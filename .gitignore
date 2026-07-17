@@ -1,0 +1,17 @@
+# === Mente OS (rama madre For3s OS) — .gitignore ===
+# NUNCA versionar accesos ni secretos del server.
+
+# Guías de acceso al server (SSH, password) — viven solo en local
+Acceso_Seguro/
+Nota.txt
+
+# Docs con el password del server literal (hasta que se limpien)
+Doc/PLAN_PRUEBAS_EXHAUSTIVO.md
+Doc/Changelog_Pulido_MVP_2026-06.md
+
+# El sub-repo Maestro ya tiene su propio git (no anidar)
+Maestro/
+
+# basura
+*.swp
+.DS_Store
