@@ -1,6 +1,20 @@
 # 🌐 RONDA F0 — MENTE OS MAESTRO (el super-cerebro conectado)
 
-> **Estado: ✅ ARQUITECTURA APROBADA por Brian 2026-07-17 — F1 EN CONSTRUCCIÓN.** Es el pendiente
+> **Estado: ✅✅ COMPLETO F1→F5 (2026-07-17).** El super-cerebro conectado ya vive. Motor entero
+> construido y verificado E2E; primer piloto real (Jazz) funcionando. Evoluciona a CARRIL (mejora
+> continua) + queda enganchado a Pendiente A (entrenar Foresito con el Maestro).
+>
+> **LO CONSTRUIDO (todo en `Mente/Maestro/`, repo `for3slabs/mente-os-maestro` privado):**
+> - **F1 registro** (`registro.md`): apunta a 5 ramas (For3s OS, marca-personal, Foresito, instancias, NavigoX-gate) + Diseño Jazz.
+> - **F2 puentes**: `maestro` — A (git efímero, `leer`/`grep`, no replica) + B (canal API vivo, `vivo`). Rama madre versionada en `mente-os-for3s`.
+> - **Bienvenida** (`BIENVENIDA.md`): protocolo de onboarding al clonar (lee CLAUDE.md/.claude/.agents + pregunta rama/descripción obligatoria).
+> - **F3 crear rama** (`mente-os-nueva`): genera {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla, descripción obligatoria, ficha para registro.
+> - **F4 permisos** (`permisos.md` + puerta en `maestro`): por persona/carril, fail-closed, reusa H8. Colaborador ve solo su carril.
+> - **F5 piloto Jazz**: rama REAL `mente-os-diseno-jazz` (privado) creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve el núcleo.
+>
+> **Pendiente (post-cierre):** F6 fino (este doc) · engancharlo a Pendiente A (Foresito lee el Maestro, puente E) · Jazz clona y usa cuando quiera.
+
+> **[HISTÓRICO] Estado inicial: ARQUITECTURA APROBADA por Brian 2026-07-17.** Es el pendiente
 > estratégico MÁS GRANDE.
 >
 > **DECISIONES LOCKED (Brian 2026-07-17):**

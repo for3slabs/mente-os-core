@@ -159,12 +159,15 @@ probar en uso real.
 
 ## 5-bis · Pendientes grandes (Brian marca el foco)
 
-- 🌐 **⭐ SUPER-CEREBRO CONECTADO (Brian 2026-07-17) — EL PENDIENTE ESTRATÉGICO MÁS GRANDE.** Visión:
-  `Alma/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md`. Dos pendientes: 🅰️ **entrenar a Foresito
-  (@For3s_OS_bot) con TODO** (hoy el agente interno es el que menos sabe) · 🅱️ **MENTE OS MAESTRO**:
-  un controlador que lo sabe todo + los Mente OS regados (Mente/marca-personal/For3s-OS/server/
-  instancias) se conectan como RAMAS + crear nuevos Mente OS ramificados (ej. el de DISEÑO de Jazz,
-  cofounder, para que colabore sin miedo) + permisos por persona. Solo VISIÓN — Ronda F0 cuando Brian diga.
+- 🌐 **⭐ SUPER-CEREBRO CONECTADO (Brian 2026-07-17).** Visión: `Alma/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md`.
+  - 🅱️ **MENTE OS MAESTRO → ✅✅ COMPLETO F1→F5 (2026-07-17).** El controlador ligero que APUNTA
+    (no replica) ya vive: repo `for3slabs/mente-os-maestro` (privado) con `registro.md` + comandos
+    `maestro` (puente A git efímero + B canal API vivo) + `mente-os-nueva` (crea ramas) + `permisos.md`
+    (puerta por carril, fail-closed) + `BIENVENIDA.md` (onboarding al clonar). Ramas versionadas:
+    `mente-os-for3s` (rama madre, 166 docs) + `mente-os-diseno-jazz` (piloto real). Detalle:
+    `Cuerpo/Ronda_Mente_OS_Maestro.md` + memoria `project_mente_os_maestro_f1_f2`. **Evoluciona a CARRIL.**
+  - 🅰️ **entrenar a Foresito (@For3s_OS_bot) con TODO** — PENDIENTE (hoy el agente interno es el que
+    menos sabe). Ahora tiene fuente: el puente E = Foresito lee el Maestro. Es el pago final del super-cerebro.
 
 - 🎯 **APRENDIZAJES DE CAMPO (post-Incubathon, 2º lugar) — mapa de trabajo grande:** 5 frentes.
   **Doc madre:** `Alma/Aprendizajes_De_Campo_Post_Incubathon.md`. Detalle en `Doc/PENDIENTES.md`

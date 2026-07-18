@@ -22,23 +22,18 @@
   del hito ENTRENAMIENTO (absorber memoria sin perderla, ya probado en brian). Cruza con 🅱️ (el
   Maestro sería la fuente que Foresito lee).
 
-### 🅱️ MENTE OS MAESTRO — la super-memoria conectada (el grande) → 🟢 RONDA F0 EN DISEÑO (2026-07-17)
-> **Ronda F0 escrita:** `Cuerpo/Ronda_Mente_OS_Maestro.md` (terreno mapeado + arquitectura propuesta:
-> el Maestro es un ÍNDICE+GRAFO de ramas, no una copia gigante · 6 decisiones abiertas para Brian ·
-> fases F1-F6). **Espera que Brian decida la arquitectura (§4) para arrancar F1 (el registro).**
-- [ ] **Un Mente OS MAESTRO/CONTROLADOR que lo sabe TODO y al que TODO se conecta.** Hoy los Mente OS
-  están REGADOS Y DESCONECTADOS: `~/for3s/Mente` · `~/for3s/marca-personal/Mente` · `~/for3s/For3s-OS`
-  · el server · cada instancia For3s · (quizá más). Sin comunicación entre ellos. La visión:
-  - **Maestro ← ramificaciones:** los demás Mente OS son ramas que se conectan al Maestro; él las
-    **lee y se comunica** con todas = la SUPER-MEMORIA de For3s.
-  - **Crear nuevos Mente OS ramificados:** ej. **Jazz (cofounder) quiere su Mente OS de DISEÑO** —
-    hoy no puede colaborar ("no sabe cómo iniciar, teme romper algo"). Con esto: se le genera una
-    rama del Maestro que él **detecta y sabe qué tiene**; Jazz aporta en su carril sin miedo.
-  - **Permisos por persona** (quién ve/toca qué) — lo que hace seguro que un tercero entre.
-  - **NO es un Mente OS más:** es el cerebro que gobierna. NO se usa dentro de un proyecto.
-  - **Objetivo:** que cualquier colaborador se ponga a la par sin estar "a un mar de diferencia".
-  - Preguntas de diseño (para la F0) en el doc de visión: cómo se conectan técnicamente, si es
-    lectura o bidireccional, cómo se genera una rama, relación con el canal API/grafo, etc.
+### 🅱️ MENTE OS MAESTRO — la super-memoria conectada → ✅✅ COMPLETO F1→F5 (2026-07-17). Evoluciona a CARRIL.
+> **Motor entero construido y verificado E2E + primer piloto real (Jazz) funcionando.**
+> Detalle: `Cuerpo/Ronda_Mente_OS_Maestro.md` · memoria `project_mente_os_maestro_f1_f2`.
+> Repo `for3slabs/mente-os-maestro` (privado). **Ya no es visión: es un sistema vivo.**
+- [x] **El controlador LIGERO que APUNTA (no replica) — regla madre "no replicamos, conectamos".**
+  - [x] **F1 registro** — `registro.md` apunta a 6 ramas (For3s OS, marca-personal, Foresito, instancias, NavigoX-gate, Diseño Jazz). Sin copiar nada.
+  - [x] **F2 puentes** — comando `maestro`: A (git efímero `leer`/`grep`, no deja clones) + B (canal API vivo `vivo`, pregunta al agente). Rama madre versionada (`mente-os-for3s`, 166 docs, secretos excluidos).
+  - [x] **Bienvenida** — `BIENVENIDA.md`: la IA que clona LEE CLAUDE.md/.claude/.agents + PREGUNTA (rama existente o nueva) + exige DESCRIPCIÓN (por qué ocupa Mente OS + qué hará). Fail-closed.
+  - [x] **F3 crear rama** — `mente-os-nueva`: genera {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla orientadora, descripción obligatoria, ficha para el registro.
+  - [x] **F4 permisos** — `permisos.md` + puerta en `maestro`: por persona/carril, fail-closed, reusa H8. Colaborador ve SOLO su carril.
+  - [x] **F5 piloto Jazz** — rama REAL `mente-os-diseno-jazz` (privado) creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve el núcleo; brian ve todo.
+- **Carril de mejora continua** (dormido): sumar más ramas · puente E (Foresito lee el Maestro, cruza con 🅰️) · puente C/D (búsqueda semántica / grafo de Mente OS) · Jazz clona y usa en vivo.
 
 ## 🎯 POST-INCUBATHON — Frentes de campo (Brian 2026-07-13, tras ganar 2º lugar) ⭐ NUEVO
 
