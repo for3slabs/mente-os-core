@@ -8,13 +8,28 @@
 
 ## 1 · Estado (actualizar tras cada tanda)
 
-- **Candidatas totales:** 974. **Con visión: 481** (195 previas + 286 procesadas el 2026-07-16/17).
-  **Pendientes: 688.** ⏳ Retomar mañana con el cupo recuperado (runner con freno: `run_tanda_freno.py`).
+- **✅✅ BACKLOG VACÍO 2026-07-18. Con visión: 1169 · Pendientes: 0.** (El total subió de 974 a 1169
+  candidatas conforme se procesaban; TODAS con visión ahora.)
+  **Sesión 2026-07-18:** 481→1169 con visión = **~688 fotos en el día**, TODAS 0 fallos. ~8 tandas de 100
+  encadenadas. Cupo nunca tocó el freno (0.92); la ventana 5h se renovó varias veces (bajó a 0.07 al final).
+  **Aprendizajes:** (1) bug /material §1-BIS resuelto. (2) el encadenador (watch en la sesión) muere si se
+  cae el internet de Brian → el procesamiento en el server sigue, pero hay que re-armar el watch. (3) bug del
+  watch: buscar "FREN" en el FIN daba falso positivo; correcto = leer `FIN (COMPLETA|FRENADA)` exacto.
+  **Estado: hito de fotos E6 CERRADO.**
 - Modelo: sonnet-4-6. Pausa 6s entre fotos. **Ritmo real: ~55s/foto** → tanda de 100 ≈ **~90 min**.
 - **⚠️ CUPO — dato REAL de la tanda 1 (corregido):** 100 fotos subieron el **5h de 0.37→0.61 (~+0.24)**
   y el 7d de 0.33→0.36 (~+0.03). O sea: **100 fotos ≈ 24% de la ventana de 5h.** NO es despreciable
   (mi estimación inicial de "casi no se mueve" fue con pocas fotos, incorrecta). **Regla: máx 1 tanda
   de 100 por ventana de 5h, o tandas de 50, para no agotar el cupo de los bots.** El 7d aguanta bien.
+
+## ⚠️ 1-BIS · BUG CAZADO 2026-07-17 (no repetir): FALTA montar /material
+El runner busca las fotos en `/material/<BASE>/<ruta>` (BASES: `Fruterito-principal`, `Fruterito-wsl`).
+Si NO montas el volumen, TODO da `FileNotFoundError` (0 procesadas, 0 cupo — el freno ni se activa).
+**Las fotos viven en el host en `~/entrenamiento/`** → el montaje obligatorio es:
+`-v ~/entrenamiento:/material:ro`. Comprobado: dentro del contenedor el archivo queda visible en
+`/material/Fruterito-principal/media/inbound/file_*.jpg`.
+**Además:** lanzar UNO solo con `--name tanda-fotos-e6` en modo `-d` (evita duplicados = doble cupo;
+nombre fijo para no confundir cuál matar). Verificar `docker ps | grep -c run_tan == 0` antes de lanzar.
 
 ## 2 · Cómo lanzar UNA tanda (server, síncrona — NO de fondo)
 

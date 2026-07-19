@@ -1063,3 +1063,28 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   OFF por default en todas (solo `brian` ON), fix de alertas del worker activo en toda la flota.
   jazz/mashe actualizadas y devueltas a ⚪ apagadas (su estado original).
 - Diferidos vigentes: carril "urgente" · /decidi RNN-LSTM al bot · encender valor en más instancias.
+
+### 🌐 2026-07-17/18 — MENTE OS MAESTRO (F1-F5) + FOTOS E6 backlog VACÍO
+- **🌐 MENTE OS MAESTRO ✅✅ COMPLETO F1→F5** — el super-cerebro conectado (pendiente estratégico 🅱️
+  más grande). El controlador LIGERO que APUNTA (no replica): regla madre LOCKED *"no replicamos
+  información, la CONECTAMOS."* **3 repos privados en `for3slabs`:** `mente-os-maestro` (controlador) +
+  `mente-os-for3s` (rama madre, 166 docs, secretos excluidos por .gitignore) + `mente-os-diseno-jazz`
+  (piloto real de la cofundadora).
+  - **F1** registro (apunta a 6 ramas: For3s OS, marca-personal, Foresito, instancias, NavigoX-gate, Jazz).
+  - **F2** puentes — comando `maestro`: A (git efímero `leer`/`grep`, clon `--depth 1`, NO replica) +
+    B (canal API vivo `vivo`, pregunta al agente por `/v1/chat`). Verificado E2E.
+  - **Bienvenida** (`BIENVENIDA.md`): la IA que clona LEE los archivos de comportamiento
+    (`CLAUDE.md`/`.claude`/`.agents`) + PREGUNTA (rama existente o nueva) + exige DESCRIPCIÓN
+    obligatoria (por qué ocupa Mente OS + qué hará), fail-closed.
+  - **F3** `mente-os-nueva`: crea rama {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla orientadora.
+  - **F4** `permisos.md` + puerta en `maestro`: por persona/carril, fail-closed, reusa H8. Colaborador
+    ve SOLO su carril (Jazz ve diseño, NO el núcleo).
+  - **F5** piloto Jazz: rama REAL creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve for3s.
+  - Bugs cazados: submódulos habrían replicado (→ punteros efímeros) · password del server en 3 docs
+    (excluido) · slug se comía la ñ (transliterado). Detalle: `Cuerpo/Ronda_Mente_OS_Maestro.md`.
+  - **Evoluciona a CARRIL** de mejora continua (puente E: Foresito lee el Maestro = cruza con 🅰️).
+- **📸 FOTOS E6 backlog VACÍO** — de 481→1169 con visión (**~688 fotos en el día**), 0 pendientes,
+  0 fallos, ~8 tandas de 100 encadenadas con freno de cupo (nunca tocó 0.92; ventana 5h se renovó).
+  Bugs de proceso cazados: montaje `/material` faltante (todo FileNotFound) · encadenador (watch en
+  la sesión) muere si se cae el internet de Brian · falso positivo "FREN" en el estado del FIN.
+  Detalle: `Doc/Entrenamiento_E6_Fotos_Runner_Tandas.md`. **Hito de fotos E6 CERRADO.**

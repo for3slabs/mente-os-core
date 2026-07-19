@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-16 (v0.18.0 CONFIANZA — Frente E completo F1-F6).
+**Última actualización:** 2026-07-18 (Mente OS Maestro F1-F5 ✅ + fotos E6 backlog VACÍO ✅).
 
 ---
 
@@ -69,14 +69,14 @@ Ejecutado E0→E6 (commits firmados). **Estado: 11,664/11,664 archivos analizado
   (~21.6K episodios tras curar Watchdog) + 15 skills + manifiesto 0 pendientes.
 - E5b digestión: **~35% consolidado al grafo (~700 conceptos), sube cada noche sola** (CLS 08:00 UTC).
 - E6 backlog profundo (archivo por archivo): F1 docx/pdf ✅ · F2 triage ✅ · F3 código→catálogo ✅ ·
-  F4 fotos: 195 con visión ✅ · F5 audio ✅ (3/4 whisper local) · F6 cierre ⏳.
+  **F4 fotos: ✅✅ BACKLOG VACÍO 2026-07-18 (1169 con visión, 0 pendientes)** · F5 audio ✅ (3/4 whisper local) · F6 cierre ⏳.
 - **7 bugs de producto cazados** (migr 033/034 grafo AGE, FK personas, incluir_import, escaping
   Cypher, KEK efímera, plantilla instancia). Reporte: `Doc/Entrenamiento_Ejecucion_Reporte.md`.
 
-**⏳ QUEDA para cerrar el hito:** (1) 🔄 **fotos a visión EN CURSO: 481/974, 688 pendientes**
-(2026-07-17). Retomar con el runner `~/entrenamiento-runners/run_tanda_freno.py` (freno de cupo,
-reanudable) — ver `Doc/Entrenamiento_E6_Fotos_Runner_Tandas.md`. **⚠️ cupo 5h al 97% hoy → seguir
-MAÑANA** con la ventana recuperada. · (2) F6 cierre E6 + examen (~40 preguntas) · (3) ✅ **microglía
+**⏳ QUEDA para cerrar el hito:** (1) ✅✅ **fotos a visión COMPLETO 2026-07-18: 1169 con visión,
+0 pendientes** (~688 procesadas en el día, 0 fallos, ~8 tandas encadenadas con freno). Runner:
+`~/entrenamiento-runners/run_tanda_freno.py` — ver `Doc/Entrenamiento_E6_Fotos_Runner_Tandas.md`
+(receta correcta + bug /material documentado). · (2) F6 cierre E6 + examen (~40 preguntas) · (3) ✅ **microglía
 ON en brian HECHA 2026-07-16** · (4) batería §5-BIS + version bump al cerrar E6. Memoria:
 `project_hito_entrenamiento`.
 
