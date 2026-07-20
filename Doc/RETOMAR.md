@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-19/20 (SUPER-CEREBRO COMPLETO: ambos exámenes ✅ + v0.19.0 desplegada + sync total + RETOMAR podado).
+**Última actualización:** 2026-07-20 (⭐ MAESTRO PUENTES C+D CONSTRUIDOS: búsqueda semántica + grafo de Mente OS sobre núcleo único — ver §5).
 
 
 ---
@@ -84,6 +84,14 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 VIVO** (3 vivas propagadas + jazz/mashe probadas con batería completa y devueltas a su estado) ·
 CI ✅ + Trivy ✅ · Mente OS pusheado (`mente-os-for3s` `80aed31`) · Maestro al día (`8681d7c`).
 Historia de v0.16→0.18 (MERCADO, Molde, Trace, Frente E): **Bitácora Julio** + `CHANGELOG.md`.
+
+**⭐ NUEVO (2026-07-20) — MAESTRO PUENTES C+D ✅ CONSTRUIDOS Y E2E** (`Cuerpo/Ronda_Maestro_
+Puentes_C_D.md`): el Maestro dejó de ser lista → es BUSCADOR semántico + RED navegable, todo
+sobre UN núcleo (punteros.tsv + puerta única + un indexador + IDs compartidos + una superficie
+`/v1/maestro/*` en Foresito). `maestro indexar --todo | subir | buscar "<preg>" [--contexto] |
+grafo <nodo>`. Jazz solo ve su carril (probado). 4 bugs cazados. Server commit `0cac57a` firmado
+**SIN push** (esperando orden). ⏳ colas: embebido rama for3s termina solo en el server ·
+smoke-test de Brian a Foresito por Telegram ("busca en el maestro…") · re-indexar tras pushes.
 
 **👉 PRÓXIMO PASO: Brian marca el foco.** Sobre la mesa:
 - 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
