@@ -1,5 +1,27 @@
 # PENDIENTES — For3s OS
 
+## 🔌 CONECTORES SELF-SERVICE + IDENTIDAD POR CORREO — ⭐ NUEVO PENDIENTE GRANDE (Brian 2026-07-20)
+
+> **El problema:** toda integración de herramientas pasa por Brian (ineficiente, no escala) y el
+> panel de la demo (`for3s.vercel.app/demo` → Conectores) es pura UI sin comunicación con el agente.
+> **La visión completa:** `Alma/Vision_Conectores_SelfService_Panel_Agente.md` (capturada, con el
+> terreno del sitio ya leído). **Hito GRANDE → arranca con Ronda F0 cuando Brian diga.**
+
+- [ ] **A · Correo admin por instancia:** brian→brian002150@gmail.com (⚠️ confirmar vs
+  brayan002150) · Foresito→fruterito101@gmail.com · jazz/mashe→correos demo (Brian los dará;
+  configurar IGUAL que las otras).
+- [ ] **B · General multi-tenant real:** agente COMPARTIDO, todo lo demás por usuario — su correo
+  de acceso (el de la demo), su rama (lógica de hilos AI1 elevada), sus API keys, SUS conectores.
+- [ ] **C · Conectores que SÍ conectan:** botón → OAuth del proveedor (patrón GitHub Authorize) →
+  credencial cifrada ligada a usuario/rama/instancia → **el agente se entera y ya usa la
+  herramienta** → el panel muestra el estado REAL. Conector por conector: GitHub primero (MCP ya
+  existe). ⚠️ OAuth de proveedores = legal; OAuth de suscripción Claude sigue PROHIBIDO (la vía
+  es que el usuario pegue su API key — ya construido y cifrado en la demo).
+- Reusar: cifrado AES-256-GCM de la demo · canal API · puerta H8 · molde For3s Inside · vault ·
+  panel /for3s-admin · Maestro (rama Mente OS por persona).
+- Preguntas abiertas en la visión §3 (correo brian, dónde viven los tokens, OAuth apps de For3s,
+  contenedores demo vacíos vs instancias reales, orden de conectores).
+
 > **Qué es:** lista única y consolidada de todo lo que está PENDIENTE, por prioridad.
 > Para que nada se pierda y se vea de un vistazo qué falta. Punteado desde RETOMAR.md.
 > **Actualizar** al cerrar/abrir pendientes. Marcar ✅ cuando se cierre (no borrar — deja rastro).

@@ -99,6 +99,10 @@ una skill del entrenamiento (primera vez completas tras el fix S1) · ③ decidi
 tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límite?).
 
 **👉 PRÓXIMO PASO: Brian marca el foco.** Sobre la mesa:
+- 🔌 **⭐ NUEVO PENDIENTE GRANDE (2026-07-20): CONECTORES SELF-SERVICE** — que el usuario conecte
+  herramientas con UN botón (OAuth del proveedor) y su agente/rama las tenga al instante, sin pasar
+  por Brian; correo admin por instancia; general multi-tenant (solo comparten el agente). Visión:
+  `Alma/Vision_Conectores_SelfService_Panel_Agente.md` · PENDIENTES §1. Arranca con Ronda F0.
 - 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
 - ⏳ pilotos VIVOS externos: Jazz usa su bot (jazz verificada v0.19.0) + NavigoX retoma consumo.
 - Pendientes técnicos menores: **CodeQL rojo desde el 17** (pre-existente) · validar torch 2.13
