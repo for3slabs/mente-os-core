@@ -36,6 +36,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S1 | `2a5131d3` | 2026-05-28 | 2026-07-13 | **278 MB** 🔴 | ~2,900 turnos | **~985K tokens** 🔴 | LA MONSTRUO — causó el incidente del jueves |
 | S2 | `3f5bbe0d` | 2026-07-13 20:28 | 2026-07-14 06:03 | 3.4 MB 🟢 | ~26 | **549K 🔴** | Maratón H13+Frente B — productiva; /clear al cruzar el umbral rojo de contexto |
 | S3 | `c9ef4299` | 2026-07-14 ~11:00 | 2026-07-15 (activa) | 8.7 MB 🟢 | ~40 | ~n/d | **La jornada MERCADO** — v0.17.0: Frente B F4-F6 + Molde For3s Inside (M1-M4) + For3s Trace completo + panel temporal. ~22 commits, ~10 bugs (1 SEC grave). Sana; sin señales raras |
+| S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-18 noche | 1.1 MB 🟢 | ~6 | 223K 🟡 | **ENTRENAMIENTO FORESITO T0-T4 + corrida 2** — 1,829 eps de 741 archivos (0 omitidos), commit 385ac46. Sana y muy productiva |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -94,6 +95,25 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
   extra para el /clear con contexto ya en 🔴.
 - **Cierre:** /clear tras este registro, ANTES de arrancar F4 (panel admin). RETOMAR.md fresco.
   6 commits del Frente A/B en server SIN push (H13 ya pusheado en 06c5f99).
+
+---
+
+## S4 · `c154a2ba` — ENTRENAMIENTO FORESITO T0-T4 (2026-07-18 18:38 → noche, Mx)
+- **Peso:** 1.1 MB · 469 líneas · ~6 mensajes de Brian.
+- **Consumo:** cache_write 869K · cache_read 32.1M · output 238K · contexto máx 223K 🟡
+  (rozó el umbral; cerrada a tiempo).
+- **Temas:** (1) plan de cierre del hito brian (decisión: examen en 2-3 noches + v0.19.0) ·
+  (2) **HITO ENTRENAMIENTO FORESITO**: Ronda aprobada + T0 (backup RESTORE-verificado + reversa
+  demostrada + snapshot) + T1-T4 (censo 727 → olas docs 1,101 eps + código 670 eps con marca de
+  versión) + **corrida 2** (ramas+raíz, +58 eps; Wiki-hackathons EXCLUIDO por Brian) →
+  **1,829 eps, manifiesto 741/741, 0 omitidos** · módulo `entrenamiento_repo.py` + 6 tests,
+  commit `385ac46` (server SIN push) · T5 backfill embeddings corriendo al cierre.
+- **📈 Consumo excesivo:** no — todo el trabajo pesado fue $0 (censo/olas/embeddings locales,
+  sin LLM). El cache_read alto es normal por la cantidad de tool-calls al server.
+- **Cosas raras:** ninguna. 2 bugs propios cazados en vivo (regex de secretos con falsos
+  positivos · sin-extensión valiosos fuera del censo) — ambos arreglados en la sesión.
+- **Cierre:** fin de bloque — la noche trabaja sola (backfill + DMN + CLS en ambos bots).
+  RETOMAR ✓ · Ronda con bitácora ✓ · memoria `project_entrenamiento_foresito` ✓.
 
 ---
 

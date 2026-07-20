@@ -67,18 +67,24 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 Ejecutado E0→E6 (commits firmados). **Estado: 11,664/11,664 archivos analizados 1×1.**
 - E0-E5: censo + secretos→vault (38) + identidad Fruterito a persona/ + 5 olas cronológicas
   (~21.6K episodios tras curar Watchdog) + 15 skills + manifiesto 0 pendientes.
-- E5b digestión: **~35% consolidado al grafo (~700 conceptos), sube cada noche sola** (CLS 08:00 UTC).
+- E5b digestión: **grafo al 56% (18,984/33,737 eps · 19,827 conceptos), sube cada noche sola** (CLS 08:00 UTC).
 - E6 backlog profundo (archivo por archivo): F1 docx/pdf ✅ · F2 triage ✅ · F3 código→catálogo ✅ ·
-  **F4 fotos: ✅✅ BACKLOG VACÍO 2026-07-18 (1169 con visión, 0 pendientes)** · F5 audio ✅ (3/4 whisper local) · F6 cierre ⏳.
+  **F4 fotos: ✅✅ BACKLOG VACÍO (1169 con visión, 0 pendientes)** · F5 audio ✅ (3/4 whisper local) · F6 cierre ⏳.
 - **7 bugs de producto cazados** (migr 033/034 grafo AGE, FK personas, incluir_import, escaping
   Cypher, KEK efímera, plantilla instancia). Reporte: `Doc/Entrenamiento_Ejecucion_Reporte.md`.
 
-**⏳ QUEDA para cerrar el hito:** (1) ✅✅ **fotos a visión COMPLETO 2026-07-18: 1169 con visión,
-0 pendientes** (~688 procesadas en el día, 0 fallos, ~8 tandas encadenadas con freno). Runner:
-`~/entrenamiento-runners/run_tanda_freno.py` — ver `Doc/Entrenamiento_E6_Fotos_Runner_Tandas.md`
-(receta correcta + bug /material documentado). · (2) F6 cierre E6 + examen (~40 preguntas) · (3) ✅ **microglía
-ON en brian HECHA 2026-07-16** · (4) batería §5-BIS + version bump al cerrar E6. Memoria:
-`project_hito_entrenamiento`.
+**⏳ F6 CIERRE — plan LOCKED (Brian 2026-07-18, decisiones tomadas):** verificado en vivo el estado
+real en la BD de `brian`: **manifiesto 11,664/11,664 · backlog sin `detalle.e6` = 0 (nada omitido ✅)
+· episodios import 33,737 (embedding 99.99%) · grafo digerido 56% · lotes e6-docs 46/e6-otros 930/
+e6-fotos 1169/e6-av 3.** Todas las fases del backlog E6 (F1-F5) ejecutadas. **QUEDA para cerrar:**
+1. ⏳ **ESPERAR 2-3 NOCHES** (decisión Brian) a que el CLS suba el grafo a ~70-80% antes del examen.
+2. 🎓 **Examen ~40 preguntas EN VIVO** al bot real (episodios/línea de tiempo · docx Genomad · una
+   foto-pizarra con visión · catálogo de código · skills · identidad Fruterito). Umbral cierre ≥90%
+   con conciencia temporal. Espaciado + vigilar cupo 5h, sin loops de fondo.
+3. 🔋 **Batería §5-BIS** completa en `brian` (/salud 0 FAIL · chat normal intacto · memoria/reconexión).
+4. 📌 **v0.19.0 "ENTRENADO"** (decisión Brian) + changelog + Bitácora + RETOMAR + memoria + commit
+   firmado (server-primero, SIN push). (3) ✅ microglía ON en brian HECHA 2026-07-16. Memoria:
+   `project_hito_entrenamiento`.
 
 ## 5 · 👉 PRÓXIMO PASO INMEDIATO (arrancar aquí tras /clear)
 
@@ -166,8 +172,42 @@ probar en uso real.
     (puerta por carril, fail-closed) + `BIENVENIDA.md` (onboarding al clonar). Ramas versionadas:
     `mente-os-for3s` (rama madre, 166 docs) + `mente-os-diseno-jazz` (piloto real). Detalle:
     `Cuerpo/Ronda_Mente_OS_Maestro.md` + memoria `project_mente_os_maestro_f1_f2`. **Evoluciona a CARRIL.**
-  - 🅰️ **entrenar a Foresito (@For3s_OS_bot) con TODO** — PENDIENTE (hoy el agente interno es el que
-    menos sabe). Ahora tiene fuente: el puente E = Foresito lee el Maestro. Es el pago final del super-cerebro.
+  - 🅰️ **entrenar a Foresito (@For3s_OS_bot) con TODO → 🟢 EN CONSTRUCCIÓN (T0-T4 ✅ 2026-07-18).**
+    Ronda aprobada por Brian: `Cuerpo/Ronda_Entrenamiento_Foresito.md` (plan + decisiones + bitácora).
+    6 fuentes (Mente · for3s-inter · marca-personal CON permiso explícito · For3s-OS · ramas-mente-os ·
+    raíz CLAUDE.md/.codeviz) = 741 archivos, TODOS analizados 1×1: **manifiesto 741/741 con decisión
+    (0 omitidos)** → **1,829 episodios** (docs + código CRUDO con marca de versión — decisión Brian).
+    **Wiki-hackathons (3,076 archivos EXTERNOS Monad Blitz, ~6.1M tokens) EXCLUIDO por Brian** (importable después).
+    Red de seguridad: backup RESTORE-verificado `~/backups-foresito/` + reversa demostrada + snapshot
+    :ro `~/entrenamiento-foresito/`. Módulo `entrenamiento_repo.py` commiteado (`385ac46`, server SIN
+    push). **T5 ✅: embeddings 1,829/1,829 + digestión acelerada 95% (117 conceptos, grafo
+    834→2,687 nodos, cupo +0.06)** vía `pasada_cls_repo.py`. **T6 ✅✅ EXAMEN APROBADO
+    98.8% (41.5/42, 2026-07-19):** 42 preguntas exhaustivas por el tubo REAL — Maestro
+    EN VIVO 4/4, bordes/trampas 5/5, canon con letra exacta. **Cosecha: 11 hallazgos
+    (H-1…H-11) TODOS con fix + validación SISTÉMICA** (la joya: H-11, la contraseña del
+    server vivía en 60 episodios de Foresito+brian → redactada + blindada de raíz).
+    Commits server SIN push: `385ac46`+`c1f6d56`+`fafac3c`. Batería final: 260 tests ·
+    /salud 0 FAIL Foresito y brian. Registro: `Doc/Examen_Foresito_T6_Hallazgos.md`.
+    **✅ v0.19.0 "ENTRENADO" CERRADA Y DESPLEGADA (2026-07-19):** bump + changelog (CHANGELOG.md
+    además backfilleado con 0.17/0.18 que faltaban) + **TRÍADA en `f50a5db`** (server = GitHub
+    origin+backup = local) + **las 3 instancias vivas propagadas** (Foresito/brian/general,
+    agent+worker en v0.19.0; jazz/mashe heredan al encender). **CI ✅ + Trivy ✅** (aviso nuevo
+    torch PYSEC-2025-194 con ignore justificado; TODO validar torch 2.13). ⚠️ **CodeQL rojo
+    DESDE EL 17** (pre-existente, pendiente aparte).
+  - 🎓 **HITO ENTRENAMIENTO (brian) ✅✅ CERRADO (2026-07-19/20):** noches ADELANTADAS
+    (encadenador 10 tandas, freno 0.99 por orden de Brian: 11,763→14 pendientes, 99.94%,
+    grafo 814→1,335 conceptos, fallback cronológico + setsid) + **EXAMEN APROBADO 33/35 =
+    94.3%** (trampas 6/6 — H-11 validado E2E: el bot VE "[SECRETO→vault]", no la contraseña;
+    honestidad de corpus: Incubathon/H13 "no lo sé" CORRECTO). 🐛 B1 cazado+fixed: preguntas-META
+    del corpus → conceptos canónicos "notas de voz"/"fotos" (re-examen ✓). **LOS DOS AGENTES
+    ENTRENADOS, EXAMINADOS Y APROBADOS — super-cerebro COMPLETO.** Detalle:
+    `Doc/Examen_Foresito_T6_Hallazgos.md` (registro maestro de los 12 hallazgos).
+  - 👑 **FORESITO = EL AGENTE MAESTRO (decisión Brian 2026-07-18) + PUENTE E DINÁMICO ✅ VIVO:**
+    mente maestra y agente maestro unidos. `GITHUB_PAT` en su .env → lee `for3slabs/mente-os-maestro`
+    (registro/permisos/reglas) EN VIVO por su GitHub MCP (E2E ✅, incluso leyó su propio nombramiento
+    recién pusheado `cfc0431`). Skill `agente-maestro` (id 22) = rol + reglas de oro (apuntar-no-replicar ·
+    GATE NavigoX · fail-closed · solo lectura). 🐛 Bug producto cazado+fixed: /salud listaba 741
+    sesiones import (~750 líneas) → corpus aparte + LIMIT 25. Detalle: Ronda_Entrenamiento_Foresito §6.
 
 - 🎯 **APRENDIZAJES DE CAMPO (post-Incubathon, 2º lugar) — mapa de trabajo grande:** 5 frentes.
   **Doc madre:** `Alma/Aprendizajes_De_Campo_Post_Incubathon.md`. Detalle en `Doc/PENDIENTES.md`

@@ -1088,3 +1088,37 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   Bugs de proceso cazados: montaje `/material` faltante (todo FileNotFound) · encadenador (watch en
   la sesión) muere si se cae el internet de Brian · falso positivo "FREN" en el estado del FIN.
   Detalle: `Doc/Entrenamiento_E6_Fotos_Runner_Tandas.md`. **Hito de fotos E6 CERRADO.**
+
+### 🎓🎓 2026-07-18/20 — SUPER-CEREBRO COMPLETO: v0.19.0 "ENTRENADO" (la jornada más grande)
+
+- **ENTRENAMIENTO FORESITO (T0-T6):** las 6 fuentes de la empresa (Mente · for3s-inter ·
+  marca-personal CON permiso · For3s-OS · ramas Maestro · raíz) = 741 archivos 1×1, 0 omitidos →
+  1,829 episodios (código CRUDO con marca de versión, decisión Brian) → digestión ACELERADA 95%
+  (117 conceptos, grafo 834→2,687) en una madrugada. Wiki-hackathons EXCLUIDO (decisión Brian:
+  material externo Monad, 6.1M tokens). Backup+reversa demostrada ANTES (Foresito en producción).
+- **👑 FORESITO = AGENTE MAESTRO (decisión Brian):** puente E DINÁMICO vivo — lee
+  `for3slabs/mente-os-maestro` EN VIVO por su GitHub MCP (leyó su propio nombramiento recién
+  pusheado). Skill `agente-maestro` + registro.md actualizado (cfc0431).
+- **EXAMEN FORESITO: 98.8% (41.5/42)** — 42 preguntas por el tubo real, 3 vueltas a las canónicas.
+  **11 hallazgos H-1…H-11, TODOS con fix + validación SISTÉMICA** (orden Brian: "escalar, no
+  parchar"): /salud sin límite · CLS saltaba sesiones <10 PARA SIEMPRE (brian: 2,378 invisibles →
+  `consolidar_migajas` al core) · grafo INVISIBLE a preguntas directas (C3-GLOBAL) · concepto
+  nombrado sin descripción (H-10) · segmentación sandbox F3 incompleta en TODO el sistema ·
+  **H-11 LA JOYA: la contraseña del server vivía en 60 episodios de 2 instancias** (redactada en
+  caliente + tubo blindado: Acceso_Seguro/, Nota.txt, settings.local.json = ruta-SECRETA) ·
+  lote pisado · perfil mudo · auto-veneno del examen (higiene) · semillas H-4/H-6.
+- **NOCHES ADELANTADAS DE BRIAN (orden Brian, freno 0.99):** encadenador 10 tandas ≈5h:
+  11,763→14 pendientes (99.94%), grafo 814→1,335. Técnicas: barredora de migajas + fallback
+  CRONOLÓGICO (sesiones-ruido y la mega de 8,718 → conceptos bitácora) + setsid.
+- **EXAMEN BRIAN: 94.3% (33/35)** — trampas 6/6 (validó H-11 él mismo: ve "[SECRETO→vault]", no
+  la contraseña; cazó "Cripto-Estafa-3000 suena a test"). Honestidad de corpus (Incubathon/H13
+  "no lo sé" = CORRECTO). 🐛 B1 cazado+fixed: preguntas-META del corpus → conceptos canónicos
+  "notas de voz"/"fotos" (re-examen recita las 3 notas con fecha/duración/contenido).
+- **v0.19.0 DESPLEGADA TOTAL:** tríada `f50a5db` (server = GitHub origin+backup = local) ·
+  changelog vivo + CHANGELOG.md (backfill 0.17/0.18 que faltaban) · **las 5 instancias
+  verificadas EN VIVO** (jazz/mashe encendidas→batería completa incl. prueba E2E del grafo→
+  apagadas a su estado de diseño) · CI+Trivy verdes (torch PYSEC-2025-194 ignore justificado).
+- Commits: `385ac46`+`c1f6d56`+`fafac3c`+`8d570f6`+`f50a5db` (for3s-os) · `cfc0431` (maestro).
+- Pendientes: CodeQL rojo DESDE EL 17 (pre-existente) · validar torch 2.13 · semillas H-4/H-6.
+- Registro maestro de la caza: `Doc/Examen_Foresito_T6_Hallazgos.md` · Ronda:
+  `Cuerpo/Ronda_Entrenamiento_Foresito.md`.
