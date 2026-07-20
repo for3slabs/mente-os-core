@@ -36,7 +36,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S1 | `2a5131d3` | 2026-05-28 | 2026-07-13 | **278 MB** 🔴 | ~2,900 turnos | **~985K tokens** 🔴 | LA MONSTRUO — causó el incidente del jueves |
 | S2 | `3f5bbe0d` | 2026-07-13 20:28 | 2026-07-14 06:03 | 3.4 MB 🟢 | ~26 | **549K 🔴** | Maratón H13+Frente B — productiva; /clear al cruzar el umbral rojo de contexto |
 | S3 | `c9ef4299` | 2026-07-14 ~11:00 | 2026-07-15 (activa) | 8.7 MB 🟢 | ~40 | ~n/d | **La jornada MERCADO** — v0.17.0: Frente B F4-F6 + Molde For3s Inside (M1-M4) + For3s Trace completo + panel temporal. ~22 commits, ~10 bugs (1 SEC grave). Sana; sin señales raras |
-| S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-18 noche | 1.1 MB 🟢 | ~6 | 223K 🟡 | **ENTRENAMIENTO FORESITO T0-T4 + corrida 2** — 1,829 eps de 741 archivos (0 omitidos), commit 385ac46. Sana y muy productiva |
+| S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-19 ~18:30 (Mx) | 4.2 MB 🟢 | ~29 | **667K 🔴** | **LA JORNADA DEL SUPER-CEREBRO (30h)** — entrenamiento+examen de AMBOS agentes, 12 fixes sistémicos, v0.19.0 desplegada total. La más productiva de la historia del proyecto; /clear al cierre por contexto rojo |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -98,22 +98,29 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 
 ---
 
-## S4 · `c154a2ba` — ENTRENAMIENTO FORESITO T0-T4 (2026-07-18 18:38 → noche, Mx)
-- **Peso:** 1.1 MB · 469 líneas · ~6 mensajes de Brian.
-- **Consumo:** cache_write 869K · cache_read 32.1M · output 238K · contexto máx 223K 🟡
-  (rozó el umbral; cerrada a tiempo).
-- **Temas:** (1) plan de cierre del hito brian (decisión: examen en 2-3 noches + v0.19.0) ·
-  (2) **HITO ENTRENAMIENTO FORESITO**: Ronda aprobada + T0 (backup RESTORE-verificado + reversa
-  demostrada + snapshot) + T1-T4 (censo 727 → olas docs 1,101 eps + código 670 eps con marca de
-  versión) + **corrida 2** (ramas+raíz, +58 eps; Wiki-hackathons EXCLUIDO por Brian) →
-  **1,829 eps, manifiesto 741/741, 0 omitidos** · módulo `entrenamiento_repo.py` + 6 tests,
-  commit `385ac46` (server SIN push) · T5 backfill embeddings corriendo al cierre.
-- **📈 Consumo excesivo:** no — todo el trabajo pesado fue $0 (censo/olas/embeddings locales,
-  sin LLM). El cache_read alto es normal por la cantidad de tool-calls al server.
-- **Cosas raras:** ninguna. 2 bugs propios cazados en vivo (regex de secretos con falsos
-  positivos · sin-extensión valiosos fuera del censo) — ambos arreglados en la sesión.
-- **Cierre:** fin de bloque — la noche trabaja sola (backfill + DMN + CLS en ambos bots).
-  RETOMAR ✓ · Ronda con bitácora ✓ · memoria `project_entrenamiento_foresito` ✓.
+## S4 · `c154a2ba` — LA JORNADA DEL SUPER-CEREBRO (2026-07-18 18:38 → 07-19 ~18:30 Mx, ~30h)
+- **Peso:** 4.2 MB · 2,075 líneas · ~29 mensajes de Brian (sesión sobrevivió 2 reinicios de
+  Claude Code + 1 reboot del server + varios cortes de red).
+- **Consumo:** cache_write 4.2M · cache_read **354.7M** · output 967K · **contexto máx 667K 🔴**
+  (muy por encima del umbral — /clear obligado al cierre; el costo se moderó porque la mayoría
+  del trabajo pesado fue $0: censo/embeddings/clustering locales, y lo LLM fue con freno).
+- **Temas (la jornada más grande del proyecto):** (1) ENTRENAMIENTO FORESITO T0-T6 completo
+  (1,829 eps, digestión acelerada 95%) · (2) 👑 Foresito = AGENTE MAESTRO + puente E dinámico ·
+  (3) EXAMEN Foresito 98.8% → **12 hallazgos H-1…H-11+B1 TODOS con fix sistémico** (joya H-11:
+  contraseña del server en 60 eps de 2 instancias → redactada+blindada) · (4) noches ADELANTADAS
+  de brian (encadenador 10 tandas, 11,763→14) · (5) EXAMEN brian 94.3% (trampas 6/6) ·
+  (6) v0.19.0 ENTRENADO: bump+changelog+push tríada+propagación 5 instancias+CI verde ·
+  (7) sync TOTAL (4 repos GitHub + server + local + Maestro).
+- **📈 Consumo excesivo:** el contexto creció rojo por la duración (30h, ~35 vigías/tareas de
+  fondo); el cache_read enorme = cientos de tool-calls ssh. Sin incidente de cupo: frenos
+  funcionaron (el examen se auto-frenó a 0.90 una vez).
+- **Cosas raras (todas cazadas y documentadas):** PermissionError enmascarado por mi grep del
+  log ("la red" no era) · pkill que se AUTO-mataba (patrón en mi propio cmdline ssh) ·
+  encadenador muerto por limpieza de sesión (→ setsid SIEMPRE) · builds muertos por cortes de
+  red (→ nohup SIEMPRE) · rebuild que mató al backfill (secuenciar recreates).
+- **Cierre:** hito doble CERRADO + ecosistema entero sincronizado + esta autopsia + RETOMAR
+  podado → /clear seguro. Todo vive en: Bitácora (entrada completa) · `Doc/Examen_Foresito_
+  T6_Hallazgos.md` · `Cuerpo/Ronda_Entrenamiento_Foresito.md` · memorias actualizadas.
 
 ---
 
