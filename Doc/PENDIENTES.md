@@ -7,9 +7,9 @@
 > **La visión completa:** `Alma/Vision_Conectores_SelfService_Panel_Agente.md` (capturada, con el
 > terreno del sitio ya leído). **Hito GRANDE → arranca con Ronda F0 cuando Brian diga.**
 
-- [ ] **A · Correo admin por instancia:** brian→brian002150@gmail.com (⚠️ confirmar vs
-  brayan002150) · Foresito→fruterito101@gmail.com · jazz/mashe→correos demo (Brian los dará;
-  configurar IGUAL que las otras).
+- [ ] **A · Correo admin por instancia:** brian→**brayan002150@gmail.com** ✅confirmado ·
+  Foresito→fruterito101@gmail.com · jazz/mashe→correos demo (Brian los dará; configurar IGUAL
+  que las otras).
 - [ ] **B · General multi-tenant real:** agente COMPARTIDO, todo lo demás por usuario — su correo
   de acceso (el de la demo), su rama (lógica de hilos AI1 elevada), sus API keys, SUS conectores.
 - [ ] **C · Conectores que SÍ conectan:** botón → OAuth del proveedor (patrón GitHub Authorize) →
@@ -17,6 +17,12 @@
   herramienta** → el panel muestra el estado REAL. Conector por conector: GitHub primero (MCP ya
   existe). ⚠️ OAuth de proveedores = legal; OAuth de suscripción Claude sigue PROHIBIDO (la vía
   es que el usuario pegue su API key — ya construido y cifrado en la demo).
+- [ ] **D · API keys de For3s self-service:** apartado "Genera mi API key" en el panel del
+  USUARIO (misma mecánica que /for3s-admin → +Nuevo cliente, pero self-service): solo pone un
+  NOMBRE → key ligada a su cuenta/correo · **tope 3 keys por persona** · puede revocarlas él.
+  Reusa el motor api_clients del Frente B.
+- **La experiencia (Brian):** *"1. registro nombre y correo · 2. conectar herramientas ·
+  3. usarlo — todo del lado usuario"* — incluido QUITAR conectores (revoca y el agente lo suelta).
 - Reusar: cifrado AES-256-GCM de la demo · canal API · puerta H8 · molde For3s Inside · vault ·
   panel /for3s-admin · Maestro (rama Mente OS por persona).
 - Preguntas abiertas en la visión §3 (correo brian, dónde viven los tokens, OAuth apps de For3s,

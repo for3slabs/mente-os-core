@@ -25,7 +25,7 @@
 Cada instancia tiene UN correo que es su admin:
 | Instancia | Correo admin |
 |---|---|
-| brian | brian002150@gmail.com *(⚠️ confirmar: ¿o brayan002150@gmail.com, el del form de la demo?)* |
+| brian | **brayan002150@gmail.com** ✅ (confirmado por Brian 2026-07-20) |
 | Foresito | fruterito101@gmail.com |
 | jazz | correo demo (Brian lo dará; configurar IGUAL que las otras) |
 | mashe | correo demo (Brian lo dará; configurar IGUAL que las otras) |
@@ -46,6 +46,21 @@ es el agente. General se vuelve de verdad multi-tenant por correo.
 - El panel refleja el estado real (Conectado/No conectado) leyendo del agente, no de mentira.
 - No están casi ninguna de las integraciones del panel: se cablea **conector por conector**
   (GitHub primero — MCP ya existe), avanzando.
+- **La experiencia completa en 3 pasos (Brian, 2026-07-20):** *"1. registro nombre y correo ·
+  2. conectar herramientas · 3. usarlo — en tres sencillos pasos queda todo, y TODO del lado
+  del usuario."* La persona conecta y dice "ya quedó, ya tengo integrada esta herramienta".
+- **Quitar también es del usuario:** desconectar un conector = igual de fácil que conectarlo
+  (un botón; la credencial se revoca/borra de su vault; el agente deja de tener la herramienta).
+
+### D · API keys de For3s SELF-SERVICE (Brian, 2026-07-20)
+Hoy las keys `f3k_` las genera Brian desde el panel admin (`/for3s-admin` → Clientes →
+"+ Nuevo cliente"). La visión: **un apartado "Genera mi API key de For3s" en el panel del
+USUARIO** — la misma mecánica del admin pero self-service:
+- El usuario solo pone un **NOMBRE** para la key → se genera ligada a SU cuenta (su correo).
+- **Tope: 3 API keys por persona.** (Y puede revocarlas él mismo, coherente con "quitar
+  también es del usuario".)
+- Reusa el motor que ya existe (api_clients: hash sha256, scopes, estado, cuotas — Frente B);
+  lo nuevo es la puerta self-service ligada a la identidad por correo de la pieza B.
 
 ## 2 · Lo que YA existe para reusar (terreno leído 2026-07-20)
 
@@ -68,8 +83,7 @@ es el agente. General se vuelve de verdad multi-tenant por correo.
 
 ## 3 · Preguntas abiertas (para la Ronda F0)
 
-1. **Correo de brian:** ¿brian002150@gmail.com (como dictó Brian) o brayan002150@gmail.com
-   (el del form/screenshot)? Confirmar antes de configurar.
+1. ~~Correo de brian~~ → ✅ **brayan002150@gmail.com** (confirmado 2026-07-20).
 2. Correos demo de jazz/mashe — Brian los dará.
 3. ¿Los conectores viven en la BD de cada instancia (vault propio, aislamiento total) o en
    `for3s_demo` (cerca del panel)? — instinto: en la instancia (el agente es quien los usa),
