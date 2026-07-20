@@ -23,11 +23,10 @@
   key se registra en `/v1/token` → responde con SU billing. ChatPanel (sección Chat, 1ª del shell).
   E2E: aislamiento PROBADO (A guarda dato, B no lo ve, A lo recuerda). Commit LOCAL sitio `8232e32`
   (SIN push, espera orden). Plan: `Cuerpo/Plan_Pieza_B_General_Multitenant.md`.
-- [ ] **C · Conectores que SÍ conectan:** botón → OAuth del proveedor (patrón GitHub Authorize) →
-  credencial cifrada ligada a usuario/rama/instancia → **el agente se entera y ya usa la
-  herramienta** → el panel muestra el estado REAL. Conector por conector: GitHub primero (MCP ya
-  existe). ⚠️ OAuth de proveedores = legal; OAuth de suscripción Claude sigue PROHIBIDO (la vía
-  es que el usuario pegue su API key — ya construido y cifrado en la demo).
+- [🔨] **C · Conectores que SÍ conectan — FRENTE 1 ✅ + FRENTE 2 ✅ código (2026-07-20, 4ª pieza):** GitHub end-to-end. **F1 (server, tríada `3c3e35b`):** canal API con tool-loop POR USUARIO (token del vault, read-only, aislado) — resuelve S3. Endpoint `/v1/conector` (guarda/lee/borra cifrado) + `SecretStore.delete_secret`. E2E: ciclo + aislamiento verificados. **F2 (sitio, commit local `017871d`):** OAuth GitHub (start/callback state CSRF), token cifrado en vault por correo, `ConnectorsPanel` estado real (Conectar/Conectado/Desconectar). Verificado sin app (503/401/200). Plan: `Cuerpo/Plan_Pieza_C_Conectores_OAuth.md`. ⏳ **FALTA (Brian):** registrar GitHub OAuth App en fruterito101 + pegar credenciales (guía `marca-personal/Mente/Doc/GUIA_Registrar_GitHub_OAuth_App.md`) → luego C6 (conectar→chat usa el repo) E2E. Sitio SIN push (espera orden).
+  (Visión C: botón→OAuth proveedor→credencial cifrada por usuario→el agente la usa→panel estado
+  real. OAuth de proveedores=legal; OAuth de suscripción Claude sigue PROHIBIDO — la vía es que el
+  usuario pegue su API key, ya construido.)
 - [ ] **D · API keys de For3s self-service:** apartado "Genera mi API key" en el panel del
   USUARIO (misma mecánica que /for3s-admin → +Nuevo cliente, pero self-service): solo pone un
   NOMBRE → key ligada a su cuenta/correo · **tope 3 keys por persona** · puede revocarlas él.
