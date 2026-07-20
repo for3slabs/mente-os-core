@@ -1122,3 +1122,25 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
 - Pendientes: CodeQL rojo DESDE EL 17 (pre-existente) · validar torch 2.13 · semillas H-4/H-6.
 - Registro maestro de la caza: `Doc/Examen_Foresito_T6_Hallazgos.md` · Ronda:
   `Cuerpo/Ronda_Entrenamiento_Foresito.md`.
+
+## 📅 2026-07-19 → 07-20 — 🔌 MAESTRO PUENTES C+D: de lista de punteros a SUPER-CEREBRO BUSCABLE Y NAVEGABLE
+
+- Brian pidió los planes de C (semántica) y D (grafo) con UNA condición arquitectónica: "que no se
+  construya por separado ni se llame la misma acción varias veces". Ronda F0 diseñada, aprobada
+  ("continúa") y CONSTRUIDA la misma jornada: `Cuerpo/Ronda_Maestro_Puentes_C_D.md`.
+- **Núcleo (N0-N2):** `punteros.tsv` fuente única (mató la triplicación del v1) · `maestro_lib.sh`
+  puerta única fail-closed · `indexador.py` una pasada → chunks `rama:ruta#NNN` + cinturón
+  anti-secretos (excluyó 5 chunks con pinta de credencial).
+- **Server (N3/C/D, commit firmado `0cac57a`, SIN push):** migración 046 (maestro_chunks pgvector
+  HNSW + grafo AGE `maestro_kg`) · módulo `maestro_indice.py` · superficie `/v1/maestro/*` en
+  Foresito (su canal API se ENCENDIÓ hoy — era opt-in) · skill 22 ampliado · key al sandbox solo
+  del compose principal.
+- **E2E:** semántica real (halló permisos.md sin palabras literales) · jazz SOLO su carril ·
+  randito/401 fail-closed · grafo automático (CONTIENE/REFIERE/ENLAZA de `[[links]]`) + curado
+  (`relaciones.md` declarativo: diseno-jazz DEPENDE_DE for3s) · `buscar --contexto` = híbrido C×D.
+- **Batería:** 264 tests (4 nuevos) · ruff/format · ty 0 nuevos · 4 bugs cazados construyendo
+  (--relaciones colado como rama · AGE una-columna/mapa · alcance marca-personal → columna
+  `indexar` · restart mató el one-shot → el diseño resumible por hash lo salvó).
+- Repos doc pusheados: maestro `05dae20` · mente-os-for3s `68c5e17`. Índice: derivado REGENERABLE
+  (regla madre intacta). Pendiente: embebido for3s termina solo · smoke Telegram de Brian ·
+  push for3s-os con orden.
