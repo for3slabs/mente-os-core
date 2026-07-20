@@ -23,6 +23,10 @@
   USUARIO (misma mecánica que /for3s-admin → +Nuevo cliente, pero self-service): solo pone un
   NOMBRE → key ligada a su cuenta/correo · **tope 3 keys por persona** · puede revocarlas él.
   Reusa el motor api_clients del Frente B.
+- [ ] **E · UN solo concentrado admin + responsivo:** absorber `/demo-admin` dentro de
+  `/for3s-admin` (el concentrado ÚNICO; el panel suelto desaparece) + arreglar el menú del
+  panel que NO es responsivo (diagnóstico: `PanelDashboard.tsx` ~L187, tabs `flex` sin
+  `overflow-x-auto`/wrap → 7 pestañas se desbordan en móvil; header ~L169 también).
 - **La experiencia (Brian):** *"1. registro nombre y correo · 2. conectar herramientas ·
   3. usarlo — todo del lado usuario"* — incluido QUITAR conectores (revoca y el agente lo suelta).
 - Reusar: cifrado AES-256-GCM de la demo · canal API · puerta H8 · molde For3s Inside · vault ·

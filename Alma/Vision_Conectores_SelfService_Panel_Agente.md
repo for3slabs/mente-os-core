@@ -62,6 +62,17 @@ USUARIO** — la misma mecánica del admin pero self-service:
 - Reusa el motor que ya existe (api_clients: hash sha256, scopes, estado, cuotas — Frente B);
   lo nuevo es la puerta self-service ligada a la identidad por correo de la pieza B.
 
+### E · UN solo concentrado admin + panel responsivo (Brian, 2026-07-20)
+- **`/demo-admin` NO debe existir como panel suelto:** su contenido (Demo General · Personas,
+  registros, waitlist de la demo) se ABSORBE en el **Panel de administración** (`/for3s-admin`)
+  — ese es EL concentrado único de administración. Una sola puerta, una sola vista.
+- **El menú del panel admin NO es responsivo** (diagnóstico 2026-07-20, solo lectura):
+  `components/for3s-admin/PanelDashboard.tsx` línea ~187 — la barra de tabs es un
+  `flex gap-2` plano SIN `overflow-x-auto` ni wrap ni breakpoints; con 7 pestañas
+  (Resumen…Expediente) en móvil se desborda/aplasta. Fix natural: tabs scrollables
+  (`overflow-x-auto flex-nowrap`) o colapsar a menú en pantallas chicas. El header
+  (línea ~169, `flex items-start justify-between`) también se aprieta en móvil.
+
 ## 2 · Lo que YA existe para reusar (terreno leído 2026-07-20)
 
 **Del lado sitio (`marca-personal`, doc `Mente/Doc/Demo_For3s_Avance.md`):**
