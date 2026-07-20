@@ -92,10 +92,27 @@ USUARIO** — la misma mecánica del admin pero self-service:
   (contrato+SDK) + secret store/vault (H-11 blindó el tubo) + MCP GitHub vivo + Maestro
   (ramas Mente OS por persona — cruza con la rama de cada usuario).
 
+## 2-BIS · DECISIÓN RAÍZ — la demo habla con instancias REALES (Brian, 2026-07-20) 🔒
+
+> **La pregunta más importante del pendiente, ya resuelta:** ¿con qué agente habla el usuario de
+> la demo web cuando usa conectores? **RESPUESTA: con las instancias REALES del server**, por el
+> canal API. NO se llenan los 4 contenedores demo vacíos — se **retiran**. Un solo For3s, no dos
+> mundos que mantener. Coherente con "un solo cerebro".
+
+**Consecuencias que esta decisión fija para las demás piezas:**
+- **Conectores viven en la BD de la instancia** (vault propio del agente que los usa), NO en
+  `for3s_demo`. El panel/sitio solo CONSULTA el estado por el canal API (no es dueño del token).
+- La demo web = un **cliente más del canal API** (como NavigoX/jazz-id ya lo son). El registro
+  nombre+correo del sitio se MAPEA a identidad dentro de la instancia real (general multi-tenant).
+- Los 4 contenedores `for3s-demo-*` vacíos → retirar (tarea de limpieza, pieza a definir).
+- `for3s_demo` (BD del sitio) queda SOLO para lo del sitio (registro/sesiones/waitlist), no para
+  credenciales de agente.
+
 ## 3 · Preguntas abiertas (para la Ronda F0)
 
 1. ~~Correo de brian~~ → ✅ **brayan002150@gmail.com** (confirmado 2026-07-20).
 2. Correos demo de jazz/mashe — Brian los dará.
+3. ~~¿demo habla con instancias reales o contenedores vacíos?~~ → ✅ **instancias REALES** (§2-BIS).
 3. ¿Los conectores viven en la BD de cada instancia (vault propio, aislamiento total) o en
    `for3s_demo` (cerca del panel)? — instinto: en la instancia (el agente es quien los usa),
    el panel solo consulta por el canal API.

@@ -23,10 +23,15 @@
   USUARIO (misma mecánica que /for3s-admin → +Nuevo cliente, pero self-service): solo pone un
   NOMBRE → key ligada a su cuenta/correo · **tope 3 keys por persona** · puede revocarlas él.
   Reusa el motor api_clients del Frente B.
-- [ ] **E · UN solo concentrado admin + responsivo:** absorber `/demo-admin` dentro de
-  `/for3s-admin` (el concentrado ÚNICO; el panel suelto desaparece) + arreglar el menú del
-  panel que NO es responsivo (diagnóstico: `PanelDashboard.tsx` ~L187, tabs `flex` sin
-  `overflow-x-auto`/wrap → 7 pestañas se desbordan en móvil; header ~L169 también).
+- [x] **E · UN solo concentrado admin + responsivo ✅ CONSTRUIDO (2026-07-20, 1ª pieza):**
+  `/demo-admin` absorbido como pestaña "Demo" en `/for3s-admin` (una sola llave = token de control,
+  validado server-side con caché 60s) + tabs con scroll horizontal + header apilado en móvil.
+  `/demo-admin`, `/api/demo/admin/auth`, `AdminDashboard.tsx`, `checkAdminPassword` eliminados.
+  Build+lint verdes, 401 fail-closed, sin regresión. 3 bugs propios cazados. Plan+resultado:
+  `marca-personal/Mente/Doc/Plan_Pieza_E_Concentrado_Admin.md`. Commit LOCAL `bc814e3` (SIN push,
+  espera orden de Brian). ⚠️ **Bloqueo de INFRA para Brian:** el Postgres demo escucha solo
+  `127.0.0.1`, no el tailnet → la tabla de personas no carga hasta reabrir `listen_addresses`+
+  `pg_hba` (requiere sudo). NO es de la pieza E (preexiste).
 - **La experiencia (Brian):** *"1. registro nombre y correo · 2. conectar herramientas ·
   3. usarlo — todo del lado usuario"* — incluido QUITAR conectores (revoca y el agente lo suelta).
 - Reusar: cifrado AES-256-GCM de la demo · canal API · puerta H8 · molde For3s Inside · vault ·
