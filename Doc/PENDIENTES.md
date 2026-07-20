@@ -16,8 +16,13 @@
   pieza B). E2E verde en las 3 vivas, owner_id intacto. 3 bugs cazados (owner_id=0 falso · tipo
   sucio · compose equivocado). Tríada `b6aad52`. Plan: `Cuerpo/Plan_Pieza_A_Correo_Admin_Instancia.md`.
   ⏳ jazz/mashe: correos pendientes de Brian (su ENV vacío = admin_email null, inofensivo).
-- [ ] **B · General multi-tenant real:** agente COMPARTIDO, todo lo demás por usuario — su correo
-  de acceso (el de la demo), su rama (lógica de hilos AI1 elevada), sus API keys, SUS conectores.
+- [x] **B · General multi-tenant real ✅ CONSTRUIDA (2026-07-20, 3ª pieza):** ⭐ **LA DEMO WEB
+  CONVERSA CON FOR3S POR 1ª VEZ** (el "usarlo" de la visión, que no existía). `/api/demo/general/chat`
+  → canal del general (Funnel público) con X-Client-Id=**correo de la sesión** (no del body,
+  fail-closed) → hilo aislado (AI1). Agente COMPARTIDO, cada correo su memoria. BYOK: al guardar la
+  key se registra en `/v1/token` → responde con SU billing. ChatPanel (sección Chat, 1ª del shell).
+  E2E: aislamiento PROBADO (A guarda dato, B no lo ve, A lo recuerda). Commit LOCAL sitio `8232e32`
+  (SIN push, espera orden). Plan: `Cuerpo/Plan_Pieza_B_General_Multitenant.md`.
 - [ ] **C · Conectores que SÍ conectan:** botón → OAuth del proveedor (patrón GitHub Authorize) →
   credencial cifrada ligada a usuario/rama/instancia → **el agente se entera y ya usa la
   herramienta** → el panel muestra el estado REAL. Conector por conector: GitHub primero (MCP ya
