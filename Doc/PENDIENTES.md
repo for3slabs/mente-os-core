@@ -28,10 +28,12 @@
   validado server-side con caché 60s) + tabs con scroll horizontal + header apilado en móvil.
   `/demo-admin`, `/api/demo/admin/auth`, `AdminDashboard.tsx`, `checkAdminPassword` eliminados.
   Build+lint verdes, 401 fail-closed, sin regresión. 3 bugs propios cazados. Plan+resultado:
-  `marca-personal/Mente/Doc/Plan_Pieza_E_Concentrado_Admin.md`. Commit LOCAL `bc814e3` (SIN push,
-  espera orden de Brian). ⚠️ **Bloqueo de INFRA para Brian:** el Postgres demo escucha solo
-  `127.0.0.1`, no el tailnet → la tabla de personas no carga hasta reabrir `listen_addresses`+
-  `pg_hba` (requiere sudo). NO es de la pieza E (preexiste).
+  `marca-personal/Mente/Doc/Plan_Pieza_E_Concentrado_Admin.md`. **✅ PUSHEADO** (sitio
+  `ElBrAyAn1967/For3s` main `d585144`). **✅ E2E completo:** caso positivo verificado (200 + tabla
+  real de personas). El bloqueo de infra se resolvió: el Postgres demo NO escuchaba en tailnet
+  porque arrancó antes que `tailscale0` en boot → `systemctl restart postgresql@16-main` lo fijó.
+  ⚠️ **Deuda de mantenimiento del server (no urgente):** el bind se pierde si el server reinicia;
+  fix duradero = `After=tailscaled` en el unit de PG o esperar la IP en ExecStartPre.
 - **La experiencia (Brian):** *"1. registro nombre y correo · 2. conectar herramientas ·
   3. usarlo — todo del lado usuario"* — incluido QUITAR conectores (revoca y el agente lo suelta).
 - Reusar: cifrado AES-256-GCM de la demo · canal API · puerta H8 · molde For3s Inside · vault ·
