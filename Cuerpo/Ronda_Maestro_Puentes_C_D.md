@@ -26,6 +26,25 @@
 >   (smoke-test de Brian: "busca en el maestro dónde…") · push de for3s-os con la tríada cuando
 >   Brian dé la orden · re-indexar tras push de los repos doc (`maestro indexar --todo && subir`).
 >
+> **🔬 BARRIDO SISTÉMICO POST-E2E (2026-07-20, pedido por Brian — patrón H-findings):**
+> los bugs cazados en el E2E de Foresito se verificaron en TODAS las distribuciones:
+> - **🔴 S1 — skills amputadas en silencio** (`conversation.py` inyectaba `contenido[:1500]`):
+>   sistémico en v0.19.0. Víctima real: **brian con 16/16 skills del entrenamiento a 8,000
+>   chars → el bot veía el 19% de cada receta desde el día uno**. Foresito 0/3 (skill 22
+>   compactada) · general 0/0 · jazz/mashe apagadas. **FIX aprobado por Brian, opción (a):**
+>   `SKILL_INYECCION_MAX = 8000` (fidelidad 100%; costo ~4K tokens SOLO cuando aplica una
+>   skill, máx 2/turno) + test-guardia que delata si alguien lo vuelve a bajar.
+> - **🟠 S2 — "busca/consulta…" no disparaba el tool-loop** (solo "ejecuta/corre"): fix
+>   `huele_a_maestro` (aditivo, 6 tests) para las frases del Maestro; el patrón general
+>   conservador se queda (decisión pendiente solo si Brian quiere ampliarlo).
+> - **🟡 S3 — el canal API NO corre tools en NINGUNA instancia** (usa `send` plano por
+>   diseño): al pedir ejecución por API el modelo NARRA e inventa resultados (Foresito
+>   "reportó" un error de red que los logs desmintieron). Afecta la promesa del canal para
+>   clientes (general/NavigoX). **Decisión de producto PENDIENTE de Brian — no se tocó.**
+> - Extra cazado en la propagación: el mapeo de la key al sandbox estaba en el compose
+>   COMPARTIDO → general/jazz/mashe la habrían heredado al recrear. Cerrado con
+>   `FOR3S_SANDBOX_API_KEY` que SOLO define el .env del principal (fail-closed).
+>
 > **Diseño original aprobado (histórico):**
 > Regla de Brian (2026-07-19, origen de esta ronda): *"quiero que todo esto de Mente OS Maestro
 > esté conectado, que realmente tenga un flujo — que no se construya por separado y que cuando

@@ -1144,3 +1144,14 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
 - Repos doc pusheados: maestro `05dae20` · mente-os-for3s `68c5e17`. Índice: derivado REGENERABLE
   (regla madre intacta). Pendiente: embebido for3s termina solo · smoke Telegram de Brian ·
   push for3s-os con orden.
+
+### Adenda 2026-07-20 — 🔬 BARRIDO SISTÉMICO S1-S3 (post-E2E de los puentes C+D)
+
+- Brian pidió verificar si los bugs del E2E vivían en TODAS las distribuciones → sí:
+  **S1 🔴 skills inyectadas cortadas a 1,500 chars EN SILENCIO** — brian tenía SUS 16 skills
+  del entrenamiento (8,000 c/u) amputadas al 19% desde el día uno. Fix aprobado (a):
+  `SKILL_INYECCION_MAX=8000` + test-guardia. **S2 🟠** "busca en el maestro" no disparaba el
+  tool-loop → `huele_a_maestro`. **S3 🟡** el canal API narra/inventa ejecuciones (send plano,
+  sin tools, por diseño) — decisión de producto pendiente. Extra: key del sandbox se cerró a
+  solo-principal (`FOR3S_SANDBOX_API_KEY`). Propagación a las 3 vivas con `for3s encender`
+  (env-file propio, sin riesgo KEK). 266 tests.
