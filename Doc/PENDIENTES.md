@@ -28,10 +28,9 @@
   (Visión C: botón→OAuth proveedor→credencial cifrada por usuario→el agente la usa→panel estado
   real. OAuth de proveedores=legal; OAuth de suscripción Claude sigue PROHIBIDO — la vía es que el
   usuario pegue su API key, ya construido.)
-- [ ] **D · API keys de For3s self-service:** apartado "Genera mi API key" en el panel del
-  USUARIO (misma mecánica que /for3s-admin → +Nuevo cliente, pero self-service): solo pone un
-  NOMBRE → key ligada a su cuenta/correo · **tope 3 keys por persona** · puede revocarlas él.
-  Reusa el motor api_clients del Frente B.
+- [x] **D · API keys de For3s self-service ✅ CONSTRUIDA (2026-07-20, 5ª y ÚLTIMA):** endpoint `/v1/miskeys` (canal, tríada `cbf5d37`) — genera/lista/revoca, tope 3, aislamiento de propiedad por prefijo `::key-`, colisión de nombres resuelta, key plana 1 vez. Reusa `api_admin`. Sitio (`9f00442`, pusheado): `ApiKeysPanel` "Mis API keys" (generar con nombre/copiar/revocar). E2E: tope, B no toca las de A (403), la key CONSUME For3s, sin regresión. Plan: `Cuerpo/Plan_Pieza_D_API_Keys_Self_Service.md`.
+> ✅✅ **PENDIENTE CONECTORES SELF-SERVICE COMPLETO (5/5 piezas): E · A · B · C(código, falta OAuth App) · D.**
+
 - [x] **E · UN solo concentrado admin + responsivo ✅ CONSTRUIDO (2026-07-20, 1ª pieza):**
   `/demo-admin` absorbido como pestaña "Demo" en `/for3s-admin` (una sola llave = token de control,
   validado server-side con caché 60s) + tabs con scroll horizontal + header apilado en móvil.
