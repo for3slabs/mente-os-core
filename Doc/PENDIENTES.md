@@ -9,9 +9,13 @@
 > 2026-07-20, visión §4): por cada pieza → alinear visión (Brian+yo) → plan DETALLADO de esa
 > pieza → aprobar → construir → batería. NO un plan global. Brian marca cuándo y qué pieza.**
 
-- [ ] **A · Correo admin por instancia:** brian→**brayan002150@gmail.com** ✅confirmado ·
-  Foresito→fruterito101@gmail.com · jazz/mashe→correos demo (Brian los dará; configurar IGUAL
-  que las otras).
+- [x] **A · Correo admin por instancia ✅ CONSTRUIDA (2026-07-20, 2ª pieza):** migr 047
+  (`admin_email` en `owner`, aditiva) + OwnerStore (get/set/sync + norm) + siembra por ENV
+  `FOR3S_ADMIN_EMAIL` + endpoint **`/v1/whoami`** (lo consume B) + `/soy` muestra el correo.
+  Correos vivos: **Foresito=fruterito101** · **brian=brayan002150** · general=null (multi-tenant,
+  pieza B). E2E verde en las 3 vivas, owner_id intacto. 3 bugs cazados (owner_id=0 falso · tipo
+  sucio · compose equivocado). Tríada `b6aad52`. Plan: `Cuerpo/Plan_Pieza_A_Correo_Admin_Instancia.md`.
+  ⏳ jazz/mashe: correos pendientes de Brian (su ENV vacío = admin_email null, inofensivo).
 - [ ] **B · General multi-tenant real:** agente COMPARTIDO, todo lo demás por usuario — su correo
   de acceso (el de la demo), su rama (lógica de hilos AI1 elevada), sus API keys, SUS conectores.
 - [ ] **C · Conectores que SÍ conectan:** botón → OAuth del proveedor (patrón GitHub Authorize) →
