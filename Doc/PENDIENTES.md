@@ -5,7 +5,9 @@
 > **El problema:** toda integración de herramientas pasa por Brian (ineficiente, no escala) y el
 > panel de la demo (`for3s.vercel.app/demo` → Conectores) es pura UI sin comunicación con el agente.
 > **La visión completa:** `Alma/Vision_Conectores_SelfService_Panel_Agente.md` (capturada, con el
-> terreno del sitio ya leído). **Hito GRANDE → arranca con Ronda F0 cuando Brian diga.**
+> terreno del sitio ya leído). **Hito GRANDE → se ejecuta PIEZA POR PIEZA (regla Brian
+> 2026-07-20, visión §4): por cada pieza → alinear visión (Brian+yo) → plan DETALLADO de esa
+> pieza → aprobar → construir → batería. NO un plan global. Brian marca cuándo y qué pieza.**
 
 - [ ] **A · Correo admin por instancia:** brian→**brayan002150@gmail.com** ✅confirmado ·
   Foresito→fruterito101@gmail.com · jazz/mashe→correos demo (Brian los dará; configurar IGUAL

@@ -95,10 +95,26 @@ USUARIO** — la misma mecánica del admin pero self-service:
    apunta a instancias reales + general multi-tenant).
 6. Orden de conectores: GitHub primero (MCP listo). ¿Luego? (Drive/Telegram parecen naturales).
 
-## 4 · Estado
+## 4 · MÉTODO DE EJECUCIÓN — plan detallado POR PIEZA (regla de Brian, 2026-07-20)
+
+> *"Como es muy grande, necesitamos un plan detallado POR PIEZA, no por todo el pendiente —
+> así aseguramos la PRECISIÓN. Cuando empecemos a diseñarlo: alineamos la visión tuya y mía,
+> realizamos el plan de esa pieza, y le damos."*
+
+**Cada pieza (A correo-admin · B general multi-tenant · C conectores · D API keys self-service)
+es su PROPIA mini-ronda:**
+1. **Alinear visión** — Brian y yo cerramos qué es exactamente ESA pieza (sin ambigüedad).
+2. **Plan detallado de la pieza** — terreno + fases + contratos con las otras piezas + red de
+   seguridad + batería. Nada de plan global difuso.
+3. **Aprobar** → **construir** → batería §5-BIS → cierre de la pieza.
+4. Siguiente pieza (el orden lo marca Brian; los contratos entre piezas evitan que se
+   construyan por separado — misma lección de la Ronda Maestro C+D).
+
+## 5 · Estado
 
 **🎯 VISIÓN CAPTURADA (2026-07-20) — NO diseñar ni construir hasta que Brian diga.** Arranca
-con Ronda F0 (explicar → aprobar → construir). Registrado en `Doc/PENDIENTES.md`.
+pieza por pieza (§4): alinear visión → plan de LA pieza → aprobar → construir. Registrado en
+`Doc/PENDIENTES.md`.
 
 Relacionado: `marca-personal/Mente/Doc/Demo_For3s_Avance.md` (terreno del sitio, LEÍDO con
 permiso de Brian 2026-07-20) · [[project_frente_b_puente_mercado]] (canal API producto) ·
