@@ -117,6 +117,25 @@ en su namespace sin mapeo al host). Correcto: general recibe a los usuarios de l
 - ✅ sin sesión→401 · build/lint verdes · canal general health ok, 0 errores (sin regresión).
 - Limpieza: hilos borrados con `/v1/olvidar` (200) + registros de prueba fuera de `for3s_demo`.
 
+## 5-TER · 🔴 BUG TRÁGICO CAZADO EN AUDITORÍA INTEGRAL (2026-07-20) — FIX
+
+Al probar el flujo COMPLETO encadenado (Brian pidió "prueba todo el flujo, he reconocido
+errores y patrones"), salió una **fuga de aislamiento entre usuarios** que pieza-por-pieza NO
+se veía (solo aparece con correos REALES):
+
+- **Causa:** el canal API sanea el `X-Client-Id` con `_limpiar_id` (borra `@ . +`, trunca a 32).
+  Los correos reales colapsan: `a+b.test@x.com`, `ab.test@x.com`, `a.b.test@x.com` → TODOS
+  `abtestxcom` → **MISMO hilo / memoria / vault de conectores** = un usuario ve el chat de otro
+  y podría usar su token de GitHub. Gmail usa puntos y `+` constantemente → el bug es común.
+- **Confirmado en vivo:** la BD del general tenía `client_id` ya destrozados (`auditorexamplecom`…).
+- **Fix (`for3sChat.ts`, commit sitio `950b51b`):** `clientIdDeCorreo(email)` = `u` +
+  sha256(correo normalizado)[:24] → id `[a-z0-9]` estable, único, <32 (intacto por `_limpiar_id`).
+  Las 5 funciones lo aplican INTERNAMENTE (ningún caller lo olvida). El correo se normaliza
+  (minúsculas+trim) → mismo correo, mismo id siempre.
+- **E2E verificado:** 2 correos que colisionaban ahora AISLADOS (X guarda "AZUL-42", Y no lo ve,
+  X lo recuerda). Conectores heredan el fix. Barrido: ningún otro lugar manda correo crudo como id
+  (molde/NavigoX usan ids de máquina, intactos). Datos de prueba destrozados limpiados de la BD.
+
 ## 6 · Fuera de alcance de B
 - Conectores OAuth (C) · API keys self-service f3k_ del usuario (D — distinto del BYOK de Claude) ·
   el correo admin ya lo hizo A · retirar contenedores demo vacíos (limpieza).
