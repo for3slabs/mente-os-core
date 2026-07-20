@@ -33,7 +33,21 @@
   - [x] **F3 crear rama** — `mente-os-nueva`: genera {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla orientadora, descripción obligatoria, ficha para el registro.
   - [x] **F4 permisos** — `permisos.md` + puerta en `maestro`: por persona/carril, fail-closed, reusa H8. Colaborador ve SOLO su carril.
   - [x] **F5 piloto Jazz** — rama REAL `mente-os-diseno-jazz` (privado) creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve el núcleo; brian ve todo.
-- **Carril de mejora continua** (dormido): sumar más ramas · puente E (Foresito lee el Maestro, cruza con 🅰️) · puente C/D (búsqueda semántica / grafo de Mente OS) · Jazz clona y usa en vivo.
+- [x] **Puentes C+D ✅ CONSTRUIDOS (2026-07-19/20)** — búsqueda semántica + grafo de Mente OS sobre
+  UN núcleo anti-duplicación (`Cuerpo/Ronda_Maestro_Puentes_C_D.md`). Índice en Foresito
+  (`/v1/maestro/*`), CLI `maestro indexar|subir|buscar --contexto|grafo`. Barrido sistémico S1-S3:
+  S1 skills amputadas [:1500] → fix 8000 propagado a las 3 vivas · S2 huele_a_maestro · S3 abierto.
+- **Carril de mejora continua** (dormido): sumar más ramas · Jazz clona y usa en vivo · S3 (canal
+  API con tools) si Brian decide.
+
+### 📌 PENDIENTES DE BRIAN (él los hace — registrados 2026-07-20, cierre puentes C+D)
+- [ ] **Smoke por Telegram a @For3s_OS_bot:** decirle *"busca en el maestro dónde se explica cómo
+  dar permisos a una rama"* — debe EJECUTAR la búsqueda (tool-loop + /v1/maestro/buscar) y citar
+  `rama:ruta`, no narrarla. Es el último eslabón E2E conversacional de los puentes C+D.
+- [ ] **Probar en @For3s_Brian_bot una skill del entrenamiento** (tick-coord, monad, godinez…):
+  primera vez que las ve COMPLETAS (S1 las amputaba al 19% desde el día uno). Comparar calidad.
+- [ ] **Decidir S3** (canal API sin tools → el modelo NARRA e inventa ejecuciones; afecta la promesa
+  del canal para clientes API como NavigoX): ¿darle tool-loop al canal API o documentar el límite?
 
 ## 🎯 POST-INCUBATHON — Frentes de campo (Brian 2026-07-13, tras ganar 2º lugar) ⭐ NUEVO
 

@@ -93,6 +93,11 @@ grafo <nodo>`. Jazz solo ve su carril (probado). 4 bugs cazados. Server commit `
 **SIN push** (esperando orden). ⏳ colas: embebido rama for3s termina solo en el server ·
 smoke-test de Brian a Foresito por Telegram ("busca en el maestro…") · re-indexar tras pushes.
 
+**📌 PENDIENTES DE BRIAN (2026-07-20, detalle en PENDIENTES.md §Super-cerebro):** ① smoke Telegram
+a Foresito ("busca en el maestro dónde…" → debe EJECUTAR y citar rama:ruta) · ② probar en brian-bot
+una skill del entrenamiento (primera vez completas tras el fix S1) · ③ decidir S3 (canal API sin
+tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límite?).
+
 **👉 PRÓXIMO PASO: Brian marca el foco.** Sobre la mesa:
 - 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
 - ⏳ pilotos VIVOS externos: Jazz usa su bot (jazz verificada v0.19.0) + NavigoX retoma consumo.
