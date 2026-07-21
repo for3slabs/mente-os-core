@@ -155,3 +155,33 @@ defensivo) — de hecho C lo vuelve irrelevante (cada usuario trae el suyo).
 *Relacionado: `Alma/Vision_Conectores_SelfService_Panel_Agente.md` (§C) · piezas A (identidad) y B
 (chat) ya listas · S3 (reportado en `Cuerpo/Ronda_Maestro_Puentes_C_D.md` §barrido) · memoria
 `project_conectores_selfservice`.*
+
+## 5-TER · 🔴 AUDITORÍA PROFUNDA (2026-07-20) — la pieza C estaba ROTA de raíz
+
+Brian pidió probar a fondo ("sé que hay bugs y errores, hay cosas que ni están conectadas y
+están mal hechas"). Tenía razón. Hallazgos:
+
+- **🔴 CRÍTICO 1 — el conector NUNCA habría funcionado.** `/v1/conector` GUARDABA el token como
+  `github_<cliente>` (porque `tipo="github"`) pero el tool-loop lo BUSCABA como `gh_<cliente>`.
+  **Jamás coincidían.** El usuario conectaba GitHub, el panel decía "Conectado" ✅, y el agente
+  nunca encontraba el token → siempre caía a chat plano. La joya del pendiente estaba muerta.
+  **Por qué se pasó la 1ª auditoría:** probé las dos mitades POR SEPARADO (el ciclo guardar/leer
+  del endpoint, y el tool-loop sin token real) — el bug vivía ENTRE ellas (mismo patrón que el
+  bug de los correos). **Demostrado en vivo:** clave vieja `gh_` → None; clave nueva `github_`
+  → ENCONTRADA. Fix en tríada `f785373`.
+- **🔴 CRÍTICO 2 — el agente improvisaba en vez de guiar.** Sin GitHub conectado, el tool-loop
+  caía a `send` plano EN SILENCIO y el agente respondía *"Voy a leer el README… necesito ser
+  honesto: no ejecuté la herramienta… ¿es público o privado?"*. Ahora recibe contexto del sistema
+  y responde: *"conecta tu cuenta de GitHub primero. Ve al panel → Conectores → GitHub → Conectar"*
+  (verificado en vivo).
+- **🟠 IMPORTANTE 3 — el callback de OAuth perdía la sesión.** El redirect estaba hardcodeado al
+  tailnet: entrando por localhost, GitHub devolvía a otra URL → cookie perdida → `no_session`.
+  Fix: vuelve al `origin` real de la request (sitio `84d4b74`).
+
+**🟡 De producto (para Brian, NO tocado):** 7 de 8 conectores son botones muertos (solo GitHub
+conecta; el resto deshabilitados con "Pronto") · el shell EXIGE la API key de Claude para navegar,
+pero chat/conectores/keys funcionan sin ella (fricción innecesaria en el onboarding) · el
+"Cerebro" (BrainPanel) es un dibujo estático, sin datos vivos.
+
+**Falso positivo corregido:** acusé al toggle del agente de fallar en silencio; leyendo completo,
+SÍ maneja el caso (nota "solo pago"). Verificar antes de reportar.
