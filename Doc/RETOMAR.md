@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-20 (⭐ MAESTRO PUENTES C+D CONSTRUIDOS: búsqueda semántica + grafo de Mente OS sobre núcleo único — ver §5).
+**Última actualización:** 2026-07-20 (🎉 CONECTORES SELF-SERVICE COMPLETO 5/5 → v0.20.0 desplegada en todas las instancias).
 
 
 ---
@@ -26,7 +26,7 @@
 Tailscale `for3s` 100.112.177.53 · SSH brianweb3 (pass en memoria `reference_servidor_for3s`) ·
 gestor de instancias: comando `for3s listar|agregar|entrar|encender|apagar|borrar`.
 Aislamiento TOTAL por `docker compose -p for3s-<nombre>` (red/BD/KEK/volúmenes propios).
-Comparten SOLO: máquina + imagen `for3s-agent:local` (hoy v0.19.0) + suscripción Claude (**1 solo cupo** para todos).
+Comparten SOLO: máquina + imagen `for3s-agent:local` (hoy **v0.20.0**) + suscripción Claude (**1 solo cupo** para todos).
 
 | Bot | Instancia | Dueño | Estado | Notas |
 |---|---|---|---|---|
@@ -42,13 +42,13 @@ normal hasta que el dueño da /start). Detalle: memoria `project_multi_instancia
 
 ## 3 · Estado global del producto
 
-Diseño 100% LOCKED (R1-R10, 11 nodos, 3 pilares). **v0.19.0 ENTRENADO. schema BD v45.** 13 hitos
+Diseño 100% LOCKED (R1-R10, 11 nodos, 3 pilares). **v0.20.0 CONECTORES SELF-SERVICE. schema BD v47.** 13 hitos
 H1-H13 + Identidad Viva + Auto-conciencia + Multi-instancia + Execute-code + Paridad Hermes
 (5/5) + intern-os + CI + Frente B + Molde + Trace + Frente E + **super-cerebro (ambos agentes
 entrenados+examinados, §4).** **Cero bugs abiertos** (12 cazados y cerrados en los exámenes).
 **✅ TRÍADA SINCRONIZADA (2026-07-19/20): server = GitHub (origin for3slabs/for3s-os + backup
 for3slabs/for3s) = local (`For3s-OS/`) en HEAD `f50a5db`. CI+Trivy verdes. 260 tests.**
-**✅ LAS 5 INSTANCIAS EN v0.19.0** (3 vivas + jazz/mashe verificadas y apagadas por diseño).
+**✅ LAS INSTANCIAS EN v0.20.0** (3 vivas + jazz/mashe verificadas y apagadas por diseño).
 Cliente API real: NavigoX (hotel-recepcion, no consume activo) + jazz-id (prueba). Datos limpios.
 **✅ SEGURIDAD/HIGIENE CERRADA DEL TODO (2026-07-16):** CI 100% VERDE (`b8da4d7`; llevaba rojo desde
 v0.17.0) — gitleaks (repo SIN secretos reales) · format · bandit · migraciones E2E con AGE · **CI-2
