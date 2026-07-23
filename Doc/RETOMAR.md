@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-22 (🖥️ REDISEÑO DEMO ESCALABLE + panel con "más manos" — todo en el SITIO + 1 cambio en el server para uso por key).
+**Última actualización:** 2026-07-23 (🎉 FRENTE F0 "enrutar correo→instancia" COMPLETO 4/4 + 🔴 fix red server (Telegram) + barra de uso por key + verificaciones profundas de la demo).
 
 
 ---
@@ -79,7 +79,50 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-**🖥️ HOY (2026-07-22) — REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" (todo en el SITIO
+**🎉 HOY (2026-07-23) — FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + FIX RED SERVER + más:**
+
+**🔴 FIX RED DEL SERVER (Telegram volvió):** los agentes NO respondían en Telegram
+(desde 21-jul). Causa: el server prefería IPv6 pero NO tiene salida IPv6 real (solo
+la de Tailscale, `fd7a:`) → `api.telegram.org` (que resuelve por IPv6) daba HTTP 000;
+IPv4 funcionaba (302). NO fue la demo ni nuestros cambios (verificado: el commit
+sospechoso no tocó red). Fix aplicado: `precedence ::ffff:0:0/96 100` en `/etc/gai.conf`
+(respaldo `gai.conf.bak-ipv4fix`, reversible) → prefiere IPv4, **conserva IPv6/Tailscale**.
+Reiniciados brian/foresito/general → Telegram conectado sin NetworkError. Verificado en vivo.
+
+**🎉 FRENTE F0 "enrutar correo del dueño → su instancia" — 4/4 PIEZAS, probado E2E con
+evidencia del server** (sitio `ElBrAyAn1967/For3s`, commits `a03833f`→`529786e`; server
+preparado, no en repo). Cuando el dueño (ej. brayan002150@gmail.com) entra a la demo, lo
+reconoce como dueño de brian, verifica por código, y lo enruta a SU instancia (no general):
+- **P1 puente:** tabla Neon `demo_duenos` (correo→instancia) + `POST /api/demo/check-dueno`.
+  Sembrado brayan002150→brian. Las instancias del server están AISLADAS → el mapa vive en Neon.
+- **P2 verificación:** tabla `demo_verificaciones` (código HASHEADO, 10min, 5 intentos,
+  un-solo-uso). Resend (`re_3Nec...` en .env.local, `RESEND_FROM=onboarding@resend.dev`).
+  `verify/send` + `verify/check`. 6 defensas probadas.
+- **P3 enrutador:** brian con canal API ON + su key propia + puerto fijo 8798 + ruta pública
+  en Funnel `for3s.tail6749e5.ts.net/i/brian`. general intacto en `/`. `chatDueno()` enruta
+  a la instancia del dueño verificado. Verificado: el chat llegó a BRIAN (hilo en su BD), NO general.
+- **P4 UI:** `GeneralRegister` detecta dueño→pide código→entra. Correo cualquiera→general sin fricción.
+- **⚠️ FALTA para producción:** en Vercel agregar `RESEND_API_KEY`, `RESEND_FROM`,
+  `FOR3S_INST_BRIAN_KEY=for3s_sk_6de4db98f4bb265c29b478709d186333` · verificar dominio en
+  Resend (onboarding@resend.dev solo manda a pruebas, no Gmail) · ROTAR keys expuestas (Resend + brian).
+
+**📊 BARRA DE USO REAL POR API KEY f3k_ (server+sitio) COMPLETA:** `/v1/miskeys` expone
+uso por key (llamadas/tokens/costo-cupo/serie desde `api_consumo`; cada key = su client_id).
+Sitio pinta sparkline. **Server commit `8a5eb5e` = local `a699de6` (código byte-idéntico, md5
+verificado) SIN push.**
+
+**🔎 VERIFICACIONES PROFUNDAS de la demo (todo SANO, verificado en vivo):** aislamiento de
+hilo por persona (`api:<hash-correo>:<tema>` / `tg:<uid>`, nadie accede al de otro) · concurrencia
+(10+2 al mismo tiempo NO rompe, encola con "repartidor de carriles" concurrency.py; con BYOK cada
+quien su cuota = sin fila) · el hilo por persona existe en TODAS las instancias (canal API en
+general/foresito, Telegram en todas) · invitar equipo a brian por Telegram (`/invitar`) SÍ, por web
+NO (era el frente F0). 2 hallazgos demo General registrados (BYOK fire-and-forget, tema "hoteles").
+
+**⬇️ Contexto del 22-jul abajo. Sigue: cerrar F0 en producción (Vercel/Resend), o lo que Brian marque.**
+
+---
+
+**🖥️ (2026-07-22) — REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" (todo en el SITIO
 `marca-personal`, repo `github.com/ElBrAyAn1967/For3s`, deploy Vercel `for3s.vercel.app`):**
 Contexto: Brian PAUSÓ los pendientes grandes para volver For3s "operable sin él" (que pueda
 decir "está listo para prestárselo a alguien"). Trabajo por PIEZA, Brian valida cada una.

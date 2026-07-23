@@ -433,6 +433,53 @@ ESTADO TÉCNICO: bot+worker activos · sonnet-4-6 OAuth · KEK · BD schema v20 
 
 ## Julio 2026
 
+## 📅 2026-07-23 — 🎉 FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + 🔴 FIX RED SERVER + verificaciones profundas
+
+**Sesión enorme, continuación del 22-jul. Meta viva: For3s operable sin Brian. Todo en el SITIO
+salvo lo del server (marcado).**
+
+**🔴 FIX RED DEL SERVER (Telegram volvió a funcionar):** los agentes NO respondían en Telegram
+(fallando en silencio desde 21-jul mientras trabajábamos en la demo). Diagnóstico a fondo: el SO
+del server tiene IPv6 activado (`ipv6os=true`) pero NO hay salida IPv6 real a internet (solo la de
+Tailscale, `fd7a:` — interna). `api.telegram.org` resuelve por IPv6 → el sistema lo intenta → HTTP
+000; IPv4 sí funciona (302, Google 200). **Brian sospechó que la demo lo rompió; verifiqué y NO fue
+eso** (el commit sospechoso del 21 no tocó red/IPv6, coincidencia temporal). Fix: `precedence
+::ffff:0:0/96 100` en `/etc/gai.conf` (respaldo, reversible) → prefiere IPv4, conserva IPv6/Tailscale.
+Reiniciados los 3 agentes → Telegram conectado sin NetworkError. Verificado en vivo (host y contenedor
+→ Telegram 302).
+
+**🎉 FRENTE F0 "enrutar correo del dueño → su instancia" — RONDA DE DISEÑO + 4 PIEZAS COMPLETAS:**
+El problema: al entrar a la demo con su correo, a Brian lo reconocía como general, no como dueño de
+brian. La base (Pieza A, owner.admin_email + /v1/whoami) ya existía pero el sitio no la usaba, y brian
+no tenía puerta web. Decisiones de arquitectura alineadas con Brian: (1) un solo Funnel que enruta por
+ruta; (2) verificación por código al correo; (3) general se queda igual, brian/jazz/mashe (dueños 1:1)
+llevan verificación; (4) el mapa correo→instancia vive en Neon (instancias del server aisladas).
+- **P1 puente:** tabla Neon `demo_duenos` + `POST /api/demo/check-dueno`. E2E: correo→brian / cualquiera→false.
+- **P2 verificación:** tabla `demo_verificaciones` (código sha256, 10min, 5 intentos, un-solo-uso) +
+  Resend + `verify/send`/`verify/check`. 6 defensas probadas E2E.
+- **P3 enrutador (toca SERVER):** brian con canal API ON + su key propia + puerto fijo 8798 + ruta
+  pública `/i/brian` en el Funnel (⚠️ un `serve --set-path` quitó el Funnel de general por un momento;
+  detectado y reparado con `funnel`, general nunca se cayó de verdad — verificado 200). `chatDueno()`
+  enruta al dueño. E2E con evidencia: el mensaje llegó a BRIAN (hilo en su BD), NO a general.
+- **P4 UI:** `GeneralRegister` intercala el paso de código si el correo es dueño; general sin fricción.
+  Build de producción verde.
+- Commits sitio `a03833f`→`529786e`. **FALTA producción:** Vercel (RESEND_API_KEY, RESEND_FROM,
+  FOR3S_INST_BRIAN_KEY) + verificar dominio Resend + rotar keys expuestas (Resend, brian).
+
+**📊 Barra de uso real por API key f3k_ (server+sitio):** `/v1/miskeys` expone uso por key desde
+`api_consumo` (cada key = su client_id, cero instrumentación nueva). Sitio pinta sparkline. Server
+commit `8a5eb5e`, luego alineado en local `a699de6` (código byte-idéntico, md5 verificado, SIN push).
+
+**🔎 Verificaciones profundas de la demo (Brian pidió "busca el bug propio"; todo SANO):** aislamiento
+de hilo por persona sólido (por hash-correo en canal API, por tg:uid en Telegram; nadie accede al de
+otro; el bug de colisión de correos ya estaba fijado por hash) · concurrencia 10+2 NO rompe (encola con
+concurrency.py; con BYOK cada quien su cuota separada = sin fila) · aislamiento en TODAS las instancias
+(no solo general) · invitar equipo a brian por Telegram SÍ (`/invitar`), por web era justo el frente F0.
+2 hallazgos registrados (BYOK fire-and-forget sin feedback; tema "hoteles" hardcodeado — ambos bajo impacto).
+
+**Pendientes nuevos registrados (memorias):** conexión de cuenta OAuth suscripción (decidir con calma),
+enrutar correo→instancia (ya resuelto hoy), 2 hallazgos demo General.
+
 ## 📅 2026-07-22 — 🖥️ REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" + barra de uso real por API key
 
 **Contexto — cambio de foco:** Brian PAUSÓ los pendientes grandes. Meta: volver For3s **operable
