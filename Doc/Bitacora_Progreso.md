@@ -433,6 +433,56 @@ ESTADO TÉCNICO: bot+worker activos · sonnet-4-6 OAuth · KEK · BD schema v20 
 
 ## Julio 2026
 
+## 📅 2026-07-22 — 🖥️ REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" + barra de uso real por API key
+
+**Contexto — cambio de foco:** Brian PAUSÓ los pendientes grandes. Meta: volver For3s **operable
+sin él** ("que pueda decir: está listo para prestárselo a alguien"). Antes: análisis de la
+consultoría de Ángulo (primer paso comercial; doc `Alma/Analisis_Consultoria_Angulo_Primer_Paso.md`
+— "For3s tiene un foso que Ángulo no supo nombrar y una debilidad: depende de Brian para todo").
+Modo de trabajo estricto: Brian dirige pieza por pieza, valida cada una, no encadenar, no analizar
+salvo que lo pida. **Casi todo el trabajo fue en el SITIO** (`marca-personal` → repo
+`ElBrAyAn1967/For3s`, deploy Vercel `for3s.vercel.app`), NO en el repo de For3s OS.
+
+**Rediseño demo escalable (los links 1:1 salieron de variables de Vercel → a Neon):**
+- Los tokens/correos 1:1 vivían hardcodeados en Vercel = no escala. Ahora en **Neon** (`neondb`,
+  fuente de verdad de la demo — NO tailnet; Vercel no alcanza el tailnet, ese fue un error mío
+  que Brian corrigió el 21). `demo_accounts`: `kind` acepta `privado` + columnas nombre/correo/
+  instancia. `demo_users`: columna `kind_ui` (demo mostrado ≠ demo real).
+- Botón **"＋ Agregar"** en `/for3s-admin`→Demo: crea 1:1 privada (genera link `/demo/<token>`
+  en código) o General a mano. El link 1:1 **ahora funciona** (lee de Neon). La 1:1 es un usuario
+  como los demás (vive en AMBAS tablas). NO se tocó la entrada a la demo (nombre+email igual).
+  `foresito` NO es demo-able (instancia interna de la empresa, riesgoso meter externos).
+
+**Panel "más manos" (para no tocar código):** editar persona (nombre/correo real) · colores por
+demo (jazz morado · mashe verde · brian amarillo · general gris) · filtros por instancia ·
+**eliminar personas** (borra también su puerta 1:1) · **cambiar demo = MOCKUP honesto**: mueve
+solo `kind_ui`, el hilo real `kind` NO se mueve, Neon guarda ambos ("en UI se ve una cosa, en
+realidad es otra"). Decisión de Brian: que Neon sepa la verdad con columna aparte.
+
+**Dentro de la demo:** chat responsivo (sin menú superior duplicado en desktop; se conserva Cerrar
+sesión; el chat ocupa el ancho) · conectores n8n + NotebookLM (arriba de Adobe) · Perfil = pendiente.
+
+**📊 Barra de uso real por API key f3k_ (Fase 1 server + Fase 2 sitio) — COMPLETA:** ⚠️ único
+cambio en el SERVER hoy. Hallazgo: `api_consumo` ya registra cada llamada y cada key f3k_ ES su
+client_id → cero instrumentación nueva. El canal `/v1/miskeys` ahora expone por key
+total_llamadas/total_tokens/costo_usd (solo NUESTRO cupo, byok=false)/serie por día. El sitio pinta
+un **sparkline** (línea que sube/baja estilo GitHub) + los números. Verificado E2E con chat real
+(uso subió a 2 llamadas/10596 tokens/$0.032). **Server commit `8a5eb5e` SIN push** (server-primero;
+desplegado en la imagen `general` vía SSH+rebuild). Sitio: commits `a03833f`→`05058b3`.
+
+**Vercel Env Vars (Brian limpió):** quedan 5 críticas (DEMO_DATABASE_URL→Neon · DEMO_ADMIN_PASSWORD
+· DEMO_ENC_KEY · FOR3S_GENERAL_API_KEY · FOR3S_GENERAL_BASE). Se quitaron DEMO_JAZZ/MASHE/BRIAN_
+TOKEN+EMAIL (ya en Neon). Demo verificada viva tras limpiar.
+
+**Pendientes nuevos registrados (memorias, con Ronda F0 cuando Brian diga):** (a) migrar hilos entre
+agentes (el mockup cambiar-demo lo espera; NO codificado) · (b) reconstruir encender/apagar agente
+1:1 (importante, se rehará de forma especial; vars DEMO_AGENT_CONTROL_URL/_TOKEN sin uso).
+
+**Nota de proceso (autoauditoría de días previos):** el 21 hubo fricción — construí lógica de más
+(auth de demo contra el server tailnet que Vercel no alcanza), Brian lo corrigió duro ("la lógica
+que te armaste toda está mal… solo tenías que cambiar la forma"). Hoy: revertir en vez de escalar,
+mover ≠ reescribir, no tocar lo que ya funciona. Salió limpio.
+
 ## 📅 2026-07-16/17 (madrugada) — 🔥 SEMILLAS FRENTE E + MICROGLÍA brian + F-A2 (bloque "atacable ya")
 
 **4 semillas de código del carril de Confianza cerradas + microglía activada, todo con caza de bugs:**

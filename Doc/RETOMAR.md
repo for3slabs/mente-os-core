@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-20 (🎉 CONECTORES SELF-SERVICE COMPLETO 5/5 → v0.20.0 desplegada en todas las instancias).
+**Última actualización:** 2026-07-22 (🖥️ REDISEÑO DEMO ESCALABLE + panel con "más manos" — todo en el SITIO + 1 cambio en el server para uso por key).
 
 
 ---
@@ -78,6 +78,43 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 - Runners reusables (re-entrenos/aceleración) en `~/entrenamiento-runners/` del server.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
+
+**🖥️ HOY (2026-07-22) — REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" (todo en el SITIO
+`marca-personal`, repo `github.com/ElBrAyAn1967/For3s`, deploy Vercel `for3s.vercel.app`):**
+Contexto: Brian PAUSÓ los pendientes grandes para volver For3s "operable sin él" (que pueda
+decir "está listo para prestárselo a alguien"). Trabajo por PIEZA, Brian valida cada una.
+- **Demo escalable (los links 1:1 salieron de variables de Vercel → a Neon):** BD Neon
+  (`neondb`, la fuente de verdad de la demo, NO tailnet — Vercel no alcanza el tailnet).
+  `demo_accounts` ganó `kind='privado'` + columnas (nombre/correo/instancia); `demo_users`
+  ganó `kind_ui`. Botón **"＋ Agregar"** en `/for3s-admin`→Demo: crea 1:1 privada (genera
+  link `/demo/<token>` en código) o General a mano. El link 1:1 ahora **funciona** (lee de
+  Neon, no de Vercel). La 1:1 es un usuario más (vive en AMBAS tablas). Entrada a la demo
+  NO se tocó (nombre+email igual). `foresito` NO es demo-able (instancia interna, riesgoso).
+- **Panel "más manos":** editar persona (nombre/correo real) · colores por demo (jazz morado
+  · mashe verde · brian amarillo · general gris) · filtros por instancia · **eliminar
+  personas** (borra también su puerta 1:1) · **cambiar demo = MOCKUP honesto** (mueve solo
+  `kind_ui`; el hilo real `kind` NO se mueve; Neon sabe la verdad).
+- **Dentro de la demo:** chat responsivo (sin menú superior duplicado en desktop, se conserva
+  Cerrar sesión, el chat ocupa el ancho) · conectores n8n + NotebookLM (arriba de Adobe) ·
+  Perfil = pendiente.
+- **📊 BARRA DE USO REAL POR API KEY f3k_ (server + sitio):** ⚠️ ÚNICO cambio en el SERVER hoy.
+  El canal `/v1/miskeys` ahora expone por key: total_llamadas/total_tokens/costo_usd (solo
+  NUESTRO cupo, byok=false)/serie por día — desde `api_consumo` (ya existía; cada key ES su
+  client_id). El sitio pinta un **sparkline** (línea que sube/baja estilo GitHub) + los números.
+  Verificado E2E con chat real (uso subió). **Server commit `8a5eb5e` SIN push (server-primero).**
+  Sitio pusheado (commits `a03833f`→`05058b3` en ElBrAyAn1967/For3s).
+- **Vercel Env Vars (Brian las limpió):** quedan 5 críticas (DEMO_DATABASE_URL→Neon,
+  DEMO_ADMIN_PASSWORD, DEMO_ENC_KEY, FOR3S_GENERAL_API_KEY, FOR3S_GENERAL_BASE). Se quitaron
+  DEMO_JAZZ/MASHE/BRIAN_TOKEN+EMAIL (ya viven en Neon). Demo verificada viva tras limpiar.
+- **🔮 PENDIENTES NUEVOS registrados (memorias):** (a) **migrar hilos entre agentes** (el mockup
+  cambiar-demo lo espera, NO codificado) · (b) **reconstruir encender/apagar agente 1:1** (Brian:
+  importante pero se rehará de forma especial; vars DEMO_AGENT_CONTROL_URL/_TOKEN quedaron sin uso)
+  · (c) barra de uso = COMPLETA hoy. Todos con Ronda F0 cuando Brian diga.
+- **⚠️ Repo del SITIO ≠ repo de For3s OS:** el sitio vive en `ElBrAyAn1967/For3s` (marca-personal);
+  el server/agente en `for3slabs/for3s(-os)`. HOY solo se tocó el sitio + 1 archivo del canal
+  (`api_channel.py`) del server (commit local, sin push). La tríada de For3s OS sigue en `f50a5db`.
+
+---
 
 **🚀 v0.19.0 "ENTRENADO" DESPLEGADA TOTAL (2026-07-19/20):** tríada de código en **`f50a5db`**
 (server = GitHub origin `for3s-os` + backup `for3s` = local) · **las 5 instancias verificadas EN

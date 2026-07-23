@@ -1,0 +1,1113 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico Estratégico · For3s</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:#F5F3EE;color:#1A1A1A;font-family:'Poppins',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.wrap{max-width:900px;margin:0 auto;background:#FAFAF7;box-shadow:0 20px 60px rgba(0,0,0,.08);overflow:hidden;}
+.page{padding:clamp(28px,6vw,60px) clamp(20px,5vw,56px);min-height:1100px;position:relative;page-break-after:always;overflow:hidden;}
+.page:last-child{page-break-after:avoid;}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:#FAFAF7!important;overflow:visible;}
+  .wrap{box-shadow:none;overflow:visible;}
+  .page{min-height:auto;padding:40px 44px;overflow:visible;}
+  @page{size:A4;margin:0;}
+  .no-print{display:none!important;}
+}
+@media (max-width:640px){ .page{min-height:auto;} }
+
+h1{font-family:'Poppins',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-0.03em;line-height:1.05;color:#1A1A1A;word-wrap:break-word;overflow-wrap:break-word;}
+h2{font-family:'Poppins',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:700;letter-spacing:-0.02em;line-height:1.1;color:#1A1A1A;margin-bottom:20px;word-wrap:break-word;overflow-wrap:break-word;}
+h3{font-family:'Poppins',sans-serif;font-size:clamp(18px,3vw,22px);font-weight:600;letter-spacing:-0.01em;line-height:1.2;color:#1A1A1A;margin-bottom:12px;}
+h4{font-size:clamp(14px,2.5vw,15px);font-weight:700;color:#1A1A1A;margin-bottom:6px;letter-spacing:0.01em;}
+p{font-size:clamp(13px,2.2vw,14.5px);line-height:1.7;color:#2A2A2A;word-wrap:break-word;overflow-wrap:break-word;}
+
+.eyebrow{font-size:clamp(9px,1.6vw,10px);font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8B5CF6;margin-bottom:12px;}
+.eyebrow.pink{color:#EC4899;}
+.eyebrow.green{color:#059669;}
+.eyebrow.cyan{color:#0891B2;}
+
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:clamp(20px,4vw,32px);padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.08);gap:10px;flex-wrap:wrap;}
+.logo-mini{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:26px;height:26px;background:linear-gradient(135deg,#8B5CF6 0%,#EC4899 60%,#2EF2A5 100%);border-radius:50%;position:relative;flex-shrink:0;}
+.logo-icon::after{content:'';position:absolute;inset:5px;background:#FAFAF7;border-radius:50%;}
+.logo-text{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.02em;}
+.page-meta{font-size:10px;color:#6B7280;letter-spacing:1px;text-transform:uppercase;text-align:right;}
+.page-footer{margin-top:40px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06);gap:10px;flex-wrap:wrap;}
+
+/* ── Portada (dark Ángulo) ── */
+.cover{background:#0B0B12;color:#F9FAFB;padding:0;position:relative;overflow:hidden;min-height:1100px;}
+.cover-content{position:relative;z-index:3;padding:clamp(36px,6vw,70px) clamp(24px,5vw,60px);display:flex;flex-direction:column;justify-content:space-between;min-height:1100px;gap:40px;}
+.cover-glow-1{position:absolute;top:-120px;right:-120px;width:clamp(300px,55vw,500px);height:clamp(300px,55vw,500px);background:radial-gradient(circle,#8B5CF6 0%,transparent 70%);opacity:0.35;filter:blur(40px);}
+.cover-glow-2{position:absolute;bottom:-160px;left:-160px;width:clamp(340px,60vw,560px);height:clamp(340px,60vw,560px);background:radial-gradient(circle,#2EF2A5 0%,#12C2E9 50%,transparent 85%);opacity:0.22;filter:blur(50px);}
+.cover-mesh{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:44px 44px;opacity:.6;}
+.cover-circle{position:absolute;top:38%;right:8%;width:clamp(120px,20vw,180px);height:clamp(120px,20vw,180px);border:2px solid rgba(46,242,165,0.3);border-radius:50%;}
+.brand-lockup{display:flex;align-items:center;gap:14px;}
+.logo-big{width:clamp(44px,6vw,54px);height:clamp(44px,6vw,54px);background:linear-gradient(135deg,#2EF2A5 0%,#12C2E9 35%,#8B5CF6 70%,#EC4899 100%);border-radius:50%;position:relative;box-shadow:0 8px 30px rgba(139,92,246,0.4);flex-shrink:0;}
+.logo-big::after{content:'';position:absolute;inset:9px;background:#0B0B12;border-radius:50%;}
+.logo-big-text{font-family:'Poppins',sans-serif;font-size:clamp(22px,4vw,28px);font-weight:800;letter-spacing:-0.01em;background:linear-gradient(90deg,#2EF2A5,#12C2E9,#8B5CF6,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cover-kicker{font-size:clamp(10px,1.8vw,11px);font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2EF2A5;margin-bottom:18px;}
+.cover-title{font-family:'Poppins',sans-serif;font-size:clamp(34px,8vw,64px);font-weight:700;letter-spacing:-0.04em;line-height:1;margin-bottom:18px;word-wrap:break-word;overflow-wrap:break-word;color:#F9FAFB;}
+.cover-title em{font-style:italic;font-weight:400;background:linear-gradient(90deg,#2EF2A5,#12C2E9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cover-subtitle{font-size:clamp(14px,2.8vw,17px);color:#B4B4C8;line-height:1.6;max-width:560px;}
+.cover-footer{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,0.15);padding-top:24px;gap:16px;flex-wrap:wrap;}
+.cover-meta-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8B8BA8;margin-bottom:4px;}
+.cover-meta-value{font-family:'Poppins',sans-serif;font-size:clamp(13px,2.4vw,16px);font-weight:600;color:#F9FAFB;word-break:break-word;}
+.accent-strip{height:4px;background:linear-gradient(90deg,#2EF2A5,#12C2E9,#8B5CF6,#EC4899);margin:0 0 36px 0;border-radius:2px;}
+
+/* ── Cards ── */
+.card{background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:clamp(18px,4vw,24px) clamp(20px,4vw,26px);margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+.card-accent-purple{border-left:4px solid #8B5CF6;}
+.card-accent-pink{border-left:4px solid #EC4899;}
+.card-accent-green{border-left:4px solid #059669;}
+.card-accent-cyan{border-left:4px solid #0891B2;}
+.card-dark{background:#1A1A1A;color:#FAFAF7;border:none;padding:clamp(22px,4.5vw,28px) clamp(22px,4.5vw,30px);}
+.card-dark h3,.card-dark h4{color:#FAFAF7;}
+.card-dark p{color:#D1D5DB;}
+
+/* ── Hallazgo central box ── */
+.highlight-box{background:linear-gradient(135deg,#1A1A1A 0%,#2D1B4E 100%);color:#FAFAF7;padding:clamp(24px,5vw,36px) clamp(22px,5vw,40px);border-radius:16px;margin:24px 0;position:relative;overflow:hidden;}
+.highlight-box::before{content:'"';font-family:'Poppins',sans-serif;position:absolute;top:-20px;left:20px;font-size:clamp(80px,15vw,120px);color:rgba(46,242,165,0.15);line-height:1;}
+.highlight-box .eyebrow{color:#2EF2A5;margin-bottom:10px;}
+.highlight-box-text{font-family:'Poppins',sans-serif;font-size:clamp(18px,3.5vw,26px);font-weight:600;line-height:1.3;letter-spacing:-0.01em;color:#FAFAF7;position:relative;z-index:2;}
+
+/* ── Hallazgo items ── */
+.hallazgo-item{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid rgba(0,0,0,0.08);}
+.hallazgo-item:last-child{border-bottom:none;}
+.hallazgo-num{font-family:'Poppins',sans-serif;font-size:clamp(22px,4vw,28px);font-weight:700;line-height:1;min-width:clamp(36px,7vw,44px);flex-shrink:0;}
+.hallazgo-content h4{margin-bottom:4px;font-size:clamp(14px,2.7vw,16px);}
+.hallazgo-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:6px;}
+.tag-brecha{background:#FCE7F3;color:#EC4899;}
+.tag-oportunidad{background:#D1FAE5;color:#059669;}
+.tag-alerta{background:#FEF3C7;color:#D97706;}
+.tag-insight{background:#CFFAFE;color:#0891B2;}
+.hallazgo-content p{font-size:clamp(12.5px,2.3vw,13.5px);color:#4B5563;line-height:1.65;}
+
+/* ── Tabla benchmarks ── */
+.bench-table{width:100%;border-collapse:collapse;margin:16px 0;background:#FFFFFF;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,0.08);}
+.bench-table thead{background:#1A1A1A;}
+.bench-table th{text-align:left;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FAFAF7;padding:14px 16px;}
+.bench-table td{padding:14px 16px;font-size:13px;border-bottom:1px solid rgba(0,0,0,0.06);vertical-align:top;}
+.bench-table tr:last-child td{border-bottom:none;}
+.bench-table td.metric{font-weight:700;color:#1A1A1A;}
+.verdict-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:12px;}
+.verdict-alineado{background:#D1FAE5;color:#059669;}
+.verdict-por-debajo{background:#FCE7F3;color:#EC4899;}
+.verdict-por-encima{background:#CFFAFE;color:#0891B2;}
+@media (max-width:640px){
+  .bench-table{border:none;background:transparent;}
+  .bench-table thead{display:none;}
+  .bench-table tr{display:block;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:14px;margin-bottom:10px;}
+  .bench-table td{display:block;padding:4px 0;border:none;font-size:13px;}
+  .bench-table td::before{content:attr(data-label);display:block;font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;text-transform:uppercase;margin-top:6px;margin-bottom:2px;}
+}
+
+/* ── Fases ── */
+.fase{background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:clamp(20px,4vw,26px) clamp(20px,4vw,28px);margin-bottom:16px;position:relative;}
+.fase-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:14px;flex-wrap:wrap;}
+.fase-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px;}
+.fase-nombre{font-family:'Poppins',sans-serif;font-size:clamp(16px,3.8vw,20px);font-weight:700;color:#1A1A1A;letter-spacing:-0.01em;margin-bottom:4px;line-height:1.25;overflow-wrap:break-word;}
+.fase-duracion{display:inline-block;background:#1A1A1A;color:#FAFAF7;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px;flex-shrink:0;white-space:nowrap;}
+.fase-objetivo{font-size:clamp(13px,2.5vw,14px);color:#4B5563;font-style:italic;margin-bottom:10px;padding-left:12px;border-left:2px solid #2EF2A5;line-height:1.55;}
+.entregables-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6B7280;margin-bottom:10px;margin-top:4px;}
+.entregable{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:clamp(12.5px,2.3vw,13px);color:#2A2A2A;line-height:1.55;}
+.entregable-dot{width:5px;height:5px;border-radius:50%;margin-top:8px;flex-shrink:0;}
+.fase:nth-of-type(4n+1) .entregable-dot,.fase:nth-of-type(4n+1) .fase-label{color:#EC4899;}
+.fase:nth-of-type(4n+1) .entregable-dot{background:#EC4899;}
+.fase:nth-of-type(4n+2) .entregable-dot,.fase:nth-of-type(4n+2) .fase-label{color:#0891B2;}
+.fase:nth-of-type(4n+2) .entregable-dot{background:#0891B2;}
+.fase:nth-of-type(4n+3) .entregable-dot,.fase:nth-of-type(4n+3) .fase-label{color:#059669;}
+.fase:nth-of-type(4n+3) .entregable-dot{background:#059669;}
+.fase:nth-of-type(4n) .entregable-dot,.fase:nth-of-type(4n) .fase-label{color:#8B5CF6;}
+.fase:nth-of-type(4n) .entregable-dot{background:#8B5CF6;}
+
+/* ── Timeline ── */
+.timeline-container{background:#1A1A1A;border-radius:16px;padding:clamp(24px,5vw,40px) clamp(20px,4vw,32px);margin:20px 0;position:relative;overflow:hidden;}
+.timeline-container::before{content:'';position:absolute;top:-40px;right:-40px;width:clamp(140px,25vw,200px);height:clamp(140px,25vw,200px);background:radial-gradient(circle,#8B5CF6 0%,transparent 70%);opacity:0.25;}
+.timeline-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;position:relative;z-index:2;}
+.timeline-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:clamp(14px,3vw,18px) clamp(12px,2.5vw,16px);text-align:center;}
+.timeline-weeks{font-family:'Poppins',sans-serif;font-size:clamp(16px,3vw,20px);font-weight:700;color:#2EF2A5;margin-bottom:6px;letter-spacing:-0.01em;}
+.timeline-title{font-size:clamp(12px,2.2vw,13px);font-weight:600;color:#FAFAF7;margin-bottom:4px;overflow-wrap:break-word;}
+.timeline-sub{font-size:clamp(10px,1.9vw,11px);color:#9CA3AF;letter-spacing:0.3px;}
+
+/* ── Stats boxes ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:20px 0;}
+.stat-box{background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:18px 20px;}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6B7280;margin-bottom:6px;}
+.stat-value{font-family:'Poppins',sans-serif;font-size:clamp(20px,3.5vw,26px);font-weight:700;letter-spacing:-0.02em;line-height:1.15;}
+.stat-value.pink{color:#EC4899;}
+.stat-value.green{color:#059669;}
+.stat-value.cyan{color:#0891B2;}
+.stat-value.purple{color:#8B5CF6;}
+.stat-sub{font-size:11px;color:#9CA3AF;margin-top:4px;}
+
+/* ── Recomendación destacada ── */
+.reco-box{background:linear-gradient(135deg,#EC4899 0%,#8B5CF6 100%);color:#FFFFFF;padding:clamp(22px,5vw,32px) clamp(22px,5vw,36px);border-radius:16px;margin:24px 0;position:relative;overflow:hidden;}
+.reco-box::before{content:'';position:absolute;top:-30px;right:-30px;width:clamp(110px,20vw,160px);height:clamp(110px,20vw,160px);background:radial-gradient(circle,rgba(255,255,255,0.2) 0%,transparent 70%);border-radius:50%;}
+.reco-box .eyebrow{color:rgba(255,255,255,0.85);}
+.reco-box h3{color:#FFFFFF;margin-bottom:14px;}
+.reco-box p{color:rgba(255,255,255,0.95);font-size:clamp(13.5px,2.5vw,15.5px);line-height:1.7;position:relative;z-index:2;}
+
+/* ── Pill list ── */
+.pill-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.pill{display:inline-block;padding:6px 12px;border-radius:99px;font-size:12px;font-weight:500;background:#F5F3EE;color:#2A2A2A;border:1px solid rgba(0,0,0,0.06);}
+
+/* ── Fuentes consultadas ── */
+.sources-block{margin-top:28px;padding:clamp(20px,4vw,28px) clamp(20px,4vw,30px);background:linear-gradient(135deg,rgba(8,145,178,0.05) 0%,rgba(139,92,246,0.04) 100%);border:1px solid rgba(8,145,178,0.18);border-radius:14px;}
+.sources-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.sources-icon{font-size:18px;}
+.sources-title{font-family:'Poppins',sans-serif;font-size:clamp(13px,2.3vw,15px);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#0891B2;}
+.sources-intro{font-size:clamp(12px,2.1vw,13px);color:#6B7280;line-height:1.55;margin-bottom:16px;max-width:640px;}
+.sources-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
+.source-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.6);border-radius:10px;border:1px solid rgba(0,0,0,0.04);}
+.source-marker{color:#0891B2;flex-shrink:0;margin-top:2px;font-size:11px;}
+.source-body{flex:1;min-width:0;}
+.source-link{color:#0891B2;text-decoration:none;font-weight:600;font-size:clamp(12.5px,2.3vw,14px);line-height:1.4;word-break:break-word;display:inline-flex;align-items:center;gap:6px;}
+.source-link:hover{text-decoration:underline;}
+.source-arrow{font-size:11px;opacity:0.7;}
+.source-title{color:#1A1A1A;font-weight:600;font-size:clamp(12.5px,2.3vw,14px);line-height:1.4;word-break:break-word;}
+.source-domain{font-size:11px;color:#9CA3AF;margin-top:2px;font-family:'Poppins',sans-serif;letter-spacing:0.3px;}
+.source-aporto{font-size:clamp(11.5px,2vw,12.5px);color:#4B5563;margin-top:6px;line-height:1.55;font-style:italic;}
+.searches-meta{margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06);font-size:11px;color:#6B7280;}
+.searches-label{font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#8B5CF6;margin-right:6px;}
+.search-tag{display:inline-block;padding:2px 8px;background:rgba(139,92,246,0.08);border-radius:99px;margin:2px 4px 2px 0;color:#6B7280;font-size:11px;}
+
+/* ── Section header ── */
+.section-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.section-eyebrow-line{height:2px;width:32px;background:linear-gradient(90deg,#2EF2A5,#12C2E9);border-radius:1px;}
+
+/* ── Cierre page ── */
+.cierre-page{background:#0B0B12;color:#F9FAFB;min-height:1100px;position:relative;overflow:hidden;padding:clamp(48px,8vw,80px) clamp(24px,5vw,60px);}
+.cierre-page::before{content:'';position:absolute;top:-100px;right:-100px;width:clamp(280px,60vw,500px);height:clamp(280px,60vw,500px);background:radial-gradient(circle,#8B5CF6 0%,transparent 60%);opacity:0.35;filter:blur(40px);}
+.cierre-page::after{content:'';position:absolute;bottom:-150px;left:-100px;width:clamp(320px,70vw,600px);height:clamp(320px,70vw,600px);background:radial-gradient(circle,#2EF2A5 0%,#12C2E9 50%,transparent 80%);opacity:0.18;filter:blur(50px);}
+.cierre-content{position:relative;z-index:2;max-width:720px;}
+.cierre-eyebrow{font-size:clamp(10px,1.8vw,11px);font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2EF2A5;margin-bottom:20px;}
+.cierre-title{font-family:'Poppins',sans-serif;font-size:clamp(32px,7vw,54px);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:30px;color:#F9FAFB;}
+.cierre-title em{font-style:italic;background:linear-gradient(90deg,#2EF2A5,#12C2E9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cierre-body{font-size:clamp(14.5px,2.8vw,17px);line-height:1.7;color:#D1D5DB;margin-bottom:40px;max-width:620px;}
+.cierre-cta{display:inline-block;background:linear-gradient(90deg,#2EF2A5,#12C2E9,#8B5CF6,#EC4899);color:#0B0B12;padding:clamp(14px,2.5vw,18px) clamp(24px,4vw,32px);border-radius:50px;font-weight:700;font-size:clamp(13px,2.5vw,15px);text-decoration:none;letter-spacing:-0.01em;box-shadow:0 12px 40px rgba(139,92,246,0.4);}
+.cierre-signature{margin-top:60px;padding-top:30px;border-top:1px solid rgba(255,255,255,0.15);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+.cierre-signature-brand{font-family:'Poppins',sans-serif;font-size:clamp(18px,3.5vw,22px);font-weight:700;background:linear-gradient(90deg,#2EF2A5,#12C2E9,#8B5CF6,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cierre-signature-meta{font-size:11px;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ═══════════ PORTADA (dark Ángulo) ═══════════ -->
+  <div class="page cover">
+    <div class="cover-mesh"></div>
+    <div class="cover-glow-1"></div>
+    <div class="cover-glow-2"></div>
+    <div class="cover-circle"></div>
+    <div class="cover-content">
+      <div class="brand-lockup">
+        <div class="logo-big"></div>
+        <div class="logo-big-text">Ángulo</div>
+      </div>
+      <div>
+        <div class="cover-kicker">Diagnóstico Estratégico</div>
+        <h1 class="cover-title">Diagnóstico<br><em>Estratégico para</em><br>For3s</h1>
+        <p class="cover-subtitle">Su diagnóstico, su mercado y nuestro plan para construir juntos un negocio rentable y escalable. Documento de trabajo para tomar decisiones con ustedes.</p>
+      </div>
+      <div class="cover-footer">
+        <div>
+          <div class="cover-meta-label">Preparado para</div>
+          <div class="cover-meta-value">Brian</div>
+        </div>
+        <div>
+          <div class="cover-meta-label">Proyecto</div>
+          <div class="cover-meta-value">Herramienta para creación de flujos agénticos · ciudad de mexico</div>
+        </div>
+        <div>
+          <div class="cover-meta-label">Fecha</div>
+          <div class="cover-meta-value">21 de julio de 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONTEXTO + RESUMEN ═══════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="logo-mini"><div class="logo-icon"></div><div class="logo-text">Ángulo · Diagnóstico</div></div>
+      <div class="page-meta">01 · Contexto</div>
+    </div>
+    <div class="accent-strip"></div>
+
+    <div class="eyebrow">Su punto de partida</div>
+    <h2>Dónde estás hoy</h2>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">Giro</div>
+        <div class="stat-value purple" style="font-size:18px">Herramienta para creación de flujos agénticos</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Etapa</div>
+        <div class="stat-value green" style="font-size:18px">MVP / Prototipo</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Ciudad</div>
+        <div class="stat-value cyan" style="font-size:18px">ciudad de mexico</div>
+      </div>
+    </div>
+
+    
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><span class="eyebrow green" style="margin:0">Su situación actual</span></div>
+    <div class="card card-accent-green">
+      <p>For3s tiene un diferenciador técnico real —privacidad agéntica en un mercado que la necesita urgentemente— pero sus expectativas financieras están desconectadas de la realidad en varios órdenes de magnitud, su modelo de precios no existe aún, y la única persona que puede cerrar ventas es la misma que construye el producto y da soporte. Tienen tecnología que el mercado quiere comprar, pero hoy no saben cuánto cobrarle, a quién vendérsela ni cómo cerrar la venta. Su runway real es de 6 meses o menos, y el ciclo de venta B2B en el segmento que apuntan tarda entre 3 y 9 meses. Esa matemática es su problema más urgente, no el producto.</p>
+    </div>
+    
+
+    
+    <div class="highlight-box">
+      <div class="eyebrow">Hallazgo Central</div>
+      <div class="highlight-box-text">For3s no necesita más tecnología para ganar: necesita un precio, un vendedor y un cliente firmado antes de que se acaben los 6 meses.</div>
+    </div>
+    
+
+    
+    <h3 style="margin-top:32px">El problema que vamos a resolver juntos</h3>
+    <div class="card">
+      <p>Los lideres de las empresas quieren crear flujos agenticos para sus colaboradores que sean eficientes, seguros y utilicen conocimiento propio </p>
+    </div>
+    
+
+    <div class="page-footer">
+      <span>Ángulo · Consultoría estratégica</span>
+      <span>Página 02</span>
+    </div>
+  </div>
+
+  
+  <!-- ═══════════ INVESTIGACIÓN DE MERCADO ═══════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="logo-mini"><div class="logo-icon"></div><div class="logo-text">Ángulo · Diagnóstico</div></div>
+      <div class="page-meta">02 · Mercado</div>
+    </div>
+    <div class="accent-strip"></div>
+
+    <div class="eyebrow pink">Sus expectativas vs el mercado real</div>
+    <h2>Esto es lo que paga su mercado</h2>
+
+    <div class="card card-dark">
+      <div class="eyebrow" style="color:#2EF2A5">Lo más importante para ustedes</div>
+      <p style="font-size:clamp(14px,2.6vw,16px);font-weight:500;color:#F9FAFB">Su tecnología tiene un diferenciador real y un mercado con apetito genuino, pero sus expectativas financieras y su modelo comercial están tan desconectados de la realidad del mercado que, sin recalibrarse en los próximos 30 días, corren el riesgo de quedarse sin runway antes de cobrar su primer peso.</p>
+    </div>
+
+    <h3 style="margin-top:28px">Su mercado, en una mirada</h3>
+    <div class="card">
+      <p>Su mercado en Ciudad de México es uno de los más activos de América Latina: México concentra el 17% de las empresas SaaS de la región y captó más de $2,000 MDD en financiamiento en 2025, con startups que integraron IA levantando cinco veces más capital que las que no lo hicieron. El 89% de las empresas mexicanas planea integrar agentes inteligentes en 2025, pero solo el 18% ha adoptado IA de forma estructurada, lo que representa exactamente la brecha que For3s puede capitalizar. Su diferenciador de privacidad y datos seguros llega en el momento más oportuno: la LFPDPPP se ha vuelto significativamente más estricta desde marzo de 2025 y el 'shadow AI' (colaboradores que suben datos sensibles a herramientas gratuitas) es el dolor empresarial más urgente y sin resolver del segmento al que apuntan.</p>
+    </div>
+
+    
+    <h3 style="margin-top:28px">Lo que esperan vs lo que paga el mercado</h3>
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th>Lo que esperan</th>
+          <th>Lo que paga el mercado</th>
+          <th>Veredicto</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Ticket mensual por cliente (plataforma agéntica B2B México, PyME-mediana)</td>
+          <td data-label="Lo que esperan">$50 MXN/mes (interpretado literalmente de la respuesta del cliente)</td>
+          <td data-label="Lo que paga el mercado">$3,000–$80,000 MXN/mes según nivel; segmento mediano-avanzado con privacidad: $15,000–$50,000 MXN/mes</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-por-debajo">por debajo</span></td>
+        </tr>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Ingresos mensuales al mes 6 con 10 clientes</td>
+          <td data-label="Lo que esperan">$1,000,000,000 MXN (un billón de pesos)</td>
+          <td data-label="Lo que paga el mercado">Con 10 clientes a ticket de mercado ($15,000–$50,000 MXN): $150,000–$500,000 MXN/mes al mes 6 es realista; $1,000M MXN requeriría ~20,000 clientes enterprise o tickets de $100M cada uno</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-por-encima">por encima</span></td>
+        </tr>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Margen de utilidad operativa (SaaS IA early-stage)</td>
+          <td data-label="Lo que esperan">20%</td>
+          <td data-label="Lo que paga el mercado">Startups SaaS IA en etapa temprana operan con márgenes negativos o de 0–10% los primeros 12–18 meses por costos de APIs, infraestructura, soporte y adquisición de clientes; márgenes del 20%+ son realistas a partir del mes 18–24 con base de clientes estable</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-por-encima">por encima</span></td>
+        </tr>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Costos fijos mensuales de operación (infraestructura + APIs)</td>
+          <td data-label="Lo que esperan">~$10,000 MXN/mes ($500 USD)</td>
+          <td data-label="Lo que paga el mercado">Para 1–5 clientes activos con menos de 50 agentes: $300–$800 USD/mes es plausible; al escalar a 10+ clientes con uso intensivo de LLMs: $2,000–$8,000 USD/mes por consumo de tokens y servidores</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-alineado">alineado</span></td>
+        </tr>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Ticket de implementación one-time (onboarding + configuración inicial)</td>
+          <td data-label="Lo que esperan">no definido</td>
+          <td data-label="Lo que paga el mercado">El mercado mexicano cobra $80,000–$400,000 MXN por implementación de IA generativa en flujos existentes; For3s podría cobrar $30,000–$120,000 MXN como fee de arranque además del mensual</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-por-debajo">por debajo</span></td>
+        </tr>
+        
+        <tr>
+          <td class="metric" data-label="Métrica">Tiempo de cierre de primer cliente B2B con privacidad como diferenciador</td>
+          <td data-label="Lo que esperan">10 interesados → primer cliente pagador en ~mes 1–2 (implícito en expectativa de ingresos al mes 6)</td>
+          <td data-label="Lo que paga el mercado">Ciclo de ventas B2B enterprise en México con información sensible: 3–9 meses desde primer contacto hasta firma; decisores con poder de compra no son gerentes de TI sino C-suite o directores de operaciones</td>
+          <td data-label="Veredicto"><span class="verdict-pill verdict-por-encima">por encima</span></td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+
+    
+    <div class="card card-accent-cyan" style="margin-top:16px">
+      <div class="eyebrow cyan">Qué te recomendamos en pricing</div>
+      <p style="font-weight:500">Abandonen el ticket de $50 MXN/mes de inmediato y estructuren un modelo de dos capas validado por el mercado mexicano: (1) Fee de implementación y onboarding de $40,000–$100,000 MXN one-time, pagadero al inicio del proyecto, que les genere flujo de caja inmediato y cubra el costo real de configuración para un cliente de 50–200 empleados; (2) Suscripción mensual de $15,000–$35,000 MXN/mes por mantenimiento, actualizaciones y soporte, que construya el MRR (ingreso recurrente mensual) de largo plazo. Con este modelo, un solo cliente les genera entre $55,000 y $135,000 MXN en el mes uno y entre $15,000 y $35,000 MXN de ingreso recurrente mensual desde el mes dos. Con 10 clientes bajo este esquema, pueden alcanzar un MRR real de $150,000–$350,000 MXN/mes al mes 12 —una meta ambiciosa pero ejecutable— en lugar del billón de pesos que hoy está en sus expectativas. Prioricen sectores con dolor de privacidad comprobado (legal, salud, finanzas, RRHH) donde el diferenciador de encriptación y trazabilidad tiene valor contractual, no solo emocional, y donde los decisores firman contratos de 12 meses o más.</p>
+    </div>
+    
+
+    
+      <div class="sources-block">
+        <div class="sources-header">
+          <span class="sources-icon">🔎</span>
+          <span class="sources-title">Fuentes de la investigación de mercado</span>
+        </div>
+        <p class="sources-intro">Los datos de esta sección vienen de investigación web en vivo. Pueden consultar las fuentes originales para profundizar.</p>
+        <ul class="sources-list">
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://azulclarito.com/blogazul/inteligencia-artificial-para-empresas-mexico/" target="_blank" rel="noopener noreferrer" class="source-link">Inteligencia Artificial para Empresas en México 2026 | Guía Completa – Azul Clarito<span class="source-arrow">↗</span></a>
+            <div class="source-domain">azulclarito.com</div>
+            <div class="source-aporto">Rangos de precios por nivel de implementación de IA en México: básico $500–$3,000 MXN/mes, intermedio $3,000–$15,000 MXN/mes, avanzado $15,000–$80,000+ MXN/mes</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://duotach.com/blog/cuanto-cuesta-automatizar-ia-mexico" target="_blank" rel="noopener noreferrer" class="source-link">¿Cuánto Cuesta Automatizar con IA en México 2026? Precios Reales | Duotach<span class="source-arrow">↗</span></a>
+            <div class="source-domain">duotach.com</div>
+            <div class="source-aporto">Benchmarks validados contra proyectos reales en empresas mexicanas durante 2025 y 2026; costos ocultos de implementación; equivalencia USD/MXN</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://www.itmastersmag.com/inteligencia-artificial/empresas-de-ia-en-mexico-desafios-y-oportunidades-en-2025/" target="_blank" rel="noopener noreferrer" class="source-link">Empresas de IA en México: desafíos y oportunidades en 2025 – ITMastersMag<span class="source-arrow">↗</span></a>
+            <div class="source-domain">itmastersmag.com</div>
+            <div class="source-aporto">89% de empresas mexicanas planea integrar agentes inteligentes en 2025; 41% ya los usa en procesos clave</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://www.entreveredas.com.mx/2026/02/mexico-concentra-17-del-mercado-saas-en.html" target="_blank" rel="noopener noreferrer" class="source-link">México concentra 17% del mercado SaaS en América Latina – Entre Veredas<span class="source-arrow">↗</span></a>
+            <div class="source-domain">entreveredas.com.mx</div>
+            <div class="source-aporto">México capta 17% del financiamiento SaaS en LATAM; startups mexicanas con IA levantaron 5x más capital en 2025; mercado SaaS LATAM valuado en $21,000 MDD proyectado a $45,000 MDD en 2030</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://www.coderhouse.com/coderlibrary/n8n-vs-make-vs-zapier-mejor-herramienta-automatizacion-ia-2026" target="_blank" rel="noopener noreferrer" class="source-link">n8n vs Make vs Zapier: cuál automatización elegir 2026 | Coderhouse<span class="source-arrow">↗</span></a>
+            <div class="source-domain">coderhouse.com</div>
+            <div class="source-aporto">Precios de Make desde USD 9/mes, n8n Cloud desde 20 EUR/mes, Zapier el más caro por operación; todos tienen capacidades nativas de agentes IA en 2026</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://smartbridge.com/salesforce-agentforce-vs-microsoft-copilot-studio-2026-comparison/" target="_blank" rel="noopener noreferrer" class="source-link">Salesforce Agentforce vs Microsoft Copilot Studio 2026 – Smartbridge<span class="source-arrow">↗</span></a>
+            <div class="source-domain">smartbridge.com</div>
+            <div class="source-aporto">Agentforce y Copilot Studio dominan el espacio enterprise de agentes IA; Agentforce a $2 USD por conversación; Copilot Studio por créditos de mensajes</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://www.magokoro.mx/blog/tendencias-ia-2026-mexico" target="_blank" rel="noopener noreferrer" class="source-link">Tendencias de IA en México 2026 | Magokoro<span class="source-arrow">↗</span></a>
+            <div class="source-domain">magokoro.mx</div>
+            <div class="source-aporto">Implementación de IA generativa en flujos de trabajo existentes: $80,000–$400,000 MXN; modelos locales (on-premise) como tendencia creciente en empresas preocupadas por privacidad</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://executrain.com.mx/nueva-lfpdppp-2026-guia-cumplimiento-empresas-mexico/" target="_blank" rel="noopener noreferrer" class="source-link">La Nueva LFPDPPP en 2026 – Executrain México<span class="source-arrow">↗</span></a>
+            <div class="source-domain">executrain.com.mx</div>
+            <div class="source-aporto">La LFPDPPP se ha vuelto más estricta desde marzo 2025; el riesgo del 'shadow AI' (colaboradores que suben datos sensibles a IA gratuita) es el dolor real del mercado objetivo de For3s</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://add.com.mx/agentes-de-ia-para-empresas/" target="_blank" rel="noopener noreferrer" class="source-link">Agentes de IA para Empresas – ADD.com.mx<span class="source-arrow">↗</span></a>
+            <div class="source-domain">add.com.mx</div>
+            <div class="source-aporto">Costo típico de implementación de agentes de ventas con IA: $400,000–$1,200,000 MXN; casos de uso verificables en México</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <div class="source-marker">◆</div>
+          <div class="source-body">
+            <a href="https://ecosistemastartup.com/infraestructura-de-datos-para-ia-lo-que-founders-deben-saber-en-2026/" target="_blank" rel="noopener noreferrer" class="source-link">Infraestructura de datos para IA: lo que founders deben saber en 2026 – Ecosistema Startup<span class="source-arrow">↗</span></a>
+            <div class="source-domain">ecosistemastartup.com</div>
+            <div class="source-aporto">Privacidad y compliance desde el diseño ya no son opcionales para IA a escala enterprise (Forrester); 20% de implementaciones enterprise usarán modelo on-premise para 2026</div>
+          </div>
+        </li></ul>
+        <div class="searches-meta"><span class="searches-label">Búsquedas realizadas:</span> <span class="search-tag">herramientas agentes IA empresas México 2025 precios SaaS automatización</span><span class="search-tag">competidores plataformas agentic AI México Make Zapier N8N precios 2025</span><span class="search-tag">mercado SaaS IA empresas México ticket promedio pricing B2B 2025</span><span class="search-tag">Salesforce Agentforce Microsoft Copilot Studio precios México pesos 2025 2026</span><span class="search-tag">implementación agentes IA privacidad on-premise seguridad datos México pricing enterprise 2026</span></div>
+      </div>
+
+    <div class="page-footer">
+      <span>Ángulo · Investigación de mercado</span>
+      <span>Página 03</span>
+    </div>
+  </div>
+  
+
+  
+  <!-- ═══════════ HALLAZGOS ═══════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="logo-mini"><div class="logo-icon"></div><div class="logo-text">Ángulo · Diagnóstico</div></div>
+      <div class="page-meta">03 · Hallazgos</div>
+    </div>
+    <div class="accent-strip"></div>
+
+    <div class="eyebrow">Hallazgos para ustedes</div>
+    <h2>Lo que vimos en su negocio</h2>
+    <p style="margin-bottom:24px;color:#4B5563">Estos son los 14 hallazgos que tienen que ver antes de seguir. Léanlos como una conversación con ustedes, no como un diagnóstico médico.</p>
+
+    
+    <h3 style="margin-top:20px;color:#EC4899">Sus brechas</h3>
+    <div class="card">
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#EC4899">01</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-brecha">Brecha</span>
+          <p>Su ticket de $50 MXN destruye el negocio desde el día uno; necesitan reposicionarse a $15,000–$50,000 MXN/mes.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#EC4899">02</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-brecha">Brecha</span>
+          <p>No tienen contacto con poder de compra en ninguna empresa objetivo; sus 10 'interesados' no son pipeline, son conversaciones.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#EC4899">03</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-brecha">Brecha</span>
+          <p>Sin modelo de precios definido, sin promesa de ROI y sin narrativa de valor, no pueden presentarse ante un decisor real hoy.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#EC4899">04</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-brecha">Brecha</span>
+          <p>La interfaz actual no es operable por un usuario no técnico sin su presencia; eso bloquea cualquier venta a empresa mediana.</p>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    
+    <h3 style="margin-top:24px;color:#059669">Sus oportunidades</h3>
+    <div class="card">
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#059669">01</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-oportunidad">Oportunidad</span>
+          <p>La LFPDPPP más estricta desde 2025 convierte su diferenciador de privacidad en obligación legal para sus clientes objetivo.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#059669">02</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-oportunidad">Oportunidad</span>
+          <p>Sus clientes ideales gastan $40,000–$120,000 MXN/mes en licencias dispersas; pueden consolidarlas y justificar su precio con eso.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#059669">03</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-oportunidad">Oportunidad</span>
+          <p>Ninguna plataforma local empaquetada ocupa el nicho de IA privada para medianas empresas en México; pueden ser los primeros.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#059669">04</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-oportunidad">Oportunidad</span>
+          <p>Un fee de implementación de $30,000–$120,000 MXN desde el primer cliente les da flujo de caja real sin esperar masa crítica.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#059669">05</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-oportunidad">Oportunidad</span>
+          <p>El interesado del sector con información sensible que mencionaron es su caso de estudio más valioso: ciérrenlo primero, aunque sea gratis el mes uno.</p>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    
+    <h3 style="margin-top:24px;color:#D97706">Sus alertas</h3>
+    <div class="card">
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#D97706">01</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-alerta">Alerta</span>
+          <p>Su runway es de 6 meses y su ciclo de venta real es de 3–9: esa matemática no cierra sin actuar esta semana.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#D97706">02</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-alerta">Alerta</span>
+          <p>Son una sola persona cubriendo producto, ventas, soporte y onboarding: eso no escala ni con un cliente, menos con diez.</p>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    
+    <h3 style="margin-top:24px;color:#0891B2">Insights clave para ustedes</h3>
+    <div class="card">
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#0891B2">01</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-insight">Insight</span>
+          <p>Su mayor miedo —cerrar ventas y dar seguimiento— es exactamente la capacidad que decide si For3s vive o muere en los próximos 90 días.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#0891B2">02</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-insight">Insight</span>
+          <p>Tienen tecnología que el mercado quiere comprar, pero nadie puede comprarles algo que no tiene precio, interfaz ni vendedor.</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item">
+        <div class="hallazgo-num" style="color:#0891B2">03</div>
+        <div class="hallazgo-content">
+          <span class="hallazgo-tag tag-insight">Insight</span>
+          <p>Su ventaja competitiva sobre n8n self-hosted no es técnica, es el empaquetamiento: alguien tiene que explicar eso en 30 segundos y hoy nadie puede.</p>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    
+    <div class="reco-box">
+      <div class="eyebrow">Lo más importante que deben hacer</div>
+      <p>En los próximos 15 días necesitan hacer tres cosas en paralelo: fijar un modelo de precios concreto (fee de implementación + suscripción mensual), identificar cuál de sus 10 interesados tiene poder de firma real y presupuesto disponible, y preparar una demostración de 20 minutos que un no-técnico entienda sin que ustedes estén explicando. Todo lo demás —branding, UX, GTM global— es secundario hasta que tengan un cliente que pague, porque sin ese primer ingreso no habrá tiempo ni recursos para construir el resto.</p>
+    </div>
+    
+
+    <div class="page-footer">
+      <span>Ángulo · Hallazgos</span>
+      <span>Página 04</span>
+    </div>
+  </div>
+  
+
+  
+  <!-- ═══════════ PLAN DE TRABAJO ═══════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="logo-mini"><div class="logo-icon"></div><div class="logo-text">Ángulo · Diagnóstico</div></div>
+      <div class="page-meta">04 · Plan</div>
+    </div>
+    <div class="accent-strip"></div>
+
+    <div class="eyebrow green">Nuestro plan juntos</div>
+    <h2>Cómo lo vamos a hacer</h2>
+    <p style="margin-bottom:20px;color:#4B5563">Vamos a ejecutar un plan de 8 semanas diseñado para que For3s tenga su primer cliente pagante antes de que su runway se convierta en un problema sin solución. Empezamos por donde más duele y más importa: precio, modelo de ingresos y demo operativa, porque sin esas tres piezas ningún esfuerzo de marca o UX les va a cerrar una venta. Cada fase construye sobre la anterior con entregables concretos que ustedes pueden usar de inmediato, no documentos para el cajón. Trabajaremos juntos con sesiones semanales de revisión para que cada decisión quede validada antes de avanzar.</p>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">Duración total</div>
+        <div class="stat-value green">8 semanas</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Fases</div>
+        <div class="stat-value cyan">4</div>
+      </div>
+      
+      <div class="stat-box">
+        <div class="stat-label">Horas consultor</div>
+        <div class="stat-value purple">64 horas consultor</div>
+      </div>
+      
+    </div>
+
+    
+    <div class="timeline-container">
+      <div class="timeline-grid">
+        
+        <div class="timeline-item">
+          <div class="timeline-weeks">F1</div>
+          <div class="timeline-title">Precio, Poder y Demo</div>
+          <div class="timeline-sub">2 semanas</div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-weeks">F2</div>
+          <div class="timeline-title">Identidad y Narrativa Diferenciada</div>
+          <div class="timeline-sub">2 semanas</div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-weeks">F3</div>
+          <div class="timeline-title">UX Operacional: Interfaz que Vende Sola</div>
+          <div class="timeline-sub">2 semanas</div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-weeks">F4</div>
+          <div class="timeline-title">GTM: Primer Cliente que Paga</div>
+          <div class="timeline-sub">2 semanas</div>
+        </div>
+        
+      </div>
+    </div>
+    
+
+    <h3 style="margin-top:28px">Esto es lo que haremos en cada fase</h3>
+    
+    <div class="fase">
+      <div class="fase-header">
+        <div style="flex:1;min-width:0">
+          <div class="fase-label">Fase 01</div>
+          <div class="fase-nombre">Precio, Poder y Demo</div>
+        </div>
+        <div class="fase-duracion">2 semanas</div>
+      </div>
+      <div class="fase-objetivo">Vamos a resolver las tres brechas que hoy les impiden presentarse ante un decisor real: fijar un modelo de precios que sostenga el negocio, identificar quién en su lista de interesados tiene poder de compra y presupuesto real, y construir una demo de 20 minutos que un no-técnico entienda sin su ayuda. Esta es la fase más crítica de todo el engagement; sin estos tres elementos, todo lo demás es secundario.</div>
+      
+      <div class="entregables-label">Lo que tendrán al cierre</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Su modelo de precios definitivo con tres niveles documentados y la lógica de ROI para cada uno.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Mapa de poder de sus 10 interesados: quién tiene firma, quién no y por qué.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Script de calificación comercial de 5 preguntas listo para usar esta semana.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Flujo de demo de 20 minutos validado con guión y puntos de cierre identificados.</span>
+      </div>
+      
+      
+      
+      <div class="entregables-label" style="margin-top:14px">Lo que haremos juntos</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Calculamos juntos el modelo de precios completo: fee de implementación de $30,000–$120,000 MXN según perfil de cliente, más suscripción mensual de $15,000–$50,000 MXN, con la lógica de ROI que justifica cada número frente a un CFO.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Construimos juntos el argumento de consolidación: sus clientes objetivo gastan $40,000–$120,000 MXN/mes en licencias dispersas; vamos a documentar cómo For3s las reemplaza y les volvemos ese número la razón de compra.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Mapeamos sus 10 interesados actuales contra tres criterios: poder de firma, presupuesto disponible y urgencia regulatoria (LFPDPPP); al final de esta actividad saben exactamente a quién llamar primero.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Definimos el script de calificación de 5 preguntas que ustedes van a usar en cada conversación comercial para no perder tiempo con contactos sin poder de decisión.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Diseñamos juntos el flujo de la demo de 20 minutos: qué mostrar, en qué orden, qué decir y qué no decir para que un director de operaciones o jurídico la entienda y quiera una siguiente reunión.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Ustedes graban o ejecutan un ensayo de la demo para validar que funciona sin explicación técnica de su parte.</span>
+      </div>
+      
+      
+      
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(46,242,165,0.08);border-left:3px solid #2EF2A5;border-radius:8px;font-size:12.5px;color:#059669">
+        <strong>Lo que validamos juntos:</strong> Validamos juntos que el modelo de precios es defendible frente a un decisor real, que tienen identificado al menos un contacto con poder de firma y que la demo puede ejecutarse sin su intervención técnica constante.
+      </div>
+      
+    </div>
+    
+    <div class="fase">
+      <div class="fase-header">
+        <div style="flex:1;min-width:0">
+          <div class="fase-label">Fase 02</div>
+          <div class="fase-nombre">Identidad y Narrativa Diferenciada</div>
+        </div>
+        <div class="fase-duracion">2 semanas</div>
+      </div>
+      <div class="fase-objetivo">Vamos a construir la narrativa de valor de For3s desde la perspectiva de sus compradores reales, no desde la tecnología. Necesitan poder explicar en 30 segundos por qué For3s no es n8n ni OpenAI ni un consultor de automatización, y por qué esa diferencia importa legalmente y operacionalmente para una empresa mediana en México que maneja información sensible. Esta narrativa se convierte en el eje de todo: deck, propuesta comercial, web y conversaciones de venta.</div>
+      
+      <div class="entregables-label">Lo que tendrán al cierre</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Posicionamiento diferenciado de For3s documentado: quiénes son, para quién, contra qué y por qué importa ahora.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Tres mensajes clave adaptados a Director General, Director de TI y Director Jurídico.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Promesa de valor de una oración validada y lista para usar.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Deck de ventas de 10 slides orientado a conversión, no a educación técnica.</span>
+      </div>
+      
+      
+      
+      <div class="entregables-label" style="margin-top:14px">Lo que haremos juntos</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Definimos juntos el posicionamiento central de For3s: IA agéntica privada y trazable para empresas medianas en México, con el diferenciador de cumplimiento LFPDPPP como obligación legal, no como característica opcional.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Construimos la comparativa de posicionamiento contra n8n self-hosted, soluciones cloud de IA y consultoras de automatización; vamos a hacer que su ventaja sea el empaquetamiento y la certeza legal, no la tecnología.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Desarrollamos juntos los tres mensajes centrales adaptados a cada perfil de decisor: Director General, Director de TI y Director Jurídico o de Compliance.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Escribimos la promesa de valor en una sola oración que cualquier persona de su equipo pueda repetir con confianza en cualquier conversación.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Construimos el deck de ventas de 10 slides basado en la narrativa validada, orientado a conseguir una segunda reunión, no a explicar la tecnología.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Validamos la narrativa contra el interesado del sector con información sensible que mencionaron; ese perfil es su caso de prueba más valioso y vamos a usarlo para afinar el mensaje antes de escalar.</span>
+      </div>
+      
+      
+      
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(46,242,165,0.08);border-left:3px solid #2EF2A5;border-radius:8px;font-size:12.5px;color:#059669">
+        <strong>Lo que validamos juntos:</strong> Revisamos juntos si el deck y la narrativa les generan una pregunta de compra en los primeros 5 minutos de una presentación simulada; si no la generan, la ajustamos antes de salir a presentarla.
+      </div>
+      
+    </div>
+    
+    <div class="fase">
+      <div class="fase-header">
+        <div style="flex:1;min-width:0">
+          <div class="fase-label">Fase 03</div>
+          <div class="fase-nombre">UX Operacional: Interfaz que Vende Sola</div>
+        </div>
+        <div class="fase-duracion">2 semanas</div>
+      </div>
+      <div class="fase-objetivo">Vamos a rediseñar la experiencia de uso de For3s para que un usuario no-técnico pueda operar las funciones críticas sin que ustedes estén presentes. Hoy la interfaz bloquea cualquier venta a empresa mediana porque requiere su acompañamiento constante; eso no escala con un cliente, y menos con diez. El objetivo no es un rediseño completo de producto, sino una UX de venta y onboarding que elimine la fricción en los momentos que deciden si el cliente renueva o cancela.</div>
+      
+      <div class="entregables-label">Lo que tendrán al cierre</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Mapa de journey del usuario no-técnico con fricciones identificadas y priorizadas.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Wireframes de los tres flujos críticos de onboarding y operación diaria.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Modelo de onboarding documentado: qué es autoservicio, qué requiere su intervención y cuándo.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Criterios de aceptación de UX para que ustedes puedan evaluar si una mejora de interfaz está lista para mostrar a un cliente.</span>
+      </div>
+      
+      
+      
+      <div class="entregables-label" style="margin-top:14px">Lo que haremos juntos</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Mapeamos juntos el journey de un usuario no-técnico desde que accede por primera vez hasta que ejecuta su primer flujo agéntico; identificamos en qué puntos necesitan explicación y en cuáles la interfaz puede resolverlo sola.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Priorizamos los tres flujos críticos que un cliente de empresa mediana debe poder ejecutar sin soporte: activación de agente, revisión de trazabilidad y exportación de reporte de cumplimiento.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Diseñamos los wireframes de los flujos prioritarios con foco en reducir dependencia de ustedes durante el onboarding y la operación diaria.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Definimos juntos el modelo de onboarding: qué hace el cliente solo, en qué momento ustedes intervienen y cómo escalan ese soporte cuando tienen más de tres clientes activos.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Establecemos los criterios de éxito de UX desde la perspectiva del decisor de compra: si un director puede ver el valor en 10 minutos sin ayuda, la interfaz está lista para vender.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Validamos los wireframes con al menos un interesado real del pipeline para confirmar que la experiencia reduce su miedo de adopción.</span>
+      </div>
+      
+      
+      
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(46,242,165,0.08);border-left:3px solid #2EF2A5;border-radius:8px;font-size:12.5px;color:#059669">
+        <strong>Lo que validamos juntos:</strong> Ejecutamos juntos una simulación de onboarding con un perfil no-técnico real o simulado; si la persona puede completar el flujo crítico en menos de 15 minutos sin que ustedes intervengan, la fase está cumplida.
+      </div>
+      
+    </div>
+    
+    <div class="fase">
+      <div class="fase-header">
+        <div style="flex:1;min-width:0">
+          <div class="fase-label">Fase 04</div>
+          <div class="fase-nombre">GTM: Primer Cliente que Paga</div>
+        </div>
+        <div class="fase-duracion">2 semanas</div>
+      </div>
+      <div class="fase-objetivo">Vamos a construir y ejecutar la estrategia de salida al mercado con un único objetivo no negociable: que For3s tenga su primer cliente pagante o un acuerdo firmado antes de cerrar esta fase. Todo el GTM está diseñado para el segmento de empresas medianas en México que manejan información sensible y tienen urgencia regulatoria, porque ese es su nicho sin competidor local empaquetado y es donde su matemática financiera cierra primero.</div>
+      
+      <div class="entregables-label">Lo que tendrán al cierre</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Lista de 20 prospectos calificados con contacto, criterio de calificación y siguiente acción definida.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Secuencia de contacto de tres pasos lista para ejecutar, con textos personalizables por sector.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Propuesta comercial estándar de una página ejecutiva lista para enviar.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Proceso comercial mínimo viable documentado: su playbook de ventas para operar solos después del engagement.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Primer cliente pagante o acuerdo firmado, o en su defecto una propuesta formal en etapa de aprobación interna con fecha de respuesta comprometida.</span>
+      </div>
+      
+      
+      
+      <div class="entregables-label" style="margin-top:14px">Lo que haremos juntos</div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Construimos juntos la lista de 20 prospectos calificados usando los criterios de poder de firma, presupuesto y urgencia LFPDPPP que definimos en la fase 1; calidad sobre cantidad.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Diseñamos la secuencia de contacto de tres pasos para cada prospecto: mensaje de apertura, follow-up con caso de uso específico y cierre con propuesta; todo con textos listos para enviar.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Preparamos la propuesta comercial estándar de For3s: una página ejecutiva con el problema, la solución, el precio y el ROI estimado, pensada para que el decisor la pueda aprobar internamente sin que ustedes estén en la sala.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Definimos juntos los términos del primer cliente estratégico: si el interesado del sector sensible que mencionaron necesita el mes uno gratis para convertirse en caso de éxito, calculamos si ese intercambio vale la pena y cómo estructurarlo.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Establecemos el proceso comercial mínimo viable que ustedes puedan operar como equipo de una persona: qué herramientas, qué cadencia de seguimiento y en qué momento escalan o piden apoyo.</span>
+      </div>
+      
+      <div class="entregable">
+        <div class="entregable-dot"></div>
+        <span>Ejecutamos las primeras cinco conversaciones comerciales reales con el apoyo del consultor en la preparación y el debrief post-reunión para ajustar el mensaje en tiempo real.</span>
+      </div>
+      
+      
+      
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(46,242,165,0.08);border-left:3px solid #2EF2A5;border-radius:8px;font-size:12.5px;color:#059669">
+        <strong>Lo que validamos juntos:</strong> Revisamos juntos el estado del pipeline al cierre de la semana 8: si tienen un cliente pagante, definimos el plan de transición post-engagement; si tienen una propuesta en proceso, establecemos los pasos exactos para cerrarla la semana siguiente sin soporte del consultor.
+      </div>
+      
+    </div>
+    
+
+    
+    <div class="card card-accent-pink" style="margin-top:20px">
+      <div class="eyebrow pink">Lo que necesitamos ajustar de la propuesta original</div>
+      <p style="margin-bottom:6px">• La propuesta original no tenía duración definida; establecemos 8 semanas con fecha de cierre fija porque su runway de 6 meses no admite un engagement abierto sin presión de tiempo real.</p><p style="margin-bottom:6px">• El alcance prometido incluye Diseño UX/UI completo, pero dado su runway y las brechas críticas identificadas, en esta fase trabajaremos una UX operacional orientada a cerrar ventas, no un rediseño de producto completo; un UX de producción más amplio requeriría un segundo engagement una vez que tengan ingresos.</p><p style="margin-bottom:6px">• La Estrategia GTM prometida se ejecuta en paralelo con el cierre de su primer cliente real, no como ejercicio teórico previo; si esperamos a tener todo 'listo' antes de salir al mercado, su matemática financiera no cierra.</p><p style="margin-bottom:6px">• Su modelo de precios actual de $50 MXN destruye el negocio desde el día uno; vamos a redefinirlo juntos en la primera semana hacia un rango de $15,000–$50,000 MXN/mes más fee de implementación, lo que implica reposicionar For3s antes de cualquier conversación comercial activa.</p>
+    </div>
+    
+
+    
+    <h3 style="margin-top:24px">Hitos en los que necesitan estar presentes</h3>
+    <div class="pill-list">
+      <span class="pill">◆ Ustedes tienen su modelo de precios definitivo (fee de implementación + suscripción mensual) validado y documentado antes de terminar la semana 2.</span><span class="pill">◆ Ustedes identifican cuál de sus 10 interesados tiene poder de firma real y presupuesto disponible antes de arrancar la fase 2.</span><span class="pill">◆ Su demo de 20 minutos está operativa y es entendible por un no-técnico sin que ustedes estén explicando, antes de terminar la semana 4.</span><span class="pill">◆ Ustedes tienen al menos una propuesta formal enviada a un decisor real con presupuesto antes de terminar la semana 6.</span><span class="pill">◆ For3s tiene su primer cliente pagante o un acuerdo firmado antes de cerrar la semana 8.</span>
+    </div>
+    
+
+    <div class="page-footer">
+      <span>Ángulo · Plan de trabajo</span>
+      <span>Página 05</span>
+    </div>
+  </div>
+  
+
+  
+  <!-- ═══════════ ALCANCE ACORDADO ═══════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="logo-mini"><div class="logo-icon"></div><div class="logo-text">Ángulo · Diagnóstico</div></div>
+      <div class="page-meta">05 · Alcance</div>
+    </div>
+    <div class="accent-strip"></div>
+
+    <div class="eyebrow">Lo que acordamos al inicio</div>
+    <h2>Su inversión y lo que les entregamos</h2>
+
+    <div class="stat-grid">
+      
+      
+      
+    </div>
+
+    
+    <h3 style="margin-top:24px">El alcance que firmamos</h3>
+    <div class="card">
+      <p>El consultor apoyará a Brian en posicionar y articular For3s como un sistema agéntico seguro y escalable, desarrollando su identidad de producto, experiencia de usuario y narrativa de valor. Adicionalmente, se diseñará una estrategia de salida al mercado orientada a empresas que manejan información sensible y buscan automatización con trazabilidad y privacidad garantizada.</p>
+    </div>
+    
+
+    
+    <h3 style="margin-top:20px">Lo que les entregamos</h3>
+    <div class="card">
+      
+      <div class="hallazgo-item" style="padding:12px 0">
+        <div class="hallazgo-num" style="color:#8B5CF6;font-size:20px">01</div>
+        <div class="hallazgo-content">
+          <p style="font-size:14px">Definición de producto diferenciado</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item" style="padding:12px 0">
+        <div class="hallazgo-num" style="color:#8B5CF6;font-size:20px">02</div>
+        <div class="hallazgo-content">
+          <p style="font-size:14px">Diseño UX/UI</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item" style="padding:12px 0">
+        <div class="hallazgo-num" style="color:#8B5CF6;font-size:20px">03</div>
+        <div class="hallazgo-content">
+          <p style="font-size:14px">Narrativa de producto</p>
+        </div>
+      </div>
+      
+      <div class="hallazgo-item" style="padding:12px 0">
+        <div class="hallazgo-num" style="color:#8B5CF6;font-size:20px">04</div>
+        <div class="hallazgo-content">
+          <p style="font-size:14px">Estrategia GTM (Go-to-Market)</p>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <div class="page-footer">
+      <span>Ángulo · Alcance</span>
+      <span>Página 06</span>
+    </div>
+  </div>
+  
+
+  <!-- ═══════════ CIERRE ═══════════ -->
+  <div class="page cierre-page">
+    <div class="cierre-content">
+      <div class="cierre-eyebrow">¿Qué sigue?</div>
+      <h1 class="cierre-title">Este documento es <em>nuestro punto de partida</em>,<br>no el destino.</h1>
+      <p class="cierre-body">Acaban de leer su diagnóstico y nuestro plan. Lo que sigue es tomar decisiones juntos: revisar cada hallazgo, validar cada fase, y arrancar la ejecución cuando ustedes estén listos. Vamos a la siguiente sesión con esto sobre la mesa.</p>
+      <a href="#" class="cierre-cta">Vamos a la siguiente sesión →</a>
+      <div class="cierre-signature">
+        <div class="cierre-signature-brand">Ángulo</div>
+        <div class="cierre-signature-meta">21 de julio de 2026</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
