@@ -37,6 +37,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S2 | `3f5bbe0d` | 2026-07-13 20:28 | 2026-07-14 06:03 | 3.4 MB 🟢 | ~26 | **549K 🔴** | Maratón H13+Frente B — productiva; /clear al cruzar el umbral rojo de contexto |
 | S3 | `c9ef4299` | 2026-07-14 ~11:00 | 2026-07-15 (activa) | 8.7 MB 🟢 | ~40 | ~n/d | **La jornada MERCADO** — v0.17.0: Frente B F4-F6 + Molde For3s Inside (M1-M4) + For3s Trace completo + panel temporal. ~22 commits, ~10 bugs (1 SEC grave). Sana; sin señales raras |
 | S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-19 ~18:30 (Mx) | 4.2 MB 🟢 | ~29 | **667K 🔴** | **LA JORNADA DEL SUPER-CEREBRO (30h)** — entrenamiento+examen de AMBOS agentes, 12 fixes sistémicos, v0.19.0 desplegada total. La más productiva de la historia del proyecto; /clear al cierre por contexto rojo |
+| S5 | `7e9ce3b7` | 2026-07-24 20:58 | 2026-07-26 ~06:22 (~33h) | 12 MB 🟢 | ~97 | **917K 🔴** | **LA JORNADA DEMO → PRODUCTO** — BD reestructurada (F1-F6) + cableado + pulido P1-P7 + optimización (heartbeat −68%) + 9 bugs. Sana en disco pero **contexto en rojo**: /clear recomendado al cerrar |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -121,6 +122,50 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 - **Cierre:** hito doble CERRADO + ecosistema entero sincronizado + esta autopsia + RETOMAR
   podado → /clear seguro. Todo vive en: Bitácora (entrada completa) · `Doc/Examen_Foresito_
   T6_Hallazgos.md` · `Cuerpo/Ronda_Entrenamiento_Foresito.md` · memorias actualizadas.
+
+---
+
+## S5 · `7e9ce3b7` — LA JORNADA DEMO → PRODUCTO (2026-07-24 20:58 → 07-26 ~06:22 Mx, ~33h)
+
+- **Peso:** 12 MB 🟢 (2,985 líneas) · **Mensajes de Brian:** ~97 · **Contexto máx: ~917K 🔴**
+- **Veredicto:** sana en disco, **contexto en ROJO** (cerca del umbral de la monstruo). La causa no
+  fue una fuga: fue el volumen real de trabajo (33h, ~97 turnos, mucha lectura de código + BD).
+- **Temas (en orden):** F0 en producción (Resend/Vercel) → auditoría de la BD de la demo →
+  **reestructuración F1-F6** → cableado C1-C6p1 → verificación integral → **auditoría de código**
+  → pulido P1-P7 → **optimización O-F1..O-F5** → refactor de `for3sChat.ts` → limpieza del tema
+  `hoteles` → rebuild del agente → documentación.
+
+### Qué se logró
+- **BD de MVP a producto:** `demo_instancias` como fuente única (modo, cupo, puente URL+key
+  cifrada) · 7 FKs · catálogo de estados · `demo_llaves` revocables · `demo_eventos` ·
+  **`demo_config`** (parámetros editables con UPDATE, sin push). **Escalar = 1 INSERT** (probado).
+- **Código pulido:** la instancia deja de ser lista fija (27 archivos) · UNA puerta de acceso
+  (antes 3 fuentes) · un solo cupo · **−434 líneas** de subsistema muerto · `for3sChat.ts`
+  refactorizado con capa base (**−79% de plomería**).
+- **Optimización medida:** heartbeat 11→3-4 viajes a Neon (**−68%**), N+1 eliminado, freno de
+  mantenimiento (260→4 en 60 s). Con 100 usuarios: 220→70 q/s.
+- **9 bugs cazados y cerrados** (varios de seguridad/coherencia).
+
+### Cosas raras / lecciones de la sesión
+- **El contexto creció temprano y no bajó** — desde ~la mitad de la jornada ya era grande por
+  leer código extenso (`userStore.ts` 485 líneas, `for3sChat.ts` 362) y volcados de BD. Señal para
+  futuras jornadas de auditoría: leer por tramos y resumir, no arrastrar archivos enteros.
+- **404 local que parecía la BD y era caché de `.next`** — costó rato; lección: 404 de FRAMEWORK
+  (HTML) ≠ 404 de aplicación (JSON). Si caen varias rutas hermanas a la vez → es caché.
+- **Un fix mío PELIGROSO que Brian cazó** — iba a poner `general` (hilo del dueño) como tema por
+  defecto. De ahí salió el caso de estudio `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md` y la regla
+  "un default nunca apunta a algo con dueño". **La revisión de Brian evitó un problema real.**
+- **Dije "esto rompería cualquier cliente API" sin medirlo** — al comprobarlo, solo afectaba a las
+  keys f3k_. Lección registrada: las afirmaciones de impacto se comprueban.
+- **Rebuild del agente:** el primer intento no recreó el contenedor (compose equivocado); la vía
+  correcta es `docker compose -p for3s-brian -f docker-compose.instancia.yml up -d --force-recreate`.
+
+### Cierre
+Todo pusheado: sitio `1c54a49` (ElBrAyAn1967/For3s) · Mente OS `d9d456c` (for3slabs/mente-os-for3s)
+· agente reconstruido y `brian` reiniciado con el código nuevo (verificado en vivo: sin tema →
+`sin-tema`, con tema → `general`). **`hoteles` eliminado del sistema.**
+Documentación: 4 planes `DEMO_*.md` en el repo del sitio + caso de estudio + Bitácora + memorias.
+⚠️ **/clear recomendado** al cerrar: el contexto quedó en rojo (~917K).
 
 ---
 
