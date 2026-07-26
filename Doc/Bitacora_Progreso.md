@@ -1326,3 +1326,128 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   sin tools, por diseño) — decisión de producto pendiente. Extra: key del sandbox se cerró a
   solo-principal (`FOR3S_SANDBOX_API_KEY`). Propagación a las 3 vivas con `for3s encender`
   (env-file propio, sin riesgo KEK). 266 tests.
+
+
+---
+
+## 📦 Movido de RETOMAR.md el 2026-07-26 (regla de higiene: RETOMAR ≤200 líneas)
+
+Contexto del 22 y 23 de julio, ya cerrado. Se conserva aquí como historia.
+
+---
+
+**🎉 (2026-07-23) — FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + FIX RED SERVER + más:**
+
+**🔴 FIX RED DEL SERVER (Telegram volvió):** los agentes NO respondían en Telegram
+(desde 21-jul). Causa: el server prefería IPv6 pero NO tiene salida IPv6 real (solo
+la de Tailscale, `fd7a:`) → `api.telegram.org` (que resuelve por IPv6) daba HTTP 000;
+IPv4 funcionaba (302). NO fue la demo ni nuestros cambios (verificado: el commit
+sospechoso no tocó red). Fix aplicado: `precedence ::ffff:0:0/96 100` en `/etc/gai.conf`
+(respaldo `gai.conf.bak-ipv4fix`, reversible) → prefiere IPv4, **conserva IPv6/Tailscale**.
+Reiniciados brian/foresito/general → Telegram conectado sin NetworkError. Verificado en vivo.
+
+**🎉 FRENTE F0 "enrutar correo del dueño → su instancia" — 4/4 PIEZAS, probado E2E con
+evidencia del server** (sitio `ElBrAyAn1967/For3s`, commits `a03833f`→`529786e`; server
+preparado, no en repo). Cuando el dueño (ej. brayan002150@gmail.com) entra a la demo, lo
+reconoce como dueño de brian, verifica por código, y lo enruta a SU instancia (no general):
+- **P1 puente:** tabla Neon `demo_duenos` (correo→instancia) + `POST /api/demo/check-dueno`.
+  Sembrado brayan002150→brian. Las instancias del server están AISLADAS → el mapa vive en Neon.
+- **P2 verificación:** tabla `demo_verificaciones` (código HASHEADO, 10min, 5 intentos,
+  un-solo-uso). Resend (`re_3Nec...` en .env.local, `RESEND_FROM=onboarding@resend.dev`).
+  `verify/send` + `verify/check`. 6 defensas probadas.
+- **P3 enrutador:** brian con canal API ON + su key propia + puerto fijo 8798 + ruta pública
+  en Funnel `for3s.tail6749e5.ts.net/i/brian`. general intacto en `/`. `chatDueno()` enruta
+  a la instancia del dueño verificado. Verificado: el chat llegó a BRIAN (hilo en su BD), NO general.
+- **P4 UI:** `GeneralRegister` detecta dueño→pide código→entra. Correo cualquiera→general sin fricción.
+- **⚠️ FALTA para producción:** en Vercel agregar `RESEND_API_KEY`, `RESEND_FROM`,
+  `FOR3S_INST_BRIAN_KEY=for3s_sk_6de4db98f4bb265c29b478709d186333` · verificar dominio en
+  Resend (onboarding@resend.dev solo manda a pruebas, no Gmail) · ROTAR keys expuestas (Resend + brian).
+
+**📊 BARRA DE USO REAL POR API KEY f3k_ (server+sitio) COMPLETA:** `/v1/miskeys` expone
+uso por key (llamadas/tokens/costo-cupo/serie desde `api_consumo`; cada key = su client_id).
+Sitio pinta sparkline. **Server commit `8a5eb5e` = local `a699de6` (código byte-idéntico, md5
+verificado) SIN push.**
+
+**🔎 VERIFICACIONES PROFUNDAS de la demo (todo SANO, verificado en vivo):** aislamiento de
+hilo por persona (`api:<hash-correo>:<tema>` / `tg:<uid>`, nadie accede al de otro) · concurrencia
+(10+2 al mismo tiempo NO rompe, encola con "repartidor de carriles" concurrency.py; con BYOK cada
+quien su cuota = sin fila) · el hilo por persona existe en TODAS las instancias (canal API en
+general/foresito, Telegram en todas) · invitar equipo a brian por Telegram (`/invitar`) SÍ, por web
+NO (era el frente F0). 2 hallazgos demo General registrados (BYOK fire-and-forget, tema "hoteles").
+
+**⬇️ Contexto del 22-jul abajo. Sigue: cerrar F0 en producción (Vercel/Resend), o lo que Brian marque.**
+
+---
+
+**🖥️ (2026-07-22) — REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" (todo en el SITIO
+`marca-personal`, repo `github.com/ElBrAyAn1967/For3s`, deploy Vercel `for3s.vercel.app`):**
+Contexto: Brian PAUSÓ los pendientes grandes para volver For3s "operable sin él" (que pueda
+decir "está listo para prestárselo a alguien"). Trabajo por PIEZA, Brian valida cada una.
+- **Demo escalable (los links 1:1 salieron de variables de Vercel → a Neon):** BD Neon
+  (`neondb`, la fuente de verdad de la demo, NO tailnet — Vercel no alcanza el tailnet).
+  `demo_accounts` ganó `kind='privado'` + columnas (nombre/correo/instancia); `demo_users`
+  ganó `kind_ui`. Botón **"＋ Agregar"** en `/for3s-admin`→Demo: crea 1:1 privada (genera
+  link `/demo/<token>` en código) o General a mano. El link 1:1 ahora **funciona** (lee de
+  Neon, no de Vercel). La 1:1 es un usuario más (vive en AMBAS tablas). Entrada a la demo
+  NO se tocó (nombre+email igual). `foresito` NO es demo-able (instancia interna, riesgoso).
+- **Panel "más manos":** editar persona (nombre/correo real) · colores por demo (jazz morado
+  · mashe verde · brian amarillo · general gris) · filtros por instancia · **eliminar
+  personas** (borra también su puerta 1:1) · **cambiar demo = MOCKUP honesto** (mueve solo
+  `kind_ui`; el hilo real `kind` NO se mueve; Neon sabe la verdad).
+- **Dentro de la demo:** chat responsivo (sin menú superior duplicado en desktop, se conserva
+  Cerrar sesión, el chat ocupa el ancho) · conectores n8n + NotebookLM (arriba de Adobe) ·
+  Perfil = pendiente.
+- **📊 BARRA DE USO REAL POR API KEY f3k_ (server + sitio):** ⚠️ ÚNICO cambio en el SERVER hoy.
+  El canal `/v1/miskeys` ahora expone por key: total_llamadas/total_tokens/costo_usd (solo
+  NUESTRO cupo, byok=false)/serie por día — desde `api_consumo` (ya existía; cada key ES su
+  client_id). El sitio pinta un **sparkline** (línea que sube/baja estilo GitHub) + los números.
+  Verificado E2E con chat real (uso subió). **Server commit `8a5eb5e` SIN push (server-primero).**
+  Sitio pusheado (commits `a03833f`→`05058b3` en ElBrAyAn1967/For3s).
+- **Vercel Env Vars (Brian las limpió):** quedan 5 críticas (DEMO_DATABASE_URL→Neon,
+  DEMO_ADMIN_PASSWORD, DEMO_ENC_KEY, FOR3S_GENERAL_API_KEY, FOR3S_GENERAL_BASE). Se quitaron
+  DEMO_JAZZ/MASHE/BRIAN_TOKEN+EMAIL (ya viven en Neon). Demo verificada viva tras limpiar.
+- **🔮 PENDIENTES NUEVOS registrados (memorias):** (a) **migrar hilos entre agentes** (el mockup
+  cambiar-demo lo espera, NO codificado) · (b) **reconstruir encender/apagar agente 1:1** (Brian:
+  importante pero se rehará de forma especial; vars DEMO_AGENT_CONTROL_URL/_TOKEN quedaron sin uso)
+  · (c) barra de uso = COMPLETA hoy. Todos con Ronda F0 cuando Brian diga.
+- **⚠️ Repo del SITIO ≠ repo de For3s OS:** el sitio vive en `ElBrAyAn1967/For3s` (marca-personal);
+  el server/agente en `for3slabs/for3s(-os)`. HOY solo se tocó el sitio + 1 archivo del canal
+  (`api_channel.py`) del server (commit local, sin push). La tríada de For3s OS sigue en `f50a5db`.
+
+---
+
+**🚀 v0.19.0 "ENTRENADO" DESPLEGADA TOTAL (2026-07-19/20):** tríada de código en **`f50a5db`**
+(server = GitHub origin `for3s-os` + backup `for3s` = local) · **las 5 instancias verificadas EN
+VIVO** (3 vivas propagadas + jazz/mashe probadas con batería completa y devueltas a su estado) ·
+CI ✅ + Trivy ✅ · Mente OS pusheado (`mente-os-for3s` `80aed31`) · Maestro al día (`8681d7c`).
+Historia de v0.16→0.18 (MERCADO, Molde, Trace, Frente E): **Bitácora Julio** + `CHANGELOG.md`.
+
+**⭐ NUEVO (2026-07-20) — MAESTRO PUENTES C+D ✅ CONSTRUIDOS Y E2E** (`Cuerpo/Ronda_Maestro_
+Puentes_C_D.md`): el Maestro dejó de ser lista → es BUSCADOR semántico + RED navegable, todo
+sobre UN núcleo (punteros.tsv + puerta única + un indexador + IDs compartidos + una superficie
+`/v1/maestro/*` en Foresito). `maestro indexar --todo | subir | buscar "<preg>" [--contexto] |
+grafo <nodo>`. Jazz solo ve su carril (probado). 4 bugs cazados. Server commit `0cac57a` firmado
+**SIN push** (esperando orden). ⏳ colas: embebido rama for3s termina solo en el server ·
+smoke-test de Brian a Foresito por Telegram ("busca en el maestro…") · re-indexar tras pushes.
+
+**📌 PENDIENTES DE BRIAN (2026-07-20, detalle en PENDIENTES.md §Super-cerebro):** ① smoke Telegram
+a Foresito ("busca en el maestro dónde…" → debe EJECUTAR y citar rama:ruta) · ② probar en brian-bot
+una skill del entrenamiento (primera vez completas tras el fix S1) · ③ decidir S3 (canal API sin
+tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límite?).
+
+**👉 PRÓXIMO PASO: Brian marca el foco.** Sobre la mesa:
+- 🔌 **⭐ NUEVO PENDIENTE GRANDE (2026-07-20): CONECTORES SELF-SERVICE** — que el usuario conecte
+  herramientas con UN botón (OAuth del proveedor) y su agente/rama las tenga al instante, sin pasar
+  por Brian; correo admin por instancia; general multi-tenant (solo comparten el agente). Visión:
+  `Alma/Vision_Conectores_SelfService_Panel_Agente.md` · PENDIENTES §1. Arranca con Ronda F0.
+- 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
+- ⏳ pilotos VIVOS externos: Jazz usa su bot (jazz verificada v0.19.0) + NavigoX retoma consumo.
+- Pendientes técnicos menores: **CodeQL rojo desde el 17** (pre-existente) · validar torch 2.13
+  (quitar 2 ignores pip-audit) · semillas de diseño H-4 (peso de respuestas propias en ranking) y
+  H-6 (presupuesto chars por chunk) — Ronda si Brian quiere.
+
+**🔄 Carriles vivos DORMIDOS** (se despiertan cuando Brian diga): Confianza
+(`Doc/Carril_Mejora_Continua_Confianza.md`) · Presencia (`Doc/Carril_Presencia_Descubribilidad.md`)
+· Multi-canal (`Doc/Carril_Multicanal.md`) · Maestro (evoluciona a carril).
+⚠️ NavigoX vive en `~/5M-incubathon/`, CERRADO — no leerlo sin gate (§6).
+

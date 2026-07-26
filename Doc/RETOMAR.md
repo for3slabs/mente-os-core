@@ -6,7 +6,7 @@
 > creció, mover lo viejo a `Estado_Sesion_Continuidad.md` (o al último snapshot) y dejar
 > aquí SOLO el estado vigente + punteros. La historia va a la Bitácora, no aquí.
 
-**Última actualización:** 2026-07-23 (🎉 FRENTE F0 "enrutar correo→instancia" COMPLETO 4/4 + 🔴 fix red server (Telegram) + barra de uso por key + verificaciones profundas de la demo).
+**Última actualización:** 2026-07-26 (🖥️⭐ LA DEMO = BLOQUE GRANDE con índice propio: `project_bloque_demo_pendientes`. 6 archivos a producto + Ronda F0 userStore U1-U6 + container.ts activado + DEMO_ENC_KEY unificada).
 
 
 ---
@@ -79,161 +79,42 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-**🏗️ HOY (2026-07-24/26) — LA DEMO PASÓ DE MVP A PRODUCTO: BD reestructurada + código pulido
-+ optimizado.** Jornada larga sobre `marca-personal` (repo `ElBrAyAn1967/For3s`, Neon PG18).
-Detalle completo: memoria `project_reestructuracion_bd_demo` · planes en el propio repo del sitio
-(`DEMO_MAPA_BLOQUES.md`, `DEMO_REESTRUCTURACION_PLAN_F0.md`, `DEMO_AUDITORIA_CODIGO.md`,
-`DEMO_PLAN_OPTIMIZACION.md`). Método: **atómico por bloques, verificar antes de avanzar.**
+**🖥️⭐ LA DEMO ES UN BLOQUE GRANDE CON ÍNDICE PROPIO.** Antes de tocarla, leer la memoria
+**`project_bloque_demo_pendientes`** — es el punto de entrada único: los 3 tapones que impiden
+prestarla, los pendientes de producto/higiene, y 7 reglas aprendidas a base de romperla.
+Repo del sitio: `ElBrAyAn1967/For3s` (≠ el del agente) · BD Neon · `main` en `793e858`.
 
-- **BD (F1-F6) ✅** — `demo_instancias` = FUENTE ÚNICA DE VERDAD (modo, cupo, puente URL+key
-  CIFRADA) + 7 FKs + catálogo de estados + `demo_llaves` (revocables) + `demo_eventos`
-  (telemetría) + **`demo_config`** (parámetros editables con UPDATE, **sin push ni redeploy**).
-  Fantasmas eliminadas. **Escalar = 1 INSERT** (probado con instancia 'acme').
-  Verificada: integridad 7/7 · candados 8/8 · E2E 6/6 · endpoints 8/8 vivos.
-- **CABLEADO (C1-C6p1) ✅** — el código lee de la BD: puente cifrado, doble-escritura,
-  cupo en vivo, revocación, telemetría.
-- **PULIDO (P1-P7) ✅** — P1 la instancia es un DATO (antes lista fija en 27 archivos: la BD
-  escalaba y el código no) · P2 UNA puerta de acceso (`acceso.ts`; antes 3 fuentes en cascada) ·
-  P3 un solo cupo · P4 **−434 líneas** de subsistema muerto · P5 código muerto + 🐛 bug de logout ·
-  P6 correo real con Resend · P7 TODO va al agente del usuario (antes conectores/BYOK iban a general).
-- **OPTIMIZACIÓN (O-F1..O-F5) ✅** — heartbeat **11→3-4 viajes a Neon (−68%)**, N+1 eliminado
-  (10→1 UPDATE), memoización por operación, freno de mantenimiento (260→4 en 60 s).
-  Con 100 usuarios: 220→70 q/s. **Regla madre: optimizar NO es romper** (build + comportamiento
-  verificado idéntico en cada fase).
-- **`for3sChat.ts` refactorizado** — capa base única `llamarAgente()`: plomería 116→24 líneas
-  (−79%); un endpoint nuevo pasa de ~25 líneas a 3.
-- **🐛 9 bugs cazados y cerrados** — dueño entraba sin código · refrescar rompía la sesión · key
-  perdida al promover · rol nunca se actualizaba · hilos de homónimos colisionaban · keys f3k_ y
-  BYOK iban al agente equivocado · cupo del panel hardcodeado · logout no limpiaba la cookie de
-  dueño · tema `hoteles` heredado del Incubathon.
-- **🎓 CASO DE ESTUDIO documentado** (reutilizable): `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md`
-  — la regla "un default NUNCA debe apuntar a algo con dueño" + checklist para limpiar valores
-  heredados. Salió de que Brian cazó un fix mío peligroso (`general` como default habría metido a
-  cualquier cliente en el hilo privado del dueño).
-- **Estado del código:** sitio pusheado hasta **`1c54a49`**. Agente: `api_channel.py` con el tema
-  neutro listo en `~/for3s-os` del server (respaldo `.bak-tema`), **pendiente de rebuild de imagen**
-  — NO urgente: el sitio ya manda el tema explícito, así que el fix ya funciona.
-- **⏳ Pendientes de esta ronda:** C6 parte 2 (borrar columna `kind`, tabla `demo_accounts`, env
-  vars del puente) · panel admin de dueños (`registrarDueno`/`listarDuenos` ya existen, sin UI) ·
-  `container.ts` sigue NO-OP (encender/apagar agente) · identidad de instancia del agente
-  (memoria `project_pendiente_identidad_instancia_agente`) · un hilo/key único por dueño.
+**🏗️ (2026-07-24/26) DE MVP A PRODUCTO — jornada larga, ~15 bugs reales cerrados.**
+BD F1-F6 (fuente única + 7 FKs + `demo_config` editable sin push) · cableado C1-C6 · pulido P1-P7
+(−434 líneas muertas) · optimización O-F1..O-F5 (heartbeat −68%). Detalle:
+`project_reestructuracion_bd_demo` + los `DEMO_*.md` del repo del sitio.
 
----
+**6 archivos elevados a PRODUCTO (cada uno con su memoria):**
+`instancias.ts` (I1-I5, puente 100% BD sin env) · `session.ts` (S1-S3, guardia único 12→0) ·
+`verificacion.ts` (V1-V4, anti fuerza bruta que se burlaba) · `eventos.ts` (telemetría por
+instancia real) · S4a "cero listas fijas" · **`userStore.ts` Ronda F0 completa U1-U6**
+(`marca-personal/DEMO_RONDA_F0_USERSTORE.md`) → **C6p2 CERRADO**: fuera la columna `kind` y la
+tabla `demo_accounts`.
 
-**🎉 (2026-07-23) — FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + FIX RED SERVER + más:**
+**⭐ 3 cierres grandes del 26-jul:**
+- **`container.ts` ACTIVADO** — el botón encender/apagar agente ya NO es NO-OP. Modelo C: la web
+  escribe en `demo_users.agent_on` y el servicio `for3s-agente-sync` (systemd en el server) lo
+  aplica; **`/ctl` NUNCA se expone a internet**. 🔒 **solo el DUEÑO** (un invitado con llave podía
+  apagarle el agente al dueño). → `project_container_ts_activado`
+- **`DEMO_ENC_KEY` rotada y unificada** local=Vercel (eran distintas desde junio; el fallback lo
+  tapaba). Clave en `Mente/Acceso_Seguro/Secretos_Demo_Sitio.md` (**fuera de git**).
+  → `project_rotacion_demo_enc_key`
+- **Rebuild de la imagen del agente** (`for3s-agent:local`, reversa `pre-cupo429`): el cupo
+  agotado ya sale como **429 + minutos**, no como "error interno". Server commit `732c434`.
 
-**🔴 FIX RED DEL SERVER (Telegram volvió):** los agentes NO respondían en Telegram
-(desde 21-jul). Causa: el server prefería IPv6 pero NO tiene salida IPv6 real (solo
-la de Tailscale, `fd7a:`) → `api.telegram.org` (que resuelve por IPv6) daba HTTP 000;
-IPv4 funcionaba (302). NO fue la demo ni nuestros cambios (verificado: el commit
-sospechoso no tocó red). Fix aplicado: `precedence ::ffff:0:0/96 100` en `/etc/gai.conf`
-(respaldo `gai.conf.bak-ipv4fix`, reversible) → prefiere IPv4, **conserva IPv6/Tailscale**.
-Reiniciados brian/foresito/general → Telegram conectado sin NetworkError. Verificado en vivo.
+**👉 PRÓXIMO PASO: los 3 tapones (por orden).** ① dueños de jazz/mashe → borrar
+`allowedEmails.ts` con su `DEV_FALLBACK` que autoriza un correo falso (marcado DENTRO de la BD:
+`COMMENT ON TABLE demo_duenos`) · ② tests de los 5 caminos críticos (hoy CERO) · ③ decidir el
+hosting (todo cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
 
-**🎉 FRENTE F0 "enrutar correo del dueño → su instancia" — 4/4 PIEZAS, probado E2E con
-evidencia del server** (sitio `ElBrAyAn1967/For3s`, commits `a03833f`→`529786e`; server
-preparado, no en repo). Cuando el dueño (ej. brayan002150@gmail.com) entra a la demo, lo
-reconoce como dueño de brian, verifica por código, y lo enruta a SU instancia (no general):
-- **P1 puente:** tabla Neon `demo_duenos` (correo→instancia) + `POST /api/demo/check-dueno`.
-  Sembrado brayan002150→brian. Las instancias del server están AISLADAS → el mapa vive en Neon.
-- **P2 verificación:** tabla `demo_verificaciones` (código HASHEADO, 10min, 5 intentos,
-  un-solo-uso). Resend (`re_3Nec...` en .env.local, `RESEND_FROM=onboarding@resend.dev`).
-  `verify/send` + `verify/check`. 6 defensas probadas.
-- **P3 enrutador:** brian con canal API ON + su key propia + puerto fijo 8798 + ruta pública
-  en Funnel `for3s.tail6749e5.ts.net/i/brian`. general intacto en `/`. `chatDueno()` enruta
-  a la instancia del dueño verificado. Verificado: el chat llegó a BRIAN (hilo en su BD), NO general.
-- **P4 UI:** `GeneralRegister` detecta dueño→pide código→entra. Correo cualquiera→general sin fricción.
-- **⚠️ FALTA para producción:** en Vercel agregar `RESEND_API_KEY`, `RESEND_FROM`,
-  `FOR3S_INST_BRIAN_KEY=for3s_sk_6de4db98f4bb265c29b478709d186333` · verificar dominio en
-  Resend (onboarding@resend.dev solo manda a pruebas, no Gmail) · ROTAR keys expuestas (Resend + brian).
-
-**📊 BARRA DE USO REAL POR API KEY f3k_ (server+sitio) COMPLETA:** `/v1/miskeys` expone
-uso por key (llamadas/tokens/costo-cupo/serie desde `api_consumo`; cada key = su client_id).
-Sitio pinta sparkline. **Server commit `8a5eb5e` = local `a699de6` (código byte-idéntico, md5
-verificado) SIN push.**
-
-**🔎 VERIFICACIONES PROFUNDAS de la demo (todo SANO, verificado en vivo):** aislamiento de
-hilo por persona (`api:<hash-correo>:<tema>` / `tg:<uid>`, nadie accede al de otro) · concurrencia
-(10+2 al mismo tiempo NO rompe, encola con "repartidor de carriles" concurrency.py; con BYOK cada
-quien su cuota = sin fila) · el hilo por persona existe en TODAS las instancias (canal API en
-general/foresito, Telegram en todas) · invitar equipo a brian por Telegram (`/invitar`) SÍ, por web
-NO (era el frente F0). 2 hallazgos demo General registrados (BYOK fire-and-forget, tema "hoteles").
-
-**⬇️ Contexto del 22-jul abajo. Sigue: cerrar F0 en producción (Vercel/Resend), o lo que Brian marque.**
-
----
-
-**🖥️ (2026-07-22) — REDISEÑO DEMO ESCALABLE + PANEL CON "MÁS MANOS" (todo en el SITIO
-`marca-personal`, repo `github.com/ElBrAyAn1967/For3s`, deploy Vercel `for3s.vercel.app`):**
-Contexto: Brian PAUSÓ los pendientes grandes para volver For3s "operable sin él" (que pueda
-decir "está listo para prestárselo a alguien"). Trabajo por PIEZA, Brian valida cada una.
-- **Demo escalable (los links 1:1 salieron de variables de Vercel → a Neon):** BD Neon
-  (`neondb`, la fuente de verdad de la demo, NO tailnet — Vercel no alcanza el tailnet).
-  `demo_accounts` ganó `kind='privado'` + columnas (nombre/correo/instancia); `demo_users`
-  ganó `kind_ui`. Botón **"＋ Agregar"** en `/for3s-admin`→Demo: crea 1:1 privada (genera
-  link `/demo/<token>` en código) o General a mano. El link 1:1 ahora **funciona** (lee de
-  Neon, no de Vercel). La 1:1 es un usuario más (vive en AMBAS tablas). Entrada a la demo
-  NO se tocó (nombre+email igual). `foresito` NO es demo-able (instancia interna, riesgoso).
-- **Panel "más manos":** editar persona (nombre/correo real) · colores por demo (jazz morado
-  · mashe verde · brian amarillo · general gris) · filtros por instancia · **eliminar
-  personas** (borra también su puerta 1:1) · **cambiar demo = MOCKUP honesto** (mueve solo
-  `kind_ui`; el hilo real `kind` NO se mueve; Neon sabe la verdad).
-- **Dentro de la demo:** chat responsivo (sin menú superior duplicado en desktop, se conserva
-  Cerrar sesión, el chat ocupa el ancho) · conectores n8n + NotebookLM (arriba de Adobe) ·
-  Perfil = pendiente.
-- **📊 BARRA DE USO REAL POR API KEY f3k_ (server + sitio):** ⚠️ ÚNICO cambio en el SERVER hoy.
-  El canal `/v1/miskeys` ahora expone por key: total_llamadas/total_tokens/costo_usd (solo
-  NUESTRO cupo, byok=false)/serie por día — desde `api_consumo` (ya existía; cada key ES su
-  client_id). El sitio pinta un **sparkline** (línea que sube/baja estilo GitHub) + los números.
-  Verificado E2E con chat real (uso subió). **Server commit `8a5eb5e` SIN push (server-primero).**
-  Sitio pusheado (commits `a03833f`→`05058b3` en ElBrAyAn1967/For3s).
-- **Vercel Env Vars (Brian las limpió):** quedan 5 críticas (DEMO_DATABASE_URL→Neon,
-  DEMO_ADMIN_PASSWORD, DEMO_ENC_KEY, FOR3S_GENERAL_API_KEY, FOR3S_GENERAL_BASE). Se quitaron
-  DEMO_JAZZ/MASHE/BRIAN_TOKEN+EMAIL (ya viven en Neon). Demo verificada viva tras limpiar.
-- **🔮 PENDIENTES NUEVOS registrados (memorias):** (a) **migrar hilos entre agentes** (el mockup
-  cambiar-demo lo espera, NO codificado) · (b) **reconstruir encender/apagar agente 1:1** (Brian:
-  importante pero se rehará de forma especial; vars DEMO_AGENT_CONTROL_URL/_TOKEN quedaron sin uso)
-  · (c) barra de uso = COMPLETA hoy. Todos con Ronda F0 cuando Brian diga.
-- **⚠️ Repo del SITIO ≠ repo de For3s OS:** el sitio vive en `ElBrAyAn1967/For3s` (marca-personal);
-  el server/agente en `for3slabs/for3s(-os)`. HOY solo se tocó el sitio + 1 archivo del canal
-  (`api_channel.py`) del server (commit local, sin push). La tríada de For3s OS sigue en `f50a5db`.
-
----
-
-**🚀 v0.19.0 "ENTRENADO" DESPLEGADA TOTAL (2026-07-19/20):** tríada de código en **`f50a5db`**
-(server = GitHub origin `for3s-os` + backup `for3s` = local) · **las 5 instancias verificadas EN
-VIVO** (3 vivas propagadas + jazz/mashe probadas con batería completa y devueltas a su estado) ·
-CI ✅ + Trivy ✅ · Mente OS pusheado (`mente-os-for3s` `80aed31`) · Maestro al día (`8681d7c`).
-Historia de v0.16→0.18 (MERCADO, Molde, Trace, Frente E): **Bitácora Julio** + `CHANGELOG.md`.
-
-**⭐ NUEVO (2026-07-20) — MAESTRO PUENTES C+D ✅ CONSTRUIDOS Y E2E** (`Cuerpo/Ronda_Maestro_
-Puentes_C_D.md`): el Maestro dejó de ser lista → es BUSCADOR semántico + RED navegable, todo
-sobre UN núcleo (punteros.tsv + puerta única + un indexador + IDs compartidos + una superficie
-`/v1/maestro/*` en Foresito). `maestro indexar --todo | subir | buscar "<preg>" [--contexto] |
-grafo <nodo>`. Jazz solo ve su carril (probado). 4 bugs cazados. Server commit `0cac57a` firmado
-**SIN push** (esperando orden). ⏳ colas: embebido rama for3s termina solo en el server ·
-smoke-test de Brian a Foresito por Telegram ("busca en el maestro…") · re-indexar tras pushes.
-
-**📌 PENDIENTES DE BRIAN (2026-07-20, detalle en PENDIENTES.md §Super-cerebro):** ① smoke Telegram
-a Foresito ("busca en el maestro dónde…" → debe EJECUTAR y citar rama:ruta) · ② probar en brian-bot
-una skill del entrenamiento (primera vez completas tras el fix S1) · ③ decidir S3 (canal API sin
-tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límite?).
-
-**👉 PRÓXIMO PASO: Brian marca el foco.** Sobre la mesa:
-- 🔌 **⭐ NUEVO PENDIENTE GRANDE (2026-07-20): CONECTORES SELF-SERVICE** — que el usuario conecte
-  herramientas con UN botón (OAuth del proveedor) y su agente/rama las tenga al instante, sin pasar
-  por Brian; correo admin por instancia; general multi-tenant (solo comparten el agente). Visión:
-  `Alma/Vision_Conectores_SelfService_Panel_Agente.md` · PENDIENTES §1. Arranca con Ronda F0.
-- 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
-- ⏳ pilotos VIVOS externos: Jazz usa su bot (jazz verificada v0.19.0) + NavigoX retoma consumo.
-- Pendientes técnicos menores: **CodeQL rojo desde el 17** (pre-existente) · validar torch 2.13
-  (quitar 2 ignores pip-audit) · semillas de diseño H-4 (peso de respuestas propias en ranking) y
-  H-6 (presupuesto chars por chunk) — Ronda si Brian quiere.
-
-**🔄 Carriles vivos DORMIDOS** (se despiertan cuando Brian diga): Confianza
-(`Doc/Carril_Mejora_Continua_Confianza.md`) · Presencia (`Doc/Carril_Presencia_Descubribilidad.md`)
-· Multi-canal (`Doc/Carril_Multicanal.md`) · Maestro (evoluciona a carril).
-⚠️ NavigoX vive en `~/5M-incubathon/`, CERRADO — no leerlo sin gate (§6).
+**⚠️ 2 caídas de producción el 26-jul, ambas por el mismo error de método:** verificar desde mi
+entorno y asumir que probaba el de Vercel (clave divergente · `tailscale serve` apagó el Funnel).
+Reglas escritas: `feedback_tailscale_serve_apaga_funnel`.
 
 ## 5-bis · Cerrados grandes recientes (solo punteros — historia en Bitácora Julio)
 
@@ -282,6 +163,9 @@ tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límit
 
 | Necesitas… | Lee… |
 |---|---|
+| **🖥️⭐ LA DEMO — índice maestro de sus pendientes (ENTRAR POR AQUÍ)** | memoria `project_bloque_demo_pendientes` |
+| **Ronda F0 de `userStore.ts` (U1-U6) + qué falta para retirar `demo_accounts`** | `marca-personal/DEMO_RONDA_F0_USERSTORE.md` · `marca-personal/db/demo/RETIRAR_demo_accounts.md` |
+| **Secretos de la demo (DEMO_ENC_KEY) — FUERA de git** | `Mente/Acceso_Seguro/Secretos_Demo_Sitio.md` |
 | **TODOS los pendientes a detalle** | `Doc/PENDIENTES.md` |
 | 🎓 **Caso: limpiar un valor heredado/hardcodeado sin romper** (la regla del "default peligroso" + checklist) | `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md` |
 | **Demo: mapa de bloques/sistemas · plan BD · auditoría de código · plan de optimización** | en el repo del sitio: `marca-personal/DEMO_*.md` |
