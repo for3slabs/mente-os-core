@@ -35,6 +35,10 @@
 - **Landing definitiva del agente:** hoy vive en `for3s.vercel.app/for3s-os` (SSR, inglés, SEO+AEO+GEO,
   hecha 2026-07-04). Decisión pendiente: ¿queda ahí, o web propia (for3s.com/.ai cuando se compre)?
   El repo apunta a for3s.vercel.app (web de QA) → el hueco #1 histórico ya mitigado con `/for3s-os`.
+  ⭐ **RAÍZ COMÚN — comprar dominio propio (Brian, 2026-07-24):** el SEO/landing propia está atado a
+  COMPRAR el dominio, la MISMA compra que destraba los correos de verificación de Resend del Frente F0
+  (`onboarding@resend.dev` no llega a Gmails de terceros). Bloque unificado en memoria
+  `project_bloque_dominio_propio` (Resend + SEO/presencia + branding cuelgan del dominio).
 - **SEO base (ampliar):** más páginas indexables con keywords ("self-hosted AI agent", "second brain",
   "Claude agent"), sitemap, robots, Open Graph. Base ya puesta en `/for3s-os`.
 - **AEO:** más FAQ real + schema.org FAQPage/SoftwareApplication → rich snippets / AI Overview.

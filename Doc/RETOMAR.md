@@ -79,7 +79,48 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-**🎉 HOY (2026-07-23) — FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + FIX RED SERVER + más:**
+**🏗️ HOY (2026-07-24/26) — LA DEMO PASÓ DE MVP A PRODUCTO: BD reestructurada + código pulido
++ optimizado.** Jornada larga sobre `marca-personal` (repo `ElBrAyAn1967/For3s`, Neon PG18).
+Detalle completo: memoria `project_reestructuracion_bd_demo` · planes en el propio repo del sitio
+(`DEMO_MAPA_BLOQUES.md`, `DEMO_REESTRUCTURACION_PLAN_F0.md`, `DEMO_AUDITORIA_CODIGO.md`,
+`DEMO_PLAN_OPTIMIZACION.md`). Método: **atómico por bloques, verificar antes de avanzar.**
+
+- **BD (F1-F6) ✅** — `demo_instancias` = FUENTE ÚNICA DE VERDAD (modo, cupo, puente URL+key
+  CIFRADA) + 7 FKs + catálogo de estados + `demo_llaves` (revocables) + `demo_eventos`
+  (telemetría) + **`demo_config`** (parámetros editables con UPDATE, **sin push ni redeploy**).
+  Fantasmas eliminadas. **Escalar = 1 INSERT** (probado con instancia 'acme').
+  Verificada: integridad 7/7 · candados 8/8 · E2E 6/6 · endpoints 8/8 vivos.
+- **CABLEADO (C1-C6p1) ✅** — el código lee de la BD: puente cifrado, doble-escritura,
+  cupo en vivo, revocación, telemetría.
+- **PULIDO (P1-P7) ✅** — P1 la instancia es un DATO (antes lista fija en 27 archivos: la BD
+  escalaba y el código no) · P2 UNA puerta de acceso (`acceso.ts`; antes 3 fuentes en cascada) ·
+  P3 un solo cupo · P4 **−434 líneas** de subsistema muerto · P5 código muerto + 🐛 bug de logout ·
+  P6 correo real con Resend · P7 TODO va al agente del usuario (antes conectores/BYOK iban a general).
+- **OPTIMIZACIÓN (O-F1..O-F5) ✅** — heartbeat **11→3-4 viajes a Neon (−68%)**, N+1 eliminado
+  (10→1 UPDATE), memoización por operación, freno de mantenimiento (260→4 en 60 s).
+  Con 100 usuarios: 220→70 q/s. **Regla madre: optimizar NO es romper** (build + comportamiento
+  verificado idéntico en cada fase).
+- **`for3sChat.ts` refactorizado** — capa base única `llamarAgente()`: plomería 116→24 líneas
+  (−79%); un endpoint nuevo pasa de ~25 líneas a 3.
+- **🐛 9 bugs cazados y cerrados** — dueño entraba sin código · refrescar rompía la sesión · key
+  perdida al promover · rol nunca se actualizaba · hilos de homónimos colisionaban · keys f3k_ y
+  BYOK iban al agente equivocado · cupo del panel hardcodeado · logout no limpiaba la cookie de
+  dueño · tema `hoteles` heredado del Incubathon.
+- **🎓 CASO DE ESTUDIO documentado** (reutilizable): `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md`
+  — la regla "un default NUNCA debe apuntar a algo con dueño" + checklist para limpiar valores
+  heredados. Salió de que Brian cazó un fix mío peligroso (`general` como default habría metido a
+  cualquier cliente en el hilo privado del dueño).
+- **Estado del código:** sitio pusheado hasta **`1c54a49`**. Agente: `api_channel.py` con el tema
+  neutro listo en `~/for3s-os` del server (respaldo `.bak-tema`), **pendiente de rebuild de imagen**
+  — NO urgente: el sitio ya manda el tema explícito, así que el fix ya funciona.
+- **⏳ Pendientes de esta ronda:** C6 parte 2 (borrar columna `kind`, tabla `demo_accounts`, env
+  vars del puente) · panel admin de dueños (`registrarDueno`/`listarDuenos` ya existen, sin UI) ·
+  `container.ts` sigue NO-OP (encender/apagar agente) · identidad de instancia del agente
+  (memoria `project_pendiente_identidad_instancia_agente`) · un hilo/key único por dueño.
+
+---
+
+**🎉 (2026-07-23) — FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + FIX RED SERVER + más:**
 
 **🔴 FIX RED DEL SERVER (Telegram volvió):** los agentes NO respondían en Telegram
 (desde 21-jul). Causa: el server prefería IPv6 pero NO tiene salida IPv6 real (solo
@@ -242,6 +283,8 @@ tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límit
 | Necesitas… | Lee… |
 |---|---|
 | **TODOS los pendientes a detalle** | `Doc/PENDIENTES.md` |
+| 🎓 **Caso: limpiar un valor heredado/hardcodeado sin romper** (la regla del "default peligroso" + checklist) | `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md` |
+| **Demo: mapa de bloques/sistemas · plan BD · auditoría de código · plan de optimización** | en el repo del sitio: `marca-personal/DEMO_*.md` |
 | **Carril de mejora continua de CONFIANZA (reactivar el Frente E)** | `Doc/Carril_Mejora_Continua_Confianza.md` |
 | **Carril PRESENCIA/Descubribilidad (landing+SEO+AEO+analítica, dormido)** | `Doc/Carril_Presencia_Descubribilidad.md` |
 | **Carril MULTI-CANAL (Frente C: WhatsApp/correo/análisis, dormido)** | `Doc/Carril_Multicanal.md` |

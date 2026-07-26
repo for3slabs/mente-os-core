@@ -433,6 +433,80 @@ ESTADO TÉCNICO: bot+worker activos · sonnet-4-6 OAuth · KEK · BD schema v20 
 
 ## Julio 2026
 
+## 📅 2026-07-24/26 — 🏗️ LA DEMO DE MVP A PRODUCTO: BD reestructurada + código pulido + optimizado (9 bugs)
+
+**Origen (Brian):** al auditar la BD de la demo la radiografía mostró que *"no es ni un MVP"* —
+todo hardcodeado, tablas SIN relaciones formales, config regada en 4+ lugares, funciones huérfanas
+y correo STUB. Se decidió reestructurar con el **Método de Fases**, trabajando **atómico por
+bloques** y **verificando antes de avanzar**. Alcance: SOLO la demo (`marca-personal`, repo
+`ElBrAyAn1967/For3s`, BD Neon PG18) + una línea del agente.
+
+**Los 4 pilares que guiaron todo:** 🔗 Conectada (FKs reales) · 📈 Escalable (cero hardcodeo) ·
+🛡️ Confiable (constraints + catálogo) · 🔒 Segura (secretos cifrados).
+
+### FASE BD (F1–F6) ✅
+`demo_instancias` como **fuente única de verdad** (modo 1:1/1:M, cupo, puente URL + key CIFRADA
+AES-256-GCM) · 7 FKs · catálogo de estados (fuera el `ready` fantasma) · `demo_llaves` con
+revocación por el dueño · `demo_eventos` (telemetría real) · **`demo_config`**: parámetros
+operativos editables con un UPDATE, **sin push ni redeploy** (TTL de sesión, validez del código,
+cupo del panel…). Fantasmas `demo_sessions`/`demo_events` eliminadas. Dueño de general definido
+(`brian.lopezofficial@gmail.com`). **Escalar = 1 INSERT** (probado creando la instancia 'acme').
+Verificación: integridad 7/7 · candados 8/8 · flujo E2E 6/6 · endpoints 8/8 vivos. Respaldos CSV
+por fase en `~/backups-demo-neon/`.
+
+### FASE CABLEADO (C1–C6p1) ✅
+El código pasa a leer de la BD: puente cifrado (`instancias.ts`), doble-escritura kind+instancia,
+cupo en vivo, llaves con revocación, telemetría (`eventos.ts`).
+
+### FASE PULIDO (P1–P7) ✅
+- **P1** `DemoKind` era una lista fija en 27 archivos → tipo abierto + validación runtime. *La BD
+  escalaba y el código NO*: agregar una instancia funcionaba en Neon pero TypeScript la rechazaba.
+- **P2** UNA puerta de acceso (`acceso.ts`/`resolverAcceso`) — antes 3 fuentes en cascada (env vars
+  + `demo_llaves` + `demo_duenos`); de esa dispersión salieron los bugs del dueño en general.
+- **P3** un solo cupo (`cupoDe()`); `MAX_CONCURRENT` queda solo como red de seguridad documentada.
+- **P4** **−434 líneas** de subsistema MUERTO (`DemoExperience`+`WaitingRoom`+`store.ts`+4
+  endpoints). Verificado por 2 vías: nadie renderiza los componentes + su tabla tenía 0 filas.
+- **P5** código muerto fuera + 🐛 bug: el logout no limpiaba la cookie de dueño verificado.
+- **P6** `email.ts` deja de ser STUB → aviso de cupo REAL con Resend. `OAUTH_KINDS` se conserva
+  fijo **a propósito** (candado de seguridad: leerlo de la BD daría el permiso a instancias nuevas).
+- **P7** TODO va al agente DEL USUARIO: conectores y BYOK seguían yendo a general → la API key del
+  dueño se registraba en el agente equivocado (explica *"meto mi key pero el agente no la usa"*).
+
+### OPTIMIZACIÓN (O-F1..O-F5) ✅ — regla madre: **optimizar NO es romper**
+Medido antes y después: heartbeat **11→3-4 viajes a Neon (−68%)** · N+1 de `promote` eliminado
+(10→1 UPDATE) · memoización por operación (`OpCtx`) · lecturas fusionadas · freno de mantenimiento
+(260→4 en 60 s). Con 100 usuarios: 220→70 q/s. En cada fase: build verde + comportamiento
+verificado IDÉNTICO (FIFO de la cola, mismos datos, TTL intacto) + contrato de API sin tocar.
+**HTTP QUERY (RFC 10008) descartado con evidencia:** la doc de Next 16 instalada solo soporta
+GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS → QUERY daría 405. De ahí salió el criterio "solo GET es
+cacheable" y la decisión de dejar `check-dueno` en POST **por privacidad** (con GET el correo iría
+en la query string → logs).
+
+### REFACTOR de `for3sChat.ts`
+Brian detectó redundancia. Medido: el 40% del archivo era plomería repetida 9 veces. Nueva capa
+base `llamarAgente()`: plomería 116→24 líneas (**−79%**); un endpoint nuevo pasa de ~25 líneas a 3.
+Contrato intacto (13 exports, 6 consumidores sin tocar).
+
+### 🐛 9 BUGS CAZADOS Y CERRADOS
+dueño entraba sin pedir código · refrescar rompía la sesión (`pagehide` agresivo) · la key se perdía
+al promover al dueño · el rol NUNCA se actualizaba (solo se calculaba al crear) · hilos de personas
+homónimas colisionaban · keys f3k_ y BYOK iban al agente equivocado · cupo del panel hardcodeado a
+general · el logout no limpiaba la cookie de dueño · tema `hoteles` heredado del Incubathon.
+
+### 🎓 CASO DE ESTUDIO (reutilizable)
+`Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md`. Brian cazó un fix mío **peligroso**: iba a poner
+`general` como tema por defecto, pero ese nombre está RESERVADO al hilo del dueño → un cliente sin
+tema habría caído en su hilo privado. **Regla que sale de ahí: un default NUNCA debe apuntar a algo
+con dueño o significado reservado; debe ser un cajón neutro.** Más el orden de despliegue
+(emisores primero, receptor estricto después) y "medir el impacto antes de afirmar que algo rompe".
+
+**Estado:** sitio pusheado hasta `1c54a49`. Agente con el tema neutro listo en `~/for3s-os`
+(respaldo `.bak-tema`), pendiente de rebuild — no urgente porque el sitio ya manda el tema.
+**Pendientes:** C6p2 (borrar `kind`/`demo_accounts`/env del puente) · panel admin de dueños ·
+`container.ts` NO-OP · identidad de instancia del agente · un hilo/key único por dueño.
+
+---
+
 ## 📅 2026-07-23 — 🎉 FRENTE F0 "ENRUTAR CORREO→INSTANCIA" COMPLETO (4/4) + 🔴 FIX RED SERVER + verificaciones profundas
 
 **Sesión enorme, continuación del 22-jul. Meta viva: For3s operable sin Brian. Todo en el SITIO
