@@ -38,6 +38,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S3 | `c9ef4299` | 2026-07-14 ~11:00 | 2026-07-15 (activa) | 8.7 MB 🟢 | ~40 | ~n/d | **La jornada MERCADO** — v0.17.0: Frente B F4-F6 + Molde For3s Inside (M1-M4) + For3s Trace completo + panel temporal. ~22 commits, ~10 bugs (1 SEC grave). Sana; sin señales raras |
 | S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-19 ~18:30 (Mx) | 4.2 MB 🟢 | ~29 | **667K 🔴** | **LA JORNADA DEL SUPER-CEREBRO (30h)** — entrenamiento+examen de AMBOS agentes, 12 fixes sistémicos, v0.19.0 desplegada total. La más productiva de la historia del proyecto; /clear al cierre por contexto rojo |
 | S5 | `7e9ce3b7` | 2026-07-24 20:58 | 2026-07-26 ~06:22 (~33h) | 12 MB 🟢 | ~97 | **917K 🔴** | **LA JORNADA DEMO → PRODUCTO** — BD reestructurada (F1-F6) + cableado + pulido P1-P7 + optimización (heartbeat −68%) + 9 bugs. Sana en disco pero **contexto en rojo**: /clear recomendado al cerrar |
+| S6 | `dac2ce13` | 2026-07-26 ~06:00 | 2026-07-26 ~23:50 (~18h) | 5.9 MB 🟢 | ~60 | ~n/d | **LA JORNADA DE LOS CIMIENTOS DE LA DEMO** — 6 archivos a producto + Ronda F0 `userStore` (U1-U6, C6p2 cerrado) + `container.ts` activado + `DEMO_ENC_KEY` unificada + rebuild del agente. ~15 bugs (3 de seguridad). **2 caídas de producción causadas por mí.** Sana en disco |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -184,3 +185,49 @@ Documentación: 4 planes `DEMO_*.md` en el repo del sitio + caso de estudio + Bi
 > **Cómo medir** (comando de referencia): el jsonl vive en
 > `~/.claude/projects/-home-brianweb3-for3s/<id>.jsonl` — peso con `ls -lh`, y tokens/contexto
 > leyendo los campos `usage` de los mensajes assistant (script en la memoria del incidente).
+
+---
+
+## S6 · `dac2ce13` — LA JORNADA DE LOS CIMIENTOS DE LA DEMO (2026-07-26, ~18h)
+
+**Inicio/fin:** 2026-07-26 ~06:00 → ~23:50 (Mx) · **jsonl:** 5.9 MB 🟢 (2,394 líneas) ·
+**mensajes de Brian:** ~60 · **veredicto: SANA en disco.** Muy por debajo del umbral (15 MB),
+la mitad que S5. El trabajo fue de mucha herramienta y poco texto largo.
+
+### Qué se hizo
+Continuación directa de S5. Si S5 reestructuró la BD, S6 reestructuró **el código**:
+- **6 archivos elevados a producto:** `instancias.ts` (I1-I5) · `session.ts` (S1-S3) ·
+  `verificacion.ts` (V1-V4) · `eventos.ts` · S4a "cero listas fijas" · **`userStore.ts`
+  Ronda F0 completa (U1-U6)** → **C6p2 CERRADO** (fuera la columna `kind` y `demo_accounts`).
+- **`container.ts` ACTIVADO** (modelo C: la BD como buzón, `/ctl` nunca se expone).
+- **`DEMO_ENC_KEY` rotada y unificada** local=Vercel (eran distintas desde junio).
+- **Rebuild del agente** (`for3s-agent:local`): el cupo agotado ya sale como 429 + minutos.
+- **La demo marcada como BLOQUE GRANDE** con índice maestro de pendientes.
+- ~15 bugs reales, **3 de seguridad**: anti fuerza bruta burlable (reenviar código reseteaba
+  el contador) · un invitado podía apagar el agente del dueño · eliminar persona no revocaba
+  su llave.
+
+### 🔴 Cosas raras / incidentes
+1. **DOS caídas de producción, ambas causadas por mí y por el MISMO error de método:**
+   verificar desde mi entorno y asumir que probaba el de Vercel.
+   (a) retiré el fallback de env vars sin comparar la `DEMO_ENC_KEY` de Vercel — resultó
+   distinta desde junio, y el fallback lo estaba tapando. (b) usé `tailscale serve` en vez de
+   `funnel` al exponer jazz/mashe, y eso **degradó el Funnel entero a tailnet-only**: mis
+   pruebas pasaban (estoy dentro del tailnet) mientras producción estaba caída.
+   → Reglas escritas: `feedback_tailscale_serve_apaga_funnel` · `project_rotacion_demo_enc_key`.
+2. **Borré 4 eventos reales de Brian** al limpiar datos de prueba con un filtro por tiempo
+   demasiado amplio. Restaurados con sus valores y horas originales.
+3. **SSH al server con timeouts repetidos** (enlace por relay, ~833ms). Se paró sin insistir,
+   aplicando la regla de no hacer bucles contra el server.
+4. **El patrón `await fetch` sin mirar la respuesta apareció TRES veces** en el mismo día
+   (reenviarCodigo · toggle del agente · desconectarGithub). No es casualidad: es un hábito
+   del código base. Quedan más en las partes no barridas.
+
+### Consumo
+Sin señales de crecimiento excesivo. El grueso fue Bash/Read/Edit con salidas cortas, no
+lectura de archivos grandes. **No hubo lectura de `Estado_Sesion_Continuidad.md`** (200KB) ni
+de otro Mente OS. El único gasto notable fue el rebuild de la imagen (328s, en segundo plano).
+
+### Motivo de cierre
+Brian cierra un bloque grande de trabajo, no por saturación. Estado documentado en
+`project_bloque_demo_pendientes` (índice maestro) + RETOMAR §5 reescrito.

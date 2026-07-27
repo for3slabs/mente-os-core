@@ -1451,3 +1451,56 @@ tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límit
 · Multi-canal (`Doc/Carril_Multicanal.md`) · Maestro (evoluciona a carril).
 ⚠️ NavigoX vive en `~/5M-incubathon/`, CERRADO — no leerlo sin gate (§6).
 
+---
+
+## 🏗️ 2026-07-26 · LA JORNADA DE LOS CIMIENTOS DE LA DEMO (~18h, sesión S6)
+
+Si el 24-25 se reestructuró la **BD** de la demo, hoy se reestructuró el **código**. La demo
+pasa a ser un **BLOQUE GRANDE con índice propio** (memoria `project_bloque_demo_pendientes`).
+
+### 6 archivos elevados a producto
+| Archivo | Frente | Qué se cerró |
+|---|---|---|
+| `instancias.ts` | I1-I5 | forma base de `config.ts` · puente 100% BD (sin env vars) · degradación que estaba documentada pero **no existía** |
+| `session.ts` | S1-S3 | guardia único (12 copias → 0) · el `kind` de la cookie se valida contra la BD |
+| `verificacion.ts` | V1-V4 | 🔒 el anti fuerza bruta **se podía burlar** (reenviar reseteaba el contador) |
+| `eventos.ts` | — | la telemetría ubica por CORREO (9 de 9 eventos iban con `user_id` NULL) |
+| — | S4a | cero listas fijas de instancias (**menos 3 que son candados de seguridad**) |
+| **`userStore.ts`** | **U1-U6** | Ronda F0 completa → **C6p2 CERRADO**: fuera la columna `kind` y la tabla `demo_accounts` |
+
+### 3 cierres grandes
+- **`container.ts` ACTIVADO** — el botón encender/apagar agente dejó de ser NO-OP. **Modelo C**:
+  la web escribe en `demo_users.agent_on` y el servicio `for3s-agente-sync` (systemd) lo aplica
+  dentro del server → **`/ctl` NUNCA se expone a internet**, el dual-plane queda intacto.
+  🔒 **Solo el DUEÑO** (un invitado con llave podía apagarle el agente al dueño).
+- **`DEMO_ENC_KEY` rotada y unificada** local=Vercel. Eran **distintas desde junio** y el
+  fallback a env vars lo tapaba; al retirarlo, quedó al descubierto. Clave en
+  `Mente/Acceso_Seguro/` (fuera de git).
+- **Rebuild de la imagen del agente** (reversa `for3s-agent:pre-cupo429`): el cupo agotado ya
+  sale como **429 + minutos que faltan**, no como "error interno". Server commit `732c434`.
+
+### ~15 bugs, 3 de seguridad
+Anti fuerza bruta burlable · un invitado podía apagar el agente del dueño · eliminar una persona
+no revocaba su llave (seguía entrando). Y varios de UX que tapaban la causa real: el chat no
+avisaba si el agente estaba apagado · refrescar pedía código otra vez (el TTL de 60s era MENOR
+que el latido real de ~65s en pestañas de fondo) · el toggle fingía éxito inmediato.
+
+### ⚠️ 2 CAÍDAS DE PRODUCCIÓN, ambas por el mismo error de método
+Verificar desde mi entorno y **asumir que probaba el de Vercel**:
+1. Retiré el fallback de env sin comparar la clave de cifrado de Vercel (era distinta).
+2. Usé `tailscale serve` en vez de `funnel`: degradó el Funnel a tailnet-only. Mis pruebas
+   pasaban porque estoy dentro del tailnet; producción estaba caída.
+→ Reglas: `feedback_tailscale_serve_apaga_funnel` · `project_rotacion_demo_enc_key`.
+
+### Evaluación de la demo como producto (pedida por Brian)
+**7/10 — los cimientos son de producto, la superficie todavía no.** Sólido: modelo de datos,
+secretos, aislamiento probado, control de acceso, degradación. Falta: **cero tests**, **un solo
+usuario (Brian)**, sin operación/alertas, y el `DEV_FALLBACK` de `allowedEmails.ts`.
+**Lista para su primer usuario real, no para diez.**
+
+### Los 3 tapones que quedan
+① dueños de jazz/mashe (marcado DENTRO de la BD) · ② tests de los 5 caminos críticos ·
+③ hosting: los 5 agentes viven en el server `for3s`, que es una laptop en casa de Brian
+(**riesgo aceptado explícitamente por él**).
+
+**Commits:** sitio `main` → `793e858` · server `~/for3s-os` → `732c434` · Mente OS → `0ed6c82`.
