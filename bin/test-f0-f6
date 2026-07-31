@@ -226,9 +226,11 @@ done
 n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/settings.json'))
 print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
-# 3 = session-start + pre-edit-standards + gate-critical (F6-3). A hardcoded count is on purpose:
-# a hook silently disappearing from settings.json is exactly the failure this catches.
-eq "project hooks registered (session-start + standards + critical gate)" "3" "$n"
+# 4 = session-start + pre-edit-standards + gate-critical (F6-3) + gate-handoff (2026-07-31).
+# A hardcoded count is on purpose: a hook silently disappearing from settings.json is exactly
+# the failure this catches. It fired correctly when gate-handoff was added — the count is meant
+# to be updated deliberately, never widened to "N or more".
+eq "project hooks registered (session-start + standards + 2 gates)" "4" "$n"
 n=$(python3 -c "
 import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')))
 print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
@@ -511,13 +513,58 @@ done
 ok "the 3 name-taking validators reject globs, paths and missing blocks (15 cases)"
 
 # A hook that only warns must NEVER fail: an unexpected exit code can interfere with the edit.
-for h in pre-edit-standards gate-critical; do
+for h in pre-edit-standards gate-critical gate-handoff; do
   for j in '{}' 'null' '[]' '{"tool_input":null}' '{"tool_input":{"file_path":123}}' '42'; do
     printf '%s' "$j" | ./hooks/$h.py >/dev/null 2>&1
     [ "$?" -le 2 ] || bad "$h survives $j" "exit<=2" "exit $?"
   done
 done
-ok "both PreToolUse hooks survive malformed payloads (12 cases, no crash)"
+ok "the 3 PreToolUse hooks survive malformed payloads (18 cases, no crash)"
+
+# ── THE HANDOFF GATE ─────────────────────────────────────────────────────────
+# The level was MEASURED (9,786 Bash vs 32 Agent calls, 15 of them read-only): block writers,
+# warn read-only. A gate that made cheap delegation expensive would push straight back toward
+# the 20-jul saturation it exists to prevent.
+printf '{"tool_input":{"subagent_type":"Explore"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+[ "$?" -eq 0 ] || bad "read-only specialist is allowed through" "exit 0" "exit $?"
+ok "a read-only specialist (Explore) needs no manifest"
+
+printf '{"tool_input":{"subagent_type":"general-purpose"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+[ "$?" -eq 2 ] || bad "a writing specialist with no manifest is BLOCKED" "exit 2" "exit $?"
+ok "a specialist that can WRITE is BLOCKED without a declared scope"
+
+# Fail closed: an unknown agent type could be anything, so it is treated as a writer.
+printf '{"tool_input":{"subagent_type":"some-unknown-agent"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+[ "$?" -eq 2 ] || bad "unknown agent type fails CLOSED" "exit 2" "exit $?"
+ok "an unknown agent type fails CLOSED (assumed to write)"
+
+# ⭐ Presence is not compliance. A malformed manifest sitting on disk must NOT open the gate —
+# that would be the paperwork version of a scope.
+_hd="blocks/active/demo/handoffs"; mkdir -p "$_hd"
+cp rules/template-handoff.yml "$_hd/zz-probe-unfilled.yml"
+printf '{"tool_input":{"subagent_type":"general-purpose"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+_r=$?; rm -f "$_hd/zz-probe-unfilled.yml"; rmdir "$_hd" 2>/dev/null
+[ "$_r" -eq 2 ] || bad "an unfilled manifest on disk does not open the gate" "exit 2" "exit $_r"
+ok "a manifest that fails verify-handoff does NOT open the gate"
+
+# The escape hatch must work AND announce itself (rules/rule-friction.md).
+_out=$(printf '{"tool_input":{"subagent_type":"general-purpose"}}' \
+       | MENTE_HANDOFF_BYPASS=1 ./hooks/gate-handoff.py 2>&1 >/dev/null); _r=$?
+[ "$_r" -eq 0 ] || bad "the documented escape hatch works" "exit 0" "exit $_r"
+case "$_out" in *BYPASS*) : ;; *) bad "the bypass announces itself" "a visible warning" "silence" ;; esac
+ok "the escape hatch works and says so out loud"
+
+# The write scope is the point: verify-handoff must refuse a return artifact written outside
+# handoffs/, and any append target that is not BLOCK.md.
+_m=$(mktemp /tmp/handoff-probe-XXXX.yml)
+sed -e 's|^block: .*|block: blk-demo-2026-07|' \
+    -e 's|^block_path: .*|block_path: blocks/active/demo|' \
+    -e 's|^handoff_id: .*|handoff_id: 2026-07-31-0000-probe|' \
+    -e 's|  artifact_path: .*|  artifact_path: ../../escape.md|' rules/template-handoff.yml > "$_m"
+./bin/verify-handoff "$_m" >/dev/null 2>&1
+[ "$?" -eq 2 ] || bad "a write path escaping handoffs/ is refused" "exit 2" "exit $?"
+rm -f "$_m"
+ok "a return artifact written outside handoffs/ is REFUSED"
 
 # The word "rollback" anywhere used to satisfy the DB gate — so `-- no rollback needed` DISABLED it.
 printf '{"tool_input":{"file_path":"db/1_migration.sql","content":"DROP TABLE x; -- no rollback needed"}}' \

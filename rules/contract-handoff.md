@@ -129,7 +129,52 @@ describes a world that does not exist* — usually a block that moved or was ren
 
 ---
 
-## 7 · WHEN A HANDOFF IS WORTH IT
+## 7 · ⭐ THE GATE — this is enforced, not suggested
+
+`hooks/gate-handoff.py` runs on `PreToolUse(Agent|Task)`. **The level was measured, not chosen**
+(2026-07-31, across every `.jsonl` in the project):
+
+| Tool | Calls |
+|---|---|
+| Bash | **9,786** |
+| Edit | 3,289 |
+| Read | 1,851 |
+| **Agent** | **32** — 15 of them read-only |
+
+**That measurement inverted the diagnosis.** The 20-jul failure was not *delegating badly* — it
+was **not delegating at all**. There is no history of specialists writing where they should not;
+there is a history of everything happening in one context until it hit 999K.
+
+So the gate follows the law of `gate-critical.py`: *a gate that obstructs more than it protects
+degrades to a warning.*
+
+| The specialist can… | Level | Why |
+|---|---|---|
+| **WRITE** (`general-purpose`, custom agents, **unknown types**) | 🔴 **BLOCK** | an unbounded writer inside a bounded system is the real risk |
+| **only READ** (`Explore`, `Plan`) | ⚠️ **WARN** | it cannot corrupt anything — and this is the cheap delegation that was *missing* |
+
+> 🔴 **Unknown agent types fail CLOSED.** An agent whose tools are not known could be anything,
+> so it is treated as a writer. Failing open here would make the gate decorative.
+
+### Presence is not compliance
+
+A manifest sitting on disk opens nothing. The gate runs `bin/verify-handoff` on it and requires
+**exit 0**. A malformed or unfilled manifest leaves the gate shut — otherwise the scope would be
+paperwork rather than a boundary.
+
+### The escape hatch
+
+```bash
+MENTE_HANDOFF_BYPASS=1
+```
+
+Documented on purpose (`rules/rule-friction.md`: *a gate with no escape hatch gets deleted*).
+It is deliberate and **loud** — it prints that nothing records what the specialist may read,
+where it may write, or when it must stop.
+
+---
+
+## 8 · WHEN A HANDOFF IS WORTH IT
 
 > ⛔ **Not every task deserves a manifest.** Writing one costs more than a small task saves.
 

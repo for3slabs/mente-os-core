@@ -99,7 +99,9 @@ def check_misplaced():
 # ⭐ A disarmed guard is worse than no guard: the system reports healthy while unprotected.
 GUARDS = {"hooks/session-start.sh": 15, "hooks/pre-edit-standards.py": 40,
           "hooks/pre-commit.sh": 30, "hooks/gate-critical.py": 60,
-          "bin/check-blocks": 200, "bin/grade-block": 200, "bin/check-sufficiency": 40}
+          "hooks/gate-handoff.py": 60,
+          "bin/check-blocks": 200, "bin/grade-block": 200, "bin/check-sufficiency": 40,
+          "bin/verify-handoff": 150}
 
 
 def check_guards():
