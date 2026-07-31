@@ -39,6 +39,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-19 ~18:30 (Mx) | 4.2 MB 🟢 | ~29 | **667K 🔴** | **LA JORNADA DEL SUPER-CEREBRO (30h)** — entrenamiento+examen de AMBOS agentes, 12 fixes sistémicos, v0.19.0 desplegada total. La más productiva de la historia del proyecto; /clear al cierre por contexto rojo |
 | S5 | `7e9ce3b7` | 2026-07-24 20:58 | 2026-07-26 ~06:22 (~33h) | 12 MB 🟢 | ~97 | **917K 🔴** | **LA JORNADA DEMO → PRODUCTO** — BD reestructurada (F1-F6) + cableado + pulido P1-P7 + optimización (heartbeat −68%) + 9 bugs. Sana en disco pero **contexto en rojo**: /clear recomendado al cerrar |
 | S6 | `dac2ce13` | 2026-07-26 ~06:00 | 2026-07-26 ~23:50 (~18h) | 5.9 MB 🟢 | ~60 | ~n/d | **LA JORNADA DE LOS CIMIENTOS DE LA DEMO** — 6 archivos a producto + Ronda F0 `userStore` (U1-U6, C6p2 cerrado) + `container.ts` activado + `DEMO_ENC_KEY` unificada + rebuild del agente. ~15 bugs (3 de seguridad). **2 caídas de producción causadas por mí.** Sana en disco |
+| S7 | `4fc1996c` | 2026-07-27 00:03 | 2026-07-31 19:41 (**~116h**) 🔴 | 12 MB 🟢 | 1,087 turnos | **998K tokens** 🔴 | **LA JORNADA DE MENTE OS v2** — el sistema pasa de documentar a GOBERNAR: 11 validadores + 4 hooks + 3 niveles de reglas + migración v1→v2 completa (M0-M5, 186 docs, 4 carpetas eliminadas). `test-f0-f6` = 105/105. **Contexto máximo del proyecto — supera a S1 (985K), la monstruo.** 9 bugs propios, todos cazados por validadores |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -231,3 +232,63 @@ de otro Mente OS. El único gasto notable fue el rebuild de la imagen (328s, en 
 ### Motivo de cierre
 Brian cierra un bloque grande de trabajo, no por saturación. Estado documentado en
 `project_bloque_demo_pendientes` (índice maestro) + RETOMAR §5 reescrito.
+
+---
+
+## S7 · `4fc1996c` — LA JORNADA DE MENTE OS v2 (2026-07-27 00:03 → 07-31 19:41, ~116h)
+
+- **Peso:** 12 MB · 1,087 turnos de Brian.
+- **Consumo:** cache_write 9.0M · cache_read **914.9M** · output 1.86M · **contexto máx 998,782 tokens**.
+- **Temas:** Mente OS v2 completo (F4→F8-3) + migración v1→v2 (M0-M6).
+
+### Qué se hizo
+
+**El sistema pasa de DOCUMENTAR a GOBERNAR.** Es el bloque más grande del proyecto después
+del propio For3s.
+
+| Frente | Resultado |
+|---|---|
+| **F4 medir** | `bin/grade-block` — veredicto MEDIDO, nunca opinión. ADR-028: el TIPO del bloque decide el métrico |
+| **F5 verificar** | 4 hooks. Solo `pre-commit` bloquea; los demás informan |
+| **F6 garantizar lectura** | `pre-edit-standards.py` inyecta los §D del bloque dueño |
+| **F7 índices** | `generate-index` → `docs/INDEX.md` + `docs/STATES.md` generados |
+| **F8-1..3** | Primer bloque CERRADO y archivado: `split-architecture` 🟢 PRODUCT |
+| **M0-M5** | 186 documentos migrados uno por uno. **4 carpetas v1 ELIMINADAS** |
+| **3 niveles de reglas** | 🌐 `base-rules.md` → 🏢 `PROJECT-RULES.md` → 📦 `BLOCK.md §B` |
+| **Sistema de apuntado** | `Maestro/piezas.tsv` — mover una pieza cuesta 1 línea |
+
+`bin/test-f0-f6` = **105/105**. 11 validadores, 4 hooks.
+
+### 🔴 Cosas raras / incidentes
+
+1. ⭐⭐ **LA CONTRASEÑA REAL DEL SERVIDOR (`«en secrets/Conectar_Servidor_For3s.md»`) llevaba en la arquitectura desde el
+   27-jul**, dentro de un ejemplo de "qué NO hacer". Salió a la luz solo cuando partir el
+   documento hizo que `grade-block` lo leyera. Redactada en los dos archivos.
+2. ⭐ **`Maestro/punteros.tsv` apuntaba a `Doc/RETOMAR.md`** — y Foresito lo lee EN VIVO por
+   MCP. Lo cazó el validador al mover RETOMAR. Sin ese aviso: índice roto en producción.
+3. 🔴 **`indexador.py` estaba roto**: su regex buscaba `Alma|Cerebro|Cuerpo|Doc|Maestro` y
+   tres de esas carpetas fueron eliminadas en M1-M5. No encontraba NADA de la estructura v2.
+4. 🔴 **Me rompí a mí mismo 3 veces con reescrituras masivas de rutas.** Un `git checkout -- .`
+   en el revert de `migrate-doc` tumbó los fixes de 6 validadores en silencio: la batería pasó
+   de 103/103 a 13 fallos. **Regla nueva: un revert debe ser tan estrecho como el cambio.**
+5. **`migrate-doc` comparaba TOTALES, no conjuntos** — revertía por deuda que el documento ya
+   traía. `README.md` revirtió tres veces por esto.
+
+> ⭐ **Los 9 bugs los cazó un validador, ninguno leyendo.** Esa es la ley medida del sistema:
+> una regla en código se cumple 100%, una regla en documento 40-60%.
+
+### 📈 Consumo excesivo
+
+🔴 **Sí, y es el dato más importante de esta sesión.** **998K de contexto máximo — supera a S1
+(985K), la sesión monstruo que causó el incidente del 21-jul.** 116 horas abiertas: el hook de
+arranque avisó a las 96h, exactamente el umbral del incidente.
+
+**914 millones de cache_read** es la física del costo en vivo: cada pausa mayor al TTL
+re-envía el contexto completo. El trabajo fue sano y quedó en disco — el problema es la
+antigüedad de la sesión, no lo que se hizo en ella.
+
+### Motivo de cierre
+
+Bloque grande terminado y **commiteado** (`42dbfab`, 279 archivos). Se cierra por contexto en
+rojo y por edad. El `/clear` es además **la prueba F8-4**: retomar tras un corte real es la
+única fase de v2 que falta verificar.

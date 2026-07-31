@@ -1,10 +1,13 @@
 # 🗺️ PLAN DE IMPLEMENTACIÓN — Mente OS v2
-**Status:** current · **Type:** plan · **Updated:** 2026-07-29 · **Owner:** brian
+**Status:** current · **Type:** plan · **Updated:** 2026-07-31 · **Owner:** brian
 > **Petición de Brian (2026-07-27):** *"necesitamos un plan de implementación con fases y tickets de
 > desarrollo, de forma detallada, de tal manera que **sepa por qué se hizo esto primero antes que
 > otro punto**."*
 >
-> **Estatus:** 📐 PLAN — pendiente de aprobación. **Nada construido.**
+> **Estatus 2026-07-31:** ✅ **F0-F7 CERRADAS Y VERIFICADAS · F8 al 75%** — `bin/test-f0-f6` =
+> **105/105**. 11 validadores · 4 hooks · 3 niveles de reglas. Commit `42dbfab` (279 archivos).
+> Migración v1→v2 completa (M0-M5, ADR-029): `Alma/` `Cuerpo/` `Doc/` `Tickets/` **eliminadas**.
+> **Falta F8-4:** retomar tras un `/clear` real — la prueba final del sistema.
 > **Diseño:** `Arquitectura_Mente_OS_v2_Bloques.md` · **Visión:** `principles/vision-mente-os-v2.md`
 ---
 
