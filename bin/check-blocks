@@ -1,0 +1,353 @@
+#!/usr/bin/env python3
+"""check-blocks — verifies what is verifiable about Mente OS documents, blocks and ADRs.
+
+The doctrine is a document. The VERIFICATION is a script. This script decides nothing:
+it checks that a file exists, has its required fields, fits its declared limit, its id is
+unique, and it is not stale.
+
+Contracts enforced:
+  rules/contract-document.md   headers, types, size limits, shape, paths
+  rules/contract-block.md      sections A-K, scope, connections, sufficiency
+  rules/contract-adr.md        six fields, status, supersede symmetry
+
+Usage:
+  bin/check-blocks              everything
+  bin/check-blocks --docs       documents only
+  bin/check-blocks --blocks     blocks only
+  bin/check-blocks --adrs       ADRs only
+  bin/check-blocks --quiet      exit code only, no output (for hooks)
+
+Exit codes: 0 clean · 1 warnings (yellow) · 2 errors (red)
+"""
+import os
+import re
+import sys
+import glob
+from collections import defaultdict
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(ROOT)
+
+RED, YEL, OK = [], [], []
+
+# ── contract-document.md §2 · type → line limit (None = no limit) ─────────────
+LIMITS = {
+    "entry-point": 200, "contract": 250, "rule": 250, "architecture": 800,
+    "plan": 400, "block": 150, "memory-index": 80, "analysis": 300, "case": 300,
+    "append-only": None, "pending": None, "generated": None, "fossil": None,
+}
+STATUSES = {"draft", "current", "superseded", "fossil", "standard", "canonical"}
+ADR_STATUSES = {"proposed", "accepted", "superseded", "reverted"}
+
+# ── EXEMPTIONS ────────────────────────────────────────────────────────────────
+# Own contract elsewhere: never validated against contract-document.md.
+OWN_CONTRACT = re.compile(
+    r"^rules/decisions/ADR-"        # contract-adr.md
+    r"|^blocks/.*/BLOCK\.md$"       # contract-block.md
+    r"|^docs/(INDEX|STATES|DECISIONS)\.md$"   # generated, never hand-written
+    r"|^secrets/"                   # never read, never versioned
+)
+# Legacy folders migrate on demand (ADR-008) — but a file carrying a **Type:** header
+# has opted IN to the contract, wherever it lives. Fixes the hole that hid the 2,451-line
+# architecture document from validation just because it sits in Cuerpo/.
+# Shrinks as the v1→v2 migration advances (ADR-029). Alma/ and Tickets/ removed in M2.
+LEGACY = re.compile(r"^(Cerebro|Maestro)/")   # Doc/ removed in M5   # Cuerpo/ removed in M4
+
+
+def is_exempt(path, text):
+    if OWN_CONTRACT.match(path):
+        return True
+    if LEGACY.match(path) and "**Type:**" not in text[:600]:
+        return True   # legacy without a header: waits for its on-demand migration
+    return False
+
+
+def field(text, name):
+    """Reads **Name:** value — anywhere in the header, inline or on its own line."""
+    m = re.search(rf"\*\*{name}:\*\*\s*([^·\n]+)", text)
+    return m.group(1).strip() if m else None
+
+
+def red(f, msg):
+    RED.append((f, msg))
+
+
+def yel(f, msg):
+    YEL.append((f, msg))
+
+
+# ── DOCUMENTS ────────────────────────────────────────────────────────────────
+def check_documents():
+    candidates = [f for f in glob.glob("**/*.md", recursive=True) if ".git/" not in f]
+    for f in candidates:
+        text = open(f, encoding="utf-8").read()
+        if is_exempt(f, text):
+            continue
+        lines = text.count("\n") + 1
+
+        status = field(text, "Status")
+        dtype = field(text, "Type")
+        updated = field(text, "Updated")
+
+        if not status:
+            red(f, "missing **Status:**")
+        elif status.split()[0].lower() not in STATUSES:
+            red(f, f"status not allowed: {status!r}")
+
+        if not dtype:
+            # a rule/contract in rules/ can infer its type from the path
+            inferred = "rule" if f.startswith("rules/") else None
+            if inferred:
+                dtype = inferred
+                yel(f, "missing **Type:** (inferred 'rule' from path)")
+            else:
+                red(f, "missing **Type:**")
+        elif dtype not in LIMITS:
+            red(f, f"type not in the allowed set: {dtype!r}")
+
+        if not updated:
+            yel(f, "missing **Updated:**")
+        elif not re.match(r"^\d{4}-\d{2}-\d{2}$", updated.split()[0]):
+            yel(f, f"Updated is not ISO YYYY-MM-DD: {updated!r}")
+
+        # size limit for the declared type
+        if dtype in LIMITS and LIMITS[dtype] and lines > LIMITS[dtype]:
+            yel(f, f"{lines} lines — over the {dtype} limit of {LIMITS[dtype]}")
+
+        # superseded must name its replacement
+        if status and status.startswith("superseded") and not field(text, "Superseded by"):
+            red(f, "superseded without naming its replacement")
+
+        # ⭐ A FOSSIL is consulted, not maintained. Demanding Purpose/Related/short paths from
+        # 156 archived documents is busywork nobody will ever read — and 67 warnings nobody acts
+        # on is how a validator becomes noise (M1, 2026-07-30).
+        # What a fossil DOES need: a header saying what it is and that it is frozen. Nothing more.
+        if dtype == "fossil" or "/archive/" in f:
+            continue
+
+        # shape
+        if "## Purpose" not in text and "· WHY" not in text and "## 0 ·" not in text:
+            yel(f, "no Purpose section")
+        if not re.search(r"^Related:", text, re.M) and "Related:" not in text[-500:]:
+            yel(f, "no Related line at the end")
+        # -bis/-TER in a SECTION heading means the document grew past its shape.
+        # Phase names (F0.5, F1-bis) are not sections — they are identifiers.
+        grown = [m.group(0) for m in
+                 re.finditer(r"^##+ \d+-(?:bis|TER|QUATER|QUINQUIES|SEXIES|SEPTIES)[^\n]*",
+                             text, re.M | re.I)]
+        if grown:
+            yel(f, f"{len(grown)} grown section(s) → split signal (contract-document §3): "
+                   f"{', '.join(g.split('·')[0].strip('# ').strip() for g in grown[:6])}")
+
+        # paths: a bare filename with no directory prefix cannot be resolved
+        for m in re.finditer(r"`([A-Za-z0-9_-]+\.(?:md|tsv|sh|py|json))`", text):
+            name = m.group(1)
+            if name in ("BLOCK.md", "SUMMARY.md", "CLAUDE.md", "README.md",
+                        "MEMORY.md", "RETOMAR.md", "settings.json"):
+                continue  # entry points and generic block filenames are unambiguous
+            hits = glob.glob(f"**/{name}", recursive=True)
+            if not hits:
+                continue  # not ours (external system, template, example)
+            # a sibling in the same directory is unambiguous — that is how humans read
+            if any(os.path.dirname(h) == os.path.dirname(f) for h in hits):
+                continue
+            yel(f, f"bare path `{name}` — write it from the Mente root")
+            break
+
+
+# ── BLOCKS ───────────────────────────────────────────────────────────────────
+def check_blocks():
+    files = glob.glob("blocks/**/BLOCK.md", recursive=True)
+    if not files:
+        OK.append("no blocks yet (F3 creates the first one)")
+        return
+
+    ids, scopes = {}, {}
+    for f in files:
+        text = open(f, encoding="utf-8").read()
+        lines = text.count("\n") + 1
+
+        bid = (re.search(r"^id:\s*(\S+)", text, re.M) or [None, None])[1]
+        status = (re.search(r"^status:\s*(\w+)", text, re.M) or [None, None])[1]
+
+        # A · identity
+        if not bid:
+            red(f, "§A missing id")
+        elif bid in ids:
+            red(f, f"duplicate id {bid} (also in {ids[bid]})")
+        else:
+            ids[bid] = f
+        # The id format is NOT cosmetic: §C connections resolve with `blk-[\w-]+`, so an id
+        # outside that shape can never be referenced and the graph breaks silently.
+        if bid and not re.fullmatch(r"blk-[a-z0-9][a-z0-9-]*-\d{4}-\d{2}", bid):
+            red(f, f"§A id {bid!r} does not match blk-<name>-<YYYY-MM>")
+
+        if not re.search(r"^intent:", text, re.M):
+            red(f, "§A missing intent")
+
+        # ADR-028: the type decides which metrics grade-block measures.
+        # Missing it is red, not yellow: measuring code metrics on a docs block
+        # produces a permanent false 🔴, and a validator that cannot go green is ignored.
+        bt = re.search(r"^type:\s*(\w+)", text, re.M)
+        if not bt:
+            red(f, "§A missing type (code | docs | infra | data) — ADR-028")
+        elif bt.group(1).lower() not in ("code", "docs", "infra", "data"):
+            red(f, f"§A type not allowed: {bt.group(1)!r} — ADR-028")
+
+        # B · scope — both lists non-empty
+        # HTML comments may sit between the heading and the list (they document intent)
+        # re.S made `.` cross newlines and swallow §B down into a later §D. Without re.S,
+        # multi-line comments broke. A comment may span lines but never cross a `## ` heading.
+        cmt = r"(?:\s*<!--(?:(?!-->|\n##)[\s\S])*?-->\s*\n)*"
+        item = r"((?:\s*-[^\n]*\n(?:[ \t]+[^\n-][^\n]*\n)*)+)"
+        for label, pat in (("IN", r"##\s*✅?\s*IN\s*\n" + cmt + item),
+                           ("OUT", r"##\s*⛔?\s*OUT\s*\n" + cmt + item)):
+            m = re.search(pat, text)
+            if not m or not m.group(1).strip():
+                red(f, f"§B Scope {label} is empty — a block with no boundary")
+            elif label == "IN":
+                scopes[f] = [l.strip("- ").strip() for l in m.group(1).strip().split("\n")]
+
+        # C · connections
+        if "## Connections" not in text:
+            red(f, "§C missing Connections")
+        for ref in re.findall(r"(?:DEPENDS ON|DEPENDED ON BY|ISOLATED FROM):\s*(blk-[\w-]+)", text):
+            if ref not in ids and not glob.glob(f"blocks/**/BLOCK.md", recursive=True):
+                yel(f, f"§C cites {ref} — verify it exists")
+
+        # D · required standards must resolve
+        m = re.search(r"## Required standards\s*\n((?:\s*-.*\n)+)", text)
+        if not m:
+            red(f, "§D missing Required standards")
+        else:
+            for line in m.group(1).strip().split("\n"):
+                p = line.strip("- ").split()[0] if line.strip("- ") else ""
+                if p and not os.path.exists(p):
+                    red(f, f"§D standard does not exist: {p}")
+
+        # E · state freshness
+        if status == "active":
+            upd = (re.search(r"^updated:\s*(\S+)", text, re.M) or [None, None])[1]
+            if not upd:
+                yel(f, "§E missing updated:")
+
+        # K · closing
+        if status == "closed":
+            if "## Closing" not in text:
+                red(f, "status closed without §K Closing")
+            if re.search(r"\|\s*\d+\s*\|.*\|\s*(open|active|blocked)\s*\|", text):
+                red(f, "status closed with an open sub-block")
+            if re.search(r"sufficiency:\s*fail", text):
+                red(f, "sufficiency: fail — the block does not close")
+
+        # limits
+        if lines > 150:
+            yel(f, f"{lines} lines — over the 150-line block limit")
+
+        # nesting depth (ADR-015: max 3)
+        depth = f.count("/") - 1
+        if depth > 3:
+            yel(f, f"nesting depth {depth} — over the max of 3")
+
+    # scope overlap between blocks
+    # 🔴 Comparing RAW LINES made a fresh scaffold "overlap" with every block on the empty
+    # string and on `## Checkpoints`. A false positive teaches you to ignore the validator —
+    # worse than the overlap it hunts. Only real paths count.
+    def real_paths(entries):
+        out = set()
+        for e in entries:
+            for tok in re.findall(r"[\w.\[\]*-]+/[\w./\[\]*-]*", e):
+                p2 = tok.split("*")[0].rstrip("/")
+                if len(p2) > 4 and not p2.startswith("#"):
+                    out.add(p2)
+        return out
+
+    paths = [(f, real_paths(s2)) for f, s2 in scopes.items()]
+    for i, (fa, sa) in enumerate(paths):
+        for fb, sb in paths[i + 1:]:
+            shared = sa & sb
+            if shared:
+                red(fa, f"§B Scope IN overlaps with {fb}: {sorted(shared)[:2]}")
+
+
+# ── ADRs ─────────────────────────────────────────────────────────────────────
+def check_adrs():
+    files = sorted(glob.glob("rules/decisions/ADR-*.md"))
+    if not files:
+        yel("rules/decisions/", "no ADRs found")
+        return
+
+    nums, supersedes = defaultdict(list), {}
+    for f in files:
+        text = open(f, encoding="utf-8").read()
+        n = re.search(r"ADR-(\d+)", os.path.basename(f)).group(1)
+        nums[n].append(f)
+
+        for fld in ("date", "status", "decided-by"):
+            if not re.search(rf"^{fld}:\s*\S", text, re.M):
+                red(f, f"missing field {fld}:")
+
+        st = (re.search(r"^status:\s*(\S+)", text, re.M) or [None, ""])[1]
+        if st and st not in ADR_STATUSES:
+            red(f, f"status not allowed: {st!r}")
+
+        for sec in ("Context", "Decision", "Rationale", "Evidence", "Reverting"):
+            m = re.search(rf"## {sec}\s*\n+(.+?)(?=\n##|\Z)", text, re.S)
+            if not m or not m.group(1).strip():
+                red(f, f"## {sec} is empty")
+
+        sup = (re.search(r"^supersedes:\s*(\S+)", text, re.M) or [None, "—"])[1]
+        if sup not in ("—", "-", ""):
+            supersedes[f] = sup
+
+    for n, fs in nums.items():
+        if len(fs) > 1:
+            red(fs[0], f"duplicate ADR number {n}: {[os.path.basename(x) for x in fs]}")
+
+    # supersede symmetry: if A supersedes B, B must say superseded-by A
+    for f, target in supersedes.items():
+        hits = glob.glob(f"rules/decisions/{target}-*.md")
+        if not hits:
+            red(f, f"supersedes {target} which does not exist")
+            continue
+        back = open(hits[0], encoding="utf-8").read()
+        if os.path.basename(f).split("-")[1] not in back:
+            red(hits[0], f"one-sided supersede: {os.path.basename(f)} supersedes it, "
+                         "but superseded-by does not point back")
+
+
+# ── MAIN ─────────────────────────────────────────────────────────────────────
+def main():
+    args = sys.argv[1:]
+    quiet = "--quiet" in args
+    only = [a for a in args if a in ("--docs", "--blocks", "--adrs")]
+
+    if not only or "--docs" in only:
+        check_documents()
+    if not only or "--blocks" in only:
+        check_blocks()
+    if not only or "--adrs" in only:
+        check_adrs()
+
+    if quiet:
+        return 2 if RED else (1 if YEL else 0)
+
+    if RED:
+        print(f"\n🔴 ERRORS ({len(RED)})")
+        for f, m in RED:
+            print(f"   {f}\n      {m}")
+    if YEL:
+        print(f"\n🟡 WARNINGS ({len(YEL)})")
+        for f, m in YEL:
+            print(f"   {f}\n      {m}")
+    if not RED and not YEL:
+        print("✅ clean — every contract satisfied")
+    for m in OK:
+        print(f"   note: {m}")
+
+    print(f"\n{len(RED)} errors · {len(YEL)} warnings")
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

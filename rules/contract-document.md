@@ -1,0 +1,173 @@
+# CONTRACT · DOCUMENT
+**Status:** current · **Type:** rule · **Updated:** 2026-07-29 · **Owner:** brian
+**Applies to:** every new document in Mente OS · legacy ones on demand (when touched)
+**Verified by:** `bin/check-blocks` · **Naming:** `NAMING_CONVENTION.md`
+---
+
+## 0 · WHY THIS EXISTS
+
+> **Brian:** *"se documenta lo que se hace, está bien, pero la forma, los estándares que debe seguir
+> esa documentación no la tenemos... todo está hecho como la IA quiso, es decir tú, nunca ocupaste
+> nada como base, eso me preocupa."*
+
+**Measured 2026-07-27:**
+
+| | |
+|---|---|
+| Templates in 188 documents | **0** |
+| Documents declaring when they were last updated | **15 of 188** |
+| Documents declaring a status (alive / fossil) | **~0** |
+| The master index (`memory/archive/README.md`) inventory | **35 of 188** — regla incumplida ~150 veces |
+
+**Nothing was wrong with any single document. What was missing was a shape they all shared.**
+Without it, no two documents are comparable and no script can audit them.
+
+---
+
+## 1 · THE HEADER — required in every document
+
+```markdown
+# TITLE
+
+**Status:** draft | current | superseded | fossil
+**Type:** contract
+**Updated:** YYYY-MM-DD
+**Owner:** brian | ai
+```
+
+Optional but recommended when they apply:
+
+```markdown
+**Supersedes:** <file>
+**Superseded by:** <file>
+**Language:** US English    ← only when it deviates from the type default
+```
+
+### Why exactly these four
+
+| Field | What it prevents |
+|---|---|
+| `Status` | 🔴 **a fossil looking current.** Today the modification date is the *only* signal, and a bulk rename would destroy it |
+| `Type` | nobody knows which size limit applies (§2) |
+| `Updated` | only 15 of 188 have it → nothing can be flagged as stale |
+| `Owner` | criterion vs. form. `brian` = do not rewrite without asking |
+
+---
+
+## 2 · TYPES AND THEIR LIMITS
+
+From architecture §3.2-QUATER (ADR-027). **The type determines the limit.**
+
+| Type | Limit | Overflow action |
+|---|---|---|
+| `entry-point` (`RETOMAR` · `INDEX` · `PENDING-BRIAN`) | **≤200 lines** | move content to pointers |
+| `contract` · `rule` (`rules/*`) | **≤250** | split by topic |
+| `architecture` | **≤800** | 🔴 split into per-area documents |
+| `plan` | **≤400** | move closed phases to the logbook |
+| `block` (`BLOCK.md`) | **≤150** | see `contract-block.md` |
+| `memory-index` (`MEMORY.md`) | **≤80** | archive old memories |
+| `append-only` (logbook · decisions · friction) | none | **yearly rotation** |
+| `pending` (`memory/PENDIENTES.md`) | none | **rotation by CLOSURE**, not by date |
+| `generated` (`INDEX` · `STATES` · `DECISIONS`) | none | it is generated, never written |
+| `analysis` · `case` | ≤300 | split or summarize |
+| `fossil` | frozen | does not grow · moves to `docs/archive/` |
+
+### ⭐ The rule behind the limits
+
+> ## A file is not split because of its size: it is split when it contains TWO DISTINCT THINGS.
+> **The limit is the SIGNAL, not the cause.**
+
+Measured proof: `memory/RETOMAR.md` is the **only** v1 file with a declared limit, and the **only** one that
+never overflowed. `memory/PENDIENTES.md` reached 3,213 lines · `Estado_Sesion` 4,779.
+
+---
+
+## 3 · BODY STRUCTURE
+
+**Required, in this order:**
+
+| # | Part | Rule |
+|---|---|---|
+| 1 | **Purpose** — one paragraph | *what this is and who reads it.* If it needs three paragraphs, the document does two things |
+| 2 | **Content** | numbered sections `## N · TITLE` |
+| 3 | **Related** — last line | pointers to sibling documents |
+
+**Section numbering:** `## N · TITLE` for top level, `### N.M ·` for sub-sections.
+> ⚠️ **Never `N-bis`, `N-TER`, `N-QUATER`.** That pattern means the document grew past its shape —
+> it is the smell that says *split me*. (This architecture document has six of them. Point taken.)
+
+---
+
+## 4 · CONTENT RULES
+
+| # | Rule | Why |
+|---|---|---|
+| 1 | **A claim carries its evidence** — a number, a file, a command | `owner-0-voice.md` §2.7: an unverified claim is banned |
+| 2 | **Point, never copy** | a duplicated table desynchronizes. Measured: the decisions table lived in two documents and diverged (75 vs 37 rows) |
+| 3 | **Long detail goes to `docs/`** | keeps the document inside its limit |
+| 4 | **Quotes from Brian are verbatim** | Método F §1: *they are the contract* |
+| 5 | **Dates in ISO** `YYYY-MM-DD` | avoids MM/DD vs DD/MM ambiguity |
+| 6 | **No dates or versions in filenames** | `NAMING_CONVENTION.md` §4.4 — git already knows |
+| 7 | ⭐ **Every path is written from the Mente root**, never as a bare filename | `punteros.tsv` is ambiguous; `Maestro/punteros.tsv` resolves. Files outside Mente carry their real prefix (`.claude/settings.json`, `For3s-OS/...`) |
+
+---
+
+## 5 · LIFECYCLE
+
+```
+draft  ──▶  current  ──▶  superseded  ──▶  fossil
+                              │                │
+                     points at its              └─▶ docs/archive/
+                     replacement                    (keeps its old name)
+```
+
+| Status | Meaning | Can it be edited? |
+|---|---|---|
+| `draft` | being written | ✅ |
+| `current` | in force | ✅ with `Updated` bumped |
+| `superseded` | replaced — **must** name its replacement | ⛔ only to add the pointer |
+| `fossil` | historical | ⛔ frozen |
+
+> ⭐ **A fossil is not deleted — it is marked.** From forensic evidence came the 21-jul incident that
+> was documented nowhere. **Deleting history is how you lose the ability to diagnose.**
+
+---
+
+## 6 · WHAT `bin/check-blocks` VERIFIES
+
+```
+🔴 HEADER
+   · missing Status, Type, Updated or Owner
+   · Status not in the allowed set
+   · Type not in the allowed set
+   · superseded without naming its replacement
+
+🟡 LIMITS
+   · file over the limit for its declared Type
+   · Updated older than 90 days while Status: current
+
+🟡 SHAPE
+   · no Purpose paragraph
+   · no Related line
+   · section numbering using -bis / -TER / -QUATER   ← split signal
+
+🟡 PATHS
+   · a bare filename with no directory prefix        ← ambiguous, cannot be resolved
+   · a path that does not resolve from the Mente root
+```
+
+---
+
+## 7 · MIGRATION
+
+**New documents:** born with this contract, always.
+**Legacy documents:** get the header **when touched** — never in bulk (ADR-008).
+**Never touched:** left alone. Renaming or reheadering what nobody reads is work with no return.
+
+> Of 194 `.md` files, **97 are alive** and ~97 are fossils. Half the tree does not need this contract —
+> it needs `Status: fossil` and an archive folder.
+
+---
+
+Related: `contract-block.md` · `contract-adr.md` · `NAMING_CONVENTION.md` ·
+`principles/owner-1-docs.md` (who applies this) · ADR-027 (size limits) · ADR-008 (on-demand migration).

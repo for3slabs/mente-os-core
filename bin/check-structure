@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""check-structure — is the folder tree the one the design declared?
+
+⭐ Why this exists (found 2026-07-30 when Brian asked what the folder system was missing):
+the validators check contracts, contents, limits and graphs. **NOTHING checked the SHAPE.**
+So five holes sat there for days — missing generated indexes, an empty unspecified archive/, the
+bridge scattered across two folders, a nested git repo, and two folders that were never built.
+
+None of them broke anything loudly. That is exactly why they need a script: a hole that does not
+hurt today is a hole nobody remembers tomorrow.
+
+The declared tree lives in `Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md` §12.0. This file encodes it
+as data so a machine can compare — a diagram nobody can run is a diagram that drifts.
+
+Usage: bin/check-structure [--quiet]
+Exit: 0 tree matches · 1 warnings · 2 something required is missing
+"""
+import os
+import re
+import sys
+import glob
+import json
+import subprocess
+
+
+def sh(*cmd):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=20).stdout
+    except Exception:                                          # noqa: BLE001
+        return ""
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = os.path.dirname(MENTE)
+os.chdir(MENTE)
+RED, YEL, OK = [], [], []
+
+# ── THE DECLARED TREE ────────────────────────────────────────────────────────
+# (path, required, what it is for). Names are post-ADR-023 (US English); the design diagram
+# still shows the Spanish originals, so the mapping is recorded here once.
+REQUIRED_DIRS = [
+    ("rules",                "the contracts and rules"),
+    ("rules/decisions",      "the ADRs — one decision, one file"),
+    ("principles",           "the owners (0..3)"),
+    ("principles/expertise", "Brian's criterion per discipline"),
+    ("blocks",               "the work"),
+    ("blocks/active",        "blocks being worked"),
+    ("blocks/blocked",       "blocks waiting on someone"),
+    ("blocks/archive",       "closed blocks = consultable experience"),
+    ("bin",                  "the validators"),
+    ("hooks",                "the gates"),
+    ("docs",                 "plans, analyses, phase logs"),
+    ("secrets",              "never in git"),
+]
+
+REQUIRED_FILES = [
+    ("base-rules.md",                    "🌐 universal rules"),
+    ("../PROJECT-RULES.md",              "🏢 project rules"),
+    ("../CLAUDE.md",                     "the router"),
+    ("rules/contract-block.md",          "what fields a block has"),
+    ("rules/contract-document.md",       "the shape of every document"),
+    ("rules/contract-adr.md",            "the shape of an ADR"),
+    ("principles/owner-0-voice.md",      "the voice"),
+]
+
+# Declared by the design, not built yet. Named so the gap is VISIBLE instead of forgotten.
+GENERATED = [
+    ("docs/INDEX.md",  "bin/generate-index", "🤖 replaces the README that lies"),
+    ("docs/STATES.md", "bin/generate-index", "🤖 every block + its health"),
+]
+
+# ⭐ WHERE EACH KEY PIECE LIVES — read from Maestro/piezas.tsv, never hardcoded here.
+#
+# The first version of this file embedded the list, which was the exact duplication the pointer
+# system exists to remove: measured 2026-07-30, 11 documents declared where 2 files live, with 29
+# mentions between them. Moving one file meant fixing 29 places by hand — and that is how the
+# architecture diagram ended up describing paths that do not exist.
+#
+# Same criterion Brian already applied in punteros.tsv: documents REFERENCE the table, never
+# duplicate it. One line changes when a piece moves.
+PIECES_TSV = "Maestro/piezas.tsv"
+
+
+def read_pieces():
+    """[(name, path, owner, kind, what)] — the declared location of every key piece."""
+    out = []
+    if not os.path.exists(PIECES_TSV):
+        return out
+    for line in open(PIECES_TSV, encoding="utf-8", errors="replace"):
+        if line.startswith("#") or not line.strip():
+            continue
+        f = [c.strip() for c in line.rstrip("\n").split("\t")]
+        if len(f) >= 5:
+            out.append(tuple(f[:5]))
+    return out
+
+
+def main():
+    quiet = "--quiet" in sys.argv
+
+    for d, why in REQUIRED_DIRS:
+        if not os.path.isdir(d):
+            RED.append(f"MISSING DIR · {d}/ — {why}")
+    for f, why in REQUIRED_FILES:
+        if not os.path.exists(f):
+            RED.append(f"MISSING FILE · {f} — {why}")
+
+    for f, by, why in GENERATED:
+        if not os.path.exists(f):
+            YEL.append(f"NOT GENERATED YET · {f} ({why})\n"
+                       f"   produced by {by} — phase F7")
+        elif not os.path.exists(by):
+            RED.append(f"ORPHAN GENERATED FILE · {f} exists but {by} does not.\n"
+                       "   A generated file with no generator is a file maintained by hand —\n"
+                       "   which is the drift it was created to stop.")
+
+    # ⭐ Every declared piece must exist where the table says. This is what makes the pointer
+    # system real: move a file, update ONE line, and the validator follows.
+    pieces = read_pieces()
+    if not pieces:
+        RED.append(f"MISSING · {PIECES_TSV} — the single source of where each piece lives.\n"
+                   "   Without it nothing can tell a moved file from a lost one.")
+    for name, path, owner, kind, what in pieces:
+        real = path.replace("repo:", "")
+        if not os.path.exists(real):
+            RED.append(f"PIECE MOVED OR LOST · `{name}` is declared at {path}\n"
+                       f"   ({what}) but nothing is there.\n"
+                       f"   Either restore it, or update that one line in {PIECES_TSV}.")
+        elif kind == "generated":
+            gen = "bin/generate-index"
+            if not os.path.exists(gen):
+                RED.append(f"ORPHAN · `{name}` is declared generated but {gen} does not exist")
+
+    # An archived block must leave the two files the design named. Nothing contracts them yet,
+    # so this is where that gap becomes visible instead of being discovered at closing time.
+    # An archived block must satisfy rules/contract-archive.md — three files, and SUMMARY.md must
+    # actually carry the lesson. Demanding a file whose content is undefined produces empty files
+    # that pass the check and teach nothing (the gap found 2026-07-30).
+    for d in glob.glob("blocks/archive/*"):
+        if not os.path.isdir(d):
+            continue
+        for need in ("SUMMARY.md", "connections.md", "BLOCK.md"):
+            if not os.path.exists(f"{d}/{need}"):
+                RED.append(f"ARCHIVE INCOMPLETE · {d}/ has no {need}\n"
+                           "   A closed block that cannot be consulted is a block that was lost.\n"
+                           "   Required by rules/contract-archive.md §0.")
+                continue
+        sm = f"{d}/SUMMARY.md"
+        if os.path.exists(sm):
+            t = open(sm, encoding="utf-8", errors="replace").read()
+            # 🔴 The first pattern used `.*learn.*` with re.S, so `.` crossed newlines and the
+            # heading match swallowed the section body — it always captured 0 chars and reported
+            # every SUMMARY as empty. Anchor the heading to its own line. (Caught 2026-07-30.)
+            m = re.search(r"(?im)^#+\s*[^\n]*learn[^\n]*\n(.*?)(?=\n#|\Z)", t, re.S)
+            if not m or len(m.group(1).strip()) < 40:
+                YEL.append(f"{sm} has no real 'what was learned' section.\n"
+                           "   It is the ONLY part that is not a copy of the block "
+                           "(contract-archive.md §1).")
+        cm = f"{d}/connections.md"
+        if os.path.exists(cm):
+            for ref in re.findall(r"(blk-[\w-]+)",
+                                  open(cm, encoding="utf-8", errors="replace").read()):
+                found = [x for x in glob.glob("blocks/**/BLOCK.md", recursive=True)
+                         if ref in open(x, encoding="utf-8", errors="replace").read()]
+                if not found:
+                    YEL.append(f"{cm} names {ref}, which no block declares")
+
+    # Every active block owns the same shape.
+    for b in glob.glob("blocks/active/*"):
+        if not os.path.isdir(b):
+            continue
+        for need in ("BLOCK.md", "docs", "cache"):
+            if not os.path.exists(f"{b}/{need}"):
+                YEL.append(f"{b}/ has no {need} — bin/new-block creates all three")
+
+    # A nested git repo is invisible to the parent — but that can be DELIBERATE.
+    # Corrected 2026-07-30: the first version reported "if it is lost, it is lost" without
+    # checking. Maestro/ has a remote and 0 unpushed commits; .gitignore excludes it on purpose
+    # ("el sub-repo Maestro ya tiene su propio git"). Reporting a risk that is not there costs
+    # the same trust as missing one (owner-0-voice.md §2.7).
+    # What IS a real risk: uncommitted work, or no remote at all.
+    for g in glob.glob("*/.git") + glob.glob("*/*/.git"):
+        owner = os.path.dirname(g)
+        if owner.startswith("blocks/"):
+            continue
+        has_remote = bool(sh("git", "-C", owner, "remote").strip())
+        dirty = [l for l in sh("git", "-C", owner, "status", "--porcelain").split("\n") if l]
+        unpushed = sh("git", "-C", owner, "rev-list", "--count", "@{u}..").strip()
+
+        if not has_remote:
+            RED.append(f"NESTED REPO AT RISK · {owner}/ is its own repo with NO REMOTE.\n"
+                       "   Mente does not version it and nothing else backs it up.")
+        elif dirty and owner == "Maestro":
+            YEL.append(f"{owner}/ (separate repo, remote OK) has {len(dirty)} uncommitted "
+                       f"file(s): {', '.join(d[3:] for d in dirty[:4])}\n"
+                       "   ⚠️ Paths inside it are relative to ITS OWN root, not to Mente's —\n"
+                       "   a bulk rewrite from Mente broke 8 links here on 2026-07-30.")
+        elif dirty:
+            YEL.append(f"{owner}/ (separate repo, has a remote) has {len(dirty)} uncommitted "
+                       f"file(s):\n   {', '.join(d[3:] for d in dirty[:4])}\n"
+                       "   They live only on this disk until committed and pushed.")
+        elif unpushed and unpushed != "0":
+            YEL.append(f"{owner}/ has {unpushed} commit(s) not pushed to its remote")
+
+    # Empty dirs are fine for the three block states (they mean 'nothing here yet').
+    # Anywhere else an empty folder is a decision nobody finished.
+    EXPECTED_EMPTY = {"blocks/active", "blocks/blocked", "blocks/archive"}
+    for d, _ in REQUIRED_DIRS:
+        if d in EXPECTED_EMPTY or not os.path.isdir(d):
+            continue
+        if not os.listdir(d):
+            YEL.append(f"EMPTY · {d}/ exists but holds nothing")
+
+    if quiet:
+        return 2 if RED else (1 if YEL else 0)
+
+    if RED:
+        print(f"\n🔴 {len(RED)}")
+        for m in RED:
+            print(f"   {m}")
+    if YEL:
+        print(f"\n🟡 {len(YEL)}")
+        for m in YEL:
+            print(f"   {m}")
+    if not RED and not YEL:
+        print("✅ the tree matches the declared structure")
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

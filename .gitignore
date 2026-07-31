@@ -2,6 +2,9 @@
 # NUNCA versionar accesos ni secretos del server.
 
 # Guías de acceso al server (SSH, password) — viven solo en local
+# secrets/ es el nombre nuevo (NAMING_CONVENTION). Acceso_Seguro/ se conserva
+# a propósito: si algún día reaparece la carpeta vieja, sigue ignorada.
+secrets/
 Acceso_Seguro/
 Nota.txt
 

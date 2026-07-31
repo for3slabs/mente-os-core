@@ -6,7 +6,7 @@
 **Fecha:** 2026-05-28
 **Estatus:** Mapa de referencia. Iteración 2.
 **Propósito:** Cubrir los 6 territorios que `Cerebro_Humano_acercamiento1.md §"Lo que este diagrama NO cubre todavía"` dejó pendientes. Profundizar sin diluir, con honestidad sobre qué sabemos, qué no, y qué importa para For3s.
-**Documentos relacionados:** [Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md), [Primeros_Pasos.md](../Doc/Primeros_Pasos.md), [README.md](../Doc/README.md)
+**Documentos relacionados:** [Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md), [Primeros_Pasos.md](../Doc/Primeros_Pasos.md), [README.md](../memory/archive/README.md)
 
 ---
 
@@ -811,7 +811,7 @@ Juntos forman la base teórica completa que necesitas para tomar la decisión t�
 
 **Próximos pasos lógicos:**
 
-- Validar las 3 preguntas pendientes del [README.md](../Doc/README.md) §7.
+- Validar las 3 preguntas pendientes del [README.md](../memory/archive/README.md) §7.
 - Empezar a poblar `Mente/Cuerpo/` en el orden recomendado en §6.3.
 - Si surge necesidad, iniciar acercamiento 3 con foco en Free Energy Principle.
 

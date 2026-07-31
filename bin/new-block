@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""new-block — creates a block scaffold from the contract, never from memory.
+
+Writes blocks/active/<name>/ with BLOCK.md (sections A-K), docs/ and cache/.
+Sections A, C and D are pre-filled with what can be DERIVED from the repo.
+Section B (Scope OUT) is left as a marked hole: the boundary of the work is a
+decision, not a derivation (block-lifecycle.md §1).
+
+Usage:
+  bin/new-block <name>                          scaffold only
+  bin/new-block <name> --piece <path>           + measure that piece's dependents
+  bin/new-block <name> --piece <p> --root <dir> + where to search (default: repo root)
+
+Exit codes: 0 created · 1 refused (already exists / bad name)
+"""
+import os
+import re
+import sys
+import subprocess
+from datetime import date
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(ROOT)
+
+
+def dependents(piece, search_root):
+    """Who imports this piece? MEASURED, never assumed.
+
+    The graph is dynamic on purpose: today it is N, next month it is M. A number
+    written into the block is a number that goes stale — and a stale graph picks
+    the wrong lane (rule-lanes.md). This is why the field says how it was measured.
+    """
+    if not piece:
+        return [], ""
+    stem = os.path.basename(piece).rsplit(".", 1)[0]
+    if not os.path.isdir(search_root):
+        return [], f"search root not found: {search_root}"
+    # A DEPENDENT is a file that IMPORTS the piece — not one that mentions it.
+    # Measured 2026-07-29: instancias.ts had 26 mentions and 9 real imports.
+    # A comment naming a file is not a dependency; counting it inflates the lane.
+    pattern = rf"(from|require|import)\s*\(?[\"'][^\"']*(/|\./|\.\./){stem}[\"']"
+    try:
+        out = subprocess.run(
+            ["grep", "-rlE", pattern, search_root,
+             "--include=*.ts", "--include=*.tsx", "--include=*.js",
+             "--include=*.py", "--include=*.sql",
+             # build artifacts and vendored code are NOT dependents: they are copies.
+             # Counting them inflated userStore from 14 to 38 on the first run.
+             "--exclude-dir=.next", "--exclude-dir=node_modules", "--exclude-dir=.git",
+             "--exclude-dir=dist", "--exclude-dir=build", "--exclude-dir=__pycache__",
+             "--exclude-dir=.venv", "--exclude-dir=coverage"],
+            capture_output=True, text=True, timeout=30).stdout
+    except Exception as e:                                    # noqa: BLE001
+        return [], f"could not measure: {e}"
+    hits = [h.replace(search_root.rstrip("/") + "/", "")
+            for h in out.strip().split("\n") if h and piece not in h]
+    return sorted(hits), ""
+
+
+def lane_from(n_dependents, has_piece):
+    """The lane comes from the graph, not from judgment (rule-lanes.md, ADR-004)."""
+    if n_dependents > 0:
+        return "full-block", f"{n_dependents} declared dependents → propagation forces it"
+    if has_piece:
+        return "task", "no dependents measured"
+    return "direct", "no code piece declared yet"
+
+
+def main():
+    args = sys.argv[1:]
+    if not args or args[0].startswith("-"):
+        print(__doc__)
+        return 1
+
+    name = args[0].strip().lower()
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name):
+        print(f"🔴 bad name {name!r} — lowercase letters, digits and hyphens only "
+              "(rules/NAMING_CONVENTION.md)")
+        return 1
+
+    piece = args[args.index("--piece") + 1] if "--piece" in args else ""
+    search_root = args[args.index("--root") + 1] if "--root" in args else \
+        os.path.dirname(ROOT)   # default: the repo above Mente/
+
+    # ── type (ADR-028): derive it from the piece's extension when that is unambiguous.
+    # A wrong type produces false reds forever, so it is never guessed — asked instead.
+    TYPES = ("code", "docs", "infra", "data")
+    if "--type" in args:
+        btype = args[args.index("--type") + 1].lower()
+        if btype not in TYPES:
+            print(f"🔴 type {btype!r} is not one of {' | '.join(TYPES)}")
+            return 1
+    elif piece.endswith((".ts", ".tsx", ".js", ".jsx", ".py")):
+        btype = "code"
+    elif piece.endswith(".md"):
+        btype = "docs"
+    elif piece.endswith(".sql"):
+        btype = "data"
+    else:
+        print(f"🔴 cannot derive the type from {piece or '(no --piece given)'}.\n"
+              f"   Pass --type {' | '.join(TYPES)}.\n"
+              "   It decides WHICH metrics bin/grade-block measures (ADR-028) — guessing it\n"
+              "   would produce permanent false reds, so it is asked, not assumed.")
+        return 1
+
+    path = f"blocks/active/{name}"
+    if os.path.exists(path):
+        print(f"🔴 {path} already exists — a block is never overwritten.")
+        print("   Reuse it, or pick another name (block-lifecycle.md §2).")
+        return 1
+
+    deps, warn = dependents(piece, search_root)
+    lane, why = lane_from(len(deps), bool(piece))
+    today = date.today().isoformat()
+    month = today[:7]
+
+    os.makedirs(f"{path}/docs", exist_ok=True)
+    os.makedirs(f"{path}/cache", exist_ok=True)
+
+    crit = ""
+    if piece:
+        shown = "\n".join(f"  - {d}" for d in deps[:12])
+        more = f"\n  - … and {len(deps) - 12} more" if len(deps) > 12 else ""
+        crit = (f"\n- 🔴 CRITICAL PIECE: {piece} → {len(deps)} dependents "
+                f"(measured {today} with `bin/new-block --piece`)\n"
+                f"{shown}{more}\n" if deps else
+                f"\n- PIECE: {piece} → 0 dependents (measured {today})\n")
+
+    block = f"""# BLOCK · {name}
+
+<!-- ══ A · IDENTITY ══ required to OPEN · ≤5 lines ══ -->
+id: blk-{name}-{month}
+type: {btype}
+intent: ⬜ PENDING · one sentence — what this block is for
+status: active · lane: {lane}
+owner: brian
+created: {today} · updated: {today}
+
+<!-- ══ B · SCOPE ══ required to OPEN · ≤15 lines ══ -->
+<!-- ⭐ The only field the AI does not fill: the boundary is a decision, not a
+     derivation (block-lifecycle.md §1). An empty OUT is a block with no boundary. -->
+## ✅ IN
+- ⬜ PENDING · paths, systems and tables this block may touch
+
+## ⛔ OUT
+- ⬜ PENDING · BRIAN · what is explicitly out of bounds, and why
+
+<!-- ══ C · CONNECTIONS ══ required to OPEN · ≤10 lines ══ -->
+## Connections
+- DEPENDS ON: ⬜ none declared yet
+- DEPENDED ON BY: ⬜ none declared yet
+- ISOLATED FROM: ⬜ none declared yet{crit}
+<!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤8 lines ══ -->
+<!-- These get injected before editing (architecture §12-QUATER). Every path must exist. -->
+## Required standards
+- rules/rule-fix-not-patch.md
+<!-- ⬜ PENDING: add the expertise file for the discipline this block touches -->
+
+<!-- ══ E · STATE ══ ≤10 lines ══ -->
+## State
+phase: just opened
+next: ⬜ PENDING
+blockers: none
+progress: 0/0 sub-blocks closed
+updated: {today}
+
+<!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
+## Sub-blocks
+| # | task | code piece | dependents | status |
+|---|---|---|---|---|
+
+<!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
+## Decisions
+- (none yet — *if it is not written, it is not made*)
+
+<!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
+## Friction log
+- (none recorded)
+
+<!-- ══ I · CHECKPOINTS ══ -->
+## Checkpoints
+- (none yet)
+
+<!-- ══ J · CONTEXT ══ ≤80 lines · CURATED, not a log ══ -->
+## Context
+⬜ PENDING · durable context only. Long chronology goes to docs/.
+
+<!-- ══ K · CLOSING ══ required to CLOSE ══ -->
+## Closing
+(pending — the block is still active)
+"""
+    open(f"{path}/BLOCK.md", "w", encoding="utf-8").write(block)
+
+    print(f"✅ {path}/")
+    print(f"   BLOCK.md · docs/ · cache/")
+    print(f"\n   id:   blk-{name}-{month}")
+    print(f"   lane: {lane}  ({why})")
+    if piece:
+        print(f"   piece: {piece}")
+        print(f"   dependents MEASURED: {len(deps)}")
+        for d in deps[:6]:
+            print(f"      {d}")
+        if len(deps) > 6:
+            print(f"      … and {len(deps) - 6} more")
+    if warn:
+        print(f"   🟡 {warn}")
+
+    print("\n   ⬜ Fill before working — the hard minimum:")
+    print("      §A intent · §B Scope IN/OUT (⭐ OUT is Brian's) · §D expertise file")
+    print("\n   Then: bin/check-blocks --blocks")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1622,7 +1622,7 @@ Stack complejo = más vendors. Más vendors = más riesgo. ¿Y si Neo4j sube pre
 ### 16.3 Próximos pasos sugeridos
 
 **Inmediato:**
-- Validar las 3 preguntas pendientes del [README.md](../Doc/README.md) §7.
+- Validar las 3 preguntas pendientes del [README.md](../memory/archive/README.md) §7.
 - Decidir si For3s QA arranca con knowledge graph desde día 1 (recomendado) o lo añade después.
 
 **Corto plazo (semanas):**

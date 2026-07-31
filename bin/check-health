@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""check-health — the system audits its own state, without being asked.
+
+Rule behind this file (Brian, 2026-07-27): **if you have to ASK for it, it is not automated.**
+Three failures lived for weeks and were found by Brian asking — not by anything watching.
+
+Never deletes forensic evidence. The .jsonl transcripts are never touched: the 2026-07-21
+incident was recovered from them six days later, documented nowhere else.
+
+Usage:
+  bin/check-health              everything
+  bin/check-health --misplaced  misplaced-file detection only
+  bin/check-health --quiet      exit code only (for SessionStart)
+
+Exit codes: 0 clean · 1 warnings · 2 errors
+"""
+import os
+import re
+import sys
+import json
+import glob
+import subprocess
+from datetime import date, datetime
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = os.path.dirname(MENTE)
+os.chdir(MENTE)
+
+RED, YEL = [], []
+
+
+def red(m):
+    RED.append(m)
+
+
+def yel(m):
+    YEL.append(m)
+
+
+def sh(*cmd, cwd=None):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=25, cwd=cwd).stdout
+    except Exception:                                          # noqa: BLE001
+        return ""
+
+
+# ── MISPLACED FILES ──────────────────────────────────────────────────────────
+# Finding #1 of 2026-07-30: three For3s OS docs were living in marca-personal/Mente/.
+# They were found by NAME ("Demo", "GUIA") — which missed a fourth one,
+# Plan_Pieza_E_Concentrado_Admin.md, that was the same violation.
+#
+# A misplaced file is not detected by its name. It is detected by its ORIGIN:
+# every one of the three was written on 2026-07-20/21, during the degradation incident.
+# The three legitimate files in that directory were last touched in June.
+INCIDENTS = [
+    # (start, end, label) — sessions where scope violations are documented
+    ("2026-07-20", "2026-07-21", "2026-07-21 degradation incident (835K context, 6 scope violations)"),
+]
+# Directories that belong to another project: our vocabulary must not appear inside them.
+FOREIGN = {
+    "marca-personal/Mente": ["For3s OS", "for3s-core", "Foresito", "api_channel",
+                             "Pieza E", "Pieza C", "instancia"],
+}
+
+
+def check_misplaced():
+    for folder, markers in FOREIGN.items():
+        full = os.path.join(REPO, folder)
+        if not os.path.isdir(full):
+            continue
+        for f in glob.glob(f"{full}/**/*.md", recursive=True):
+            rel = f.replace(REPO + "/", "")
+            try:
+                mtime = date.fromtimestamp(os.path.getmtime(f)).isoformat()
+            except OSError:
+                continue
+            in_window = any(a <= mtime <= b for a, b, _ in INCIDENTS)
+            if not in_window:
+                continue
+            label = next(lb for a, b, lb in INCIDENTS if a <= mtime <= b)
+            # signal 2: does it talk about our project?
+            try:
+                head = open(f, encoding="utf-8", errors="replace").read(4000)
+            except OSError:
+                continue
+            hits = [m for m in markers if m in head]
+            if hits:
+                red(f"MISPLACED · {rel}\n"
+                    f"   modified {mtime} — inside the {label}\n"
+                    f"   mentions: {', '.join(hits[:3])}\n"
+                    f"   → likely written into the wrong project. Verify before moving.")
+            else:
+                yel(f"suspect · {rel} modified {mtime}, inside a known incident window")
+
+
+# ── THE GUARDS THEMSELVES ────────────────────────────────────────────────────
+# 🔴 Found adversarially 2026-07-30: nothing protected the guards. A hook could be deleted,
+# emptied or stripped of its execute bit and NOTHING in the startup path noticed.
+# ⭐ A disarmed guard is worse than no guard: the system reports healthy while unprotected.
+GUARDS = {"hooks/session-start.sh": 15, "hooks/pre-edit-standards.py": 40,
+          "hooks/pre-commit.sh": 30, "hooks/gate-critical.py": 60,
+          "bin/check-blocks": 200, "bin/grade-block": 200, "bin/check-sufficiency": 40}
+
+
+def check_guards():
+    for path, min_lines in GUARDS.items():
+        if not os.path.exists(path):
+            red(f"GUARD MISSING · {path} does not exist. Restore it from git.")
+            continue
+        if not os.access(path, os.X_OK):
+            red(f"GUARD DISARMED · {path} is not executable.\n"
+                f"   A validator that cannot run is not a pass. Fix: chmod +x {path}")
+            continue
+        n = sum(1 for _ in open(path, encoding="utf-8", errors="replace"))
+        if n < min_lines:
+            red(f"GUARD GUTTED · {path} is {n} lines, expected at least {min_lines}.")
+
+
+# ── PERMISSIONS ──────────────────────────────────────────────────────────────
+def check_permissions():
+    # BOTH files, and they are not interchangeable (found 2026-07-30, F5):
+    #   settings.json       is SHARED — travels with the repo, protects anyone who clones it
+    #   settings.local.json is LOCAL  — gitignored, so a deny living only here protects nobody else
+    # Auditing only the local one hid that the shared file granted Read(//home/brianweb3/**)
+    # with zero deny rules — an open door to ~/.ssh that no validator was watching.
+    for name in ("settings.json", "settings.local.json"):
+        _check_one(os.path.join(REPO, ".claude", name), name)
+
+
+def _check_one(p, name):
+    if not os.path.exists(p):
+        return
+    try:
+        d = json.load(open(p, encoding="utf-8"))
+    except Exception:                                          # noqa: BLE001
+        red(f"{name} is not valid JSON — ALL its settings are silently ignored")
+        return
+    perms = d.get("permissions", {})
+
+    # a broad Read grant with nothing walling off credentials
+    SENSITIVE = ("/.ssh/", "/secrets/", "/.env")
+    for a in perms.get("allow", []):
+        m = re.match(r"Read\(/{0,2}(/home/[^*)]*)\*\*\)", a)
+        if not m:
+            continue
+        scope = m.group(1)
+        for s in SENSITIVE:
+            probe = scope.rstrip("/") + s
+            if not any(s.strip("/") in dr for dr in perms.get("deny", [])):
+                red(f"{name} · {a} grants {probe}* and no deny rule covers it.\n"
+                    f"   Add: Read(/{probe}**)  to deny — deny wins over allow.")
+                break
+    deny = perms.get("deny", [])
+    allow = perms.get("allow", [])
+    dirs = perms.get("additionalDirectories", [])
+
+    # a deny that an additionalDirectory contradicts — the NavigoX hole
+    for rule in deny:
+        m = re.search(r"\((?://)?(/[^*)]+)", rule)
+        if not m:
+            continue
+        locked = m.group(1).rstrip("/")
+        for entry in dirs:
+            if entry.startswith(locked) or locked.startswith(entry.rstrip("/") + "/"):
+                red(f"CONTRADICTION · additionalDirectories grants {entry}\n"
+                    f"   but a deny rule locks {locked}")
+
+    for entry in dirs:
+        if not os.path.exists(entry):
+            yel(f"dead path in additionalDirectories: {entry}")
+    for i, a in enumerate(dirs):
+        for b in dirs[i + 1:]:
+            if a != b and (a.startswith(b.rstrip("/") + "/") or b.startswith(a.rstrip("/") + "/")):
+                yel(f"overlapping paths: {a} and {b} — one contains the other")
+
+    # secrets pasted into approved commands
+    blob = json.dumps(allow)
+    for pat, what in ((r"sshpass\s+-p\s+['\"]?[A-Za-z0-9]{6,}", "an SSH password"),
+                      (r"sk-ant-[A-Za-z0-9]{10,}", "an Anthropic key"),
+                      (r"ghp_[A-Za-z0-9]{20,}", "a GitHub token")):
+        if re.search(pat, blob):
+            red(f"SECRET · {what} is embedded in an approved command.\n"
+                "   Approved commands are stored verbatim — the secret is now permanent.\n"
+                "   Purge it AND rotate it: purging does not invalidate.")
+
+    if len(allow) > 200:
+        yel(f"{len(allow)} allow entries — granularity should be the mechanism, "
+            "not the invocation (architecture §12-S.3)")
+
+
+# ── SIZE LIMITS ──────────────────────────────────────────────────────────────
+LIMITS = {"entry-point": 200, "contract": 250, "rule": 250, "architecture": 800,
+          "plan": 400, "block": 150, "memory-index": 80, "analysis": 300, "case": 300}
+
+
+def check_sizes():
+    for f in glob.glob("**/*.md", recursive=True):
+        if ".git/" in f or f.startswith("secrets/"):
+            continue
+        try:
+            text = open(f, encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        m = re.search(r"\*\*Type:\*\*\s*([a-z-]+)", text)
+        if not m:
+            continue
+        t = m.group(1)
+        n = text.count("\n") + 1
+        if t in LIMITS and n > LIMITS[t]:
+            yel(f"{f}: {n} lines — over the {t} limit of {LIMITS[t]}")
+
+    mem = os.path.expanduser(
+        "~/.claude/projects/-home-brianweb3-for3s/memory/MEMORY.md")
+    if os.path.exists(mem):
+        n = sum(1 for _ in open(mem, encoding="utf-8", errors="replace"))
+        if n > 80:
+            yel(f"MEMORY.md: {n} lines — over 80. It is the heaviest piece of startup.")
+
+
+# ── TRUTH ────────────────────────────────────────────────────────────────────
+def check_truth():
+    reg = "Maestro/registro.md"
+    if os.path.exists(reg):
+        text = open(reg, encoding="utf-8", errors="replace").read()
+        m = re.search(r"\((\d+)\s*docs", text)
+        if m:
+            claimed = int(m.group(1))
+            real = len([f for f in glob.glob("**/*.md", recursive=True) if ".git/" not in f])
+            if abs(claimed - real) > 10:
+                red(f"registro.md claims {claimed} docs — measured {real}.\n"
+                    "   Foresito reads this file LIVE via MCP: it is reporting false numbers.")
+
+    for gen in ("docs/INDEX.md", "docs/STATES.md"):
+        if not os.path.exists(gen):
+            yel(f"{gen} does not exist — no generated index (phase F7)")
+
+
+# ── SESSION ──────────────────────────────────────────────────────────────────
+def check_session():
+    d = os.path.expanduser("~/.claude/projects/-home-brianweb3-for3s")
+    js = sorted(glob.glob(f"{d}/*.jsonl"), key=os.path.getmtime, reverse=True)
+    if not js:
+        return
+    cur = js[0]
+    size = os.path.getsize(cur) / 1e6
+    if size > 50:
+        red(f"current session is {size:.0f} MB — over the 50 MB red threshold")
+    elif size > 15:
+        yel(f"current session is {size:.0f} MB — watch it (red at 50)")
+
+    try:
+        first = last = None
+        errs = 0
+        for line in open(cur, errors="replace"):
+            if "Connection closed mid-response" in line or "stalled mid-stream" in line:
+                errs += 1
+            i = line.find('"timestamp":"')
+            if i > 0:
+                ts = line[i + 13:i + 32]
+                first = first or ts
+                last = ts
+        if first and last:
+            h = (datetime.fromisoformat(last) - datetime.fromisoformat(first)).total_seconds() / 3600
+            if h > 48:
+                red(f"session open {h:.0f}h — the 2026-07-21 incident happened at 4 days "
+                    "(835K context, 6 scope violations)")
+            elif h > 24:
+                yel(f"session open {h:.0f}h")
+        if errs >= 5:
+            yel(f"{errs} API connection errors this session — a saturated-context signal")
+    except Exception:                                          # noqa: BLE001
+        pass
+
+    # a previous session with no entry in the log
+    regc = "Cerebro/Registro_Conversaciones.md"
+    if os.path.exists(regc) and len(js) > 1:
+        text = open(regc, encoding="utf-8", errors="replace").read()
+        missing = [os.path.basename(f)[:8] for f in js[1:]
+                   if os.path.getsize(f) > 2e6 and os.path.basename(f)[:8] not in text]
+        if missing:
+            yel(f"{len(missing)} past session(s) over 2 MB with no entry in "
+                f"Registro_Conversaciones.md: {', '.join(missing[:4])}")
+
+
+# ── MAIN ─────────────────────────────────────────────────────────────────────
+def main():
+    args = sys.argv[1:]
+    quiet = "--quiet" in args
+    only_misplaced = "--misplaced" in args
+
+    check_misplaced()
+    if not only_misplaced:
+        check_guards()
+        check_permissions()
+        check_sizes()
+        check_truth()
+        check_session()
+
+    if quiet:
+        return 2 if RED else (1 if YEL else 0)
+
+    if RED:
+        print(f"\n🔴 {len(RED)}")
+        for m in RED:
+            print(f"   {m}")
+    if YEL:
+        print(f"\n🟡 {len(YEL)}")
+        for m in YEL:
+            print(f"   {m}")
+    # Silence when everything is fine: a validator that always talks is always ignored.
+    if not RED and not YEL:
+        print("✅ system healthy")
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""check-applied — F6-4: were the declared standards actually APPLIED, or just listed?
+
+The gap this closes: §D lists the standards a block must follow, and until now nothing ever asked
+whether they left a trace. **A standard that is declared and never applied is decoration** — and
+decoration is what makes a system look professional while behaving like an MVP.
+
+This does NOT judge quality (that is `bin/grade-block`). It asks a narrower, answerable question:
+**is there evidence in the block that each declared standard was used?**
+
+Evidence is one of:
+  · a §G decision citing it            (the strongest — a decision names its rule)
+  · a §H friction entry naming it      (it chafed and was complied with anyway)
+  · the standard's own subject appearing in §G/§I
+
+Usage: bin/check-applied <block> [--quiet]
+Exit: 0 all declared standards show evidence · 1 some do not
+"""
+import os
+import re
+import sys
+import glob
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+
+
+def section(text, name, nxt):
+    m = re.search(rf"##\s*{name}\b(.*?)(?=##\s*{nxt}|\Z)", text, re.S)
+    return m.group(1) if m else ""
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    quiet = "--quiet" in sys.argv
+    if not args:
+        print(__doc__)
+        return 1
+    # 🔴 A block name is a folder name. A glob or a path would silently resolve to a DIFFERENT
+    # block and report about it under the name you typed (found adversarially, 2026-07-30:
+    # `check-applied '*'` printed a verdict titled `*` about `demo`).
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args[0]):
+        print(f"🔴 {args[0]!r} is not a block name — lowercase letters, digits and hyphens only.\n"
+              "   Globs and paths are refused: they would grade a block you did not ask about.")
+        return 1
+    hits = glob.glob(f"blocks/**/{args[0]}/BLOCK.md", recursive=True)
+    if not hits:
+        print(f"🔴 no block named {args[0]!r}")
+        return 1
+
+    text = open(hits[0], encoding="utf-8", errors="replace").read()
+    # An HTML comment documents why something was REMOVED — it is not a declaration.
+    # (Caught 2026-07-30: this counted a removal note as a declared standard still in force.)
+    sec = re.sub(r"<!--.*?-->", "", section(text, "Required standards", "State"), flags=re.S)
+    std = re.findall(r"^\s*-\s*([\w./-]+\.md)", sec, re.M)
+    if not std:
+        if not quiet:
+            print(f"🔴 {args[0]}: §D declares no standards (contract-block.md requires them)")
+        return 1
+
+    # Where evidence of application can live.
+    evidence = (section(text, "Decisions", "Quality") + section(text, "Friction log", "Checkpoints")
+                + section(text, "Checkpoints", "Context") + section(text, "Quality verdict", "Friction"))
+
+    applied, missing = [], []
+    for s in std:
+        stem = os.path.basename(s).rsplit(".", 1)[0]
+        # cited by name, or its subject present (a rule named rule-fix-not-patch is about patches)
+        subject = [w for w in re.split(r"[-_]", stem) if len(w) > 4 and w not in
+                   ("rule", "case", "contract")]
+        if s in evidence or stem in evidence or (subject and
+                                                 all(w in evidence.lower() for w in subject[:2])):
+            applied.append(s)
+        else:
+            missing.append(s)
+
+    if quiet:
+        return 1 if missing else 0
+
+    print(f"\nBLOCK {args[0]} — were the §D standards applied?\n")
+    for s in applied:
+        print(f"  ✅ {s}")
+    for s in missing:
+        print(f"  🟡 {s} — declared, no trace in §G/§H/§I")
+    print()
+    if missing:
+        print(f"  🟡 {len(missing)}/{len(std)} declared standards show no evidence of use.")
+        print("     A standard declared and never applied is decoration.")
+        print("     Either cite it in a §G decision, log the friction in §H, or REMOVE it from §D —")
+        print("     an inflated §D makes the injection hook noise, and noise gets ignored.")
+        return 1
+    print(f"  ✅ all {len(std)} declared standards show evidence of use")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

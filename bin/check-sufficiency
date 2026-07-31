@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""check-sufficiency — can this block be restarted from disk alone?
+
+The test that turns "being owner of the context" into something measurable instead of
+declarative (architecture §11.4). A block that fails it does NOT close, even if the code works:
+the next session would rebuild the scope by inference and sound just as confident.
+
+Sections A-E must answer, with no placeholders left:
+  what is being built · what must NOT be touched · what it depends on
+  under which criterion · what phase · what blocks it
+
+Usage: bin/check-sufficiency [<block-name>] [--quiet]
+Exit codes: 0 sufficient · 2 insufficient
+"""
+import os
+import re
+import sys
+import glob
+
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+args = [a for a in sys.argv[1:] if not a.startswith("-")]
+quiet = "--quiet" in sys.argv
+
+# ── 🔴 TWO BUGS found by adversarial testing, 2026-07-30 ──────────────────────
+#   1. "no blocks found" exited 0 — SUCCESS. Any caller read that as "this block is sufficient".
+#   2. The name went straight into a glob, so `*` silently graded a DIFFERENT block.
+# A block name is a folder name: letters, digits, hyphens. Nothing else resolves to a block.
+if args:
+    name = args[0]
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name):
+        if not quiet:
+            print(f"🔴 {name!r} is not a block name — lowercase letters, digits and hyphens only")
+        sys.exit(1)
+    targets = glob.glob(f"blocks/**/{name}/BLOCK.md", recursive=True)
+    if not targets:
+        if not quiet:
+            print(f"🔴 no block named {name!r} — exact resolution (ADR-011)")
+        sys.exit(1)                      # not 0: "not found" is never "sufficient"
+else:
+    targets = glob.glob("blocks/**/BLOCK.md", recursive=True)
+    if not targets:
+        if not quiet:
+            print("🔴 no blocks exist — nothing to verify")
+        sys.exit(1)
+
+# question -> (what answers it, how to detect it is unanswered)
+QUESTIONS = [
+    ("what is being built",       r"^intent:\s*(.+)$",            "§A intent"),
+    ("what must NOT be touched",  r"##\s*⛔?\s*OUT\s*\n(?:\s*<!--.*?-->\s*\n)*((?:\s*-.*\n)+)", "§B OUT"),
+    ("what it depends on",        r"## Connections\s*\n((?:\s*-.*\n)+)", "§C"),
+    ("under which criterion",     r"## Required standards\s*\n((?:\s*-.*\n)+)", "§D"),
+    ("what phase it is in",       r"^phase:\s*(.+)$",             "§E phase"),
+    ("what the next step is",     r"^next:\s*(.+)$",              "§E next"),
+    ("what blocks it",            r"^blockers:\s*(.+)$",          "§E blockers"),
+]
+UNANSWERED = re.compile(r"⬜|PENDING|TBD|TODO|\?\?\?|^\s*-?\s*$", re.I)
+
+failed_any = False
+for path in targets:
+    text = open(path, encoding="utf-8", errors="replace").read()
+    name = path.split("/")[-2]
+    # Tier 1 only: A-E. Everything below §F is on-demand context, not required to restart.
+    tier1 = text.split("## Sub-blocks")[0]
+    misses = []
+    for question, pat, where in QUESTIONS:
+        m = re.search(pat, tier1, re.M | re.S)
+        if not m:
+            misses.append(f"{where} missing — cannot answer: {question}")
+        elif UNANSWERED.search(m.group(1).strip()):
+            misses.append(f"{where} still a placeholder — cannot answer: {question}")
+
+    lines = tier1.count("\n") + 1
+    if not quiet:
+        print(f"\nBLOCK {name} — Tier 1 is {lines} lines")
+        if misses:
+            print("🔴 INSUFFICIENT — this block does not close")
+            for m in misses:
+                print(f"   {m}")
+        else:
+            print("✅ SUFFICIENT — A-E answer all seven restart questions")
+            if lines > 80:
+                print(f"   🟡 {lines} lines is heavy for Tier 1 — it should be cheap to reload")
+    failed_any = failed_any or bool(misses)
+
+sys.exit(2 if failed_any else 0)

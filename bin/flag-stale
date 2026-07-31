@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+"""flag-stale — finds blocks that stopped moving without anyone noticing.
+
+A block that goes quiet is not neutral: it either finished and nobody closed it, or it is
+blocked and nobody owns the blocker. Both look identical from the outside — this tells them apart.
+
+Thresholds (contract-block.md §E, block-lifecycle.md §5):
+  active  and not updated in  7 days  -> stale
+  blocked and not updated in 14 days  -> abandoned
+  blocked with no owner named          -> not a blocker, an abandoned block
+
+Usage: bin/flag-stale [--quiet]
+Exit codes: 0 clean · 1 warnings · 2 errors
+"""
+import os
+import re
+import sys
+import glob
+from datetime import date
+
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+RED, YEL = [], []
+TODAY = date.today()
+
+
+def days_since(iso):
+    try:
+        return (TODAY - date.fromisoformat(iso)).days
+    except (ValueError, TypeError):
+        return None
+
+
+for f in glob.glob("blocks/**/BLOCK.md", recursive=True):
+    text = open(f, encoding="utf-8", errors="replace").read()
+    name = f.split("/")[-2]
+    status = (re.search(r"^status:\s*(\w+)", text, re.M) or [None, "?"])[1]
+    # §E updated wins over §A updated: it is the operational heartbeat
+    ups = re.findall(r"^updated:\s*(\S+)", text, re.M)
+    upd = ups[-1] if ups else None
+    age = days_since(upd)
+
+    if age is None:
+        RED.append(f"{name}: no readable `updated:` — nothing can tell if it is alive")
+        continue
+
+    if status == "active" and age > 7:
+        YEL.append(f"{name}: active, untouched for {age} days\n"
+                   f"      -> close it, block it, or say why it waits (contract-block.md §E)")
+
+    if status == "blocked":
+        m = re.search(r"^blockers:\s*(.+)$", text, re.M)
+        blockers = m.group(1).strip() if m else ""
+        if age > 14:
+            YEL.append(f"{name}: BLOCKED for {age} days — abandoned, not blocked")
+        if not blockers or blockers.lower() in ("none", "-"):
+            RED.append(f"{name}: status blocked with no blocker stated")
+        elif not re.search(r"(->|→)\s*\w+|BRIAN|brian", blockers):
+            RED.append(f"{name}: blocker names no owner: {blockers[:60]!r}\n"
+                       "      -> a blocker with no owner is an abandoned block "
+                       "(block-lifecycle.md §5)")
+
+    # a sub-block left open inside a block that claims to be closed
+    if status == "closed":
+        for row in re.findall(r"^\|\s*\d+\s*\|.*\|\s*(open|active|blocked)\s*\|", text, re.M):
+            RED.append(f"{name}: closed but a sub-block is still {row}")
+
+quiet = "--quiet" in sys.argv
+if not quiet:
+    if RED:
+        print(f"\n🔴 {len(RED)}")
+        for m in RED:
+            print(f"   {m}")
+    if YEL:
+        print(f"\n🟡 {len(YEL)}")
+        for m in YEL:
+            print(f"   {m}")
+    if not RED and not YEL:
+        print("✅ no stale blocks")
+sys.exit(2 if RED else (1 if YEL else 0))

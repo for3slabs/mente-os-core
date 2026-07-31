@@ -1,0 +1,677 @@
+#!/usr/bin/env bash
+# test-f0-f6 — the whole system, end to end, every phase.
+#
+# Why this is a script and not a list of commands typed once (Brian, 2026-07-20):
+#   "los bugs trágicos viven ENTRE las piezas" — a battery that cannot be re-run proves nothing
+#   about tomorrow. This one is re-runnable, and every check is AFFIRMATIVE: it states the
+#   expected value and compares. No "more or less".
+#
+# Each test names WHAT it verifies and WHY that is the thing that would break.
+# Exit: 0 all pass · 1 something failed
+set -uo pipefail
+M="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(dirname "$M")"
+PASS=0; FAIL=0; NOTE=()
+
+ok()   { PASS=$((PASS+1)); printf '  ✅ %s\n' "$1"; }
+bad()  { FAIL=$((FAIL+1)); printf '  🔴 %s\n     expected: %s\n     got:      %s\n' "$1" "$2" "$3"; }
+eq()   { [ "$2" = "$3" ] && ok "$1" || bad "$1" "$2" "$3"; }
+note() { NOTE+=("$1"); printf '  🟡 %s\n' "$1"; }
+head2(){ printf '\n\033[1m── %s\033[0m\n' "$1"; }
+
+cd "$M"
+
+# ═══════════════════════════════════════════════════════════════════ F0 · SECURITY
+head2 "F0 · SECURITY — is the gate a lock or just a document?"
+
+# The gate must be enforced by the harness, not by doctrine. Doctrine complies 40-60%.
+for target in "5M-incubathon" "marca-personal/Mente"; do
+  for f in settings.json settings.local.json; do
+    n=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/$f'))
+print(sum(1 for r in d['permissions'].get('deny',[]) if '$target' in r))")
+    eq "deny for $target in $f (Read+Edit+Write)" "3" "$n"
+  done
+done
+
+# A broad Read grant with no deny over credentials is an open door nothing was watching.
+for f in settings.json settings.local.json; do
+  n=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/$f'))
+dn=d['permissions'].get('deny',[])
+print(sum(1 for k in ('.ssh','secrets','.env') if any(k in r for r in dn)))")
+  eq "credential deny rules in $f (.ssh + secrets + .env)" "3" "$n"
+done
+
+# The password incident: approved commands are stored verbatim, so a secret there is permanent.
+n=$(grep -ohE "sshpass -p '[^']+'|sk-ant-[A-Za-z0-9]{15,}|ghp_[A-Za-z0-9]{20,}" \
+     "$REPO/.claude/settings.json" "$REPO/.claude/settings.local.json" 2>/dev/null | wc -l)
+eq "no secret VALUES inside approved commands" "0" "$n"
+
+eq "secrets/ is 700 (owner only)" "700" "$(stat -c %a secrets 2>/dev/null || echo MISSING)"
+n=$(find secrets -type f ! -perm 600 2>/dev/null | wc -l)
+eq "every file in secrets/ is 600" "0" "$n"
+( cd "$M" && git check-ignore -q secrets/ ) && ok "secrets/ is gitignored" \
+  || bad "secrets/ gitignored" "ignored" "TRACKED"
+
+# A dead path in additionalDirectories is a grant nobody can audit.
+n=$(python3 -c "
+import json,os
+t=0
+for f in ('settings.json','settings.local.json'):
+    d=json.load(open('$REPO/.claude/'+f))
+    t+=sum(1 for e in d['permissions'].get('additionalDirectories',[]) if not os.path.exists(e))
+print(t)")
+eq "no dead paths in additionalDirectories" "0" "$n"
+
+# ═══════════════════════════════════════════════════════════════════ F1 · STRUCTURE
+head2 "F1 · STRUCTURE — do the contracts hold on the real tree?"
+
+for d in rules principles blocks docs bin hooks rules/decisions principles/expertise \
+         blocks/active blocks/blocked blocks/archive; do
+  [ -d "$d" ] && ok "$d/ exists" || bad "$d/ exists" "directory" "MISSING"
+done
+
+./bin/check-blocks --docs >/dev/null 2>&1; c=$?
+[ "$c" -le 1 ] && ok "document contract: 0 errors (exit $c)" \
+  || bad "document contract" "exit 0 or 1" "exit $c"
+
+# ADR rules: one decision = one file, and a superseded ADR must name its successor.
+./bin/check-blocks --adrs >/dev/null 2>&1; c=$?
+[ "$c" -le 1 ] && ok "ADR contract: 0 errors (exit $c)" || bad "ADR contract" "exit<=1" "exit $c"
+eq "ADR numbering has no gaps" "$(ls rules/decisions/ADR-*.md | wc -l)" \
+   "$(ls rules/decisions/ADR-*.md | sed 's/.*ADR-0*\([0-9]*\).*/\1/' | sort -n | tail -1)"
+
+# ═══════════════════════════════════════════════════════════════════ F2 · OWNERS
+head2 "F2 · OWNERS — 3 max + the voice, and every hole asked not assumed"
+
+eq "owner files (0 voice + 3 owners)" "4" "$(ls principles/owner-*.md 2>/dev/null | wc -l)"
+eq "expertise disciplines" "3" "$(ls principles/expertise/*.md 2>/dev/null | wc -l)"
+
+# The master rule of the voice must be present verbatim — it is the one that stops the lying.
+grep -qi "do not state" principles/owner-0-voice.md \
+  && ok "owner-0 master rule present ('do not state, report the measurement')" \
+  || bad "owner-0 master rule" "present" "MISSING"
+
+# §5-BIS is what makes 'verified' mean something. It was missing once and got recovered.
+grep -q "5-BIS\|5-bis" principles/owner-3-validation.md \
+  && ok "owner-3 carries the §5-BIS battery" || bad "§5-BIS in owner-3" "present" "MISSING"
+
+# Holes must be visible and countable, or they get forgotten as 'done'.
+#
+# 🔴 BUG in the first version of this battery (2026-07-30): it counted ⬜ in PENDING-BRIAN.md,
+# which is the INDEX. It reported 1 hole when 34 exist. The holes live in the SOURCE files —
+# counting them where they are not is a false green, which is what this battery exists to catch.
+h=$(grep -rho "⬜" rules/qa-dimensions.md principles/expertise/*.md principles/owner-0-voice.md \
+     2>/dev/null | wc -l)
+note "$h criterion holes still waiting on Brian (in the source files, not the index)"
+
+# The index must not disagree with the source — a lying index is read as truth.
+# It must DECLARE its total explicitly (`holes-total: N`). Grepping "the first number in the
+# file" read a year as a count in the first version of this battery — a made-up number is worse
+# than no number, so the total is now a declared field or nothing.
+idx=$(grep -oE "^holes-total:\s*[0-9]+" docs/PENDING-BRIAN.md 2>/dev/null | grep -oE "[0-9]+")
+if [ -z "$idx" ]; then
+  note "docs/PENDING-BRIAN.md declares no holes-total — nothing to cross-check against"
+elif [ "$idx" != "$h" ]; then
+  bad "index agrees with the source files" "$h" "$idx (holes-total drifted)"
+else
+  ok "index holes-total ($idx) matches the source files"
+fi
+
+# ═══════════════════════════════════════════════════════════════════ F3 · THE BLOCK
+head2 "F3 · THE BLOCK — does it restart from disk alone?"
+
+./bin/check-blocks --blocks >/dev/null 2>&1; c=$?
+[ "$c" -le 1 ] && ok "block contract: 0 errors (exit $c)" || bad "block contract" "exit<=1" "exit $c"
+
+./bin/check-sufficiency demo >/dev/null 2>&1
+eq "demo passes the sufficiency test (§A-E answer the 7 restart questions)" "0" "$?"
+
+# Negative direction: a block full of placeholders must FAIL, and its exit code must agree with
+# its report. A validator whose exit contradicts its output is worse than one that stays silent.
+tmp="blocks/active/zz-suff"; mkdir -p "$tmp"
+cat > "$tmp/BLOCK.md" <<'PROBE'
+# BLOCK · zz-suff
+id: blk-zz-suff-2026-07
+type: docs
+intent: ⬜ PENDING
+status: active · lane: direct
+owner: brian
+created: 2026-07-30 · updated: 2026-07-30
+## ✅ IN
+- Mente/blocks/active/zz-suff/docs
+## ⛔ OUT
+- ⬜ PENDING
+## Connections
+- ISOLATED FROM: everything
+## Required standards
+- ⬜ PENDING
+## State
+phase: ⬜ PENDING
+PROBE
+./bin/check-sufficiency zz-suff >/dev/null 2>&1
+eq "a placeholder-filled block FAILS sufficiency (exit agrees with report)" "2" "$?"
+rm -rf "$tmp"
+
+./bin/flag-stale >/dev/null 2>&1
+eq "no stale or abandoned blocks" "0" "$?"
+
+# The two levels of OUT: a block must not claim ownership of system-wide rules.
+grep -q "System-wide rules" blocks/active/demo/BLOCK.md \
+  && ok "demo separates its own OUT from inherited rules" \
+  || bad "OUT separation" "present" "MISSING"
+
+n=$(wc -l < blocks/active/demo/BLOCK.md)
+[ "$n" -le 150 ] && ok "BLOCK.md within its 150-line limit ($n)" \
+  || bad "BLOCK.md limit" "<=150" "$n"
+
+# ═══════════════════════════════════════════════════════════════════ F4 · MEASURE
+head2 "F4 · MEASURE — the verdict must be reproducible, not a mood"
+
+# The whole point: same numbers on two consecutive runs. If they drift, it is an opinion.
+a=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].items()))" 2>/dev/null)
+b=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].items()))" 2>/dev/null)
+[ -n "$a" ] && [ "$a" = "$b" ] && ok "grade-block is deterministic across runs" \
+  || bad "determinism" "identical output twice" "drifted or empty"
+
+./bin/grade-block demo --root "$REPO/marca-personal" --quiet >/dev/null 2>&1
+eq "demo verdict exit code (2 = 🔴 MVP)" "2" "$?"
+
+# ADR-028: the type decides the ruler. A block with no type must be REFUSED, not guessed.
+tmp="blocks/active/zz-probe"; mkdir -p "$tmp"
+cat > "$tmp/BLOCK.md" <<'PROBE'
+# BLOCK · zz-probe
+id: blk-zz-probe-2026-07
+intent: probe
+status: active · lane: direct
+owner: brian
+created: 2026-07-30 · updated: 2026-07-30
+## ✅ IN
+- Mente/rules/decisions
+## ⛔ OUT
+- nothing
+## Connections
+- ISOLATED FROM: everything
+## Required standards
+- rules/contract-document.md
+## State
+phase: probe
+PROBE
+./bin/grade-block zz-probe --quiet >/dev/null 2>&1
+eq "block with NO type is refused (not guessed)" "1" "$?"
+
+# docs type: must NOT report 0 tests as a failure — that was the false-red bug.
+printf 'type: docs\n' > /tmp/t && python3 - <<'PY'
+p='blocks/active/zz-probe/BLOCK.md'; s=open(p).read()
+open(p,'w').write(s.replace('id: blk-zz-probe-2026-07','id: blk-zz-probe-2026-07\ntype: docs'))
+PY
+out=$(./bin/grade-block zz-probe 2>/dev/null)
+printf '%s' "$out" | grep -q "n/a" && ok "docs type prints n/a instead of a false red" \
+  || bad "docs n/a" "n/a present" "absent"
+printf '%s' "$out" | grep -q "NOT a pass" && ok "n/a is explicitly NOT counted as a pass" \
+  || bad "n/a disclaimer" "present" "MISSING"
+rm -rf "$tmp"
+
+# ═══════════════════════════════════════════════════════════════════ F5 · VERIFY
+head2 "F5 · VERIFY — do the locks actually lock?"
+
+for h in session-start.sh pre-edit-standards.py pre-commit.sh; do
+  [ -x "hooks/$h" ] && ok "hooks/$h is executable" || bad "hooks/$h" "executable" "no"
+done
+
+# Registered in the PROJECT settings, and the 9 GSD hooks untouched.
+n=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/settings.json'))
+print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
+# 3 = session-start + pre-edit-standards + gate-critical (F6-3). A hardcoded count is on purpose:
+# a hook silently disappearing from settings.json is exactly the failure this catches.
+eq "project hooks registered (session-start + standards + critical gate)" "3" "$n"
+n=$(python3 -c "
+import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')))
+print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
+eq "the 9 global GSD hooks are untouched" "9" "$n"
+
+# The informing hooks must NEVER block, even on garbage input.
+./hooks/session-start.sh >/dev/null 2>&1
+eq "session-start never blocks" "0" "$?"
+printf 'not json' | ./hooks/pre-edit-standards.py >/dev/null 2>&1
+eq "pre-edit survives malformed input" "0" "$?"
+
+# It must name the block's standards for a file inside the block, and stay quiet outside.
+o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/lib/demo/session.ts"}}' "$REPO" \
+    | ./hooks/pre-edit-standards.py 2>&1)
+printf '%s' "$o" | grep -q "block \`demo\`" && ok "pre-edit names the owning block" \
+  || bad "pre-edit block match" "names demo" "silent"
+o=$(printf '{"tool_input":{"file_path":"/tmp/unrelated.txt"}}' | ./hooks/pre-edit-standards.py 2>&1)
+[ -z "$o" ] && ok "pre-edit stays silent outside every block" \
+  || bad "pre-edit silence" "no output" "$o"
+
+# An unclosed sub-block covering the file is the fix-on-fix pattern. Must warn.
+o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/lib/demo/allowedEmails.ts"}}' "$REPO" \
+    | ./hooks/pre-edit-standards.py 2>&1)
+printf '%s' "$o" | grep -q "sub-block" && ok "pre-edit warns on an unclosed sub-block" \
+  || bad "sub-block warning" "warns" "silent"
+
+# ⭐ pre-commit is the only one that blocks. Both directions must be proven.
+./hooks/pre-commit.sh >/dev/null 2>&1
+eq "pre-commit passes on a healthy block" "0" "$?"
+
+cp blocks/active/demo/BLOCK.md /tmp/bk.$$
+python3 -c "
+s=open('blocks/active/demo/BLOCK.md').read()
+open('blocks/active/demo/BLOCK.md','w').write(s.replace('type: code\n',''))"
+./hooks/pre-commit.sh >/dev/null 2>&1
+eq "pre-commit BLOCKS a contract violation" "1" "$?"
+cp /tmp/bk.$$ blocks/active/demo/BLOCK.md && rm -f /tmp/bk.$$
+
+# fail-open vs fail-closed — the second bug of F5.
+t=$(mktemp -d); ( cd "$t" && git init -q && mkdir -p .git/hooks \
+  && cp "$M/hooks/pre-commit.sh" .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit \
+  && bash .git/hooks/pre-commit >/dev/null 2>&1 )
+eq "pre-commit fails OPEN in a repo with no Mente nearby" "0" "$?"
+rm -rf "$t"
+
+# The /clear lock must refuse while this session has no autopsy on disk.
+./bin/check-clear-ready --quiet >/dev/null 2>&1
+eq "check-clear-ready refuses (this session is unregistered)" "1" "$?"
+
+# Found by the E2E flow 2026-07-30: an EMPTY docs block scored 🟢 PRODUCT — zero broken links
+# and zero orphans, because there was nothing to measure. Absence of evidence read as evidence.
+tmp="blocks/active/zz-empty"; mkdir -p "$tmp/docs"
+cat > "$tmp/BLOCK.md" <<'PROBE'
+# BLOCK · zz-empty
+id: blk-zz-empty-2026-07
+type: docs
+intent: probe the empty-scope case
+status: active · lane: direct
+owner: brian
+created: 2026-07-30 · updated: 2026-07-30
+## ✅ IN
+- Mente/blocks/active/zz-empty/docs
+## ⛔ OUT
+- nothing
+## Connections
+- ISOLATED FROM: everything
+## Required standards
+- rules/contract-document.md
+## State
+phase: probe
+PROBE
+o=$(./bin/grade-block zz-empty --root "$REPO" 2>/dev/null)
+printf '%s' "$o" | grep -q "NOTHING MEASURED" \
+  && ok "an empty scope is NOT graded PRODUCT (nothing measured != passing)" \
+  || bad "empty scope" "NOTHING MEASURED" "$(printf '%s' "$o" | grep -oE 'VERDICT.*' | head -1)"
+rm -rf "$tmp"
+
+# ═══════════════════════════════════════════════════════════════════ F6 · GUARANTEE
+head2 "F6 · GUARANTEE READING — the router and the three gates"
+
+# The 3 levels must EXIST. The whole point is that a rule has a declared level.
+for f in "$M/base-rules.md" "$REPO/PROJECT-RULES.md"; do
+  [ -f "$f" ] && ok "$(basename "$f") exists" || bad "$(basename "$f")" "exists" "MISSING"
+done
+
+# CLAUDE.md is a ROUTER: it points, it does not store. A rule written there has no declared level.
+n=$(grep -cE "^- \*\*(NO|NUNCA)|^- \*\*Foco" "$REPO/CLAUDE.md" 2>/dev/null); n=${n:-0}
+eq "CLAUDE.md stores no project rules (it routes)" "0" "$n"
+grep -q "PROJECT-RULES.md" "$REPO/CLAUDE.md" && ok "CLAUDE.md routes to PROJECT-RULES.md" \
+  || bad "router" "points at PROJECT-RULES.md" "does not"
+
+# ⭐ Nothing was lost in the migration: the gate and server-first must still be findable.
+for k in "5M-incubathon" "acceder mente" "Server-first" "Brian López" "KEK"; do
+  grep -qi "$k" "$REPO/PROJECT-RULES.md" && ok "PROJECT-RULES carries: $k" \
+    || bad "migrated rule: $k" "present" "LOST"
+done
+
+# base-rules must no longer be the SOURCE of the 2 project rules — only a pointer.
+grep -q "PROJECT-RULES.md" "$M/base-rules.md" \
+  && ok "base-rules points the 2 project rules at their new level" \
+  || bad "base-rules pointer" "present" "MISSING"
+
+[ -x "hooks/gate-critical.py" ] && ok "hooks/gate-critical.py is executable" \
+  || bad "gate-critical" "executable" "no"
+
+# GATE 2 · the database — both directions.
+printf '{"tool_input":{"file_path":"db/003_migration.sql","content":"DROP TABLE x;"}}' \
+  | ./hooks/gate-critical.py >/dev/null 2>&1
+eq "GATE db: BLOCKS a destructive migration with no rollback" "2" "$?"
+printf '{"tool_input":{"file_path":"db/003_migration.sql","content":"DROP TABLE x;\n-- down\nCREATE TABLE x (id int);"}}' \
+  | ./hooks/gate-critical.py >/dev/null 2>&1
+eq "GATE db: allows the same migration WITH a rollback" "0" "$?"
+
+# GATE 3 · closing a block over open sub-blocks.
+# No trailing \n in the JSON string: printf would emit it as a literal backslash-n inside the
+# value, and the hook's `^status:\s*closed` never matched. Caught 2026-07-30 — the gate blocked
+# correctly by hand and passed in the battery, which is the worst kind of disagreement.
+printf '{"tool_input":{"file_path":"%s/blocks/active/demo/BLOCK.md","content":"status: closed"}}' "$M" \
+  | ./hooks/gate-critical.py >/dev/null 2>&1
+eq "GATE close: BLOCKS closing over open sub-blocks" "2" "$?"
+printf '{"tool_input":{"file_path":"%s/blocks/active/demo/BLOCK.md","content":"updated: 2026-07-30\n"}}' "$M" \
+  | ./hooks/gate-critical.py >/dev/null 2>&1
+eq "GATE close: does NOT obstruct a normal edit of BLOCK.md" "0" "$?"
+
+# GATE 1 · deliberately a WARNING. Blocking the daily path would be pure friction.
+printf '{"tool_input":{"file_path":"%s/marca-personal/lib/demo/session.ts","content":"x"}}' "$REPO" \
+  | ./hooks/gate-critical.py >/dev/null 2>&1
+eq "GATE deps: WARNS but never blocks (12 dependents)" "0" "$?"
+
+# F6-4 · declared standards must show evidence of use.
+./bin/check-applied demo --quiet >/dev/null 2>&1
+eq "every §D standard the demo declares was actually APPLIED" "0" "$?"
+
+# ═══════════════════════════════════════════════════════════════════ STRUCTURE
+head2 "TREE — is the folder structure the one the design declared?"
+
+[ -x "bin/check-structure" ] && ok "bin/check-structure exists" \
+  || bad "check-structure" "executable" "MISSING"
+[ -x "bin/generate-index" ] && ok "bin/generate-index exists" \
+  || bad "generate-index" "executable" "MISSING"
+
+# The generated indexes must EXIST and be CURRENT. A stale index is read as truth.
+for f in docs/INDEX.md docs/STATES.md; do
+  [ -f "$f" ] && ok "$f is generated" || bad "$f" "exists" "MISSING"
+done
+# Earlier sections of this battery create and delete probe blocks, which legitimately changes
+# what the index should contain. Regenerate first, THEN assert the check is clean — otherwise the
+# battery fails on its own side effects, which teaches you to ignore a real staleness report.
+./bin/generate-index >/dev/null 2>&1
+./bin/generate-index --check >/dev/null 2>&1
+eq "the generated indexes are up to date after regenerating" "0" "$?"
+
+# Regeneration must be DETERMINISTIC — twice in a row cannot differ, or --check is meaningless.
+./bin/generate-index >/dev/null 2>&1
+a=$(md5sum docs/INDEX.md docs/STATES.md | md5sum)
+./bin/generate-index >/dev/null 2>&1
+b=$(md5sum docs/INDEX.md docs/STATES.md | md5sum)
+eq "regenerating twice produces identical output" "$a" "$b"
+
+# ⭐ A hand edit must be DETECTED — that is the whole point of generating.
+printf '\nHAND EDIT\n' >> docs/INDEX.md
+./bin/generate-index --check >/dev/null 2>&1
+eq "a hand edit to a generated index is DETECTED" "1" "$?"
+./bin/generate-index >/dev/null 2>&1
+
+# ⭐ THE POINTER SYSTEM — the test that makes it real (P4).
+# Move a file, update ONE line in piezas.tsv, and everything follows. If this fails, the pointer
+# system is decoration and the diagram will drift again.
+[ -f Maestro/piezas.tsv ] && ok "Maestro/piezas.tsv exists (single source of piece locations)" \
+  || bad "piezas.tsv" "exists" "MISSING"
+
+# Every declared piece must resolve. A pointer to nothing is worse than no pointer.
+miss=$(python3 - <<'PY'
+import os
+bad = 0
+for line in open("Maestro/piezas.tsv", encoding="utf-8", errors="replace"):
+    if line.startswith("#") or not line.strip():
+        continue
+    f = line.rstrip("\n").split("\t")
+    if len(f) >= 5 and not os.path.exists(f[1].replace("repo:", "")):
+        print(f"     {f[0]} -> {f[1]}")
+        bad += 1
+print(f"COUNT={bad}")
+PY
+)
+printf '%s\n' "$miss" | grep -v COUNT
+eq "every piece declared in piezas.tsv exists" "0" "$(printf '%s' "$miss" | grep -oE 'COUNT=[0-9]+' | cut -d= -f2)"
+
+# ⭐ THE REAL TEST: move a piece, update only the pointer, and check-structure must follow.
+mv bridges/Puentes_Mente_OS.md /tmp/gate.bak
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"PIECE MOVED OR LOST"*) ok "a moved piece is caught by the pointer table" ;;
+  *) bad "moved piece detection" "PIECE MOVED OR LOST" "silent" ;;
+esac
+mkdir -p /tmp/newhome && mv /tmp/gate.bak /tmp/newhome/Puentes_Mente_OS.md
+sed -i 's|^gate\tbridges/Puentes_Mente_OS.md|gate\t/tmp/newhome/Puentes_Mente_OS.md|' Maestro/piezas.tsv
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"PIECE MOVED OR LOST"*) bad "pointer follows a move" "clean after updating 1 line" "still red" ;;
+  *) ok "updating ONE line in piezas.tsv makes the validator follow the move" ;;
+esac
+sed -i 's|^gate\t/tmp/newhome/Puentes_Mente_OS.md|gate\tbridges/Puentes_Mente_OS.md|' Maestro/piezas.tsv
+mv /tmp/newhome/Puentes_Mente_OS.md bridges/Puentes_Mente_OS.md && rmdir /tmp/newhome
+
+# F8-3 · an archived block must satisfy rules/contract-archive.md. Nothing has ever been closed,
+# so this is the only place the closing path gets exercised before it is used for real.
+[ -f rules/contract-archive.md ] && ok "rules/contract-archive.md defines what a closed block leaves" \
+  || bad "contract-archive" "exists" "MISSING"
+
+tmp="blocks/archive/zz-probe_2026-07"; mkdir -p "$tmp"
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"ARCHIVE INCOMPLETE"*) ok "an archived block missing its three files is REFUSED" ;;
+  *) bad "archive completeness" "ARCHIVE INCOMPLETE" "silent" ;;
+esac
+
+# ⭐ The lesson is the only section that is not a copy. An empty one passes the file check and
+# teaches nothing — that is the failure this catches.
+printf '# S\n## What was learned\nshort\n' > "$tmp/SUMMARY.md"
+printf '# c\n' > "$tmp/connections.md"
+cp blocks/active/demo/BLOCK.md "$tmp/BLOCK.md"
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"no real 'what was learned'"*) ok "an empty 'what was learned' is flagged (the only real section)" ;;
+  *) bad "lesson check" "flagged" "silent" ;;
+esac
+
+printf '# SUMMARY\n## What was learned\nA default never points at something with an owner: general was the private thread of the owner.\n' > "$tmp/SUMMARY.md"
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"no real 'what was learned'"*) bad "lesson accepted" "clean" "still flagged" ;;
+  *) ok "a real lesson satisfies the archive contract" ;;
+esac
+rm -rf "$tmp"
+
+# check-structure must NOT be silent about the known holes — a validator that reports clean
+# while the tree diverges is the failure it exists to prevent.
+# A nested repo is only a RISK if it has no remote or carries uncommitted work. Reporting it
+# as doomed without checking was itself a false claim (corrected 2026-07-30) — the test now
+# asserts the accurate behaviour: Maestro/ has a remote, so it must NOT be red.
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"NESTED REPO AT RISK · Maestro"*) bad "nested repo accuracy" "not red (it has a remote)" "red" ;;
+  *"Maestro/"*) ok "check-structure reports Maestro/ accurately (remote exists, work uncommitted)" ;;
+  *) bad "nested repo detection" "mentions Maestro/" "silent" ;;
+esac
+
+# And it must catch a REAL break, not only the known ones.
+mv rules/contract-adr.md /tmp/adr.bak
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *"MISSING FILE"*) ok "check-structure catches a required file going missing" ;;
+  *) bad "missing file detection" "MISSING FILE" "silent" ;;
+esac
+mv /tmp/adr.bak rules/contract-adr.md
+
+# ═══════════════════════════════════════════════════════════════════ ADVERSARIAL
+head2 "ADVERSARIAL — what happens when someone attacks it"
+
+# ⭐ 9 bugs were found on 2026-07-30 by attacking this system instead of confirming it. Each check
+# below is one of them, kept permanently so it cannot come back.
+
+# A block name is a folder name. A glob silently graded a DIFFERENT block and titled the verdict
+# with what you typed. "not found" exiting 0 meant a hook read it as "sufficient".
+for v in grade-block check-sufficiency check-applied; do
+  for arg in "../../../etc" "*" ".." "demo;rm -rf /tmp/x" "does-not-exist"; do
+    ./bin/$v "$arg" >/dev/null 2>&1
+    [ "$?" -eq 1 ] || bad "$v rejects hostile arg $arg" "exit 1" "exit $?"
+  done
+done
+ok "the 3 name-taking validators reject globs, paths and missing blocks (15 cases)"
+
+# A hook that only warns must NEVER fail: an unexpected exit code can interfere with the edit.
+for h in pre-edit-standards gate-critical; do
+  for j in '{}' 'null' '[]' '{"tool_input":null}' '{"tool_input":{"file_path":123}}' '42'; do
+    printf '%s' "$j" | ./hooks/$h.py >/dev/null 2>&1
+    [ "$?" -le 2 ] || bad "$h survives $j" "exit<=2" "exit $?"
+  done
+done
+ok "both PreToolUse hooks survive malformed payloads (12 cases, no crash)"
+
+# The word "rollback" anywhere used to satisfy the DB gate — so `-- no rollback needed` DISABLED it.
+printf '{"tool_input":{"file_path":"db/1_migration.sql","content":"DROP TABLE x; -- no rollback needed"}}' \
+  > /tmp/adv.json && ./hooks/gate-critical.py < /tmp/adv.json >/dev/null 2>&1
+eq "the word 'rollback' in prose does NOT satisfy the DB gate" "2" "$?"
+
+# Destructive SQL from application code: same damage, no migration filename to flag it.
+printf '{"tool_input":{"file_path":"lib/demo/x.ts","content":"await sql`DROP TABLE users`"}}' \
+  > /tmp/adv.json && ./hooks/gate-critical.py < /tmp/adv.json >/dev/null 2>&1
+eq "destructive SQL embedded in .ts is BLOCKED" "2" "$?"
+
+# `status: CLOSED` in caps evaded the close gate entirely.
+printf '{"tool_input":{"file_path":"%s/blocks/active/demo/BLOCK.md","content":"status: CLOSED"}}' "$M" \
+  > /tmp/adv.json && ./hooks/gate-critical.py < /tmp/adv.json >/dev/null 2>&1
+eq "close gate is case-insensitive (status: CLOSED)" "2" "$?"
+
+# ⭐ Nothing protected the guards: a hook could be deleted or stripped of +x and the startup path
+# stayed silent. A disarmed guard is worse than no guard — the system reports healthy while open.
+# `cmd | grep -q` under `set -o pipefail` takes the exit of the FIRST failing stage, and
+# check-health legitimately exits 2 when it finds something. Capture first, then evaluate —
+# never mix running with judging. (Cost 3 false failures on 2026-07-30.)
+chmod -x bin/check-blocks
+hout="$("$M/bin/check-health" 2>/dev/null || true)"
+case "$hout" in
+  *"GUARD DISARMED"*) ok "check-health detects a DISARMED guard (no execute bit)" ;;
+  *) bad "disarmed guard detection" "GUARD DISARMED" "silent" ;;
+esac
+./hooks/pre-commit.sh >/dev/null 2>&1
+eq "pre-commit fails CLOSED when the validator cannot run" "1" "$?"
+chmod +x bin/check-blocks
+
+mv hooks/gate-critical.py /tmp/adv-guard.bak
+hout="$("$M/bin/check-health" 2>/dev/null || true)"
+case "$hout" in
+  *"GUARD MISSING"*) ok "check-health detects a MISSING guard" ;;
+  *) bad "missing guard" "GUARD MISSING" "silent" ;;
+esac
+mv /tmp/adv-guard.bak hooks/gate-critical.py
+
+# The id shape is load-bearing: §C connections resolve with `blk-[\w-]+`.
+tmp="blocks/active/zz-adv"; mkdir -p "$tmp"
+printf '# BLOCK · zz-adv\nid: NOT-AN-ID\ntype: code\nintent: probe\nstatus: active · lane: direct\nowner: brian\ncreated: 2026-07-30 · updated: 2026-07-30\n## ✅ IN\n- Mente/docs/zz\n## ⛔ OUT\n- nothing\n## Connections\n- ISOLATED FROM: everything\n## Required standards\n- rules/contract-document.md\n## State\nphase: probe\n' > "$tmp/BLOCK.md"
+./bin/check-blocks --blocks >/dev/null 2>&1
+eq "a malformed id is REFUSED (the graph resolves by its shape)" "2" "$?"
+rm -rf "$tmp"
+
+# ⭐ The verdict cannot be forged: it is measured, never read from the file.
+sed -i 's/LAYER 1 VERDICT: 🔴 MVP/LAYER 1 VERDICT: 🟢 PRODUCT/' blocks/active/demo/BLOCK.md
+gout="$("$M/bin/grade-block" demo --root "$REPO/marca-personal" 2>/dev/null || true)"
+case "$gout" in
+  *"🔴 MVP"*) ok "a hand-written 🟢 PRODUCT is contradicted by measurement" ;;
+  *) bad "verdict forgery" "measured 🔴" "believed the file" ;;
+esac
+sed -i 's/LAYER 1 VERDICT: 🟢 PRODUCT/LAYER 1 VERDICT: 🔴 MVP/' blocks/active/demo/BLOCK.md
+
+# ═══════════════════════════════════════════════════════════════════ CROSS-PHASE
+head2 "CROSS-PHASE — the bugs live BETWEEN the pieces"
+
+# Every standard a block declares in §D must EXIST. A pointer to nothing is worse than none.
+miss=0
+while read -r s; do
+  [ -n "$s" ] && [ ! -f "$s" ] && { printf '     missing: %s\n' "$s"; miss=$((miss+1)); }
+          # An HTML comment documents a REMOVAL — it is not a declaration.
+          # (Same fix as bin/check-applied: the comment naming the removed frontend.md was being
+          # read as a standard still in force.)
+done < <(sed -n '/## Required standards/,/^$/p' blocks/active/demo/BLOCK.md \
+         | sed '/<!--/,/-->/d' | grep -oE '^- [a-z0-9/_.-]+\.md' | sed 's/^- //')
+eq "every §D standard the block declares exists on disk" "0" "$miss"
+
+# Every ADR cited anywhere must exist — a pointer to nothing is worse than no pointer.
+#
+# Excluded: the audit log, which NAMES a deliberately fake ADR (ADR-099) as the mutation it used
+# to prove this very check works. Found 2026-07-30: the check flagged its own test fixture.
+# A validator must know the difference between a citation and a description of a citation.
+miss=0
+for a in $(grep -rhoE "ADR-[0-9]{3}" rules/ principles/ blocks/ docs/ 2>/dev/null \
+           --exclude=audit-f0-f5.md | sort -u); do
+  ls rules/decisions/${a}-*.md >/dev/null 2>&1 || { printf '     cited but missing: %s\n' "$a"; miss=$((miss+1)); }
+done
+eq "every cited ADR exists" "0" "$miss"
+
+# The declared import graph must still match reality — it is measured, never remembered.
+d=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+import json,sys;print(json.load(sys.stdin)['metrics'].get('dependent counts gone stale',0))" 2>/dev/null)
+eq "block §F import counts still match the real graph" "0" "${d:-ERR}"
+
+# ⭐ TWICE in one day (2026-07-30) a bulk path-completion pass broke real citations: first it
+# corrupted 4 filenames inside Maestro/ (own root), then it "completed" 28 valid RELATIVE paths
+# (`decisions/ADR-028` from rules/, `expertise/*.md` from principles/) into absolutes that do not
+# exist. There will not be a third time: this check runs after every such pass, and a relative
+# path that resolves from its OWN directory is correct — completing it is the bug.
+#
+# ⭐ Every cited path INSIDE Mente must resolve. This check exists because of a real self-inflicted
+# bug (2026-07-30): a bulk path-completion script replaced a filename as a SUBSTRING, turning
+# `Plan_Maestro_Entrenamiento.md` into `docs/plan-v2-rollout_Entrenamiento.md` in 4 historical
+# documents — pointers to files that never existed. Paths outside Mente are not checked here: many
+# historical docs reference the agent repo and for3s-inter on purpose.
+broken=$(python3 - <<'PY'
+import glob, os, re
+bad = 0
+# ⚠️ Maestro/ is EXCLUDED: it is a separate git repo whose root is Maestro/ itself, so a path
+# written from the Mente root is wrong INSIDE it. A bulk path-completion pass broke 8 links there
+# on 2026-07-30 by treating it as a plain folder. A nested repo has its own root — always.
+INSIDE = ("rules/", "principles/", "blocks/", "docs/", "bin/", "hooks/",
+          "Cerebro/",
+          # v2 destinations created in M1 — a broken citation INSIDE them went undetected
+          # until 2026-07-30, which is exactly where the migration puts every file.
+          "vision/", "work/", "memory/", "bridges/")
+# The audit log DESCRIBES the broken paths it found, quoting them verbatim. Same class as the
+# ADR-099 fixture: a validator must tell a CITATION from a DESCRIPTION of a citation.
+# (Caught 2026-07-30 by this very check flagging the document that reports it.)
+DESCRIBES = ("docs/audit-f0-f5.md", "docs/f4-execution-log.md", "docs/f5-execution-log.md")
+for f in glob.glob("**/*.md", recursive=True):
+    if ".git/" in f or f.startswith("secrets/") or f in DESCRIBES:
+        continue
+    for m in re.findall(r"`([A-Za-z0-9_./-]+\.(?:md|tsv|sh|py))`",
+                        open(f, encoding="utf-8", errors="replace").read()):
+        # Three classes are NOT broken pointers and must not be flagged:
+        #   1. F7 TARGETS  — docs/INDEX.md and docs/STATES.md are GENERATED by phase F7. Citing
+        #      them before F7 runs is the plan describing its own output, not a dangling link.
+        #   2. PLACEHOLDERS — `Doc/X.md`, `Cuerpo/Y.md` are illustrative examples in prose.
+        #   3. PLANNED FILES — memory/PENDIENTES.md names files the pending work will CREATE
+        #      (rules/learning-system.md, blocks/architecture-v2.md...). A pending that could not
+        #      name its own output would be useless.
+        # Learned 2026-07-30: a check that cannot tell "does not exist yet" from "points nowhere"
+        # produces noise, and noise is how a validator gets ignored.
+        FUTURE = ("docs/INDEX.md", "docs/STATES.md", "docs/DECISIONS.md")
+        EXAMPLE = ("Doc/X.md", "Cuerpo/Y.md")
+        planned = f in ("memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
+                        "docs/plan-v1-to-v2-migration.md")
+        # 4. HONESTLY MARKED — a citation the document itself labels as never produced. Rewriting
+        #    it to point somewhere else would be a lie; saying so is the correct fix
+        #    (owner-0-voice.md: report what was measured). Recognised by the marker.
+        raw = open(f, encoding="utf-8", errors="replace").read()
+        i = raw.find(m)
+        if i > 0 and "never produced" in raw[i:i + 220]:
+            continue
+        if re.match(r"^memory/(\d{4}-\d{2}-\d{2}|AAAA-MM-DD)\.md$", m):
+            continue          # OpenClaw's diaries, not our memory/ — name collision from M1
+        if (m in FUTURE or m in EXAMPLE or planned):
+            continue
+        if m.startswith(INSIDE) and "..." not in m and "NNN" not in m and not os.path.exists(m):
+            print(f"     {f} -> {m}")
+            bad += 1
+print(f"COUNT={bad}")
+PY
+)
+printf '%s\n' "$broken" | grep -v COUNT | head -8
+eq "every Mente-internal cited path resolves" "0" "$(printf '%s' "$broken" | grep -oE 'COUNT=[0-9]+' | cut -d= -f2)"
+
+# ⭐ ZOMBIE CORRUPTIONS — two bad paths that came back FOUR times on 2026-07-30, because every
+# `migrate-doc` revert restores the HEAD version that still contains them. Fixed in the working
+# tree each time, they return on the next revert. This check makes their return a FAILURE instead
+# of a surprise; they die for good when the tree is committed.
+z=$(grep -rl "plan-v2-rollout_Entrenamiento\|Cerebro/casos/CASO_Default" --include="*.md" . 2>/dev/null \
+    | grep -v "^./.git" | grep -cv "test-f0-f6")
+eq "no zombie corruptions (they return on every revert until committed)" "0" "$z"
+
+# ═══════════════════════════════════════════════════════════════════ RESULT
+printf '\n\033[1m════ RESULT ════\033[0m\n'
+printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"
+[ ${#NOTE[@]} -gt 0 ] && { printf '  notes:\n'; for n in "${NOTE[@]}"; do printf '    · %s\n' "$n"; done; }
+[ "$FAIL" -eq 0 ] && printf '\n  ✅ F0-F6 verified end to end\n' \
+                  || printf '\n  🔴 %d check(s) FAILED\n' "$FAIL"
+exit $([ "$FAIL" -eq 0 ] && echo 0 || echo 1)

@@ -1,0 +1,233 @@
+#!/usr/bin/env python3
+"""migrate-doc — move ONE document from v1 to v2, safely.
+
+⭐ The whole point: **one file at a time, verified after each one.** Twice on 2026-07-30 a bulk
+rewrite broke real citations — 4 corrupted filenames inside `Maestro/`, and 28 valid relative paths
+"completed" into absolutes that do not exist.
+
+> **A bulk rewrite is not safe because the mapping is right. It is safe when something verifies the
+> result afterwards.**
+
+What it does, in order:
+  1. `git mv` — history survives the move
+  2. adds the contract header if the file has none (Status / Type / Updated / Owner)
+  3. rewrites every citation, in all four forms measured on real files:
+       `Cuerpo/X.md`  ·  `X.md`  ·  Mente/Cuerpo/X.md  ·  [text](Cuerpo/X.md)
+  4. runs bin/check-links
+  5. 🔴 **if broken links went UP, it reverts everything and says so**
+
+Usage:
+  bin/migrate-doc <source> <dest-dir> [--type <t>] [--dry-run]
+
+  bin/migrate-doc Doc/Analisis_GIL.md docs/analysis --type analysis
+  bin/migrate-doc Alma/Vision.md vision --dry-run     # shows what would change, touches nothing
+
+Exit: 0 moved and verified · 1 refused or reverted
+"""
+import os
+import re
+import sys
+import glob
+import shutil
+import subprocess
+from datetime import date
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+
+VALID_TYPES = ("entry-point", "contract", "rule", "architecture", "plan", "block",
+               "memory-index", "analysis", "case", "append-only", "pending", "generated", "fossil")
+
+
+def sh(*cmd):
+    return subprocess.run(cmd, capture_output=True, text=True)
+
+
+def broken_pairs():
+    """The SET of (file, citation) pairs that do not resolve.
+
+    ⭐ Comparing totals was wrong: a document carries debt it already had, and counting it made
+    `migrate-doc` revert files it had not broken — 3 of the first 40, and README.md three times
+    (2026-07-30). Comparing SETS answers the only question that matters: **what did THIS move
+    add?** Debt a document already carried was not caused by the migration."""
+    out = sh(f"{MENTE}/bin/check-links").stdout
+    pairs, cur = set(), None
+    for line in out.split("\n"):
+        t = line.strip()
+        if t.startswith("→"):
+            pairs.add((cur, t[1:].strip()))
+        elif t and not t.startswith(("🔴", "A pointer", "✅", "…")):
+            cur = t
+    return pairs
+
+
+def citations(name, old_path):
+    """Every way this file is cited, measured on real documents (2026-07-30):
+       `Cuerpo/X.md` · `X.md` · Mente/Cuerpo/X.md · [text](Cuerpo/X.md)"""
+    return [f"Mente/{old_path}", old_path, name]
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    dry = "--dry-run" in sys.argv
+    dtype = (sys.argv[sys.argv.index("--type") + 1] if "--type" in sys.argv else None)
+
+    if len(args) < 2:
+        print(__doc__)
+        return 1
+    src, destdir = args[0].rstrip("/"), args[1].rstrip("/")
+
+    if not os.path.isfile(src):
+        print(f"🔴 {src} is not a file")
+        return 1
+    if dtype and dtype not in VALID_TYPES:
+        print(f"🔴 type {dtype!r} not in: {', '.join(VALID_TYPES)}")
+        return 1
+    name = os.path.basename(src)
+    dest = f"{destdir}/{name}"
+    if os.path.exists(dest):
+        print(f"🔴 {dest} already exists — a document is never overwritten")
+        return 1
+
+    # ── who cites it, and how many times ─────────────────────────────────────
+    pats = citations(name, src)
+    hits = {}
+    # Mente/ + the two files at the project ROOT that govern every session. Missing them left
+    # the startup rule pointing at a moved file (found in M5, 2026-07-30).
+    scan = [f for f in glob.glob("**/*.md", recursive=True)] + \
+           [p for p in ("../CLAUDE.md", "../PROJECT-RULES.md") if os.path.exists(p)]
+    for f in scan:
+        if ".git/" in f or f == src:
+            continue
+        t = open(f, encoding="utf-8", errors="replace").read()
+        n = sum(t.count(p) for p in pats)
+        if n:
+            hits[f] = n
+    total = sum(hits.values())
+
+    print(f"\n  {src}")
+    print(f"  → {dest}")
+    print(f"  citations to rewrite: {total} in {len(hits)} document(s)")
+    for f, n in sorted(hits.items(), key=lambda x: -x[1])[:6]:
+        print(f"     {n:3d}  {f}")
+    if len(hits) > 6:
+        print(f"     … +{len(hits) - 6} more")
+
+    if dry:
+        print("\n  --dry-run: nothing was touched")
+        return 0
+
+    origin = src                     # captured BEFORE the move: the header must name where it
+    before = broken_pairs()          # came FROM, or the migration trail says "docs → docs"
+    print(f"\n  broken citations before: {len(before)}")
+
+    # ── 1 · move, keeping history ────────────────────────────────────────────
+    os.makedirs(destdir, exist_ok=True)
+    r = sh("git", "mv", src, dest)
+    moved_with_git = r.returncode == 0
+    if not moved_with_git:
+        shutil.move(src, dest)          # not tracked yet: a plain move is correct
+
+    # ── 2 · contract header ──────────────────────────────────────────────────
+    text = open(dest, encoding="utf-8", errors="replace").read()
+    # The contract header is recognised by **Type:**, not by Status — some v1 documents already
+    # used **Status:** with a different meaning ("3/3 sub-temas LOCKED") and were skipped,
+    # ending up without a type (found in M1, 2026-07-30).
+    if "**Type:**" not in text[:900]:
+        t = dtype or "analysis"
+        lines = text.split("\n")
+        i = 1 if lines and lines[0].startswith("# ") else 0
+        lines.insert(i, f"\n**Status:** current · **Type:** {t} · "
+                        f"**Updated:** {date.today().isoformat()} · **Owner:** brian\n"
+                        f"**Migrated:** {origin} → {dest} (2026-07-30, ADR-029)")
+        text = "\n".join(lines)
+        open(dest, "w", encoding="utf-8").write(text)
+        print(f"  header added (type: {t})")
+
+    # ⭐ A migrated document must satisfy `rules/contract-document.md` — Purpose and Related — or
+    # the migration trades 186 legacy exemptions for 186 warnings, which is not progress.
+    # A fossil is exempt: it is consulted, never maintained.
+    if dtype != "fossil" and "/archive/" not in dest:
+        text = open(dest, encoding="utf-8", errors="replace").read()
+        if "## Purpose" not in text:
+            title = next((l for l in text.split("\n") if l.startswith("# ")), "").lstrip("# ")
+            hdr = text.find("**Migrated:**")
+            eol = text.find("\n", hdr) if hdr > 0 else 0
+            text = (text[:eol] + f"\n\n## Purpose\n\n{title.strip() or 'Migrated from v1.'}\n"
+                    + text[eol:]) if eol else text
+        if not re.search(r"^Related:", text, re.M):
+            text = text.rstrip() + (f"\n\n---\n\nRelated: `docs/plan-v1-to-v2-migration.md` "
+                                    f"(migrado desde `{origin}`).\n")
+        open(dest, "w", encoding="utf-8").write(text)
+        print("  contract shape completed (Purpose + Related)")
+
+    # ── 3 · rewrite the citations, longest pattern first ─────────────────────
+    # ⚠️ Longest first, ALWAYS: replacing the bare name before the full path would turn
+    # `Cuerpo/X.md` into `Cuerpo/docs/X.md`. That is the substring bug of 2026-07-30.
+    # 🔴 The `**Migrated:**` line NAMES the old path on purpose — it is the migration trail.
+    # Step 3 was rewriting it along with everything else, turning "Doc/X.md → docs/X.md" into
+    # "docs/X.md → docs/X.md" and erasing where the file came from. It is protected here and
+    # restored after. (Found on the first real test, 2026-07-30.)
+    trail = f"**Migrated:** {origin} → {dest} (2026-07-30, ADR-029)"
+    changed = 0
+    for f in list(hits) + [dest]:
+        if not os.path.exists(f):
+            continue
+        t = open(f, encoding="utf-8", errors="replace").read()
+        o = t
+        for p in sorted(pats, key=len, reverse=True):
+            repl = f"Mente/{dest}" if p.startswith("Mente/") else dest
+            # a bare name only gets a path when it sits inside backticks or a link
+            if p == name:
+                t = re.sub(rf"`{re.escape(p)}`", f"`{dest}`", t)
+                t = re.sub(rf"\]\({re.escape(p)}\)", f"]({dest})", t)
+            else:
+                t = t.replace(p, repl)
+        if t != o:
+            open(f, "w", encoding="utf-8").write(t)
+            changed += 1
+    if trail.split("**Migrated:**")[1].strip() and os.path.exists(dest):
+        t = open(dest, encoding="utf-8", errors="replace").read()
+        t = re.sub(r"\*\*Migrated:\*\*[^\n]*", trail, t, count=1)
+        open(dest, "w", encoding="utf-8").write(t)
+    print(f"  citations rewritten in {changed} document(s)")
+
+    # ── 4 · verify ───────────────────────────────────────────────────────────
+    after = broken_pairs()
+    added = after - before
+    print(f"  broken citations after:  {len(after)}   ({len(added)} ADDED by this move)")
+
+    if added:
+        # ── 5 · 🔴 revert. A migration that breaks links is not a migration.
+        print(f"\n🔴 REVERTING — this move ADDED {len(added)} broken citation(s):")
+        for a, b in sorted(added)[:5]:
+            print(f"     {a} → {b}")
+        # ⚠️ ONLY the documents this move touched. `git checkout -- .` reverts EVERYTHING,
+        # including uncommitted work in bin/ and hooks/ — it silently undid two validator fixes
+        # during the first reversal test (2026-07-30). A revert must be as narrow as the change.
+        # ⚠️ Only files that are UNCHANGED since HEAD except for this move. A `git checkout` on a
+        # file migrated in an earlier batch restores its pre-migration version and silently undoes
+        # that work — it cost 16 headers in M3 (2026-07-30).
+        for f in list(hits) + [dest, src]:
+            if not f.endswith(".md"):
+                continue
+            head = sh("git", "show", f"HEAD:{f}").stdout
+            now = open(f, encoding="utf-8", errors="replace").read()[:900] if os.path.exists(f) else ""
+            # `**Type:**` is the reliable marker of "already migrated" — `**Migrated:**` missed the
+            # files that carried their own **Status:** and got it renamed (cost 18 headers, M5).
+            if head and "**Type:**" not in head[:900] and "**Type:**" in now:
+                continue          # migrated in a previous batch: leave it alone
+            sh("git", "checkout", "--", f)
+        if os.path.exists(dest) and not os.path.exists(src):
+            shutil.move(dest, src)
+        print("   Nothing was kept. Inspect with: bin/check-links")
+        return 1
+
+    print(f"\n✅ moved and verified — 0 citations broken by this move "
+          f"({len(before)} → {len(after)} total, pre-existing debt unchanged)")
+    print("   Next: bin/check-structure · bin/generate-index")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,414 @@
+#!/usr/bin/env python3
+"""grade-block — layer 1 of the quality verdict: is this a product or an MVP?
+
+Answers with NUMBERS, not with an opinion. The reason this exists (architecture §12-QUINQUIES):
+
+    2026-07-24 21:15  "el sistema está completo"
+    2026-07-26 06:33  "lo que está mal es que este archivo lo implementa a medias"
+
+Same code, opposite verdicts, 9 minutes apart. The only thing that happened in between was a
+/clear. A verdict that changes with context is not a verdict — it is a mood.
+
+    🚫 The AI does not declare "this is fine." It reports the measurement.
+
+This is LAYER 1 (measurable, no human criterion needed). Layer 2 is rules/qa-dimensions.md and
+needs Brian's criterion — that is why F4 can run before F1 closes.
+
+Usage:
+  bin/grade-block <block-name> [--root <repo>] [--json] [--quiet]
+
+Exit codes: 0 product · 1 close · 2 MVP
+"""
+import os
+import re
+import sys
+import glob
+import json
+import hashlib
+import subprocess
+from datetime import date
+from collections import defaultdict
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+
+EXCLUDE = ["--exclude-dir=.next", "--exclude-dir=node_modules", "--exclude-dir=.git",
+           "--exclude-dir=dist", "--exclude-dir=build", "--exclude-dir=__pycache__",
+           "--exclude-dir=.venv", "--exclude-dir=coverage"]
+CODE_EXT = (".ts", ".tsx", ".js", ".jsx", ".py")
+
+
+def sh(*cmd):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=60).stdout
+    except Exception:                                          # noqa: BLE001
+        return ""
+
+
+def block_pieces(text):
+    """The code pieces the block declares in §F, with the status it claims."""
+    out = []
+    for m in re.finditer(r"^\|\s*\d+\s*\|[^|]*\|\s*([^|]+?)\s*\|[^|]*\|\s*(\w+)\s*\|", text, re.M):
+        piece, status = m.group(1).strip(), m.group(2).strip()
+        if piece.startswith("(") or not piece:
+            continue
+        out.append((piece.strip("`"), status))
+    return out
+
+
+def scope_dirs(text):
+    """Paths declared in §B IN — the block's own territory."""
+    m = re.search(r"##\s*✅?\s*IN\s*\n((?:\s*-.*\n)+)", text)
+    if not m:
+        return []
+    dirs = []
+    for line in m.group(1).split("\n"):
+        for tok in re.findall(r"[\w./\[\]*-]+/[\w./\[\]*-]*", line):
+            d = tok.split("*")[0].rstrip("/")
+            if d and "/" in d:
+                dirs.append(d)
+    return sorted(set(dirs))
+
+
+def importers(stem, root):
+    """Files that IMPORT this piece. Not files that mention it (measured 2026-07-29:
+    instancias.ts had 26 mentions and 9 real imports)."""
+    pat = rf"(from|require|import)\s*\(?[\"'][^\"']*(/|\./|\.\./){stem}[\"']"
+    out = sh("grep", "-rlE", pat, root, "--include=*.ts", "--include=*.tsx",
+             "--include=*.js", "--include=*.py", *EXCLUDE)
+    return [h for h in out.strip().split("\n") if h and f"/{stem}." not in h.split("/")[-1]]
+
+
+def dead_code(dirs, root):
+    """Files nobody imports, and exports nobody imports."""
+    dead_files, dead_exports = [], []
+    for d in dirs:
+        base = os.path.join(root, d)
+        if not os.path.isdir(base):
+            continue
+        for f in glob.glob(f"{base}/**/*", recursive=True):
+            if not f.endswith(CODE_EXT) or os.path.isdir(f):
+                continue
+            rel = f.replace(root.rstrip("/") + "/", "")
+            stem = os.path.basename(f).rsplit(".", 1)[0]
+            # entry points are imported by the framework, not by code
+            if re.match(r"(route|page|layout|index|middleware|main|__init__)$", stem):
+                continue
+            if not importers(stem, root):
+                dead_files.append(rel)
+                continue
+            try:
+                src = open(f, encoding="utf-8", errors="replace").read()
+            except OSError:
+                continue
+            for name in re.findall(r"^export\s+(?:async\s+)?(?:function|const|class)\s+(\w+)",
+                                   src, re.M):
+                used = sh("grep", "-rlE", rf"\b{name}\b", root, "--include=*.ts",
+                          "--include=*.tsx", "--include=*.py", *EXCLUDE)
+                others = [h for h in used.strip().split("\n") if h and h != f]
+                if not others:
+                    dead_exports.append(f"{rel}::{name}")
+    return dead_files, dead_exports
+
+
+def duplication(dirs, root, window=8):
+    """Blocks of `window` consecutive meaningful lines appearing in more than one place."""
+    seen = defaultdict(list)
+    for d in dirs:
+        base = os.path.join(root, d)
+        if not os.path.isdir(base):
+            continue
+        for f in glob.glob(f"{base}/**/*", recursive=True):
+            if not f.endswith(CODE_EXT) or os.path.isdir(f):
+                continue
+            try:
+                raw = open(f, encoding="utf-8", errors="replace").read().split("\n")
+            except OSError:
+                continue
+            lines = [(i + 1, l.strip()) for i, l in enumerate(raw)
+                     if len(l.strip()) > 12 and not l.strip().startswith(("//", "*", "#", "/*"))]
+            for i in range(len(lines) - window):
+                chunk = "\n".join(l for _, l in lines[i:i + window])
+                h = hashlib.md5(chunk.encode()).hexdigest()
+                seen[h].append(f"{f.replace(root.rstrip('/') + '/', '')}:{lines[i][0]}")
+    return [locs for locs in seen.values() if len({l.split(':')[0] for l in locs}) > 1]
+
+
+def broken_links(dirs, root):
+    """docs blocks: markdown links pointing at files that do not exist."""
+    bad = []
+    for d in dirs:
+        base = os.path.join(root, d)
+        for f in glob.glob(f"{base}/**/*.md", recursive=True) if os.path.isdir(base) else []:
+            try:
+                src = open(f, encoding="utf-8", errors="replace").read()
+            except OSError:
+                continue
+            for target in re.findall(r"\[[^\]]*\]\(([^)#]+?)\)", src):
+                if target.startswith(("http", "mailto:", "#")):
+                    continue
+                if not os.path.exists(os.path.join(os.path.dirname(f), target)):
+                    bad.append(f"{f.replace(root.rstrip('/') + '/', '')} → {target}")
+    return bad
+
+
+def orphan_docs(dirs, root):
+    """docs blocks: files nothing links to. The doc equivalent of dead code."""
+    orphans = []
+    for d in dirs:
+        base = os.path.join(root, d)
+        for f in glob.glob(f"{base}/**/*.md", recursive=True) if os.path.isdir(base) else []:
+            name = os.path.basename(f)
+            if name.upper() in ("README.MD", "INDEX.MD", "CLAUDE.MD", "MEMORY.MD"):
+                continue                                   # entry points, nothing links to them
+            hits = sh("grep", "-rl", name, root, "--include=*.md", *EXCLUDE)
+            if not [h for h in hits.strip().split("\n") if h and h != f]:
+                orphans.append(f.replace(root.rstrip("/") + "/", ""))
+    return orphans
+
+
+def infra_evidence(dirs, root):
+    """infra blocks: is the operation documented, or does it live in someone's head?"""
+    text = ""
+    for d in dirs:
+        base = os.path.join(root, d)
+        for f in glob.glob(f"{base}/**/*.md", recursive=True) if os.path.isdir(base) else []:
+            try:
+                text += open(f, encoding="utf-8", errors="replace").read().lower()
+            except OSError:
+                pass
+    return {
+        "runbook": bool(re.search(r"runbook|step by step|paso a paso|how to run", text)),
+        "rollback": bool(re.search(r"rollback|revert|how to undo|volver atr", text)),
+    }
+
+
+def pasted_secrets(dirs, root):
+    """Any type: a secret VALUE written down instead of referenced. Always red."""
+    found = []
+    pats = [(r"sk-ant-[A-Za-z0-9_-]{15,}", "Anthropic key"),
+            (r"ghp_[A-Za-z0-9]{20,}", "GitHub token"),
+            (r"sshpass\s+-p\s+['\"]?[A-Za-z0-9]{6,}", "SSH password"),
+            (r"postgres(ql)?://[^:\s]+:[^@\s]{6,}@", "DB connection string with password")]
+    for d in dirs:
+        base = os.path.join(root, d)
+        if not os.path.isdir(base):
+            continue
+        for f in glob.glob(f"{base}/**/*", recursive=True):
+            if os.path.isdir(f) or not f.endswith(CODE_EXT + (".md", ".json", ".sh", ".yml")):
+                continue
+            try:
+                src = open(f, encoding="utf-8", errors="replace").read()
+            except OSError:
+                continue
+            for pat, what in pats:
+                if re.search(pat, src):
+                    found.append(f"{f.replace(root.rstrip('/') + '/', '')}: {what}")
+    return found
+
+
+def data_evidence(dirs, root):
+    """data blocks: is the migration reversible and the schema written down?"""
+    migs, reversible = [], 0
+    for d in dirs:
+        base = os.path.join(root, d)
+        if not os.path.isdir(base):
+            continue
+        for f in glob.glob(f"{base}/**/*", recursive=True):
+            if os.path.isdir(f) or not re.search(r"(migration|migr|\d{3}_).*\.(sql|py|ts)$", f, re.I):
+                continue
+            migs.append(f)
+            try:
+                src = open(f, encoding="utf-8", errors="replace").read().lower()
+            except OSError:
+                continue
+            if re.search(r"\bdown\b|rollback|drop\s+(table|column)|-- ?down", src):
+                reversible += 1
+    return {"migrations": len(migs), "reversible": reversible}
+
+
+def cycles(dirs, root):
+    """Import cycles — a structural debt signal."""
+    graph = defaultdict(set)
+    files = []
+    for d in dirs:
+        base = os.path.join(root, d)
+        files += [f for f in glob.glob(f"{base}/**/*", recursive=True)
+                  if f.endswith(CODE_EXT) and not os.path.isdir(f)]
+    stems = {os.path.basename(f).rsplit(".", 1)[0]: f for f in files}
+    for f in files:
+        try:
+            src = open(f, encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        me = os.path.basename(f).rsplit(".", 1)[0]
+        for imp in re.findall(r"from\s+[\"'][^\"']*/(\w+)[\"']", src):
+            if imp in stems and imp != me:
+                graph[me].add(imp)
+    found = []
+    for a, deps in graph.items():
+        for b in deps:
+            if a in graph.get(b, set()):
+                pair = tuple(sorted((a, b)))
+                if pair not in found:
+                    found.append(pair)
+    return found
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    root = (sys.argv[sys.argv.index("--root") + 1] if "--root" in sys.argv
+            else os.path.dirname(MENTE))
+    as_json, quiet = "--json" in sys.argv, "--quiet" in sys.argv
+
+    if not args:
+        print(__doc__)
+        return 1
+    # A block name is a folder name. A glob would silently grade a DIFFERENT block.
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args[0]):
+        print(f"🔴 {args[0]!r} is not a block name — lowercase, digits and hyphens only")
+        return 1
+    hits = glob.glob(f"blocks/**/{args[0]}/BLOCK.md", recursive=True)
+    if not hits:
+        print(f"🔴 no block named {args[0]!r}")
+        return 1
+
+    path = hits[0]
+    text = open(path, encoding="utf-8", errors="replace").read()
+    dirs = scope_dirs(text)
+    pieces = block_pieces(text)
+
+    # ── the TYPE decides the ruler (ADR-028) ─────────────────────────────────
+    tm = re.search(r"^type:\s*(\w+)", text, re.M)
+    if not tm:
+        print(f"🔴 {args[0]}: §A has no `type:` field — required since ADR-028.\n"
+              "   Without it grade-block cannot know which metrics apply, and measuring the\n"
+              "   wrong ones produces false reds. Add: type: code | docs | infra | data")
+        return 1
+    btype = tm.group(1).lower()
+    if btype not in ("code", "docs", "infra", "data"):
+        print(f"🔴 {args[0]}: type {btype!r} is not one of code | docs | infra | data")
+        return 1
+
+    rows, reds, yels = [], [], []
+
+    def row(label, value, red_if=False, yel_if=False, na=None):
+        """na = the reason this metric does not apply to this type. Never a green."""
+        rows.append((label, value, na, red_if, yel_if))
+        if na is None:
+            if red_if:
+                reds.append(label)
+            elif yel_if:
+                yels.append(label)
+
+    # ── universal: a pasted secret is red for EVERY type ─────────────────────
+    secrets = pasted_secrets(dirs, root)
+    row("secret values written down", len(secrets), red_if=bool(secrets))
+
+    if btype == "code":
+        dead_files, dead_exports = dead_code(dirs, root)
+        dups = duplication(dirs, root)
+        cyc = cycles(dirs, root)
+        tests = [f for f in sh("find", root, "-name", "*.test.*", "-o",
+                               "-name", "*.spec.*").strip().split("\n")
+                 if f and "node_modules" not in f and ".next" not in f]
+        undeclared = []
+        for piece, _ in pieces:
+            stem = os.path.basename(piece).rsplit(".", 1)[0]
+            real = len(importers(stem, root))
+            m = re.search(rf"{re.escape(piece)}[^|]*\|\s*(\d+)\s*\|", text)
+            if m and real != int(m.group(1)):
+                undeclared.append(f"{piece}: block says {m.group(1)}, measured {real}")
+
+        row("files nobody imports (dead code)", len(dead_files), red_if=bool(dead_files))
+        row("exports never imported", len(dead_exports), yel_if=bool(dead_exports))
+        row("duplicated blocks (>=8 lines)", len(dups),
+            red_if=len(dups) > 2, yel_if=bool(dups))
+        row("test files", len(tests), red_if=not tests)
+        row("import cycles", len(cyc), red_if=bool(cyc))
+        row("dependent counts gone stale", len(undeclared), yel_if=bool(undeclared))
+        detail = {"dead files": dead_files, "duplication": [" == ".join(d[:3]) for d in dups],
+                  "cycles": [f"{a} <-> {b}" for a, b in cyc], "stale §F counts": undeclared}
+
+    elif btype == "docs":
+        bad, orph = broken_links(dirs, root), orphan_docs(dirs, root)
+        row("broken links", len(bad), red_if=bool(bad))
+        row("orphan docs (nothing links to them)", len(orph), yel_if=bool(orph))
+        row("test files", 0, na="a document has no test file")
+        row("files nobody imports", 0, na="documents are linked, not imported")
+        row("duplicated code blocks", 0, na="not code")
+        detail = {"broken links": bad, "orphans": orph}
+
+    elif btype == "infra":
+        ev = infra_evidence(dirs, root)
+        row("runbook documented", "yes" if ev["runbook"] else "NO", red_if=not ev["runbook"])
+        row("rollback documented", "yes" if ev["rollback"] else "NO", red_if=not ev["rollback"])
+        row("test files", 0, na="infrastructure is verified by running it, not by unit tests")
+        row("files nobody imports", 0, na="no code in scope")
+        row("duplicated code blocks", 0, na="not code")
+        detail = {}
+
+    else:                                                      # data
+        ev = data_evidence(dirs, root)
+        irrev = ev["migrations"] - ev["reversible"]
+        row("migrations found", ev["migrations"])
+        row("migrations WITHOUT a rollback", irrev, red_if=irrev > 0)
+        row("test files", 0, na="schema is verified by migrating up and down")
+        row("duplicated code blocks", 0, na="not application code")
+        detail = {}
+
+    # ⛔ Absence of evidence is not evidence: an empty scope had zero broken links and zero
+    # orphans, so it scored 🟢 PRODUCT. A verdict with no measured files is NOT a pass.
+    measured = 0
+    for d in dirs:
+        base = os.path.join(root, d)
+        if os.path.isdir(base):
+            measured += len([f for f in glob.glob(f"{base}/**/*", recursive=True)
+                             if not os.path.isdir(f)])
+        elif os.path.isfile(base):
+            measured += 1
+    if measured == 0:
+        verdict, code = "NOTHING MEASURED", 1
+    else:
+        verdict = "MVP" if reds else ("CLOSE" if yels else "PRODUCT")
+        code = 2 if reds else (1 if yels else 0)
+
+    if as_json:
+        print(json.dumps({"block": args[0], "type": btype, "date": date.today().isoformat(),
+                          "metrics": {l: (v if na is None else "n/a")
+                                      for l, v, na, _, _ in rows},
+                          "reds": reds, "verdict": verdict}, indent=2))
+        return code
+    if quiet:
+        return code
+
+    print(f"\nBLOCK {args[0]} · type: {btype} — measured quality · {date.today().isoformat()}")
+    print(f"  scope: {', '.join(dirs) or '(none declared)'}\n")
+    for label, value, na, r, y in rows:
+        dots = "." * max(2, 42 - len(label))
+        if na is not None:
+            print(f"  {label} {dots} {'n/a':>4}  ⬜  ({na})")
+        else:
+            print(f"  {label} {dots} {value:>4}  {'🔴' if r else ('🟡' if y else '🟢')}")
+    print("  " + "-" * 56)
+    icon = {"PRODUCT": "🟢", "CLOSE": "🟡", "MVP": "🔴", "NOTHING MEASURED": "⬜"}[verdict]
+    print(f"  LAYER 1 VERDICT: {icon} {verdict}   (metrics for type `{btype}` · ADR-028)")
+
+    if secrets:
+        print("\n  🔴 SECRETS — reference them, never write the value:")
+        for s in secrets[:5]:
+            print(f"     {s}")
+    for name, items in detail.items():
+        if items:
+            print(f"\n  {name}:")
+            for it in items[:6]:
+                print(f"     {it}")
+
+    print("\n  ⬜ = not measured for this type. It is NOT a pass (ADR-028).")
+    print("  Layer 2 (senior criterion) is rules/qa-dimensions.md — still pending Brian.")
+    print("  A 🔴 does not forbid closing the block. It forbids closing it AS A PRODUCT.")
+    return code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -28,7 +28,7 @@
 
 ## §0 — NUMERACIÓN CANÓNICA DE NODOS (AUTORIDAD) ⚠️ LEER PRIMERO
 
-> **Reconciliación 2026-06-09.** Una auditoría de coherencia (`Doc/Reporte_Maestro_Consolidado_R1-R10.md` + `Doc/Reporte_Alineacion_R1-R10_vs_Grafo_Vision.md`) detectó que la numeración de nodos 5-9 en el CUERPO de este documento (escrito 2026-06-01, antes de R5/R9) **no coincide** con la del `For3s_OS_Grafo_Maestro.md` ni con la `Vision_For3s_Frontier.md §6.1` ni con las rondas R5/R6/R9. **Esta sección §0 es la AUTORIDAD.** Donde el cuerpo (§3-§19) diga otro número para los nodos 5-9, prevalece §0.
+> **Reconciliación 2026-06-09.** Una auditoría de coherencia (`docs/analysis/Reporte_Maestro_Consolidado_R1-R10.md` + `docs/analysis/Reporte_Alineacion_R1-R10_vs_Grafo_Vision.md`) detectó que la numeración de nodos 5-9 en el CUERPO de este documento (escrito 2026-06-01, antes de R5/R9) **no coincide** con la del `For3s_OS_Grafo_Maestro.md` ni con la `Vision_For3s_Frontier.md §6.1` ni con las rondas R5/R6/R9. **Esta sección §0 es la AUTORIDAD.** Donde el cuerpo (§3-§19) diga otro número para los nodos 5-9, prevalece §0.
 
 ### La numeración canónica (= Grafo Maestro = Visión §6.1 = R5/R6/R9)
 
@@ -2452,7 +2452,7 @@ Es DOCUMENTO VIVO con "Última actualización" en header.
 
 Cambios significativos se loguean en:
    • for3s-inter/07-operations/decision-log.md (si afecta arquitectura)
-   • Mente/Doc/Estado_Sesion_Continuidad.md (si afecta continuidad)
+   • Mente/memory/Estado_Sesion_Continuidad.md (si afecta continuidad)
 ```
 
 ---

@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""check-clear-ready — is it safe to /clear right now?
+
+⭐ This exists because of the single worst failure of the project (2026-07-24/26):
+
+    before /clear:  "todo está perfecto, me encantó"
+    after  /clear:  "sí mejoró, pero aún sigue roto"
+
+Same code. Opposite verdicts. Brian: *"¿me mientes o qué está pasando? Ese dolor es el que más me
+impide trabajar."*
+
+Nothing lied. `/clear` is a CUT, not a save — it writes nothing to disk. The first verdict lived
+only in the conversation, so it died with it, and what came back was a fresh reading of the same
+files. **The fix is not a better memory. It is refusing to /clear while the verdict lives only in
+context.**
+
+Usage: bin/check-clear-ready [--quiet]
+Exit: 0 safe · 1 something would be lost
+"""
+import os
+import re
+import sys
+import glob
+import subprocess
+from datetime import date
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+LOST, WARN = [], []
+
+
+def main():
+    quiet = "--quiet" in sys.argv
+
+    # ① the session autopsy — the rule that already existed and was never enforced
+    d = os.path.expanduser("~/.claude/projects/-home-brianweb3-for3s")
+    js = sorted(glob.glob(f"{d}/*.jsonl"), key=os.path.getmtime, reverse=True)
+    if js:
+        sid = os.path.basename(js[0])[:8]
+        mb = os.path.getsize(js[0]) / 1e6
+        reg = "Cerebro/Registro_Conversaciones.md"
+        text = open(reg, encoding="utf-8", errors="replace").read() if os.path.exists(reg) else ""
+        if sid not in text:
+            LOST.append(f"this session ({sid}, {mb:.0f} MB) has NO entry in {reg}\n"
+                        "   → rule-session-close.md: no /clear without registering first.\n"
+                        "   The 2026-07-21 incident was recovered from a .jsonl six days later,\n"
+                        "   documented nowhere else. Without the entry, the autopsy is unfindable.")
+
+    # ② every active block must restart from disk alone
+    for b in glob.glob("blocks/active/*/BLOCK.md"):
+        name = os.path.basename(os.path.dirname(b))
+        r = subprocess.run([f"{MENTE}/bin/check-sufficiency", name],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            LOST.append(f"block `{name}` is NOT sufficient — §A-E do not answer the restart\n"
+                        "   questions. After /clear its scope gets rebuilt by inference.")
+        text = open(b, encoding="utf-8", errors="replace").read()
+        upd = re.search(r"^updated:\s*(\d{4}-\d{2}-\d{2})", text, re.M)
+        if upd and upd.group(1) != date.today().isoformat():
+            WARN.append(f"block `{name}` §E updated {upd.group(1)}, not today — "
+                        "today's progress may live only in the conversation")
+
+    # ③ RETOMAR.md is the cold-start brief: stale, the next session starts blind
+    for f, label in (("Doc/RETOMAR.md", "the cold-start brief"),
+                     ("docs/plan-v2-rollout.md", "the v2 plan")):
+        if os.path.exists(f):
+            m = re.search(r"(\d{4}-\d{2}-\d{2})",
+                          open(f, encoding="utf-8", errors="replace").read()[:1500])
+            if m and m.group(1) < date.today().isoformat():
+                WARN.append(f"{f} ({label}) reads {m.group(1)} — update it before the cut")
+
+    # ④ uncommitted work is not lost by /clear, but the REASON for it is
+    for repo in (os.path.dirname(MENTE), f"{os.path.dirname(MENTE)}/marca-personal"):
+        if not os.path.isdir(f"{repo}/.git"):
+            continue
+        out = subprocess.run(["git", "-C", repo, "status", "--porcelain"],
+                             capture_output=True, text=True).stdout.strip()
+        if out:
+            WARN.append(f"{os.path.basename(repo)}: {len(out.splitlines())} uncommitted files — "
+                        "the files survive, the reason for the change does not")
+
+    if quiet:
+        return 1 if LOST else 0
+    if LOST:
+        print(f"\n🔴 DO NOT /clear YET — {len(LOST)} thing(s) would be lost\n")
+        for m in LOST:
+            print(f"   {m}\n")
+    if WARN:
+        print(f"🟡 {len(WARN)}")
+        for m in WARN:
+            print(f"   {m}")
+    if not LOST:
+        print("\n✅ SAFE TO /clear — everything that matters is on disk."
+              if not WARN else "\n🟡 /clear is allowed, but read the warnings above first.")
+    return 1 if LOST else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

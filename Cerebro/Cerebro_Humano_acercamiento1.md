@@ -6,7 +6,7 @@
 **Fecha:** 2026-05-28
 **Estatus:** Mapa de referencia. Iteración 1.
 **Propósito:** Visualizar el cerebro humano a detalle, marcando dónde la IA ya entró, dónde apenas tocó, dónde no ha entrado, y dónde están las oportunidades reales de mejora. Este mapa es base para decisiones técnicas de For3s.
-**Documentos relacionados:** [Primeros_Pasos.md](../Doc/Primeros_Pasos.md), [README.md](../Doc/README.md)
+**Documentos relacionados:** [Primeros_Pasos.md](../Doc/Primeros_Pasos.md), [README.md](../memory/archive/README.md)
 
 ---
 

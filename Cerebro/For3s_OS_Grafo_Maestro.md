@@ -8,7 +8,7 @@
 **Capa:** Cerebro — marco teórico estructural.
 **Propósito:** Mostrar For3s OS como un GRAFO DE CONEXIONES completo — no piezas aisladas. Cada nodo, cada edge, cada flujo de información explícito. Con seguridad/escalabilidad/autonomía-generativa integradas estructuralmente desde día 1.
 **Documentos ancla:**
-- [Mente/Alma/Vision_For3s_Frontier.md](../Alma/Vision_For3s_Frontier.md)
+- [Mente/vision/Vision_For3s_Frontier.md](../vision/Vision_For3s_Frontier.md)
 - [Mente/Cerebro/Arquitectura_Grafo_vs_Loop.md](Arquitectura_Grafo_vs_Loop.md)
 - [Mente/Cerebro/Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md)
 - [Mente/Cerebro/Cerebro_Humano_acercamiento2.md](Cerebro_Humano_acercamiento2.md)
@@ -18,7 +18,7 @@
 
 ## §0 — ESTADO DE IMPLEMENTACIÓN (añadido 2026-06-10 — LEER ANTES QUE NADA)
 
-> **Este documento es el diseño conceptual fundacional (mayo 2026) y SIGUE SIENDO la autoridad arquitectónica:** los 11 nodos, los 24 edges, los 3 pilares, las reglas de autonomía (§8.3 niveles de aprobación, §8.4 límites duros) y las propiedades emergentes (§12) son LEY. Ninguna ronda los contradijo (verificado: `Doc/Reporte_Alineacion_R1-R10_vs_Grafo_Vision.md`, veredicto 9.2/10).
+> **Este documento es el diseño conceptual fundacional (mayo 2026) y SIGUE SIENDO la autoridad arquitectónica:** los 11 nodos, los 24 edges, los 3 pilares, las reglas de autonomía (§8.3 niveles de aprobación, §8.4 límites duros) y las propiedades emergentes (§12) son LEY. Ninguna ronda los contradijo (verificado: `docs/analysis/Reporte_Alineacion_R1-R10_vs_Grafo_Vision.md`, veredicto 9.2/10).
 >
 > **PERO:** las 10 rondas técnicas (`Mente/Cuerpo/Ronda_01..10`, junio 2026, 100% LOCKED) **materializaron** este grafo y, al hacerlo, eligieron tecnologías más afinadas que las nombradas aquí (este doc se escribió ANTES de las rondas). **Regla de precedencia: donde una tecnología nombrada abajo difiera de lo lockeado en una ronda, MANDA LA RONDA.** Este documento conserva la autoridad CONCEPTUAL (qué nodos, qué conexiones, qué reglas); la autoridad TÉCNICA (con qué se construye) vive en las rondas.
 
@@ -35,12 +35,12 @@
 | §7.2 (escala) | Spot instances / edge deployment | **hardware LOCAL Brian (D-009), systemd+Docker** | R10 |
 | Nodo 2 (persistencia) | SQLAlchemy 2 + Alembic (R2 B1) | **asyncpg directo + migraciones SQL numeradas** (H2, sin ORM) | R2→H2 |
 
-→ El stack completo consolidado vive en `Doc/Reporte_Maestro_Consolidado_R1-R10.md` §3.
+→ El stack completo consolidado vive en `docs/analysis/Reporte_Maestro_Consolidado_R1-R10.md` §3.
 
 ### §0.2 — Desviaciones estructurales registradas (justificadas, NO contradicciones)
 
 1. **Pilar 2 en v1 = MONOLITO MODULAR, no microservicios.** Este doc dice "cada nodo es un servicio independiente". La decisión LOCKED (D-009 + R2 + R10) es: v1 corre como monolito modular en una sola máquina (hardware local de Brian), con los nodos como módulos con interfaces limpias — el diseño PERMITE extraerlos a servicios cuando la escala lo exija (v2/v3). Razón: ancla 3.D (equipo pequeño) — un solo deploy, un solo backup, operable por 1 persona.
-2. **Pilar 3 en v1 = SOLO la capacidad generativa #1 (skills).** Este doc lista 4 capacidades (§8.1: skills, relaciones KG, sub-agentes, modos). En v1 solo se activa la #1, gobernada por el Meta-Orchestrator (detallado post-diseño en `Cuerpo/Ronda_06_Pre_Code_Review_Detailed.md` — governor 6 frenos + kill switch). Las #2/#3/#4 quedan diferidas a v3. Razón: soltar autonomía gradualmente, freno antes que motor.
+2. **Pilar 3 en v1 = SOLO la capacidad generativa #1 (skills).** Este doc lista 4 capacidades (§8.1: skills, relaciones KG, sub-agentes, modos). En v1 solo se activa la #1, gobernada por el Meta-Orchestrator (detallado post-diseño en `work/Ronda_06_Pre_Code_Review_Detailed.md` — governor 6 frenos + kill switch). Las #2/#3/#4 quedan diferidas a v3. Razón: soltar autonomía gradualmente, freno antes que motor.
 3. **Capa de datos en construcción (H2) = asyncpg directo + migraciones SQL numeradas, sin ORM.** R2 B1 lockeó "SQLAlchemy 2 + Alembic". Al programar H2 se eligió SQL directo con asyncpg (R2 ya lockeó asyncpg) + un runner de migraciones SQL versionadas (`migrations/NNN_*.sql` + tabla `schema_version`) en vez de Alembic ORM. Razón: para el esquema actual (pocas tablas + triggers + audit chain que es SQL puro) es más simple, transparente y auditable, y conserva evolución versionada del esquema. Si el ORM se vuelve necesario al crecer (H5+), se reevalúa. Registrado 2026-06-11 (ticket 002).
 
 ### §0.3 — Reconciliación "cobertura cerebral %" vs "11/11 nodos"
@@ -49,9 +49,9 @@ Las dos afirmaciones son ciertas a la vez: **los 11 nodos EXISTEN en v1 (ancho c
 
 ### §0.4 — Dónde está el resto de la verdad
 
-- **El ORDEN de construcción:** `Doc/Plan_Maestro_Programacion.md` (6 fases foundation-first).
-- **El TIEMPO:** `Doc/Estimacion_Tiempo_Por_Subtema.md` (~9-10 meses Brian solo; MVP ~3.5-4).
-- **La coherencia interna de las rondas:** `Doc/Reporte_Maestro_Consolidado_R1-R10.md`.
+- **El ORDEN de construcción:** `memory/archive/Plan_Maestro_Programacion.md` (6 fases foundation-first).
+- **El TIEMPO:** `memory/archive/Estimacion_Tiempo_Por_Subtema.md` (~9-10 meses Brian solo; MVP ~3.5-4).
+- **La coherencia interna de las rondas:** `docs/analysis/Reporte_Maestro_Consolidado_R1-R10.md`.
 - **La numeración canónica de nodos:** este doc §4 = Visión §6.1 = `Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md` §0.
 
 ---
@@ -827,7 +827,7 @@ Este es el pilar más radical. Aquí se explica en detalle.
 
 ### 8.1 Las 4 capacidades generativas
 
-> ⚠️ **Nota de implementación (2026-06-10, ver §0.2):** en v1 LOCKED solo se activa la capacidad **#1 (skills)**, gobernada por el Meta-Orchestrator (governor 6 frenos + kill switch, `Cuerpo/Ronda_06_Pre_Code_Review_Detailed.md`). Las capacidades #2 (relaciones KG), #3 (sub-agentes) y #4 (modos) están DISEÑADAS aquí pero diferidas a v3.
+> ⚠️ **Nota de implementación (2026-06-10, ver §0.2):** en v1 LOCKED solo se activa la capacidad **#1 (skills)**, gobernada por el Meta-Orchestrator (governor 6 frenos + kill switch, `work/Ronda_06_Pre_Code_Review_Detailed.md`). Las capacidades #2 (relaciones KG), #3 (sub-agentes) y #4 (modos) están DISEÑADAS aquí pero diferidas a v3.
 
 **1. Generar skills nuevas (Ganglios Basales)**
 - Cuando el sistema resuelve un problema con esfuerzo, escribe skill
@@ -1235,7 +1235,7 @@ Para que sea realidad falta(ba):
 - Cómo se versiona el grafo (rollback si degrada) → ✅ RESUELTO (R6 failure handling re-plan+rollback + R10 deploy auto-rollback)
 - Cómo se prueba el grafo entero como sistema → ✅ RESUELTO (R6 memory regression 4 layers + 7 canaries · R9 attack suite · R10 pre-flight + DR testing)
 
-**Lo ÚNICO que falta hoy es PROGRAMARLO.** El orden está en `Doc/Plan_Maestro_Programacion.md` (6 fases, empezar por Fase 0) y el tiempo en `Doc/Estimacion_Tiempo_Por_Subtema.md` (~9-10 meses Brian solo, MVP ~3.5-4).
+**Lo ÚNICO que falta hoy es PROGRAMARLO.** El orden está en `memory/archive/Plan_Maestro_Programacion.md` (6 fases, empezar por Fase 0) y el tiempo en `memory/archive/Estimacion_Tiempo_Por_Subtema.md` (~9-10 meses Brian solo, MVP ~3.5-4).
 
 Cada pieza tiene su documento. Este es el **mapa maestro**, no el manual de implementación.
 
@@ -1271,7 +1271,7 @@ Brian, este es For3s OS visto como **un cerebro completo, no piezas aisladas**:
 
 1. ~~Validar este grafo con el founder~~ → ✅ HECHO (validado + auditado: alineación 9.2/10)
 2. ~~Traducir a `Mente/Cuerpo/` con documentos técnicos~~ → ✅ HECHO (R1-R10 LOCKED, 46 archivos)
-3. ~~Empezar prototipo del MVP cerebral mínimo~~ → ⏳ ES EL SIGUIENTE PASO: programar Fase 0 (`Doc/Plan_Maestro_Programacion.md`) → MVP pilotable ~3.5-4 meses
+3. ~~Empezar prototipo del MVP cerebral mínimo~~ → ⏳ ES EL SIGUIENTE PASO: programar Fase 0 (`memory/archive/Plan_Maestro_Programacion.md`) → MVP pilotable ~3.5-4 meses
 4. Validar pilares en el prototipo (E2E + sharding + 1 skill auto-generada) → ⏳ son los gates de las Fases 1-3 del Plan Maestro
 
 ---
