@@ -1,0 +1,85 @@
+# Mente OS · Handoff Manifest — Schema v1
+#
+# Canonical reference for bounded delegation manifests.
+# Doctrine: rules/contract-handoff.md
+#
+# ⚠️ THIS FILE IS A REFERENCE, NOT A FILLABLE TEMPLATE.
+# To create a manifest, copy rules/template-handoff.yml and edit it.
+# The values below are illustrative — do not copy this file directly.
+#
+# Manifests live one-per-handoff at:
+#   blocks/<state>/<block>/handoffs/<handoff_id>.yml
+#
+# Validation: bin/verify-handoff <manifest-path>
+#   0 = well-formed AND every binding check passed
+#   1 = usage error / file missing
+#   2 = malformed (the manifest itself is wrong)
+#   3 = binding failed (the manifest is fine, reality does not match)
+
+# ── Required: schema version ──────────────────────────────────────────────
+# A specialist REFUSES an unknown version rather than guessing at the shape.
+mente_handoff: v1
+
+# ── Required: identity ────────────────────────────────────────────────────
+# `block` + `block_path` are the binding. The specialist verifies both
+# against BLOCK.md before taking any task action.
+handoff_id: ""      # unique within the block · YYYY-MM-DD-HHMM-<short-slug>
+block: ""           # the block id — must equal BLOCK.md's `id:` field
+                    # (e.g. blk-demo-2026-07), NOT the folder name
+block_path: ""      # path to the block directory, relative to Mente/ or absolute
+
+# ── Optional: role ────────────────────────────────────────────────────────
+role: ""            # descriptive only · e.g. "search", "audit", "migration"
+
+# ── Required: read scope ──────────────────────────────────────────────────
+# Files the specialist MAY read. Relative paths resolve against block_path
+# unless absolute. Reading outside this list is a doctrine violation.
+load:
+  required:         # always read · every path is checked to exist
+    - BLOCK.md
+  optional: []      # may read if the task warrants it — the specialist's call
+
+# ── Required: task ────────────────────────────────────────────────────────
+task:
+  objective: ""          # what the specialist does (block scalars allowed)
+  success_condition: ""  # the observable condition that means it is done
+  stop_condition:        # at least one entry — when to halt
+    - success condition met
+    - binding check fails (return aborted-binding-mismatch)
+    - blocked by a question only Brian can answer (record it and stop)
+
+# ── Required: binding checks ──────────────────────────────────────────────
+# Ordered, named, machine-testable. First failure aborts before any action.
+#
+# v1 dispatch: bin/verify-handoff runs these four UNCONDITIONALLY in this
+# fixed order and does not parse the array. The array is documentary in v1 —
+# it reserves the wire format for a v2 verifier that parses and dispatches.
+binding_checks:
+  - block_path_exists          # block_path resolves to a directory
+  - block_md_exists            # BLOCK.md is present and readable
+  - block_id_matches           # BLOCK.md's `id:` equals this manifest's `block`
+  - load_required_paths_exist  # every load.required path resolves
+
+# ── Required: write scope ─────────────────────────────────────────────────
+# The rule that matters most. Two places, both declared. Everything else denied.
+write_back:
+  artifact_path: ""     # MUST start with "handoffs/" · the return artifact
+  artifact_schema:      # required sections, in order, in the return artifact
+    - objective
+    - work
+    - findings
+    - open-questions
+    - status            # done | blocked | aborted-binding-mismatch
+  also_append: []       # optional bounded appends to coordinator-owned files
+                        # entries: { target: <path>, max_lines: <int> }
+                        # 🔴 v1 permits ONLY BLOCK.md as a target, and the
+                        # append goes to §J Context. §A-E and §G are never
+                        # writable by a specialist.
+
+# ── Optional: isolation reminders ─────────────────────────────────────────
+# Redundant with rules/contract-handoff.md §3, but useful carried inline
+# into the specialist's prompt. Free text.
+isolation:
+  - do not read other blocks
+  - do not modify files outside block_path
+  - do not modify BLOCK.md sections A-E or G

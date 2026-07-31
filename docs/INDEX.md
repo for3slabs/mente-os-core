@@ -8,7 +8,7 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**266 documents** · **2 blocks** · 19 directories
+**267 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
@@ -28,7 +28,7 @@
 | `memory/archive/` | 38 |
 | `principles/` | 5 |
 | `principles/expertise/` | 3 |
-| `rules/` | 16 |
+| `rules/` | 17 |
 | `rules/decisions/` | 29 |
 | `vision/` | 8 |
 | `work/` | 88 |
@@ -110,7 +110,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 404 |
+| `INDEX.md` | generated | — |  | 405 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 79 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -172,7 +172,7 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-07-30 | 3579 |
+| `PENDIENTES.md` | pending | current | 2026-07-31 | 3592 |
 | `RETOMAR.md` | entry-point | current | 2026-07-31 | 199 |
 
 ## `memory/archive/`
@@ -248,6 +248,7 @@
 | `contract-archive.md` | contract | current | 2026-07-30 | 131 |
 | `contract-block.md` | contract | current | 2026-07-29 | 335 |
 | `contract-document.md` | rule | current | 2026-07-29 | 173 |
+| `contract-handoff.md` | contract | current | 2026-07-31 | 150 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
 | `rule-config-hygiene.md` | rule | current | 2026-07-30 | 76 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |

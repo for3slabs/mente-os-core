@@ -61,9 +61,16 @@ def main():
                         "today's progress may live only in the conversation")
 
     # ③ RETOMAR.md is the cold-start brief: stale, the next session starts blind
-    for f, label in (("Doc/RETOMAR.md", "the cold-start brief"),
+    #
+    # 🔴 Found 2026-07-31: this pointed at `Doc/RETOMAR.md`, a path the v1→v2 migration
+    # deleted. Guarded by `os.path.exists`, it failed SILENTLY — so the one check that
+    # protects the cold-start brief had never run. A guard aimed at a path that no longer
+    # exists is not a guard; it is a green light. Hence the missing-file branch below.
+    for f, label in (("memory/RETOMAR.md", "the cold-start brief"),
                      ("docs/plan-v2-rollout.md", "the v2 plan")):
-        if os.path.exists(f):
+        if not os.path.exists(f):
+            LOST.append(f"{f} ({label}) does not exist — the next session starts blind")
+        else:
             m = re.search(r"(\d{4}-\d{2}-\d{2})",
                           open(f, encoding="utf-8", errors="replace").read()[:1500])
             if m and m.group(1) < date.today().isoformat():

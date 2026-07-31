@@ -1,23 +1,36 @@
 # PENDIENTES — For3s OS
 
-**Status:** current · **Type:** pending · **Updated:** 2026-07-30 · **Owner:** brian
+**Status:** current · **Type:** pending · **Updated:** 2026-07-31 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
-## 📊 3 SESIONES HISTÓRICAS SIN REGISTRO — deuda de telemetría (detectado 2026-07-31)
+## ✅ 3 SESIONES HISTÓRICAS SIN REGISTRO — CERRADO 2026-07-31
 
-`bin/check-health` las reporta como 🟡. Son anteriores a la regla de `rule-session-close.md`.
+Registradas como **§R1-R3** en `Cerebro/Registro_Conversaciones.md`, con datos **medidos** de sus
+`.jsonl` (peso, turnos, contexto pico, tokens). `check-health` bajó de 🟡 7 a 🟡 5.
 
-| ID | Peso | Fin |
-|---|---|---|
-| `4c187f33` | **23 MB** 🔴 | 2026-07-23 |
-| `b075269c` | 13 MB | 2026-06-27 |
-| `fa2c625f` | 9.7 MB | 2026-07-19 |
+⚠️ Se registró lo medible. **El criterio no se reconstruyó** — qué se sintió raro, por qué se
+cerró — porque inventarlo sería peor que no tenerlo. Ese es el costo exacto que la regla previene.
 
-**Por qué no se hizo ahora:** reconstruir una autopsia de una conversación que no se vivió es
-inventarla. Los `.jsonl` están en disco y se pueden leer cuando Brian lo pida.
+`4c187f33` era la del incidente del 21-jul: 23.4 MB, 999K de contexto pico, 96h. Llevaba **10 días
+sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el peor infractor".
 
-⚠️ `4c187f33` (23 MB) es la segunda sesión más pesada del proyecto después de S1 y **no tiene
-autopsia** — justo la clase de dato que faltó tras el incidente del 21-jul.
+---
+
+## 📦 TRANSFER MODULES — anotado, NO construir hoy (2026-07-31)
+
+**Qué es:** empaquetar un trabajo completo para entregarlo a un tercero, con reporte de redacción
+de secretos. La referencia externa lo tiene en 14 archivos + `verify_tm.sh`.
+
+**Por qué NO se construye ahora — decisión de Brian, con razón medida:** los Transfer Modules
+resuelven *entregar trabajo a otra organización*. For3s OS hoy tiene **un solo dueño**, y los
+puentes a otros Mente OS ya están resueltos por el gate (`bridges/Puentes_Mente_OS.md`).
+Construirlo ahora sería **maquinaria antes de tener el problema** — el orden que el v2 existe
+para evitar (*piloto antes que maquinaria*).
+
+**Cuándo reabrirlo:** cuando haya un tercero real a quien entregar un bloque cerrado. La señal
+concreta sería un cliente que pida el trabajo, no solo su resultado.
+
+Contexto: `docs/analysis-internos-v1.md` · comparación medida del 2026-07-31 (sesión S8).
 
 ---
 

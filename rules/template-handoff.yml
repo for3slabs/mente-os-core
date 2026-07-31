@@ -1,0 +1,49 @@
+---
+# Handoff manifest — fill every placeholder before spawning the specialist.
+# Schema:   rules/schema-handoff-v1.yml
+# Doctrine: rules/contract-handoff.md
+# Verify:   bin/verify-handoff <this-file>   (must exit 0 before spawning)
+
+mente_handoff: v1
+
+handoff_id: 2026-01-01-1200-replace-me
+block: blk-<name>-<YYYY-MM>
+block_path: blocks/active/<name>
+
+role: <what-this-specialist-is-for>
+
+load:
+  required:
+    - BLOCK.md
+  optional: []
+
+task:
+  objective: |
+    <what the specialist must do>
+  success_condition: |
+    <the observable condition that means it is done>
+  stop_condition:
+    - success condition met
+    - binding check fails (return aborted-binding-mismatch)
+    - blocked by a question only Brian can answer (record it and stop)
+
+binding_checks:
+  - block_path_exists
+  - block_md_exists
+  - block_id_matches
+  - load_required_paths_exist
+
+write_back:
+  artifact_path: handoffs/2026-01-01-1200-replace-me.md
+  artifact_schema:
+    - objective
+    - work
+    - findings
+    - open-questions
+    - status
+  also_append: []
+
+isolation:
+  - do not read other blocks
+  - do not modify files outside block_path
+  - do not modify BLOCK.md sections A-E or G

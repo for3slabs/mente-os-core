@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""verify-handoff — is this delegation actually bounded?
+
+The gap this closes was measured: on 2026-07-20 a single session ran 421 Bash commands with
+ZERO subagents. Everything landed in one context, it reached 999K tokens, and that session
+produced the 21-jul incident. Delegating is not the problem — delegating with no declared
+scope is (rules/contract-handoff.md §0).
+
+Two layers, run in order:
+
+  (A) WELL-FORMEDNESS — the manifest itself is valid.        exit 2
+      Wrong here means: fix the manifest.
+
+  (B) BINDING — the manifest matches what is on disk.        exit 3
+      Wrong here means: the manifest describes a world that does not exist
+      (usually a block that moved or was renamed).
+
+Keeping 2 and 3 apart is the point: they need opposite fixes.
+
+Usage: bin/verify-handoff <manifest-path> [--quiet]
+Exit:  0 bounded · 1 usage/missing file · 2 malformed · 3 binding failed
+
+No yq, no PyYAML — the manifest subset is fixed and small, so it is parsed directly.
+A dependency that must be installed is a validator that silently does not run.
+"""
+import os
+import re
+import sys
+
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+quiet = "--quiet" in sys.argv
+args = [a for a in sys.argv[1:] if not a.startswith("-")]
+
+if len(args) != 1:
+    print("Usage: bin/verify-handoff <manifest-path> [--quiet]", file=sys.stderr)
+    sys.exit(1)
+
+MANIFEST = args[0]
+if not os.path.isfile(MANIFEST):
+    print(f"🔴 no such manifest: {MANIFEST}", file=sys.stderr)
+    sys.exit(1)
+
+text = open(MANIFEST, encoding="utf-8", errors="replace").read()
+lines = text.splitlines()
+
+# Placeholders from the template. A manifest still carrying them was never filled in —
+# and an unfilled manifest that passes is worse than no manifest, because it reads as a
+# green light. Detected explicitly rather than by "looks empty".
+PLACEHOLDER = re.compile(r"replace-me|<[a-z][a-z0-9-]*>", re.I)
+
+errors, warnings = [], []
+
+
+def scalar(key):
+    """Top-level `key: value`. Returns the raw value, or None if absent.
+
+    Block scalars (`|` / `>`) are accepted at face value: their body is indented and
+    validating its emptiness would need a real YAML parser. The template supplies bodies.
+    """
+    m = re.search(rf"^{re.escape(key)}:[ \t]*(.*)$", text, re.M)
+    return m.group(1).strip() if m else None
+
+
+def nested(parent, key):
+    """`key: value` nested exactly one level under a top-level `parent:` block."""
+    m = re.search(rf"^{re.escape(parent)}:[ \t]*$\n((?:[ \t]+.*\n|\n)*)", text, re.M)
+    if not m:
+        return None
+    m2 = re.search(rf"^[ \t]+{re.escape(key)}:[ \t]*(.*)$", m.group(1), re.M)
+    return m2.group(1).strip() if m2 else None
+
+
+def items(path):
+    """Block-style list entries under a dotted path (`load.required`).
+
+    🔴 Flow style (`[a, b]`) is REJECTED, not silently parsed. Accepting both means the
+    verifier and a future reader disagree about what the scope is — and the scope is the
+    entire point of the manifest.
+    """
+    parts = path.split(".")
+    # Narrow the search window one level at a time so `required:` under `load:` is not
+    # confused with a `required:` under some other parent.
+    window, indent = text, ""
+    for p in parts:
+        m = re.search(rf"^{indent}{re.escape(p)}:[ \t]*(.*)$\n?((?:(?:{indent}[ \t]+.*)?\n)*)",
+                      window, re.M)
+        if not m:
+            return None
+        inline = m.group(1).strip()
+        # `[]` is an explicit empty list — unambiguous, so it is accepted. Only a flow list
+        # with CONTENT is rejected: that is the form whose scope could be misread.
+        if inline == "[]":
+            return []
+        if inline.startswith("["):
+            errors.append(f"{path}: flow-style list `[a, b]` is not accepted — use `- a` on "
+                          f"separate lines (a scope must be unambiguous)")
+            return []
+        window, indent = m.group(2), indent + "  "
+    return [ln.strip()[2:].strip() for ln in window.splitlines()
+            if ln.strip().startswith("- ")]
+
+
+# ══ LAYER A · WELL-FORMEDNESS ══════════════════════════════════════════════════
+# A1 · schema version. Checked first: an unknown version means every assumption below
+#      about the shape is unverified, so nothing after this would be trustworthy.
+version = scalar("mente_handoff")
+if version is None:
+    errors.append("missing `mente_handoff:` — the schema version is required "
+                  "(a specialist refuses an unknown shape rather than guessing)")
+elif version != "v1":
+    errors.append(f"unknown schema version {version!r} — this verifier only knows v1")
+
+# A2 · identity
+for key in ("handoff_id", "block", "block_path"):
+    val = scalar(key)
+    if not val:
+        errors.append(f"missing or empty `{key}:` — required for the binding")
+    elif PLACEHOLDER.search(val):
+        errors.append(f"`{key}: {val}` is still the template placeholder — never filled in")
+
+# A3 · read scope
+req = items("load.required")
+if req is None:
+    errors.append("missing `load:` block — the read scope is required")
+elif not req:
+    errors.append("`load.required` is empty — a specialist with no declared read scope "
+                  "is unbounded")
+elif "BLOCK.md" not in req:
+    errors.append("`load.required` must include BLOCK.md — a specialist that cannot read "
+                  "the block cannot verify its own binding")
+
+# 🔴 Caught by the adversarial suite, 2026-07-31: `load.optional` was only read at PRINT time,
+# after the error gate had already passed. A flow-style `optional: [a, b]` therefore scored a
+# clean exit 0. Every list the manifest declares has to be parsed INSIDE layer A, or it is
+# not validated at all — a scope nobody checks is not a scope.
+opt = items("load.optional") or []
+
+# A4 · task
+for key in ("objective", "success_condition"):
+    val = nested("task", key)
+    if val is None:
+        errors.append(f"missing `task.{key}:`")
+    elif not val:
+        errors.append(f"`task.{key}` is empty — without it the specialist cannot know "
+                      f"what done means")
+    elif PLACEHOLDER.search(val):
+        errors.append(f"`task.{key}` still holds the template placeholder")
+stops = items("task.stop_condition")
+if not stops:
+    errors.append("`task.stop_condition` needs at least one entry — an agent with no stop "
+                  "condition runs until something external kills it")
+
+# A5 · write scope — the rule that matters most (contract-handoff.md §3)
+art = nested("write_back", "artifact_path")
+if art is None:
+    errors.append("missing `write_back.artifact_path:` — the write scope is required")
+elif not art:
+    errors.append("`write_back.artifact_path` is empty")
+elif not art.startswith("handoffs/"):
+    errors.append(f"`write_back.artifact_path: {art}` must start with `handoffs/` — a return "
+                  f"artifact written anywhere else escapes the declared scope")
+elif PLACEHOLDER.search(art):
+    errors.append("`write_back.artifact_path` still holds the template placeholder")
+
+schema_sections = items("write_back.artifact_schema")
+if not schema_sections:
+    errors.append("`write_back.artifact_schema` needs at least one section — an unstructured "
+                  "return cannot be checked")
+elif "status" not in schema_sections:
+    warnings.append("`write_back.artifact_schema` has no `status` section — without it the "
+                    "outcome is not machine-readable (done | blocked | aborted-binding-mismatch)")
+
+# A6 · also_append allowlist. v1 permits BLOCK.md only, and §A-E/§G stay coordinator-owned.
+appends = items("write_back.also_append") or []
+for entry in appends:
+    m = re.search(r"target:\s*([^,}\s]+)", entry)
+    if not m:
+        errors.append(f"`also_append` entry has no target: {entry!r}")
+        continue
+    target = m.group(1).strip().strip("\"'")
+    if os.path.basename(target) != "BLOCK.md":
+        errors.append(f"`also_append` target {target!r} is not permitted — v1 allows BLOCK.md "
+                      f"only (§J Context). Everything else is the coordinator's")
+    if not re.search(r"max_lines:\s*\d+", entry):
+        errors.append(f"`also_append` entry for {target!r} declares no `max_lines:` — an "
+                      f"unbounded append is not a bounded scope")
+
+if errors:
+    if not quiet:
+        print(f"🔴 MALFORMED — {MANIFEST}")
+        print("   the manifest itself is wrong. Fix it, then re-run.\n")
+        for e in errors:
+            print(f"   · {e}")
+    sys.exit(2)
+
+# ══ LAYER B · BINDING ══════════════════════════════════════════════════════════
+# Ordered on purpose: each check assumes the previous passed. Checking the id before
+# knowing the file exists reports a confusing error instead of the real one.
+block_path = scalar("block_path")
+block_id = scalar("block")
+failed = None
+
+if not os.path.isdir(block_path):
+    failed = ("block_path_exists", f"{block_path} does not resolve to a directory")
+else:
+    block_md = os.path.join(block_path, "BLOCK.md")
+    if not os.path.isfile(block_md):
+        failed = ("block_md_exists", f"no BLOCK.md at {block_md}")
+    else:
+        body = open(block_md, encoding="utf-8", errors="replace").read()
+        m = re.search(r"^id:[ \t]*(.+)$", body, re.M)
+        on_disk = m.group(1).strip() if m else None
+        if on_disk != block_id:
+            failed = ("block_id_matches",
+                      f"manifest says {block_id!r}, BLOCK.md says {on_disk!r}")
+        else:
+            for rel in req:
+                target = rel if os.path.isabs(rel) else os.path.join(block_path, rel)
+                if not os.path.exists(target):
+                    failed = ("load_required_paths_exist", f"{rel} does not resolve")
+                    break
+
+if failed:
+    name, detail = failed
+    if not quiet:
+        print(f"🔴 BINDING FAILED — {MANIFEST}")
+        print(f"   check `{name}` failed: {detail}")
+        print("   the manifest is well-formed but describes a world that is not on disk.")
+        print("   Usually a block that moved or was renamed.")
+    sys.exit(3)
+
+if not quiet:
+    print(f"✅ BOUNDED — {MANIFEST}")
+    print(f"   block ....... {block_id}  ({block_path})")
+    print(f"   reads ....... {len(req)} required · {len(opt)} optional")
+    print(f"   writes ...... {art}")
+    if appends:
+        print(f"   appends ..... {len(appends)} bounded (BLOCK.md §J)")
+    else:
+        print("   appends ..... none — the return artifact is the only write")
+    for w in warnings:
+        print(f"   🟡 {w}")
+    print("\n   Safe to spawn the specialist.")
+
+sys.exit(0)
