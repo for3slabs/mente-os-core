@@ -8,7 +8,7 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**271 documents** · **2 blocks** · 19 directories
+**272 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
@@ -23,7 +23,7 @@
 | `bridges/` | 6 |
 | `docs/` | 15 |
 | `docs/analysis/` | 27 |
-| `docs/architecture/` | 5 |
+| `docs/architecture/` | 6 |
 | `memory/` | 4 |
 | `memory/archive/` | 38 |
 | `principles/` | 5 |
@@ -110,7 +110,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 409 |
+| `INDEX.md` | generated | — |  | 410 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -162,6 +162,7 @@
 |---|---|---|---|---|
 | `block-anatomy.md` | architecture | current | 2026-07-30 | 454 |
 | `folder-structure.md` | architecture | current | 2026-07-30 | 292 |
+| `how-it-runs.md` | architecture | current | 2026-07-31 | 243 |
 | `language-policy.md` | architecture | current | 2026-07-30 | 86 |
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
 | `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 780 |
