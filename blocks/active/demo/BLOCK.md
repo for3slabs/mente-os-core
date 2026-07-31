@@ -43,8 +43,8 @@ created: 2026-07-24 · updated: 2026-07-29
 - rules/rule-fix-not-patch.md
 - rules/rule-lanes.md
 - rules/case-dangerous-default.md
-- principles/expertise/database.md
-<!-- expertise/frontend.md removed 2026-07-30 (bin/check-applied): 6 closed sub-blocks, zero
+- principles/expertise/dev-database.md
+<!-- expertise/dev-frontend.md removed 2026-07-30 (bin/check-applied): 6 closed sub-blocks, zero
      frontend decisions. Re-add when sub-block 10 touches a component. -->
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
@@ -87,7 +87,7 @@ note: untouched on 2026-07-31 — that session built Mente OS v2 (F4-F8 + the v1
 - 2026-07-26 · drop the `kind` column and the `demo_accounts` table. (5f86bed, closes C6p2)
   Rationale: `kind` (a cookie value) was used as if it were the real instance — the same bug
   surfaced in 6 files. Applied `rules/rule-fix-not-patch.md` (all 6 evaluated before writing,
-  not one patched) and `principles/expertise/database.md` (a column dropped, not shadowed).
+  not one patched) and `principles/expertise/dev-database.md` (a column dropped, not shadowed).
 - 2026-07-29 · lane `full-block` computed from the measured graph, not from judgement.
   Rationale: `rules/rule-lanes.md` — session.ts and userStore.ts propagate to 12 files each.
 - 2026-07-29 · **a dependent is a file that IMPORTS the piece, not one that mentions it.**

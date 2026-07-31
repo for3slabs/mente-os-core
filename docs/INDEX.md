@@ -8,7 +8,7 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**267 documents** · **2 blocks** · 19 directories
+**271 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
@@ -27,7 +27,7 @@
 | `memory/` | 4 |
 | `memory/archive/` | 38 |
 | `principles/` | 5 |
-| `principles/expertise/` | 3 |
+| `principles/expertise/` | 7 |
 | `rules/` | 17 |
 | `rules/decisions/` | 29 |
 | `vision/` | 8 |
@@ -110,8 +110,8 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 405 |
-| `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 79 |
+| `INDEX.md` | generated | — |  | 409 |
+| `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 283 |
@@ -223,18 +223,22 @@
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
 | `owner-0-voice.md` | contract | current | 2026-07-29 | 168 |
-| `owner-1-docs.md` | contract | current | 2026-07-29 | 68 |
-| `owner-2-dev.md` | contract | current | 2026-07-29 | 83 |
-| `owner-3-validation.md` | contract | current | 2026-07-29 | 134 |
+| `owner-1-docs.md` | contract | current | 2026-07-29 | 96 |
+| `owner-2-dev.md` | contract | current | 2026-07-29 | 108 |
+| `owner-3-validation.md` | contract | current | 2026-07-29 | 163 |
 | `vision-mente-os-v2.md` | architecture | current | 2026-07-29 | 285 |
 
 ## `principles/expertise/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `backend.md` | contract | draft | 2026-07-29 | 127 |
-| `database.md` | contract | draft | 2026-07-29 | 130 |
-| `frontend.md` | contract | draft | 2026-07-29 | 126 |
+| `dev-backend.md` | contract | draft | 2026-07-29 | 127 |
+| `dev-database.md` | contract | draft | 2026-07-29 | 130 |
+| `dev-frontend.md` | contract | draft | 2026-07-29 | 126 |
+| `doc-planning.md` | contract | draft | 2026-07-31 | 136 |
+| `doc-structure.md` | contract | draft | 2026-07-31 | 135 |
+| `val-functional.md` | contract | draft | 2026-07-31 | 145 |
+| `val-integration.md` | contract | draft | 2026-07-31 | 145 |
 
 ## `rules/`
 
@@ -248,7 +252,7 @@
 | `contract-archive.md` | contract | current | 2026-07-30 | 131 |
 | `contract-block.md` | contract | current | 2026-07-29 | 335 |
 | `contract-document.md` | rule | current | 2026-07-29 | 173 |
-| `contract-handoff.md` | contract | current | 2026-07-31 | 150 |
+| `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
 | `rule-config-hygiene.md` | rule | current | 2026-07-30 | 76 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |

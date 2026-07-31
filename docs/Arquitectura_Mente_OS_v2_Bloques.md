@@ -509,8 +509,8 @@ created: 2026-07-24 · updated: 2026-07-27
 <!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤8 lines ══ -->
 ## Required standards
 - rules/rule-fix-not-patch.md          ← fixes in flight
-- principles/expertise/database.md     ← the DB is touched
-- principles/expertise/frontend.md     ← components are touched
+- principles/expertise/dev-database.md     ← the DB is touched
+- principles/expertise/dev-frontend.md     ← components are touched
 - rules/case-dangerous-default.md      ← defaults are in play
 
 <!-- ══ E · STATE ══ ≤10 lines · half of Tier 1 ══ -->
@@ -1272,8 +1272,8 @@ Esto convierte *"ser dueños del contexto"* en algo **medible**, no declarativo:
     ├── Alma/  ........................ 👤 LOS 3 ENCARGADOS
     │   ├── ENCARGADO_1_Documentacion.md ... formato de docs y planes
     │   ├── ENCARGADO_2_Desarrollo.md ...... criterios + veto/retroceso
-    │   │   ├── expertise/backend.md ....... ⭐ criterio de Brian
-    │   │   ├── expertise/frontend.md ...... ⭐ criterio de Brian
+    │   │   ├── expertise/dev-backend.md ....... ⭐ criterio de Brian
+    │   │   ├── expertise/dev-frontend.md ...... ⭐ criterio de Brian
     │   │   └── expertise/base_datos.md .... ⭐ criterio de Brian
     │   └── ENCARGADO_3_Validacion.md ...... "que nada quede suelto"
     │
@@ -1431,9 +1431,9 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | `principles/owner-1-docs.md` 🇺🇸 | 🆕 nuevo | formato de docs y planes · apartados base | Brian define · IA redacta |
 | `principles/owner-2-dev.md` 🇺🇸 | 🆕 nuevo | criterios de aceptación · veto y retroceso | Brian define · IA redacta |
 | `principles/owner-3-validation.md` 🇺🇸 | 🆕 nuevo | qué revisar para que "nada quede suelto" | Brian define · IA redacta |
-| `principles/expertise/database.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | 6 dimensiones · reglas duras · 8 preguntas de entrevista · criterio ⬜ | **Brian** |
-| `principles/expertise/backend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
-| `principles/expertise/frontend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
+| `principles/expertise/dev-database.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | 6 dimensiones · reglas duras · 8 preguntas de entrevista · criterio ⬜ | **Brian** |
+| `principles/expertise/dev-backend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
+| `principles/expertise/dev-frontend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
 
 > ⭐ **Los 3 nacen CONECTADOS aunque estén vacíos:** el bloque los declara en §D → el hook los
 > inyecta → owner-3 los aplica → `check-blocks` verifica. **Índice de huecos: `docs/PENDING-BRIAN.md`.**
@@ -1765,7 +1765,7 @@ Cada capa cubre el fallo de la anterior:
 ```
    ┌─────────────────────────────────────────────────────────────┐
    │ A · ENRUTADOR en CLAUDE.md            ~15 líneas · siempre  │
-   │   "si tocas backend → carga expertise/backend.md ANTES"     │
+   │   "si tocas backend → carga expertise/dev-backend.md ANTES"     │
    │   ✔ barato · ✔ siempre presente · ✘ aún depende de la IA    │
    └───────────────────────────┬─────────────────────────────────┘
                                ▼

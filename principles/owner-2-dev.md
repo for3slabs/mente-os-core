@@ -34,12 +34,37 @@ backtracking**: a plan that fails its criteria goes back to owner-1.
 
 | Discipline | File | Status |
 |---|---|---|
-| Database | `expertise/database.md` | ⬜ **pending · Brian** |
-| Backend | `expertise/backend.md` | ⬜ pending · Brian |
-| Frontend | `expertise/frontend.md` | ⬜ pending · Brian |
+| Database | `expertise/dev-database.md` | ⬜ **pending · Brian** |
+| Backend | `expertise/dev-backend.md` | ⬜ pending · Brian |
+| Frontend | `expertise/dev-frontend.md` | ⬜ pending · Brian |
 
 > ⛔ **It never invents criterion** (ADR-003). While those files are empty, owner-2 applies only the
 > hard rules of §4 below — which do not depend on Brian's input.
+
+### ⭐ These three are BRANCHES of owner-2, not owners themselves
+
+> **Brian, 2026-07-31, correcting the AI:** *"los expertise eran formato de documentación,
+> desarrollador, validación de flujo funcional. Los 3 que pusiste van DENTRO de desarrollador —
+> es una división como si fuera un árbol."*
+
+```
+SEED (the three owners)              ROOTS (their disciplines)
+
+owner-1 · documentation format  ──▶  doc-planning · doc-structure
+owner-2 · development           ──▶  dev-database · dev-backend · dev-frontend
+owner-3 · functional-flow       ──▶  val-functional · val-integration
+```
+
+**The error being corrected:** the AI presented database/backend/frontend at the *same level* as
+the owners. They are not. They are owner-2's disciplines — architecture §9.2 says it plainly:
+*"El **Encargado 2** necesita estándares por disciplina."*
+
+**Why the distinction matters:** owners are the **sequence** (who acts, in what order, with what
+veto). Disciplines are the **subject matter** (what each field demands). Flattening them makes it
+look like "database" could return a plan to owner-1, which it cannot — only owner-2 can.
+
+**The `<owner>-<discipline>` filename prefix exists so the tree is visible in `ls`.** A flat list
+of seven files hides which owner each one answers to — which is exactly how the confusion started.
 
 ---
 

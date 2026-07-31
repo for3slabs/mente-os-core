@@ -86,7 +86,32 @@ eq "ADR numbering has no gaps" "$(ls rules/decisions/ADR-*.md | wc -l)" \
 head2 "F2 · OWNERS — 3 max + the voice, and every hole asked not assumed"
 
 eq "owner files (0 voice + 3 owners)" "4" "$(ls principles/owner-*.md 2>/dev/null | wc -l)"
-eq "expertise disciplines" "3" "$(ls principles/expertise/*.md 2>/dev/null | wc -l)"
+
+# ⭐ THE TREE (Brian, 2026-07-31): expertise files are BRANCHES of an owner, never owners
+# themselves. The AI had presented dev-{database,backend,frontend} at the same level as the
+# owners; correcting that exposed a real asymmetry — owner-1 and owner-3 had no disciplines at
+# all, so they judged with no body of criterion of their own.
+#
+#   owner-1 · documentation ──▶ doc-planning · doc-structure
+#   owner-2 · development   ──▶ dev-database · dev-backend · dev-frontend
+#   owner-3 · validation    ──▶ val-functional · val-integration
+eq "expertise disciplines (2 doc + 3 dev + 2 val)" "7" \
+   "$(ls principles/expertise/*.md 2>/dev/null | wc -l)"
+
+# Every expertise file must declare which owner it branches from, by prefix. A flat list hides
+# the tree — which is exactly how the confusion started.
+_orphan=0
+for _e in principles/expertise/*.md; do
+  case "$(basename "$_e")" in doc-*|dev-*|val-*) : ;; *) _orphan=$((_orphan+1)) ;; esac
+done
+eq "every discipline names its owner by prefix (doc-/dev-/val-)" "0" "$_orphan"
+
+# An owner with no disciplines judges with no criterion of its own — the asymmetry Brian caught.
+for _o in doc dev val; do
+  [ "$(ls principles/expertise/$_o-*.md 2>/dev/null | wc -l)" -ge 2 ] || \
+    bad "owner branch $_o- has at least 2 disciplines" "≥2" "$(ls principles/expertise/$_o-*.md 2>/dev/null | wc -l)"
+done
+ok "all three owners have their own disciplines (no owner judges without criterion)"
 
 # The master rule of the voice must be present verbatim — it is the one that stops the lying.
 grep -qi "do not state" principles/owner-0-voice.md \

@@ -249,7 +249,7 @@ signal separating alive from fossil; a blanket rename destroys that signal.
 ✅  blocks/active/demo/BLOCK.md
 ✅  rules/rule-fix-not-patch.md
 ✅  rules/ADR-001-single-file-per-block.md
-✅  principles/expertise/database.md
+✅  principles/expertise/dev-database.md
 ✅  docs/RETOMAR.md
 ✅  bin/check-blocks
 

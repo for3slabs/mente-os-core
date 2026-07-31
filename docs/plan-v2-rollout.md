@@ -118,7 +118,7 @@ se suman a las 26 que ya estaban **duplicadas en 2 documentos** (75 vs 37 filas,
 | Ticket | Qué | Quién | Salida |
 |---|---|---|---|
 | **F1-1** | `rules/qa-dimensions.md` 🇺🇸 — las 6 dimensiones + evidencia exigida | ✅ **ESTRUCTURA HECHA** · criterio ⬜ Brian | 1 archivo |
-| **F1-2** | `principles/expertise/database.md` 🇺🇸 | ✅ **ESTRUCTURA HECHA** · criterio ⬜ Brian | 1 archivo |
+| **F1-2** | `principles/expertise/dev-database.md` 🇺🇸 | ✅ **ESTRUCTURA HECHA** · criterio ⬜ Brian | 1 archivo |
 
 > ✅ **CONSTRUIDO 2026-07-27 (estructura completa, cableada, con huecos marcados):**
 > `rules/contract-adr.md` · `rules/qa-dimensions.md` · `principles/expertise/{database,backend,frontend}.md`
@@ -136,8 +136,8 @@ de botella innecesario.**
 
 | Ticket | Qué | Cuándo |
 |---|---|---|
-| **F1-bis-1** | `principles/expertise/backend.md` 🇺🇸 | ✅ estructura hecha · criterio ⬜ Brian |
-| **F1-bis-2** | `principles/expertise/frontend.md` 🇺🇸 | ✅ estructura hecha · criterio ⬜ Brian |
+| **F1-bis-1** | `principles/expertise/dev-backend.md` 🇺🇸 | ✅ estructura hecha · criterio ⬜ Brian |
+| **F1-bis-2** | `principles/expertise/dev-frontend.md` 🇺🇸 | ✅ estructura hecha · criterio ⬜ Brian |
 
 **⭐ MÉTODO (importante — no al revés):** la IA **pregunta primero**, Brian responde con **casos
 reales**, y la IA estructura. Nunca *"la IA redacta y Brian corrige"*.

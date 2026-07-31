@@ -25,6 +25,35 @@ the only one that can refuse to close a block.
 
 ---
 
+## 1-bis · ⭐ ITS DISCIPLINES — the roots of this owner
+
+**Owner-3 does not carry its own criterion — it loads Brian's**, exactly as owner-2 does:
+
+| Discipline | File | Status |
+|---|---|---|
+| Functional — does this piece actually work? | `expertise/val-functional.md` | ⬜ **pending · Brian** |
+| Integration — does the chain still work? | `expertise/val-integration.md` | ⬜ **pending · Brian** |
+
+```
+SEED (the three owners)              ROOTS (their disciplines)
+
+owner-1 · documentation format  ──▶  doc-planning · doc-structure
+owner-2 · development           ──▶  dev-database · dev-backend · dev-frontend
+owner-3 · functional-flow       ──▶  val-functional · val-integration   ⬅ THIS OWNER
+```
+
+> **Brian, 2026-07-31:** *"es una división como si fuera un árbol — la semilla son formato de
+> documentación, desarrollador, validación de flujo funcional, y a partir de ellos salen raíces."*
+
+**Why these two and not one:** `val-functional` asks *"does this piece work?"*; `val-integration`
+asks *"does the chain still work when every piece works?"* Every piece can pass its own test and
+the flow still be broken — Brian, 2026-07-20: *"los bugs trágicos viven ENTRE las piezas."*
+
+⛔ **It never invents criterion** (ADR-003). While those files are empty, owner-3 applies the
+§5-BIS battery (§4) and layer 1 of the verdict (§3) — neither depends on Brian's input.
+
+---
+
 ## 2 · THE THREE CLOSING CRITERIA — none optional
 
 | # | Criterion | Question |

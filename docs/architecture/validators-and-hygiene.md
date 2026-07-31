@@ -288,7 +288,7 @@ Cada capa cubre el fallo de la anterior:
 ```
    ┌─────────────────────────────────────────────────────────────┐
    │ A · ENRUTADOR en CLAUDE.md            ~15 líneas · siempre  │
-   │   "si tocas backend → carga expertise/backend.md ANTES"     │
+   │   "si tocas backend → carga expertise/dev-backend.md ANTES"     │
    │   ✔ barato · ✔ siempre presente · ✘ aún depende de la IA    │
    └───────────────────────────┬─────────────────────────────────┘
                                ▼

@@ -35,8 +35,8 @@ Extracted verbatim on 2026-07-30 (270 lines). **Moved, not rewritten.**
     ├── Alma/  ........................ 👤 LOS 3 ENCARGADOS
     │   ├── ENCARGADO_1_Documentacion.md ... formato de docs y planes
     │   ├── ENCARGADO_2_Desarrollo.md ...... criterios + veto/retroceso
-    │   │   ├── expertise/backend.md ....... ⭐ criterio de Brian
-    │   │   ├── expertise/frontend.md ...... ⭐ criterio de Brian
+    │   │   ├── expertise/dev-backend.md ....... ⭐ criterio de Brian
+    │   │   ├── expertise/dev-frontend.md ...... ⭐ criterio de Brian
     │   │   └── expertise/base_datos.md .... ⭐ criterio de Brian
     │   └── ENCARGADO_3_Validacion.md ...... "que nada quede suelto"
     │
@@ -198,9 +198,9 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | `principles/owner-1-docs.md` 🇺🇸 | 🆕 nuevo | formato de docs y planes · apartados base | Brian define · IA redacta |
 | `principles/owner-2-dev.md` 🇺🇸 | 🆕 nuevo | criterios de aceptación · veto y retroceso | Brian define · IA redacta |
 | `principles/owner-3-validation.md` 🇺🇸 | 🆕 nuevo | qué revisar para que "nada quede suelto" | Brian define · IA redacta |
-| `principles/expertise/database.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | 6 dimensiones · reglas duras · 8 preguntas de entrevista · criterio ⬜ | **Brian** |
-| `principles/expertise/backend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
-| `principles/expertise/frontend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
+| `principles/expertise/dev-database.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | 6 dimensiones · reglas duras · 8 preguntas de entrevista · criterio ⬜ | **Brian** |
+| `principles/expertise/dev-backend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
+| `principles/expertise/dev-frontend.md` 🇺🇸 | ✅ **estructura + cableado** ⭐ | idem · 7 preguntas | **Brian** |
 
 > ⭐ **Los 3 nacen CONECTADOS aunque estén vacíos:** el bloque los declara en §D → el hook los
 > inyecta → owner-3 los aplica → `check-blocks` verifica. **Índice de huecos: `docs/PENDING-BRIAN.md`.**

@@ -167,9 +167,9 @@ The six dimensions are **the frame**. What each one demands **changes by discipl
 
 | Discipline | File | Status |
 |---|---|---|
-| Database | `principles/expertise/database.md` | ⬜ **pending · Brian** — F1-2 |
-| Backend | `principles/expertise/backend.md` | ⬜ pending · Brian — F1-bis |
-| Frontend | `principles/expertise/frontend.md` | ⬜ pending · Brian — F1-bis |
+| Database | `principles/expertise/dev-database.md` | ⬜ **pending · Brian** — F1-2 |
+| Backend | `principles/expertise/dev-backend.md` | ⬜ pending · Brian — F1-bis |
+| Frontend | `principles/expertise/dev-frontend.md` | ⬜ pending · Brian — F1-bis |
 
 > ⚠️ **Until at least one is filled, layer 2 is an empty form.** Layer 1 (`grade-block`) works
 > without it — that is why F4 can run before F1-bis closes.

@@ -22,6 +22,34 @@ over the other two (Brian: *"los 3 tienen el mismo nivel"*).
 
 ---
 
+## 1-bis · ⭐ ITS DISCIPLINES — the roots of this owner
+
+**Owner-1 does not carry its own criterion — it loads Brian's**, exactly as owner-2 does:
+
+| Discipline | File | Status |
+|---|---|---|
+| Planning — can someone else execute this plan? | `expertise/doc-planning.md` | ⬜ **pending · Brian** |
+| Structure — can this be found and trusted later? | `expertise/doc-structure.md` | ⬜ **pending · Brian** |
+
+```
+SEED (the three owners)              ROOTS (their disciplines)
+
+owner-1 · documentation format  ──▶  doc-planning · doc-structure     ⬅ THIS OWNER
+owner-2 · development           ──▶  dev-database · dev-backend · dev-frontend
+owner-3 · functional-flow       ──▶  val-functional · val-integration
+```
+
+> **Brian, 2026-07-31:** *"es una división como si fuera un árbol — la semilla son formato de
+> documentación, desarrollador, validación de flujo funcional, y a partir de ellos salen raíces."*
+>
+> Created because the tree was **asymmetric**: only owner-2 had disciplines, so owner-1 and owner-3
+> judged with no body of criterion of their own.
+
+⛔ **It never invents criterion** (ADR-003). While those files are empty, owner-1 applies only §3
+below — which does not depend on Brian's input.
+
+---
+
 ## 2 · THE IMPLEMENTATION PLAN
 
 **Every plan is born with default sections.** At completion, **the system may add more** if the

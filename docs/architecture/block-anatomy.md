@@ -375,8 +375,8 @@ created: 2026-07-24 · updated: 2026-07-27
 <!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤8 lines ══ -->
 ## Required standards
 - rules/rule-fix-not-patch.md          ← fixes in flight
-- principles/expertise/database.md     ← the DB is touched
-- principles/expertise/frontend.md     ← components are touched
+- principles/expertise/dev-database.md     ← the DB is touched
+- principles/expertise/dev-frontend.md     ← components are touched
 - rules/case-dangerous-default.md      ← defaults are in play
 
 <!-- ══ E · STATE ══ ≤10 lines · half of Tier 1 ══ -->
