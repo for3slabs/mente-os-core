@@ -162,7 +162,7 @@
 |---|---|---|---|---|
 | `block-anatomy.md` | architecture | current | 2026-07-30 | 454 |
 | `folder-structure.md` | architecture | current | 2026-07-30 | 292 |
-| `how-it-runs.md` | architecture | current | 2026-07-31 | 243 |
+| `how-it-runs.md` | architecture | current | 2026-07-31 | 349 |
 | `language-policy.md` | architecture | current | 2026-07-30 | 86 |
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
 | `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 780 |
