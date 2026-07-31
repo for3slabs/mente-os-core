@@ -274,9 +274,17 @@ t=$(mktemp -d); ( cd "$t" && git init -q && mkdir -p .git/hooks \
 eq "pre-commit fails OPEN in a repo with no Mente nearby" "0" "$?"
 rm -rf "$t"
 
-# The /clear lock must refuse while this session has no autopsy on disk.
+# The /clear lock must AGREE with the disk: refuse (1) while this session has no autopsy,
+# pass (0) once it does.
+# 🔴 The first version asserted a constant 1 — it hard-coded the state of the day it was written
+# (2026-07-30, session unregistered). Registering S7 made the lock correctly return 0 and the
+# test failed while the system was right. A test that pins today's state is a test that breaks
+# the moment the work it guards gets DONE.
+sid=$(ls -t ~/.claude/projects/-home-brianweb3-for3s/*.jsonl 2>/dev/null | head -1)
+sid=$(basename "${sid:-none}" .jsonl | cut -c1-8)
+if grep -q "$sid" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
 ./bin/check-clear-ready --quiet >/dev/null 2>&1
-eq "check-clear-ready refuses (this session is unregistered)" "1" "$?"
+eq "check-clear-ready agrees with the registry (registered=$( [ $want = 0 ] && echo yes || echo no ))" "$want" "$?"
 
 # Found by the E2E flow 2026-07-30: an EMPTY docs block scored 🟢 PRODUCT — zero broken links
 # and zero orphans, because there was nothing to measure. Absence of evidence read as evidence.

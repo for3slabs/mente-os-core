@@ -87,6 +87,40 @@ Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
+### 🆕 ⭐ LO ÚLTIMO (2026-07-31) — MENTE OS v2 ESTÁ CONSTRUIDO Y VERIFICADO
+
+> **Si retomas tras el `/clear` del 31-jul: esto es lo primero. Estás EJECUTANDO la fase F8-4.**
+
+**Mente OS pasó de DOCUMENTAR a GOBERNAR.** No es diseño: está en disco y medido.
+
+| | |
+|---|---|
+| **Estado** | ✅ **F0-F7 cerradas y verificadas · F8 al 75%** |
+| **Prueba** | `Mente/bin/test-f0-f6` = **105/105** (correr esto primero — es la verdad) |
+| **Commits** | `42dbfab` (279 archivos: v2 + migración) · `d667b14` (registro S7) |
+| **Construido** | 11 validadores · 4 hooks · 3 niveles de reglas · sistema de apuntado |
+
+**🗑️ La migración v1→v2 está COMPLETA (M0-M5, ADR-029).** `Alma/` `Cuerpo/` `Doc/` `Tickets/`
+**eliminadas** — 186 documentos movidos uno por uno. Si un documento cita esas rutas, es una
+cita fósil, no un archivo que falta. Solo quedan por decisión: `Cerebro/` (6, el grafo del
+producto) y `Maestro/` (7, repo aparte).
+
+**👉 PRÓXIMO PASO — F8-4, la única fase sin verificar:** *¿este brief bastó para retomar?*
+- Si te alcanzó → **F8 cierra y v2 está terminado.** Decírselo a Brian.
+- Si tuviste que preguntarle algo que debía estar aquí → **ese hueco ES el hallazgo de F8-4.**
+  Anotarlo antes de taparlo: es la prueba que el sistema existe para dar.
+
+**Qué NO hace falta hacer:** commitear (hecho), registrar la sesión (hecha, S7), migrar nada más.
+
+**Deuda medida que NO bloquea:** ~73 citas rotas (56 de base + 17 que la migración *destapó*) ·
+34 huecos de criterio esperando a Brian · 8 archivos sobre su límite de líneas · M6 (renombrar
+`Maestro/`) es **decisión de Brian**, y mi recomendación medida es **no hacerlo**.
+
+🔴 **La sesión S7 llegó a 998K de contexto — superó a S1 (985K), la monstruo.** 116h abiertas.
+Por eso el `/clear`. Autopsia completa en `Cerebro/Registro_Conversaciones.md`.
+
+---
+
 **🖥️⭐ LA DEMO ES UN BLOQUE GRANDE CON ÍNDICE PROPIO.** Antes de tocarla, leer la memoria
 **`project_bloque_demo_pendientes`** — es el punto de entrada único: los 3 tapones que impiden
 prestarla, los pendientes de producto/higiene, y 7 reglas aprendidas a base de romperla.
@@ -124,7 +158,7 @@ hosting (todo cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
 entorno y asumir que probaba el de Vercel (clave divergente · `tailscale serve` apagó el Funnel).
 Reglas escritas: `feedback_tailscale_serve_apaga_funnel`.
 
-## 5-ter · 🏗️⭐ MENTE OS v2 — VISIÓN CAPTURADA (2026-07-27, sesión de diagnóstico)
+## 5-ter · 🏗️ MENTE OS v2 — el DIAGNÓSTICO que lo originó (2026-07-27) · ✅ ya construido, ver §5
 
 **Brian pidió mejorar Mente OS. El diagnóstico encontró la causa raíz: el sistema DOCUMENTA bien
 pero no GOBIERNA la ejecución.** Ley medida: *lo que está en código se cumple 100%; lo que está en
@@ -135,11 +169,12 @@ documento falla 40-60%*. Evidencia: 0 plantillas en 188 docs · `CLAUDE.md` con 
 **Recuperado del disco:** el **incidente del 21-jul** (sesión de 4 días, contexto 835K, 6 violaciones
 de scope, *"no eres el mismo de siempre, no me sirves así"*) — **nunca se había documentado**.
 
-**👉 LOS 4 DOCUMENTOS DEL v2 (diseño CERRADO, nada construido):**
+**👉 LOS 4 DOCUMENTOS DEL v2** — ⚠️ ya NO son "diseño pendiente": **el v2 está construido**
+(§5 arriba). Estos son el porqué, no un plan por ejecutar:
 | Doc | Qué es |
 |---|---|
 | `principles/vision-mente-os-v2.md` | el **PORQUÉ** + las 18 decisiones |
-| `Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md` | el **CÓMO** (1,856 líneas) |
+| `docs/Arquitectura_Mente_OS_v2_Bloques.md` | el **CÓMO** (partido en 6 archivos, F8-1) |
 | `docs/plan-v2-rollout.md` | el **CUÁNDO** — 9 fases · 38 tickets |
 | `docs/analysis-internos-v1.md` | validación externa (internOS) |
 | `docs/analysis-frameworks-v2.md` | ⭐ **4 frameworks comparados** |
@@ -154,11 +189,11 @@ la VOZ** · 3 carriles (decide la propagación) · **fix ≠ parche** · context
 
 ⭐ **Validado contra 4 frameworks** (internOS · Agent OS · Open SWE · OpenTag): **ninguno responde
 *"¿esto es producto o MVP?"*** → el veredicto de calidad es el diferenciador real del v2.
-🔴 Pero los 4 **están construidos** y el v2 tiene 0 líneas: respetar el orden del plan (piloto antes
-de maquinaria).
+Esa advertencia decía *"los 4 están construidos y el v2 tiene 0 líneas"* — **ya no aplica: el v2
+se construyó entre el 27 y el 31 de julio.** Se respetó el orden (piloto antes que maquinaria).
 
-👉 **PRÓXIMO PASO: fase F0** (cerrar 2 preguntas + aprobar el plan), luego **F1: el criterio de Brian**
-(`Alma/expertise/*`) — lo único que la IA no puede escribir y que bloquea todo lo demás.
+👉 **ESTADO REAL → §5 arriba.** Lo único que la IA no puede escribir sigue abierto: **los 34 huecos
+de criterio de Brian** en `rules/qa-dimensions.md` y los 3 `principles/expertise/*.md`.
 
 Memorias: `project_mente_os_v2_bloques` · `project_ser_duenos_del_contexto` · `project_incidente_degradacion_21jul`.
 
