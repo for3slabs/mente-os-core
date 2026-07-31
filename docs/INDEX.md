@@ -51,7 +51,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 294 |
+| `Registro_Conversaciones.md` | — | — |  | 385 |
 
 ## `Maestro/`
 
@@ -173,7 +173,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-07-30 | 3579 |
-| `RETOMAR.md` | entry-point | current | 2026-07-30 | 271 |
+| `RETOMAR.md` | entry-point | current | 2026-07-31 | 199 |
 
 ## `memory/archive/`
 

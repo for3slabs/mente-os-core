@@ -40,6 +40,10 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S5 | `7e9ce3b7` | 2026-07-24 20:58 | 2026-07-26 ~06:22 (~33h) | 12 MB 🟢 | ~97 | **917K 🔴** | **LA JORNADA DEMO → PRODUCTO** — BD reestructurada (F1-F6) + cableado + pulido P1-P7 + optimización (heartbeat −68%) + 9 bugs. Sana en disco pero **contexto en rojo**: /clear recomendado al cerrar |
 | S6 | `dac2ce13` | 2026-07-26 ~06:00 | 2026-07-26 ~23:50 (~18h) | 5.9 MB 🟢 | ~60 | ~n/d | **LA JORNADA DE LOS CIMIENTOS DE LA DEMO** — 6 archivos a producto + Ronda F0 `userStore` (U1-U6, C6p2 cerrado) + `container.ts` activado + `DEMO_ENC_KEY` unificada + rebuild del agente. ~15 bugs (3 de seguridad). **2 caídas de producción causadas por mí.** Sana en disco |
 | S7 | `4fc1996c` | 2026-07-27 00:03 | 2026-07-31 19:41 (**~116h**) 🔴 | 12 MB 🟢 | 1,087 turnos | **998K tokens** 🔴 | **LA JORNADA DE MENTE OS v2** — el sistema pasa de documentar a GOBERNAR: 11 validadores + 4 hooks + 3 niveles de reglas + migración v1→v2 completa (M0-M5, 186 docs, 4 carpetas eliminadas). `test-f0-f6` = 105/105. **Contexto máximo del proyecto — supera a S1 (985K), la monstruo.** 9 bugs propios, todos cazados por validadores |
+| S8 | `523998b8` | 2026-07-31 19:51 | 2026-07-31 (en curso) | 0.2 MB 🟢 | 17 | 63K 🟢 | **LA PRUEBA F8-4** — el primer retomar real tras un `/clear` con Mente OS v2. El brief BASTÓ (cero preguntas a Brian). 3 huecos del RETOMAR encontrados y tapados + las 3 sesiones huérfanas registradas (R1-R3, abajo) |
+| — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
+| — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
+| — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
 
 ### S3 · `c9ef4299` — la jornada MERCADO (v0.17.0)
 - **Temas:** arranque en Frente B F4 (panel admin Railway) → F5 carga (2000 conc, 2 races cazados) →
@@ -292,3 +296,90 @@ antigüedad de la sesión, no lo que se hizo en ella.
 Bloque grande terminado y **commiteado** (`42dbfab`, 279 archivos). Se cierra por contexto en
 rojo y por edad. El `/clear` es además **la prueba F8-4**: retomar tras un corte real es la
 única fase de v2 que falta verificar.
+
+---
+
+## S8 · `523998b8` — LA PRUEBA F8-4 (2026-07-31 19:51 → en curso)
+
+**El primer retomar real tras un `/clear` con Mente OS v2 en disco.** Esta sesión no construye:
+**mide si el sistema funciona.**
+
+**Peso:** 0.2 MB 🟢 · 17 turnos de Brian · **contexto máx 63K** 🟢 · cache_read 1.2M.
+Comparación con el arranque de S7 (que abrió leyendo 200 KB de historia): esta arrancó leyendo
+**un archivo de 272 líneas.** Ese contraste es el resultado de F8-4.
+
+### El veredicto de F8-4: ✅ EL BRIEF BASTÓ
+
+Brian dijo *"lee retomar"*. Con **solo** `memory/RETOMAR.md` quedó resuelto: quién es, qué es el
+proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO hay que hacer.
+**Cero preguntas a Brian sobre estado.** Lo que siguió fue *verificar*, no *averiguar*.
+
+### 🔴 Los 3 huecos que la prueba destapó (el hallazgo que F8-4 existe para dar)
+
+| # | Hueco | Por qué importa |
+|---|---|---|
+| 1 | El brief afirmaba `test-f0-f6` = **105/105**; la medición dio **104/105** | El número **no es estable a través de un `/clear`**: la batería incluye `check-clear-ready`, que evalúa la sesión VIVA. Tras cualquier corte arranca en 104 y solo llega a 105 al registrar. El brief congeló un valor variable y lo presentó como "la verdad" |
+| 2 | RETOMAR tenía **272 líneas** violando su propia regla de ~200 | La regla estaba **escrita dentro del archivo que la incumple**, sin nada que la aplique. Ley medida del proyecto, otra vez |
+| 3 | **Dos fechas de actualización en conflicto** (cabecera 30-jul · línea 17 26-jul · contenido 31-jul) | Al leer hubo que ignorar ambas y confiar en el cuerpo. Un brief cuya fecha no es fiable erosiona la confianza en el resto |
+
+> ⚠️ **Falsa alarma corregida en la misma sesión:** el hueco #1 pareció un test mal escrito. No lo
+> es — `test-f0-f6` líneas 277-287 **ya** se adapta al registro, con un comentario de alguien que
+> antes cayó en fijar la constante. El test estaba bien; el brief estaba desactualizado.
+
+### Qué se hizo
+
+- Registradas **las 3 sesiones huérfanas** que `check-health` llevaba marcando (§R1-R3), incluida
+  🔴 `4c187f33` — **la del incidente del 21-jul**, que `rule-session-close.md` §2 cita como *"el
+  peor infractor"* y que **seguía sin entrada 10 días después de escribirse esa regla.**
+- Tapados los 3 huecos del RETOMAR.
+
+### Cosas raras
+
+Ninguna. Sesión sana en todos los ejes.
+
+---
+
+## 🔁 R1-R3 · LAS 3 SESIONES HUÉRFANAS (registradas retroactivamente el 2026-07-31, sesión S8)
+
+> **Por qué existen estas 3 entradas.** `bin/check-health` las marcaba como *"past session over
+> 2 MB with no entry"*. Se registran con lo medible del `.jsonl` (peso, turnos, contexto, tokens,
+> fechas). ⚠️ **Lo que NO se puede reconstruir retroactivamente es el criterio**: qué se sintió
+> raro, por qué se cerró. **Eso se perdió** — y ese es justamente el costo que la regla previene.
+
+### 🔴 R1 · `4c187f33` — LA SESIÓN DEL INCIDENTE DEL 21-JUL (2026-07-20 00:32 → 07-23 23:42, ~96h)
+
+**La más grande jamás registrada por peso: 23.4 MB** · 1,256 turnos · **contexto máx 999,366** 🔴 ·
+cache_read **1,033 millones** (la única del proyecto que cruza el billón) · cache_write 16.9M ·
+output 1.77M.
+
+**Es la sesión del peor incidente del proyecto.** De aquí salió *"no eres el mismo de siempre, no
+me sirves así"*: 6 violaciones de scope, degradación sostenida por contexto saturado. Se recuperó
+del `.jsonl` crudo el 27-jul, **seis días después**, y hasta hoy vivía solo en la memoria
+`project_incidente_degradacion_21jul` — **nunca en el Registro.**
+
+**Lección medida:** la regla `rule-session-close.md` fue escrita *a causa* de esta sesión, la citó
+por nombre como "el peor infractor"… y **la sesión siguió sin registrarse 10 días.** Escribir la
+regla no la ejecuta. Es la ley del proyecto demostrada sobre sí misma.
+
+### 🔴 R2 · `fa2c625f` — LA JORNADA SEGURIDAD / SEC-4c (2026-07-15 21:01 → 07-19 00:38, ~76h)
+
+10.1 MB 🟢 en disco · 1,180 turnos · **contexto máx 999,692** 🔴 (el pico absoluto del proyecto) ·
+cache_read 945M · cache_write 22.4M · output 1.71M.
+
+Por fechas cubre el CI 100% verde (`b8da4d7`), los 4 urgentes de confianza SEC-3/4/5/6, **SEC-4c
+non-root con perfil por instancia** (`021292e`) — incluido el `chown -R` que rompió el HOST — y la
+rotación del token de GitHub. Empalma con el arranque de S4 (super-cerebro).
+
+⚠️ **Sana en peso, roja en contexto y edad.** Mismo patrón que R1: 76h abiertas, 999K de pico.
+
+### 🔴 R3 · `b075269c` — LA JORNADA H5-H10 (2026-06-16 05:43 → 06-27 23:58, ~11 días)
+
+12.9 MB 🟢 · 661 turnos · contexto máx 679K 🔴 · cache_read 437M · cache_write 17.2M · output 665K.
+
+**La sesión más larga en días de las tres** (11). Por fechas cubre H5 memoria real, H6 se cuida,
+H8 equipo, H9 sueña (DMN), H10 planea, el rediseño de la capa de memoria y el arranque de
+profesionalización PR1-PR10.
+
+**El patrón que las une:** las tres murieron de **edad**, no de peso. 96h · 76h · 11 días.
+Ninguna cruzó los 50 MB; las tres cruzaron el rojo de contexto. **El umbral que importa no es el
+tamaño del archivo — es cuánto lleva abierta.**
