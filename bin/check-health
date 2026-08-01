@@ -185,9 +185,13 @@ def _check_one(p, name):
                 "   Approved commands are stored verbatim — the secret is now permanent.\n"
                 "   Purge it AND rotate it: purging does not invalidate.")
 
-    if len(allow) > 200:
+    # 🔴 Lowered from 200 to 120 on 2026-07-31. The audit found 199 entries — ONE under the
+    # line — so this check never spoke while 25 broad wildcards, 24 dead scratchpad paths and
+    # `rm -rf *` sat in the list. A limit missed by one unit is a limit set by accident.
+    # 120 is above the ~30 the mechanism rule would yield, so it flags drift without nagging.
+    if len(allow) > 120:
         yel(f"{len(allow)} allow entries — granularity should be the mechanism, "
-            "not the invocation (architecture §12-S.3)")
+            "not the invocation (rules/rule-config-hygiene.md §1.3)")
 
 
 # ── SIZE LIMITS ──────────────────────────────────────────────────────────────

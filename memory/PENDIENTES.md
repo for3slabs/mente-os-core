@@ -3430,7 +3430,7 @@ Cruza **dos señales medibles**: fecha de modificación dentro de una ventana de
 `Plan_Pieza_E`, el que mi búsqueda por nombre perdió) y **no marcó** el `README.md` de junio.
 **Cero falsos positivos.**
 
-**② `git mv` obligatorio → `rules/rule-config-hygiene.md`**
+**② `git mv` obligatorio → `rules/rule-moving-files.md`**
 
 Secuencia de 5 pasos donde *"¿está rastreado?"* es el **paso 1**, no un consejo:
 `git ls-files` → `git mv` si está rastreado → repuntar referencias → verificar 0 huérfanos → commit.

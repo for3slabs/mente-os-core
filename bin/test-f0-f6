@@ -8,6 +8,14 @@
 #
 # Each test names WHAT it verifies and WHY that is the thing that would break.
 # Exit: 0 all pass · 1 something failed
+#
+# ⚠️ KNOWN FLAKE, observed twice on 2026-07-31: running this WHILE files it reads are being
+# written reports a phantom failure — the count drops by one and no check prints a detail line,
+# because the file was read mid-write. Both times it went green on the next run and stayed green
+# across five. Rule of thumb: a failure with NO named check is a race, not a regression; re-run
+# on a quiet tree before believing it. A failure that names a check is always real.
+# Not fixed: the honest fix is reading each file once into memory, which is a rewrite this
+# battery has not earned yet. Documented instead of hidden.
 set -uo pipefail
 M="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="$(dirname "$M")"
@@ -23,6 +31,25 @@ cd "$M"
 
 # ═══════════════════════════════════════════════════════════════════ F0 · SECURITY
 head2 "F0 · SECURITY — is the gate a lock or just a document?"
+
+# ⭐ A NAME THAT LIES IS A FILE THAT DOES NOT GET READ (Brian, 2026-07-31).
+# `rule-config-hygiene.md` was about MOVING FILES; the real config rules lived buried in an
+# 800-line architecture doc. Result: the AI audited .claude/, pruned 31 permissions, and
+# re-derived from scratch criteria that were already written — because the file whose name
+# promised them held something else.
+# The title is the cheapest possible contract between a filename and its content.
+_lying=0
+for _r in rules/rule-*.md; do
+  _slug=$(basename "$_r" .md | sed 's/^rule-//;s/-/ /g')
+  _title=$(head -1 "$_r" | tr 'A-Z' 'a-z')
+  _hit=0
+  for _w in $_slug; do
+    case "$_title" in *"$_w"*) _hit=$((_hit+1)) ;; esac
+  done
+  # at least one word of the filename must appear in its own H1
+  [ "$_hit" -ge 1 ] || { _lying=$((_lying+1)); printf '     ⤷ %s: title does not mention "%s"\n' "$_r" "$_slug"; }
+done
+eq "every rule file's title matches its filename (a lying name is unread)" "0" "$_lying"
 
 # The gate must be enforced by the harness, not by doctrine. Doctrine complies 40-60%.
 # 🔴 Found 2026-07-31: this counted EXACTLY 3 rules per target, which silently encoded

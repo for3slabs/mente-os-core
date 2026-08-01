@@ -8,7 +8,7 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**272 documents** · **2 blocks** · 19 directories
+**273 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
@@ -28,7 +28,7 @@
 | `memory/archive/` | 38 |
 | `principles/` | 5 |
 | `principles/expertise/` | 7 |
-| `rules/` | 17 |
+| `rules/` | 18 |
 | `rules/decisions/` | 29 |
 | `vision/` | 8 |
 | `work/` | 88 |
@@ -110,7 +110,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 410 |
+| `INDEX.md` | generated | — |  | 411 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -165,7 +165,7 @@
 | `how-it-runs.md` | architecture | current | 2026-07-31 | 349 |
 | `language-policy.md` | architecture | current | 2026-07-30 | 86 |
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
-| `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 780 |
+| `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 781 |
 
 ## `memory/`
 
@@ -255,12 +255,13 @@
 | `contract-document.md` | rule | current | 2026-07-29 | 173 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
-| `rule-config-hygiene.md` | rule | current | 2026-07-30 | 76 |
+| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 186 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |
 | `rule-friction.md` | rule | current | 2026-07-29 | 100 |
 | `rule-inheritance.md` | rule | current | 2026-07-29 | 167 |
 | `rule-isolation.md` | rule | current | 2026-07-29 | 76 |
 | `rule-lanes.md` | rule | current | 2026-07-29 | 76 |
+| `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
 
 ## `rules/decisions/`

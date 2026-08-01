@@ -777,4 +777,5 @@ absoluta. **Nadie más puede usar esto.**
 
 Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (entry point) ·
 `docs/architecture/block-anatomy.md` · `bin/check-blocks` · `bin/grade-block` ·
-`bin/check-health` · `principles/owner-0-voice.md` · `rules/rule-config-hygiene.md`.
+`bin/check-health` · `principles/owner-0-voice.md` · ⭐ **`rules/rule-config-hygiene.md`** (§12-S
+lives there as an enforceable rule — this section is its origin, not its home).
