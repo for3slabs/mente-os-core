@@ -25,13 +25,30 @@ cd "$M"
 head2 "F0 · SECURITY — is the gate a lock or just a document?"
 
 # The gate must be enforced by the harness, not by doctrine. Doctrine complies 40-60%.
+# 🔴 Found 2026-07-31: this counted EXACTLY 3 rules per target, which silently encoded
+# "Read+Edit+Write is the whole surface". It is not — Bash was never covered, so `cat` read
+# what `Read` forbade. Proven live: `ls Mente/secrets/` listed the files with no friction.
+# Now it asserts the TOOLS covered, not the rule count, so adding coverage never fails the test
+# and REMOVING a tool always does.
 for target in "5M-incubathon" "marca-personal/Mente"; do
   for f in settings.json settings.local.json; do
     n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/$f'))
-print(sum(1 for r in d['permissions'].get('deny',[]) if '$target' in r))")
+rules=[r for r in d['permissions'].get('deny',[]) if '$target' in r]
+tools={r.split('(')[0] for r in rules}
+print(sum(1 for t in ('Read','Edit','Write') if t in tools))")
     eq "deny for $target in $f (Read+Edit+Write)" "3" "$n"
   done
+done
+
+# ⭐ The gap that Read/Edit/Write alone leaves open: a shell reads whatever the file tools refuse.
+# Every protected target needs a Bash deny too, or the lock has a back door.
+for f in settings.json settings.local.json; do
+  n=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/$f'))
+dn=[r for r in d['permissions'].get('deny',[]) if r.startswith('Bash(')]
+print(sum(1 for k in ('secrets','.ssh','.env','5M-incubathon') if any(k in r for r in dn)))")
+  eq "Bash deny covers the protected targets in $f" "4" "$n"
 done
 
 # A broad Read grant with no deny over credentials is an open door nothing was watching.
