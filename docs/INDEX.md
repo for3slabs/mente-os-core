@@ -8,12 +8,12 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**274 documents** · **2 blocks** · 19 directories
+**275 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
 |---|---|
-| `./` | 1 |
+| `./` | 2 |
 | `Cerebro/` | 6 |
 | `Maestro/` | 7 |
 | `blocks/` | 1 |
@@ -40,6 +40,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
+| `README.md` | entry-point | current | 2026-07-31 | 189 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
 
 ## `Cerebro/`
@@ -110,7 +111,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 412 |
+| `INDEX.md` | generated | — |  | 413 |
 | `METRICS.md` | generated | current | 2026-07-31 | 94 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
