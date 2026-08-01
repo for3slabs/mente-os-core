@@ -9,15 +9,50 @@
 # Each test names WHAT it verifies and WHY that is the thing that would break.
 # Exit: 0 all pass · 1 something failed
 #
-# ⚠️ KNOWN FLAKE, observed twice on 2026-07-31: running this WHILE files it reads are being
-# written reports a phantom failure — the count drops by one and no check prints a detail line,
-# because the file was read mid-write. Both times it went green on the next run and stayed green
-# across five. Rule of thumb: a failure with NO named check is a race, not a regression; re-run
-# on a quiet tree before believing it. A failure that names a check is always real.
-# Not fixed: the honest fix is reading each file once into memory, which is a rewrite this
-# battery has not earned yet. Documented instead of hidden.
+# ⭐ THIS BATTERY MUTATES THE SHARED TREE, so it takes a lock (below).
+#
+# The flake it fixes, diagnosed 2026-07-31 by reproducing it on purpose: several checks create
+# probe blocks under blocks/active/zz-* and delete them at the end. `generate-index` globs
+# blocks/**, so a SECOND concurrent run regenerates the index while the first run's probe is
+# alive — and then `generate-index --check` reports the index as stale. Two simultaneous runs:
+# BOTH failed, both on "the generated indexes are up to date".
+#
+# 🔴 The first diagnosis (written before reproducing) was WRONG on both counts: it blamed
+# "reading a file mid-write" and claimed the failure named no check. It named one. A guess
+# recorded as a finding is worse than an open question — it teaches you to ignore a real report.
+#
+# Why a lock and not isolated probes: every validator anchors to its own location
+# (os.chdir(dirname(dirname(__file__)))), so running them against a scratch tree means
+# rewriting all thirteen. The lock is the honest fix for the actual invariant — this battery
+# owns the tree while it runs.
 set -uo pipefail
 M="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# ── THE LOCK ────────────────────────────────────────────────────────────────
+# mkdir is atomic on every POSIX filesystem: it either creates the directory or fails.
+# No flock dependency, no PID file to go stale silently.
+#
+# The lock is REFUSED, never waited on: a battery queued behind another one would look hung,
+# and the second run has nothing to add — the first is already verifying the same tree.
+_LOCK="$M/.test-lock"
+if ! mkdir "$_LOCK" 2>/dev/null; then
+  _owner=$(cat "$_LOCK/pid" 2>/dev/null || echo "?")
+  # A lock whose owner is gone is a crash leftover, not a running battery. Reclaim it —
+  # otherwise one killed run blocks the battery forever and someone deletes the guard.
+  if [ "$_owner" != "?" ] && ! kill -0 "$_owner" 2>/dev/null; then
+    printf '⚠️  reclaiming a stale lock from pid %s (that run died)\n' "$_owner" >&2
+    rm -rf "$_LOCK" && mkdir "$_LOCK" 2>/dev/null
+  else
+    printf '🔴 another test-f0-f6 is running (pid %s).\n' "$_owner" >&2
+    printf '   This battery creates probe blocks in the real tree, so two runs corrupt\n' >&2
+    printf '   each other. Wait for it, or: rm -rf %s\n' "$_LOCK" >&2
+    exit 1
+  fi
+fi
+echo $$ > "$_LOCK/pid"
+# Released on every exit path — normal, failed, or interrupted. A lock that survives Ctrl-C
+# is a lock someone learns to delete by hand, and then it protects nothing.
+trap 'rm -rf "$_LOCK"' EXIT INT TERM
 REPO="$(dirname "$M")"
 PASS=0; FAIL=0; NOTE=()
 
@@ -664,6 +699,20 @@ esac
 ./hooks/pre-commit.sh >/dev/null 2>&1
 eq "pre-commit fails CLOSED when the validator cannot run" "1" "$?"
 chmod +x bin/check-blocks
+
+# ⭐ THE LOCK GUARDS ITSELF. Diagnosed 2026-07-31 by reproducing the flake: two concurrent runs
+# both failed on "the generated indexes are up to date", because this battery creates probe
+# blocks in the real tree and generate-index globs blocks/**.
+# Without this check, removing the lock would silently bring the flake back — and a battery that
+# fails at random is a battery people learn to re-run until it is green, which is worse than
+# no battery.
+#
+# The lock is held by THIS run, so a nested invocation must be refused. Testing it from inside
+# is the only place where the contended path is guaranteed to exist.
+"$M/bin/test-f0-f6" >/dev/null 2>&1
+eq "a second concurrent run is REFUSED (exit 1), not run alongside" "1" "$?"
+[ -d "$_LOCK" ] && ok "the refused run did not steal or delete the live lock" \
+  || bad "lock survives a refused run" "still held" "gone"
 
 mv hooks/gate-critical.py /tmp/adv-guard.bak
 hout="$("$M/bin/check-health" 2>/dev/null || true)"

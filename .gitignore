@@ -18,3 +18,7 @@ Maestro/
 # basura
 *.swp
 .DS_Store
+
+# runtime lock — test-f0-f6 mutates the shared tree, so it takes one.
+# A committed lock would block the battery for everyone who clones this.
+.test-lock/
