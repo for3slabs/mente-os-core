@@ -23,6 +23,8 @@ import subprocess
 from datetime import date, datetime
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(MENTE, "bin"))
+import mente_config as cfg                                            # noqa: E402
 REPO = os.path.dirname(MENTE)
 os.chdir(MENTE)
 
@@ -215,8 +217,9 @@ def check_sizes():
         if t in LIMITS and n > LIMITS[t]:
             yel(f"{f}: {n} lines — over the {t} limit of {LIMITS[t]}")
 
-    mem = os.path.expanduser(
-        "~/.claude/projects/-home-brianweb3-for3s/memory/MEMORY.md")
+    # Computed from the working directory — hardcoding it made this silent on other machines.
+    _sd, _ = cfg.session_dir()
+    mem = os.path.join(_sd, "memory", "MEMORY.md")
     if os.path.exists(mem):
         n = sum(1 for _ in open(mem, encoding="utf-8", errors="replace"))
         if n > 80:
@@ -243,8 +246,15 @@ def check_truth():
 
 # ── SESSION ──────────────────────────────────────────────────────────────────
 def check_session():
-    d = os.path.expanduser("~/.claude/projects/-home-brianweb3-for3s")
-    js = sorted(glob.glob(f"{d}/*.jsonl"), key=os.path.getmtime, reverse=True)
+    # 🔴 This hardcoded the transcript path and returned SILENTLY when it did not resolve, so
+    # on any other machine the session watch — the guard that exists BECAUSE of the 21-jul
+    # incident — simply went quiet. Now the path is computed and a miss is REPORTED.
+    d, why = cfg.session_dir()
+    if why:
+        yel(f"{why}\n   → session size/age is not being watched "
+            "(set session.project_dir in mente.config.yml if this is wrong)")
+        return
+    js = cfg.session_files()
     if not js:
         return
     cur = js[0]

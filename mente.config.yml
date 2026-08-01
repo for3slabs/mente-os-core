@@ -1,0 +1,87 @@
+# ══ MENTE OS · INSTANCE CONFIG ══════════════════════════════════════════════
+#
+# ⭐ THE LINE THIS FILE DRAWS (Brian, 2026-07-31):
+#
+#   "si yo en algún momento quiero que Mente OS v2 lo puedan ocupar otras personas... este tipo
+#    de cosas un usuario normal no debería hacerlas, porque no es su foco: es ocupar la
+#    herramienta."
+#
+#   THE ENGINE      universal · cloned as-is · nobody edits it
+#                   bin/ · hooks/ · rules/ · principles/ · the contracts
+#
+#   THE INSTANCE    yours · declared ONCE, here
+#                   who you are · which projects are gated · which repos are siblings
+#
+# A new user edits THIS FILE and nothing else. If they ever have to touch bin/ to make the
+# system work, this separation failed.
+#
+# ── WHY IT IS A FILE AND NOT HARDCODED ──────────────────────────────────────
+# Measured 2026-07-31: four validators carried the literal string
+# `~/.claude/projects/-home-brianweb3-for3s`, and every one of them failed SILENTLY when the
+# path did not resolve (`if not js: return`). On any other machine the session watch — the
+# guard that exists BECAUSE of the 21-jul incident — would simply go quiet. A guard aimed at a
+# path that does not exist is not a guard; it is a green light.
+#
+# ── HOW TO ADAPT THIS FOR YOUR OWN INSTANCE ─────────────────────────────────
+# 1. `owner.name` — how you are referred to in the docs.
+# 2. `gates` — other Mente OS instances or private trees the AI must NOT read without
+#    permission. Leave the list empty if you have none.
+# 3. `siblings` — repos next to Mente/ whose uncommitted state is worth reporting.
+# 4. Everything else has a working default. `session.project_dir` is COMPUTED from the
+#    working directory (Claude Code derives it the same way), so you normally leave it unset.
+# ════════════════════════════════════════════════════════════════════════════
+
+schema: v1
+
+# ── WHO ─────────────────────────────────────────────────────────────────────
+owner:
+  # Used in generated docs and in the checks that verify identity is not lost.
+  name: "Brian López"
+  # Guards against a known past error — this exact wrong surname appeared in generated text.
+  never_called: ["Brian Aguilar"]
+
+# ── WHERE THE SESSION TRANSCRIPTS LIVE ──────────────────────────────────────
+session:
+  # Claude Code stores transcripts at ~/.claude/projects/<slug>, where <slug> is the working
+  # directory with every "/" turned into "-". COMPUTED by default — do not hardcode it, or the
+  # session watch goes silent on any other machine.
+  #
+  #   project_dir: -home-someone-myproject     # only to override the computed value
+  project_dir: null
+
+  # Thresholds calibrated against real data (rules/rule-session-close.md §4).
+  size_warn_mb: 15
+  size_red_mb: 50
+  # A session is "heavy enough that losing it costs something" past this. The 21-jul incident
+  # came from one of these.
+  heavy_mb: 2
+
+# ── GATES · other trees the AI must not read without explicit permission ────
+# Each one becomes a deny rule and a battery check. The point is cost control as much as
+# privacy: reading another Mente OS blows up token consumption (bridges/Puentes_Mente_OS.md).
+gates:
+  - path: "~/5M-incubathon"
+    why: "NavigoX has its OWN Mente OS. Opening it needs `acceder mente navigox` + a reason."
+  - path: "~/for3s/marca-personal/Mente"
+    why: "A different project's Mente. Not this one."
+
+# ── SIBLINGS · repos beside Mente/ whose state is worth reporting ───────────
+# check-clear-ready reports uncommitted work here: the files survive a /clear, the REASON for
+# the change does not.
+siblings:
+  - "marca-personal"
+
+# ── PATHS TREATED AS OUTSIDE THIS TREE ──────────────────────────────────────
+# check-links will not chase pointers into these — they belong to other repos or to tooling.
+outside:
+  - "For3s-OS"
+  - ".claude/"
+  - "for3s-inter"
+  - "marca-personal"
+  - "workspace"
+  - "node_modules"
+
+# ── SECRETS ─────────────────────────────────────────────────────────────────
+secrets:
+  # Never in git. Referenced, never pasted (rules/rule-config-hygiene.md §1.1).
+  dir: "secrets"

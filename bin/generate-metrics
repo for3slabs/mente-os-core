@@ -41,6 +41,8 @@ import subprocess
 from datetime import date
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(MENTE, "bin"))
+import mente_config as cfg                                            # noqa: E402
 os.chdir(MENTE)
 REPO = os.path.dirname(MENTE)
 OUT = "docs/METRICS.md"
@@ -90,16 +92,17 @@ def sessions():
                                   encoding="utf-8", errors="replace").read(), re.M))
     except OSError:
         return None, None, None
-    js = glob.glob(os.path.expanduser("~/.claude/projects/-home-brianweb3-for3s/*.jsonl"))
+    js = cfg.session_files()
     body = ""
     try:
         body = open("Cerebro/Registro_Conversaciones.md", encoding="utf-8",
                     errors="replace").read()
     except OSError:
         pass
-    # 2 MB is check-health's own threshold for "this session mattered".
+    # Threshold declared per instance (mente.config.yml · session.heavy_mb).
+    _, _, heavy_mb = cfg.thresholds()
     heavy_unreg = sum(1 for p in js
-                      if os.path.getsize(p) > 2_000_000
+                      if os.path.getsize(p) > heavy_mb * 1_000_000
                       and os.path.basename(p)[:8] not in body)
     return reg, len(js), heavy_unreg
 

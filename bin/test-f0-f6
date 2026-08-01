@@ -86,13 +86,43 @@ for _r in rules/rule-*.md; do
 done
 eq "every rule file's title matches its filename (a lying name is unread)" "0" "$_lying"
 
+# ⭐ ENGINE vs INSTANCE (Brian, 2026-07-31): "si quiero que Mente OS v2 lo puedan ocupar otras
+# personas... un usuario normal no debería hacer estas cosas, su foco es ocupar la herramienta."
+#
+# The ENGINE (bin/ hooks/) must carry NO path tied to one machine. Measured before the split:
+# four validators hardcoded `~/.claude/projects/-home-brianweb3-for3s`, and every one failed
+# SILENTLY when it did not resolve — on any other machine the session watch went quiet.
+# Whatever is instance-specific is DECLARED in mente.config.yml, never written into code.
+[ -f mente.config.yml ] && ok "mente.config.yml exists (the instance declares itself)" \
+  || bad "mente.config.yml" "exists" "MISSING — the engine has nowhere to read the instance from"
+
+_hardcoded=$(grep -rlE "/home/[a-z]+/|-home-[a-z]+-" bin/ hooks/ 2>/dev/null \
+             | xargs grep -lE "^[^#]*(/home/[a-z]+/|-home-[a-z]+-)" 2>/dev/null | wc -l)
+eq "no engine file hardcodes a machine path (config, not code)" "0" "$_hardcoded"
+
+# A missing transcript dir must be REPORTED, never skipped. This is the exact bug the split
+# fixed: `if not js: return` turned a guard into a green light on every other machine.
+_silent=$(python3 -c "
+import sys; sys.path.insert(0,'$M/bin')
+import mente_config as c
+d, why = c.session_dir()
+print(0 if (why is None or why.strip()) else 1)" 2>/dev/null)
+eq "a missing transcript dir yields a REASON, not silence" "0" "${_silent:-1}"
+
 # The gate must be enforced by the harness, not by doctrine. Doctrine complies 40-60%.
 # 🔴 Found 2026-07-31: this counted EXACTLY 3 rules per target, which silently encoded
 # "Read+Edit+Write is the whole surface". It is not — Bash was never covered, so `cat` read
 # what `Read` forbade. Proven live: `ls Mente/secrets/` listed the files with no friction.
 # Now it asserts the TOOLS covered, not the rule count, so adding coverage never fails the test
 # and REMOVING a tool always does.
-for target in "5M-incubathon" "marca-personal/Mente"; do
+# ⭐ INSTANCE-SPECIFIC (mente.config.yml · gates). The ENGINE is universal; WHICH trees are
+# gated is this instance's declaration. A new user changes the config, never this file.
+_GATES=$(python3 -c "
+import sys; sys.path.insert(0,'$M/bin')
+import mente_config as c
+print(' '.join(p.rstrip('/').split('/')[-1] if 'Mente' not in p.split('/')[-1] else '/'.join(p.rstrip('/').split('/')[-2:]) for p,_ in c.gates()))" 2>/dev/null)
+[ -n "$_GATES" ] || _GATES="5M-incubathon"
+for target in $_GATES; do
   for f in settings.json settings.local.json; do
     n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/$f'))
@@ -435,7 +465,11 @@ grep -q "PROJECT-RULES.md" "$REPO/CLAUDE.md" && ok "CLAUDE.md routes to PROJECT-
   || bad "router" "points at PROJECT-RULES.md" "does not"
 
 # ⭐ Nothing was lost in the migration: the gate and server-first must still be findable.
-for k in "5M-incubathon" "acceder mente" "Server-first" "Brian López" "KEK"; do
+# ⭐ INSTANCE-SPECIFIC: the owner name comes from mente.config.yml, the rest are engine rules.
+_OWNER=$(python3 -c "
+import sys; sys.path.insert(0,'$M/bin')
+import mente_config as c; print(c.owner_name())" 2>/dev/null)
+for k in "acceder mente" "Server-first" "KEK" "$_OWNER"; do
   grep -qi "$k" "$REPO/PROJECT-RULES.md" && ok "PROJECT-RULES carries: $k" \
     || bad "migrated rule: $k" "present" "LOST"
 done
