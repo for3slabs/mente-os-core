@@ -495,6 +495,29 @@ done
 ./bin/generate-index --check >/dev/null 2>&1
 eq "the generated indexes are up to date after regenerating" "0" "$?"
 
+# ⭐ NO LIVE DOCUMENT CARRIES A NUMBER THAT METRICS PUBLISHES (Brian, 2026-07-31):
+#   "que sea un apuntador... no podemos depender de que actualices, porque se te puede ir."
+#
+# Measured twice the same day: RETOMAR.md froze the battery at 105/105 (it was 104 — the count
+# is not even stable across a /clear), and SKILL.md — written HOURS after that fix — froze 105
+# again when it was already 118. Same author, same mistake, same day. A number copied into
+# prose is correct exactly once, so the fix is removing the copy, not trying harder.
+#
+# Scope is deliberately narrow: only the documents a session actually steers by. Execution logs,
+# the registry and archives are DATED EVIDENCE — a measurement of a moment that must not change.
+_frozen=0
+for _d in memory/RETOMAR.md docs/architecture/how-it-runs.md \
+          "$REPO/.claude/skills/session-wrap/SKILL.md"; do
+  [ -f "$_d" ] || continue
+  # "N/N" battery scores and "N checks" are the shapes that went stale in practice.
+  _hits=$(grep -oE "\b1[0-9]{2}/1[0-9]{2}\b|\b[0-9]{2,3} checks\b" "$_d" 2>/dev/null | wc -l)
+  [ "$_hits" -eq 0 ] || { _frozen=$((_frozen+1)); printf '     ⤷ %s carries %s frozen count(s)\n' "$_d" "$_hits"; }
+done
+eq "no live document freezes a metric METRICS.md publishes" "0" "$_frozen"
+
+[ -f docs/METRICS.md ] && ok "docs/METRICS.md exists (the single place a live number lives)" \
+  || bad "docs/METRICS.md" "exists" "MISSING — run bin/generate-metrics"
+
 # Regeneration must be DETERMINISTIC — twice in a row cannot differ, or --check is meaningless.
 ./bin/generate-index >/dev/null 2>&1
 a=$(md5sum docs/INDEX.md docs/STATES.md | md5sum)

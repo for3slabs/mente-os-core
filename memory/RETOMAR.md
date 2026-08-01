@@ -78,7 +78,7 @@ server vivía en 60 eps → redactada + tubo blindado).
 | | |
 |---|---|
 | **Estado** | ✅ **F0-F8 cerradas y verificadas — v2 TERMINADO** (F8-4 pasó el 31-jul, sesión S8) |
-| **Prueba** | `Mente/bin/test-f0-f6` — **correr esto primero, es la verdad.** ⚠️ **No confíes en un número escrito aquí:** la batería incluye `check-clear-ready`, que mide la sesión VIVA. Tras un `/clear` da **104/105** hasta que registres la sesión; luego **105/105**. Un 104 recién retomado es lo ESPERADO, no una regresión |
+| **Prueba** | `Mente/bin/test-f0-f6` — **correr esto primero, es la verdad.** Lo único que importa: **`failed: 0`**. ⚠️ El conteo NO se escribe aquí (vive en `docs/METRICS.md` · `battery.checks`): la batería incluye `check-clear-ready`, que mide la sesión VIVA, así que tras un `/clear` da **uno menos** hasta que registres la sesión. Eso es lo ESPERADO, no una regresión |
 | **Commits** | `42dbfab` (279 archivos: v2 + migración) · `d667b14` (registro S7) |
 | **Construido** | 11 validadores · 4 hooks · 3 niveles de reglas · sistema de apuntado |
 
@@ -93,7 +93,7 @@ incluida `4c187f33`, la del incidente del 21-jul, sin entrada 10 días *pese a q
 por nombre*. Autopsias: `Cerebro/Registro_Conversaciones.md` §S8 y §R1-R3.
 
 **👉 PRÓXIMO PASO — lo decide Brian.** El v2 no tiene fases pendientes. Lo abierto:
-① **los 34 huecos de criterio** en `rules/qa-dimensions.md` + los 3 `principles/expertise/*.md`
+① **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`) en `rules/qa-dimensions.md` + `principles/expertise/*.md`
 — **solo Brian puede escribirlos**, ninguna IA · ② volver a **la demo** (§ abajo, 3 tapones).
 
 **Deuda medida que NO bloquea:** ~73 citas rotas (56 de base + 17 que la migración destapó) ·

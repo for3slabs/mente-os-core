@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+"""generate-metrics — publish every live number ONCE, so documents can point instead of copy.
+
+⭐ Brian, 2026-07-31:
+
+    "que sea un apuntador... si cambió de tamaño de 118 a 120 no pasa nada con el SKILL.md
+     porque manda a apuntar a un número que está en otro lugar y no lo tenemos que estar
+     corrigiendo manualmente... no podemos depender de que actualices, porque se te puede ir."
+
+THE FAILURE THIS FIXES, measured the same day it was written:
+
+  · memory/RETOMAR.md claimed the battery was 105/105 — F8-4 found it was 104. The number is
+    not even stable across a /clear.
+  · .claude/skills/session-wrap/SKILL.md, written HOURS after that fix, froze 105 again.
+    It was 118 by then. The same author repeated the same mistake in the same day.
+
+That is the point: a number copied into prose is correct exactly once. The fix is not more
+discipline — it is removing the copy.
+
+HOW A DOCUMENT USES THIS
+    ⛔  "the battery is 118/118"
+    ✅  "the battery is green — the current count is in `docs/METRICS.md` (battery.checks)"
+
+A document names the METRIC. This file holds the VALUE. When the value moves, nothing in prose
+goes stale, because no prose carries it.
+
+WHAT DOES NOT BELONG HERE
+    Dated historical evidence — "5 of 11 sessions were never registered (2026-07-27)" — is a
+    measurement of a moment, not live state. It must NOT change. Freezing it is correct;
+    freezing live state is the bug.
+
+Usage: bin/generate-metrics [--check]
+Exit:  0 written / up to date · 1 stale (with --check) · 2 could not measure
+"""
+import os
+import re
+import sys
+import json
+import glob
+import subprocess
+from datetime import date
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+REPO = os.path.dirname(MENTE)
+OUT = "docs/METRICS.md"
+check_only = "--check" in sys.argv
+
+
+def battery_checks():
+    """Total checks in test-f0-f6, from a real run.
+
+    🔴 The battery takes a lock and REFUSES a second concurrent run (exit 1). Reading a refused
+    run as "0 checks" would publish a lie, so an unreadable count is reported as unknown —
+    never as zero. A metric that guesses is worse than a metric that is absent.
+    """
+    try:
+        r = subprocess.run(["./bin/test-f0-f6"], capture_output=True, text=True, timeout=300)
+    except (OSError, subprocess.SubprocessError):
+        return None, None
+    m = re.search(r"passed:\s*(\d+)", r.stdout)
+    f = re.search(r"failed:\s*(\d+)", r.stdout)
+    if not m:
+        return None, None
+    return int(m.group(1)), int(f.group(1)) if f else None
+
+
+def criterion_holes():
+    """Holes only Brian can fill. Counted where they LIVE, never in the index.
+
+    The first version of this count read PENDING-BRIAN.md — the index — and reported 1 when 34
+    existed. Counting them where they are not is a false green.
+    """
+    files = ["rules/qa-dimensions.md", "principles/owner-0-voice.md"] + \
+        sorted(glob.glob("principles/expertise/*.md"))
+    n = 0
+    for f in files:
+        try:
+            n += open(f, encoding="utf-8", errors="replace").read().count("⬜")
+        except OSError:
+            pass
+    return n, len(files)
+
+
+def sessions():
+    """Registered sessions vs .jsonl files on disk, and how many heavy ones lack an entry."""
+    try:
+        reg = len(re.findall(r"^\|\s*S\d+\s*\|",
+                             open("Cerebro/Registro_Conversaciones.md",
+                                  encoding="utf-8", errors="replace").read(), re.M))
+    except OSError:
+        return None, None, None
+    js = glob.glob(os.path.expanduser("~/.claude/projects/-home-brianweb3-for3s/*.jsonl"))
+    body = ""
+    try:
+        body = open("Cerebro/Registro_Conversaciones.md", encoding="utf-8",
+                    errors="replace").read()
+    except OSError:
+        pass
+    # 2 MB is check-health's own threshold for "this session mattered".
+    heavy_unreg = sum(1 for p in js
+                      if os.path.getsize(p) > 2_000_000
+                      and os.path.basename(p)[:8] not in body)
+    return reg, len(js), heavy_unreg
+
+
+def permissions():
+    out = {}
+    for name in ("settings.json", "settings.local.json"):
+        try:
+            d = json.load(open(f"{REPO}/.claude/{name}"))["permissions"]
+            out[name] = (len(d.get("allow", [])), len(d.get("deny", [])))
+        except (OSError, ValueError, KeyError):
+            out[name] = (None, None)
+    return out
+
+
+def registered_hooks():
+    try:
+        d = json.load(open(f"{REPO}/.claude/settings.json"))
+        return sum(len(e["hooks"]) for a in d.get("hooks", {}).values() for e in a)
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def n(v):
+    """A number that could not be measured prints as ?, never as 0."""
+    return "?" if v is None else str(v)
+
+
+passed, failed = battery_checks()
+holes, hole_files = criterion_holes()
+reg, on_disk, heavy_unreg = sessions()
+perms = permissions()
+hooks_reg = registered_hooks()
+validators = len([f for f in os.listdir("bin") if os.path.isfile(f"bin/{f}")])
+hook_files = len([f for f in os.listdir("hooks") if os.path.isfile(f"hooks/{f}")])
+active = len(glob.glob("blocks/active/*/BLOCK.md"))
+archived = len(glob.glob("blocks/archive/*/BLOCK.md"))
+
+body = f"""<!-- 🤖 GENERATED by bin/generate-metrics — DO NOT EDIT BY HAND.
+     Hand edits are lost on the next run. This file exists so that no document has to
+     carry a live number in its prose: documents name the METRIC, this file holds the
+     VALUE. Regenerate: bin/generate-metrics -->
+
+# METRICS — every live number, measured once
+
+**Status:** current · **Type:** generated · **Updated:** {date.today().isoformat()} · **Owner:** brian
+**Generated:** {date.today().isoformat()} · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+
+## Purpose
+
+Every live number in Mente OS, measured once, so no document has to copy one into its prose.
+
+> ⭐ **Why this file exists** (Brian, 2026-07-31): *"que sea un apuntador... no podemos depender
+> de que actualices, porque se te puede ir."*
+>
+> A number copied into prose is correct **exactly once**. `RETOMAR.md` claimed the battery was
+> 105/105 when it was 104; `SKILL.md`, written hours after that was fixed, froze 105 again — it
+> was already 118. **The fix is not more discipline. It is removing the copy.**
+
+## How to cite a metric
+
+```
+⛔  "the battery is 118/118"
+✅  "the battery is green — count in `docs/METRICS.md` (battery.checks)"
+```
+
+⚠️ **Dated historical evidence does NOT belong here.** *"5 of 11 sessions were never registered
+(2026-07-27)"* measures a moment and must never change. Freezing that is correct. Freezing live
+state is the bug this file removes.
+
+---
+
+## battery
+
+| Metric | Value |
+|---|---|
+| `battery.checks` | **{n(passed)}** |
+| `battery.failed` | **{n(failed)}** |
+
+⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
+`check-clear-ready`, which measures the **live** session: it reads one short until this session
+is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the total right after a
+`/clear` is **expected, not a regression**.
+
+## criterion — what only Brian can write
+
+| Metric | Value |
+|---|---|
+| `criterion.holes` | **{n(holes)}** |
+| `criterion.files` | {n(hole_files)} |
+
+Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-voice.md` ·
+`principles/expertise/*`), never in the index — the index is what goes stale.
+
+## sessions
+
+| Metric | Value |
+|---|---|
+| `sessions.registered` | **{n(reg)}** |
+| `sessions.on_disk` | {n(on_disk)} |
+| `sessions.heavy_unregistered` | **{n(heavy_unreg)}** |
+
+`heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
+actually costs something. The 21-jul incident came from one of them.
+
+## system
+
+| Metric | Value |
+|---|---|
+| `system.validators` | {n(validators)} |
+| `system.hook_files` | {n(hook_files)} |
+| `system.hooks_registered` | **{n(hooks_reg)}** |
+| `system.blocks_active` | {n(active)} |
+| `system.blocks_archived` | {n(archived)} |
+
+⚠️ `hook_files` and `hooks_registered` differ on purpose: `pre-commit.sh` is invoked by git, not
+by the harness, so it is a file without a settings entry.
+
+## permissions
+
+| Metric | allow | deny |
+|---|---|---|
+| `permissions.shared` (`settings.json`) | {n(perms['settings.json'][0])} | {n(perms['settings.json'][1])} |
+| `permissions.local` (`settings.local.json`) | {n(perms['settings.local.json'][0])} | {n(perms['settings.local.json'][1])} |
+
+`deny` must be **identical** in both — one that lives only in the local file protects nobody
+else (`rules/rule-config-hygiene.md` §1.6).
+
+---
+
+Related: `docs/INDEX.md` · `docs/STATES.md` (also generated) ·
+`rules/rule-config-hygiene.md` · `docs/PENDING-BRIAN.md` (the holes, by owner).
+"""
+
+if check_only:
+    try:
+        current = open(OUT, encoding="utf-8").read()
+    except OSError:
+        print(f"🔴 {OUT} does not exist — run bin/generate-metrics")
+        sys.exit(1)
+    # The generation date changes daily and is not a metric; compare everything else.
+    strip = lambda s: re.sub(r"\*\*Generated:\*\* \d{4}-\d{2}-\d{2}", "", s)
+    if strip(current) != strip(body):
+        print(f"🔴 {OUT} is stale — regenerate: bin/generate-metrics")
+        sys.exit(1)
+    print(f"✅ {OUT} is up to date")
+    sys.exit(0)
+
+open(OUT, "w", encoding="utf-8").write(body)
+print(f"✅ {OUT}")
+print(f"   battery {n(passed)} passed / {n(failed)} failed · criterion holes {n(holes)}")
+print(f"   sessions {n(reg)} registered · {n(heavy_unreg)} heavy unregistered")
+print(f"   validators {n(validators)} · hooks {n(hooks_reg)} registered · blocks {n(active)} active")
+sys.exit(0)

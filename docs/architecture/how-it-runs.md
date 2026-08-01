@@ -290,7 +290,7 @@ flowchart TD
 | Capa | Qué juzga | Quién la escribe | Estado |
 |---|---|---|---|
 | **1 · medible** | código muerto · duplicación · tests · grafo | ya es código (`bin/grade-block`) | ✅ **funciona hoy** |
-| **2 · criterio** | las 6 dimensiones con evidencia exigida | **solo Brian** | ⬜ **66 huecos** |
+| **2 · criterio** | las 6 dimensiones con evidencia exigida | **solo Brian** | ⬜ huecos abiertos (`criterion.holes`) |
 
 > ⭐ Un 🔴 **no prohíbe cerrar el bloque.** Prohíbe cerrarlo **como producto**: cierra marcado MVP,
 > con su deuda listada.
@@ -304,7 +304,9 @@ impide que la IA se autoapruebe.
 
 ### ✅ Funciona, verificado
 
-- **`test-f0-f6` = 113/113**, cero fallas, en tres corridas seguidas.
+- **`test-f0-f6` en verde**, cero fallas, en tres corridas seguidas. El conteo vivo está en
+  `docs/METRICS.md` (`battery.checks`) — **este documento no lo copia**, porque un número
+  copiado en prosa es correcto exactamente una vez.
 - **Las 4 puertas operan.** Probado en vivo: lanzar un `general-purpose` quedó bloqueado; un
   `Explore` pasó y devolvió su respuesta.
 - **El cableado del expertise funciona.** Editar `userStore.ts` nombra `dev-database.md` antes de
@@ -315,7 +317,7 @@ impide que la IA se autoapruebe.
 ### 🟡 No funciona todavía
 
 - **El tubo pasa vacío.** Los 7 archivos de expertise tienen estructura y cableado, pero su
-  criterio son **66 huecos ⬜**. Hoy el sistema responde *"¿cumple las métricas?"*; todavía no
+  criterio sigue en huecos ⬜ (`docs/METRICS.md` · `criterion.holes`). Hoy el sistema responde *"¿cumple las métricas?"*; todavía no
   *"¿lo haría un senior?"* — que era el diferenciador del v2.
 - **Nunca ha gobernado trabajo real.** Los commits desde que nació el v2 son el v2 construyéndose,
   migrándose y probándose **a sí mismo**. Cero sesiones de producto. El propio bloque `demo` lo
@@ -346,4 +348,4 @@ demostrando primero que el criterio funciona.
 
 Relacionado: `docs/architecture/` (el diseño completo) · `principles/owner-*.md` (los encargados) ·
 `principles/expertise/` (las disciplinas) · `rules/qa-dimensions.md` (las 6 dimensiones) ·
-`docs/PENDING-BRIAN.md` (los 66 huecos) · `rules/contract-handoff.md` (la puerta de delegación).
+`docs/PENDING-BRIAN.md` (los huecos, por encargado) · `rules/contract-handoff.md` (la puerta de delegación).

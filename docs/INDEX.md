@@ -8,7 +8,7 @@
 **Generated:** 2026-07-31 · **Type:** generated
 
 
-**273 documents** · **2 blocks** · 19 directories
+**274 documents** · **2 blocks** · 19 directories
 
 
 | Directory | Docs |
@@ -21,7 +21,7 @@
 | `blocks/active/demo/docs/` | 3 |
 | `blocks/archive/split-architecture_2026-07/` | 3 |
 | `bridges/` | 6 |
-| `docs/` | 15 |
+| `docs/` | 16 |
 | `docs/analysis/` | 27 |
 | `docs/architecture/` | 6 |
 | `memory/` | 4 |
@@ -110,7 +110,8 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 411 |
+| `INDEX.md` | generated | — |  | 412 |
+| `METRICS.md` | generated | current | 2026-07-31 | 94 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -162,7 +163,7 @@
 |---|---|---|---|---|
 | `block-anatomy.md` | architecture | current | 2026-07-30 | 454 |
 | `folder-structure.md` | architecture | current | 2026-07-30 | 292 |
-| `how-it-runs.md` | architecture | current | 2026-07-31 | 349 |
+| `how-it-runs.md` | architecture | current | 2026-07-31 | 351 |
 | `language-policy.md` | architecture | current | 2026-07-30 | 86 |
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
 | `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 781 |
@@ -252,7 +253,7 @@
 | `contract-adr.md` | contract | current | 2026-07-29 | 141 |
 | `contract-archive.md` | contract | current | 2026-07-30 | 131 |
 | `contract-block.md` | contract | current | 2026-07-29 | 335 |
-| `contract-document.md` | rule | current | 2026-07-29 | 173 |
+| `contract-document.md` | rule | current | 2026-07-29 | 200 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
 | `rule-config-hygiene.md` | rule | current | 2026-07-31 | 186 |
