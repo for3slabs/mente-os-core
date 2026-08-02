@@ -52,7 +52,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 385 |
+| `Registro_Conversaciones.md` | — | — |  | 453 |
 
 ## `Maestro/`
 
@@ -124,7 +124,7 @@
 | `f6-execution-log.md` | analysis | current | 2026-07-30 | 124 |
 | `f7-f8-execution-log.md` | analysis | current | 2026-07-30 | 85 |
 | `plan-v1-to-v2-migration.md` | plan | current | 2026-07-30 | 335 |
-| `plan-v2-rollout.md` | plan | current | 2026-07-31 | 416 |
+| `plan-v2-rollout.md` | plan | current | 2026-08-02 | 422 |
 
 ## `docs/analysis/`
 
@@ -175,8 +175,8 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-07-31 | 3645 |
-| `RETOMAR.md` | entry-point | current | 2026-07-31 | 199 |
+| `PENDIENTES.md` | pending | current | 2026-07-31 | 3667 |
+| `RETOMAR.md` | entry-point | current | 2026-08-02 | 197 |
 
 ## `memory/archive/`
 

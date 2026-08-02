@@ -16,6 +16,28 @@ sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el
 
 ---
 
+## ⛔ F3 DEL LATIDO — DESCARTADA, no olvidada (2026-08-02)
+
+El plan del latido tenía **tres** fases. F1 y F2 están construidas (abajo). **F3 era un cron
+externo** que corriera `check-health` en paralelo y avisara si el latido no se mueve.
+
+**Descartada al proponerla, por tres razones:**
+1. Un cron **también puede morir en silencio** → dos guardias vigilándose mutuamente y nadie
+   vigilando el par. El mismo problema, un nivel más arriba.
+2. Choca con la regla LOCKED de Brian: *"⛔ NO loops de espera / procesos de fondo"*
+   (`RETOMAR.md`).
+3. F1+F2 ya cierran el caso: no detectan *en el momento* —eso es imposible desde dentro— pero
+   lo hacen **imposible de ignorar** la primera vez que se corre cualquier validador.
+
+**Lo único que F3 aportaría:** detección **sin que estés**. Hoy si dejas de trabajar dos semanas
+y el hook muere, no te enteras hasta que vuelvas.
+
+> 🟡 **El error de método que la destapó:** al terminar F2 no dije que F3 quedaba descartada, ni
+> la anoté. Brian tuvo que preguntar *"¿pero no teníamos F3?"*. **Una decisión que solo vive en
+> la conversación muere con ella** — que es exactamente lo que este sistema existe para evitar.
+
+---
+
 ## ✅ EL LATIDO — F1 y F2 CONSTRUIDAS (2026-07-31)
 
 **F1 · `SessionStart`:** estampa `.heartbeat`; `check-health` avisa 🔴 a los ≥3 días.

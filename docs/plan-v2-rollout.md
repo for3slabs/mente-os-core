@@ -1,13 +1,19 @@
 # 🗺️ PLAN DE IMPLEMENTACIÓN — Mente OS v2
-**Status:** current · **Type:** plan · **Updated:** 2026-07-31 · **Owner:** brian
+**Status:** current · **Type:** plan · **Updated:** 2026-08-02 · **Owner:** brian
 > **Petición de Brian (2026-07-27):** *"necesitamos un plan de implementación con fases y tickets de
 > desarrollo, de forma detallada, de tal manera que **sepa por qué se hizo esto primero antes que
 > otro punto**."*
 >
-> **Estatus 2026-07-31:** ✅ **F0-F7 CERRADAS Y VERIFICADAS · F8 al 75%** — `bin/test-f0-f6` =
-> **105/105**. 11 validadores · 4 hooks · 3 niveles de reglas. Commit `42dbfab` (279 archivos).
+> **Estatus 2026-08-02:** ✅ **F0-F8 CERRADAS Y VERIFICADAS — el plan está EJECUTADO.**
+> F8-4 (retomar tras un `/clear` real) pasó el 31-jul: el brief bastó, cero preguntas de estado.
 > Migración v1→v2 completa (M0-M5, ADR-029): `Alma/` `Cuerpo/` `Doc/` `Tickets/` **eliminadas**.
-> **Falta F8-4:** retomar tras un `/clear` real — la prueba final del sistema.
+> Después, S8 lo endureció (12 commits) y lo **publicó**: `github.com/fruterito101/mente-os`.
+> **La prueba en vivo:** `bin/test-f0-f6` — lo único que importa es `failed: 0`. El conteo vive
+> en `docs/METRICS.md` (`battery.checks`), nunca escrito aquí: se congeló una vez y envejeció
+> en horas.
+>
+> ⚠️ **Lo único abierto no es una fase:** los huecos de criterio de Brian (`criterion.holes`).
+> Ninguna IA puede escribirlos sin inventarlos (ADR-003).
 > **Diseño:** `Arquitectura_Mente_OS_v2_Bloques.md` · **Visión:** `principles/vision-mente-os-v2.md`
 ---
 

@@ -53,9 +53,9 @@ phase: 6 files raised to product; 3 blockers remain before it can be handed over
 next: sub-block 7 — jazz/mashe owners into the DB, delete allowedEmails.ts DEV_FALLBACK
 blockers: sub-block 9 waits on the hosting decision → BRIAN
 progress: 6/9 sub-blocks closed
-updated: 2026-07-31
-note: untouched on 2026-07-31 — that session built Mente OS v2 (F4-F8 + the v1→v2 migration),
-      not the demo. Recorded so a stale date is not read as forgotten work.
+updated: 2026-08-02
+note: untouched through 2026-08-02 (S7 built Mente OS v2, S8 hardened and published it).
+      A stale date here is not forgotten work: the blockers are where 2026-07-26 left them.
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks

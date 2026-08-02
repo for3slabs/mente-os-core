@@ -10,7 +10,7 @@
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-07-31 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-08-02 | `blocks/active/demo/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
 
 ## Phase

@@ -1,15 +1,11 @@
 # RETOMAR — Cold-Start Brief (LEER ESTO PRIMERO) ⚡
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-07-31 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
-> **Propósito:** el ÚNICO archivo que necesitas leer al retomar. Pequeño A PROPÓSITO
-> (releerlo es caro cuando crece). **REGLA DE HIGIENE: máximo ~200 líneas** — la aplica
-> `bin/check-health`. Al cerrar, mover lo viejo a la Bitácora y dejar aquí SOLO el estado
-> vigente + punteros. La historia NO va aquí.
->
-> ⚠️ **UNA sola fecha, la de la cabecera.** Tener dos se destapó como hueco en F8-4 (S8).
-
+> **El ÚNICO archivo que necesitas leer al retomar.** Pequeño a propósito: **máximo 200 líneas**,
+> lo aplica `bin/check-health`. Al cerrar, la historia va a la Bitácora, no aquí.
+> ⚠️ **UNA sola fecha, la de la cabecera** (dos fue un hueco real de F8-4).
 
 ---
 
@@ -23,23 +19,22 @@
 - For3s OS = **agente "segundo cerebro" autónomo, self-hosted** en el servidor `for3s`
   (Telegram + consola, Python 3.12 + Postgres+AGE+pgvector, contenerizado). EN PRODUCCIÓN.
 
-## 2 · Servidor `for3s` — 5 FOR3S OS al mismo tiempo (2026-07-07)
+## 2 · Servidor `for3s` — 5 FOR3S OS al mismo tiempo
 
 Tailscale `for3s` 100.112.177.53 · SSH brianweb3 (pass en `reference_servidor_for3s`) · gestor:
 `for3s listar|agregar|entrar|encender|apagar|borrar`. Aislamiento TOTAL por
-`docker compose -p for3s-<nombre>`. Comparten SOLO: máquina + imagen `for3s-agent:local`
-(**v0.20.0**) + suscripción Claude (**1 solo cupo** para todas).
+`docker compose -p for3s-<nombre>`. Comparten SOLO: máquina + imagen (**v0.20.0**) + suscripción
+Claude (**1 solo cupo** para todas).
 
-| Bot | Instancia | Dueño | Estado | Notas |
-|---|---|---|---|---|
-| 🏢 @For3s_OS_bot | `for3s` (compose principal, no `for3s listar`) | Brian | 🟢 | "Foresito" — EMPRESA, memoria de siempre, microglía ON |
-| 👤 @For3s_Brian_bot | `brian` | Brian | 🟢 | PERSONAL — **ENTRENADO** (ver §4), microglía OFF a drede |
-| 🌐 @For3s_General_bot | `general` | Brian | 🟢 | PÚBLICO, **equipo/puerta ABIERTA** (quien escriba entra). Pendiente: otras API keys/datos |
-| 🎷 @For3s_Jazzita_bot | `jazz` | Jazz @driade_1 (1177279840) | ⚪ apagado | verificado E2E; ella lo enciende cuando quiera |
-| 👊 @For3s_Mashe_bot | `mashe` | (1er /start) | ⚪ apagado | verificado E2E; Brian decidirá qué hacer |
+| Bot | Instancia | Dueño | Estado |
+|---|---|---|---|
+| 🏢 @For3s_OS_bot | `for3s` | Brian | 🟢 "Foresito" — EMPRESA, microglía ON |
+| 👤 @For3s_Brian_bot | `brian` | Brian | 🟢 PERSONAL — **ENTRENADO** (§4), microglía OFF a drede |
+| 🌐 @For3s_General_bot | `general` | Brian | 🟢 PÚBLICO, puerta ABIERTA |
+| 🎷 @For3s_Jazzita_bot | `jazz` | Jazz @driade_1 | ⚪ apagado — verificado E2E |
+| 👊 @For3s_Mashe_bot | `mashe` | (1er /start) | ⚪ apagado — verificado E2E |
 
-⚠️ Las 3 nuevas heredan la auth OAuth de Foresito. El warning "Chat not found" es normal hasta
-que el dueño da /start. Detalle: memoria `project_multi_instancia`.
+⚠️ Las 3 nuevas heredan la auth OAuth de Foresito. Detalle: memoria `project_multi_instancia`.
 
 ## 3 · Estado global del producto
 
@@ -48,95 +43,98 @@ Diseño 100% LOCKED (R1-R10, 11 nodos, 3 pilares). **v0.20.0 CONECTORES SELF-SER
 Hermes (5/5) + intern-os + CI + Frente B + Molde + Trace + Frente E + super-cerebro (§4).
 **Cero bugs abiertos.**
 
-- **✅ TRÍADA SINCRONIZADA** (19/20-jul): server = GitHub (origin `for3slabs/for3s-os` + backup
-  `for3slabs/for3s`) = local (`For3s-OS/`) en HEAD `f50a5db`. CI+Trivy verdes · 260 tests.
-- **✅ INSTANCIAS EN v0.20.0** — 3 vivas + jazz/mashe apagadas por diseño. Cliente API real:
-  NavigoX (hotel-recepcion, sin consumo activo) + jazz-id (prueba). Datos limpios.
-- **✅ SEGURIDAD CERRADA** (16-jul): CI 100% verde (`b8da4d7`) — gitleaks · format · bandit ·
-  migraciones E2E con AGE · coverage 15% · **CVE-2026-59950 parcheada** (mcp 1.28.1).
-  SEC-3/4/5/6 + 3b/4b completos · **token GitHub rotado**.
-- **✅ SEC-4c** (`021292e`): non-root con **perfil por instancia** — Foresito/brian=interna(root),
-  general/jazz/mashe=expuesta(non-root uid 1000). 5 bugs cazados, 1 catastrófico →
-  🔒 **lección LOCKED: nunca `chown -R` un bind mount** (memoria `feedback_nunca_chown_bind_mount`).
+- **✅ TRÍADA SINCRONIZADA** (19/20-jul): server = GitHub (`for3slabs/for3s-os` + backup) = local
+  en HEAD `f50a5db`. CI+Trivy verdes · 260 tests. Instancias en v0.20.0.
+- **✅ SEGURIDAD CERRADA** (16-jul): CI 100% verde (`b8da4d7`) · SEC-3/4/5/6 + 3b/4b · token
+  rotado · **SEC-4c** non-root con perfil por instancia (`021292e`).
+  🔒 lección LOCKED: **nunca `chown -R` un bind mount** (`feedback_nunca_chown_bind_mount`).
 
-## 4 · 🎓🎓 SUPER-CEREBRO — ambos agentes entrenados+examinados ✅ CERRADO (2026-07-18/20)
+## 4 · 🎓🎓 SUPER-CEREBRO — ambos agentes entrenados+examinados ✅ (18/20-jul)
 
-**brian 🍓** 22,406 eps · 99.94% consolidado · grafo 1,335 conceptos · **examen 94.3%**.
-**Foresito 👑** 1,829 eps (741/741 archivos) · grafo 2,687 nodos · **examen 98.8%** · es el
-**AGENTE MAESTRO** (lee `for3slabs/mente-os-maestro` EN VIVO, puente E + skill 22).
-Los exámenes cazaron **12 hallazgos, todos con fix sistémico** (joya H-11: la contraseña del
-server vivía en 60 eps → redactada + tubo blindado).
-👉 Detalle: memoria `project_entrenamiento_foresito` · `docs/analysis/Examen_Foresito_T6_Hallazgos.md`
-· `work/Entrenamiento_Ejecucion_Reporte.md` · runners en `~/entrenamiento-runners/` del server.
+**brian 🍓** 22,406 eps · 99.94% consolidado · **examen 94.3%**. **Foresito 👑** 1,829 eps ·
+grafo 2,687 nodos · **examen 98.8%** · es el **AGENTE MAESTRO** (lee `for3slabs/mente-os-maestro`
+EN VIVO). Los exámenes cazaron **12 hallazgos con fix sistémico** (joya H-11: la contraseña del
+server vivía en 60 eps → redactada). 👉 `project_entrenamiento_foresito` ·
+`docs/analysis/Examen_Foresito_T6_Hallazgos.md` · `work/Entrenamiento_Ejecucion_Reporte.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-### 🆕 ⭐ LO ÚLTIMO (2026-07-31) — MENTE OS v2 TERMINADO Y VERIFICADO
+### 🆕 ⭐ LO ÚLTIMO (2026-08-02) — v2 ENDURECIDO Y **PUBLICADO**
 
-**Mente OS pasó de DOCUMENTAR a GOBERNAR.** No es diseño: está en disco y medido.
+**El v2 ya estaba terminado; esta jornada (S8, 50h) lo puso a prueba contra sí mismo.**
+12 commits. **Batería 105 → 138.** Detalle: `Cerebro/Registro_Conversaciones.md` §S8.
 
 | | |
 |---|---|
-| **Estado** | ✅ **F0-F8 cerradas y verificadas — v2 TERMINADO** (F8-4 pasó el 31-jul, sesión S8) |
-| **Prueba** | `Mente/bin/test-f0-f6` — **correr esto primero, es la verdad.** Lo único que importa: **`failed: 0`**. ⚠️ El conteo NO se escribe aquí (vive en `docs/METRICS.md` · `battery.checks`): la batería incluye `check-clear-ready`, que mide la sesión VIVA, así que tras un `/clear` da **uno menos** hasta que registres la sesión. Eso es lo ESPERADO, no una regresión |
-| **Commits** | `42dbfab` (279 archivos: v2 + migración) · `d667b14` (registro S7) |
-| **Construido** | 11 validadores · 4 hooks · 3 niveles de reglas · sistema de apuntado |
+| 🌍 **Público** | **`github.com/fruterito101/mente-os`** — MIT, 97 archivos, historial limpio. Solo el MOTOR: sin `work/` `memory/` `Cerebro/`, sin datos de clientes ni de terceros (14 categorías escaneadas antes de publicar) |
+| 🔒 **Seguridad** | el token de GitHub, AWS y GPG estuvieron **expuestos**: `Read(//home/**)` con un `deny` de 5 objetivos. Cerrado — y el guardia ahora **descubre** credenciales en vez de consultar una lista de tres |
+| 🫀 **El latido** | arranque y las 3 puertas dejan prueba de que siguen vivos (`.heartbeat` · `.beats/`). El silencio de un guardia dejó de ser indistinguible de la salud |
+| 🔌 **Portable** | motor / instancia separados en `mente.config.yml`. Probado clonando de verdad |
 
-**🗑️ La migración v1→v2 está COMPLETA (M0-M5, ADR-029).** `Alma/` `Cuerpo/` `Doc/` `Tickets/`
-**eliminadas** — 186 documentos movidos uno por uno. Si un documento cita esas rutas, es una
-cita fósil, no un archivo que falta. Solo quedan por decisión: `Cerebro/` (6, el grafo del
-producto) y `Maestro/` (7, repo aparte).
+> ⭐ **EL HALLAZGO QUE VALE MÁS QUE LOS ARREGLOS — el mismo error, 5 veces:**
+> `check-clear-ready` vigilaba una ruta pero no si existía · el `deny` cubría 3 herramientas
+> pero no Bash · `SENSITIVE` listaba 3 credenciales · `GUARDS` vigilaba 9 de 21 validadores ·
+> los hooks se comprobaban en disco pero no su registro.
+> **Cada mitad vigilada y nadie vigilando la costura.**
+>
+> **La regla:** una lista que enumera lo **PROTEGIDO** debe medirse; una que enumera lo
+> **PERMITIDO** puede escribirse, si lo desconocido **falla cerrado**. (Auditadas las 22
+> enumeraciones: 19 estaban bien, varias a propósito.) → `rules/rule-config-hygiene.md`
 
-**✅ F8-4 PASÓ (31-jul, S8):** el primer retomar real tras un `/clear` — el brief bastó, **cero
-preguntas de estado**. Destapó 3 huecos (ya tapados) y se registraron las **3 sesiones huérfanas**,
-incluida `4c187f33`, la del incidente del 21-jul, sin entrada 10 días *pese a que la regla la cita
-por nombre*. Autopsias: `Cerebro/Registro_Conversaciones.md` §S8 y §R1-R3.
+**👉 PRÓXIMO PASO — no hay deuda técnica que valga la pena.** Lo único abierto es lo que
+ninguna IA puede escribir: **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`).
+Recomendación medida: empezar por `expertise/val-integration.md` — tiene 6 casos tuyos ya en la
+mesa, dos con producción caída. Sus §3 y §4 son dos preguntas.
 
-**👉 PRÓXIMO PASO — lo decide Brian.** El v2 no tiene fases pendientes. Lo abierto:
-① **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`) en `rules/qa-dimensions.md` + `principles/expertise/*.md`
-— **solo Brian puede escribirlos**, ninguna IA · ② volver a **la demo** (§ abajo, 3 tapones).
+⚠️ **Y lo que sigue sin cambiar:** el v2 **nunca ha gobernado trabajo real de producto**. Los 12
+commits de S8 son el sistema arreglándose a sí mismo. Cero sesiones de demo o de agente.
 
-**Deuda medida que NO bloquea:** ~73 citas rotas (56 de base + 17 que la migración destapó) ·
-7 archivos sobre su límite de líneas · M6 (renombrar `Maestro/`) es **decisión de Brian**, y mi
-recomendación medida es **no hacerlo**.
+---
+
+### LO ANTERIOR (2026-07-31) — el v2 se construyó y F8-4 lo verificó
+
+**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas · commits `42dbfab` (279 archivos:
+v2 + migración) y `d667b14`. **Prueba:** `Mente/bin/test-f0-f6` — lo único que importa es
+`failed: 0`; el conteo vive en `docs/METRICS.md` (`battery.checks`), nunca escrito aquí.
+
+**La migración v1→v2 está COMPLETA** (M0-M5, ADR-029): `Alma/` `Cuerpo/` `Doc/` `Tickets/`
+eliminadas, 186 documentos movidos. Si un documento cita esas rutas es una **cita fósil**, no un
+archivo que falta. Quedan por decisión: `Cerebro/` (el grafo del producto) y `Maestro/` (repo
+aparte). **F8-4 pasó:** el brief bastó, cero preguntas de estado.
+
+**Deuda medida que NO bloquea:** ~73 citas rotas · archivos sobre su límite · M6 (renombrar
+`Maestro/`) es decisión de Brian y mi recomendación medida es **no hacerlo**.
 
 ---
 
 **🖥️⭐ LA DEMO ES UN BLOQUE GRANDE CON ÍNDICE PROPIO.** Antes de tocarla, leer la memoria
-**`project_bloque_demo_pendientes`** — es el punto de entrada único: los 3 tapones que impiden
-prestarla, los pendientes de producto/higiene, y 7 reglas aprendidas a base de romperla.
-Repo del sitio: `ElBrAyAn1967/For3s` (≠ el del agente) · BD Neon · `main` en `793e858`.
+**`project_bloque_demo_pendientes`** — punto de entrada único: los 3 tapones, los pendientes de
+producto/higiene y 7 reglas aprendidas rompiéndola. Repo: `ElBrAyAn1967/For3s` · BD Neon.
 
-**🏗️ (24-26 jul) DE MVP A PRODUCTO — ~15 bugs reales cerrados.** BD F1-F6 · cableado C1-C6 ·
-pulido P1-P7 (−434 líneas muertas) · optimización (heartbeat −68%) · **6 archivos elevados a
-producto** (`instancias.ts` · `session.ts` · `verificacion.ts` · `eventos.ts` · S4a "cero listas
-fijas" · `userStore.ts` U1-U6 → C6p2 cerrado) · **`container.ts` ACTIVADO** (encender/apagar ya
-no es NO-OP; `/ctl` nunca se expone) · **`DEMO_ENC_KEY` unificada** local=Vercel.
-👉 Todo el detalle vive en las memorias que lista `project_bloque_demo_pendientes`.
+**(24-26 jul) DE MVP A PRODUCTO — ~15 bugs cerrados:** BD F1-F6 · cableado · pulido (−434 líneas
+muertas) · heartbeat −68% · **6 archivos elevados a producto** · `container.ts` ACTIVADO ·
+`DEMO_ENC_KEY` unificada. Detalle en las memorias que lista el índice.
 
-**👉 PRÓXIMO PASO: los 3 tapones (por orden).** ① dueños de jazz/mashe → borrar
-`allowedEmails.ts` con su `DEV_FALLBACK` que autoriza un correo falso (marcado DENTRO de la BD:
-`COMMENT ON TABLE demo_duenos`) · ② tests de los 5 caminos críticos (hoy CERO) · ③ decidir el
-hosting (todo cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
+**👉 3 TAPONES (por orden):** ① dueños de jazz/mashe → borrar `allowedEmails.ts` con su
+`DEV_FALLBACK` que autoriza un correo falso · ② tests de los 5 caminos críticos (hoy CERO) ·
+③ decidir el hosting (todo cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
 
-**⚠️ 2 caídas de producción el 26-jul, mismo error de método:** verificar desde mi entorno y
-asumir que probaba el de Vercel. Regla: `feedback_tailscale_serve_apaga_funnel`.
+**⚠️ 2 caídas de producción, mismo error:** verificar desde mi entorno y asumir que probaba el de
+Vercel. Regla: `feedback_tailscale_serve_apaga_funnel`.
 
-## 5-ter · 🏗️ MENTE OS v2 — el PORQUÉ (diagnóstico 27-jul) · ✅ construido y cerrado, ver §5
+## 5-ter · 🏗️ el PORQUÉ del v2 (diagnóstico 27-jul) · ✅ construido, ver §5
 
-**Causa raíz hallada:** el sistema DOCUMENTABA bien pero no GOBERNABA la ejecución.
-**Ley que lo gobierna todo:** *lo que está en código se cumple 100%; lo que está en documento
-falla 40-60%* → **la doctrina es documento, la VERIFICACIÓN es script.**
+**Causa raíz:** el sistema DOCUMENTABA bien pero no GOBERNABA la ejecución.
+**La ley:** *lo que está en código se cumple 100%; lo que está en documento falla 40-60%* →
+**la doctrina es documento, la VERIFICACIÓN es script.**
 
-**Lo esencial del v2:** BLOQUE (unidad de trabajo, archivo único A-K) · 3 encargados + **Encargado 0
-la VOZ** · 3 carriles · **fix ≠ parche** · contexto por bloque en disco · ⭐ **VEREDICTO DE CALIDAD
-en 2 capas** · 4 capas para garantizar que un archivo se lea · **solo 3 acciones bloquean**.
-Validado contra 4 frameworks (internOS · Agent OS · Open SWE · OpenTag): **ninguno responde *"¿esto
-es producto o MVP?"*** → ese veredicto es el diferenciador real.
+**Lo esencial:** BLOQUE (archivo único A-K) · 3 encargados + Encargado 0 la VOZ · 3 carriles ·
+fix ≠ parche · ⭐ **veredicto de calidad en 2 capas** · solo 3 acciones bloquean. Validado contra
+4 frameworks: **ninguno responde *"¿producto o MVP?"*** → ese veredicto es el diferenciador.
 
-👉 El porqué: `principles/vision-mente-os-v2.md` (18 decisiones) · `docs/Arquitectura_Mente_OS_v2_Bloques.md`
-· `docs/plan-v2-rollout.md` · `docs/analysis-internos-v1.md` · `docs/analysis-frameworks-v2.md`.
-Memorias: `project_mente_os_v2_bloques` · `project_ser_duenos_del_contexto` · `project_incidente_degradacion_21jul`.
+👉 `principles/vision-mente-os-v2.md` · `docs/Arquitectura_Mente_OS_v2_Bloques.md` ·
+`docs/plan-v2-rollout.md` · `docs/analysis-frameworks-v2.md`. Memorias:
+`project_mente_os_v2_bloques` · `project_ser_duenos_del_contexto` · `project_incidente_degradacion_21jul`.
 
 ## 5-bis · Cerrados grandes recientes (solo punteros — historia en Bitácora Julio)
 
