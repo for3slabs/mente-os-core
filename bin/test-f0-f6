@@ -397,6 +397,31 @@ print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
 # the failure this catches. It fired correctly when gate-handoff was added — the count is meant
 # to be updated deliberately, never widened to "N or more".
 eq "project hooks registered (session-start + standards + 2 gates)" "4" "$n"
+
+# ⭐ THE SEAM: counting 4 says nothing about whether they point at anything real.
+# Found 2026-07-31 by breaking settings.json and measuring who noticed: a hook rewritten to
+# `gate-BORRADO.py` passed BOTH check-health and this battery. The count was 4, the files
+# existed on disk, and all three gates were dead.
+# Layer D is "lo ÚNICO que no depende del criterio de la IA" (folder-structure.md) — so its
+# wiring gets verified, not assumed.
+n=$(python3 -c "
+import json, os, re
+d = json.load(open('$REPO/.claude/settings.json'))
+bad = 0
+for arr in (d.get('hooks') or {}).values():
+    for e in arr:
+        for h in e.get('hooks', []):
+            m = re.search(r'([^\s\"\']+/(?:hooks|bin)/[\w.-]+)', h.get('command', ''))
+            if m and not os.path.exists(m.group(1)):
+                bad += 1
+print(bad)")
+eq "every registered hook points at a file that EXISTS" "0" "$n"
+
+# check-health must report the seam itself — the battery runs on demand, check-health runs
+# every session. A gap only the battery catches is a gap you find late.
+grep -q "def check_hooks_wired" bin/check-health \
+  && ok "check-health verifies the hook wiring, not just the files" \
+  || bad "check_hooks_wired" "implemented" "MISSING — only the battery would notice"
 n=$(python3 -c "
 import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')))
 print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")

@@ -151,6 +151,73 @@ def check_guards():
     for path in sorted(tracked - set(_guards())):
         red(f"GUARD MISSING · {path} is tracked in git but not on disk. Restore it.")
 
+    check_hooks_wired()
+
+
+# ── THE SEAM: registered vs on disk ──────────────────────────────────────────
+# 🔴 Found 2026-07-31 by breaking settings.json on purpose and measuring who noticed.
+# check_guards() verifies the hook FILES exist. Nothing verified they are still REGISTERED.
+# Two failures were completely silent:
+#   · deleting all four hooks   → only the battery caught it, and only if someone runs it
+#   · a hook pointing at a file that does not exist → NOBODY caught it
+# In the second case check-health said the file existed, settings.json pointed elsewhere, and
+# both reported green while all three gates were off.
+#
+# ⭐ THE SAME PATTERN, fifth time in one day: check-clear-ready watched a path but not whether
+# it still existed · deny covered three tools but not Bash · SENSITIVE listed three credentials ·
+# GUARDS watched 9 of 21. Every half was guarded and NOBODY guarded the seam —
+# which is the project's own rule: "los bugs trágicos viven ENTRE las piezas."
+#
+# Why this belongs in check-health and not only in the battery: the hooks are layer D, and
+# folder-structure.md calls them "lo ÚNICO que no depende del criterio de la IA. Sin ellos, el
+# v2 repite el fallo del Método F: existe, es encontrable, y no se lee." A piece that critical
+# cannot be verified only when someone remembers to run a test.
+def check_hooks_wired():
+    p = os.path.join(REPO, ".claude", "settings.json")
+    if not os.path.exists(p):
+        red("HOOKS UNWIRED · .claude/settings.json does not exist.\n"
+            "   Layer D is the only thing that does not depend on the AI's judgment. "
+            "Without it the system does not govern — it only documents.")
+        return
+    try:
+        d = json.load(open(p, encoding="utf-8"))
+    except Exception:                                          # noqa: BLE001
+        return                       # already reported by check_permissions — do not duplicate
+
+    registered = []
+    for arr in (d.get("hooks") or {}).values():
+        for entry in arr:
+            for h in entry.get("hooks", []):
+                cmd = h.get("command", "")
+                m = re.search(r"([^\s\"']+/(?:hooks|bin)/[\w.-]+)", cmd)
+                if m:
+                    registered.append(m.group(1))
+
+    if not registered:
+        red("HOOKS UNWIRED · settings.json registers NO hook pointing into Mente.\n"
+            "   The three gates are off and nothing else would say so. "
+            "Restore the hooks block (docs/architecture/how-it-runs.md §2-§4).")
+        return
+
+    # ① every registered command must resolve to a file that exists and can run
+    for target in registered:
+        if not os.path.exists(target):
+            red(f"HOOK DANGLING · settings.json runs `{os.path.basename(target)}` "
+                "but that file does not exist.\n"
+                f"   {target}\n"
+                "   The gate is registered and dead: it fails open on every call, silently.")
+        elif not os.access(target, os.X_OK) and not target.endswith(".py"):
+            red(f"HOOK NOT EXECUTABLE · {target} is registered but has no execute bit.")
+
+    # ② every guard hook on disk should be registered — an unregistered gate is a gate that
+    #    never fires. Warned, not blocked: a hook may legitimately be staged before wiring.
+    on_disk = {f for f in glob.glob("hooks/*") if os.path.isfile(f)
+               and not f.endswith(("pre-commit.sh", ".md"))}   # pre-commit is invoked by git
+    reg_names = {os.path.basename(t) for t in registered}
+    for f in sorted(on_disk):
+        if os.path.basename(f) not in reg_names:
+            yel(f"{f} exists but is NOT registered in settings.json — it never fires")
+
 
 # ── PERMISSIONS ──────────────────────────────────────────────────────────────
 def check_permissions():
