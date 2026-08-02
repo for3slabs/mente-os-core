@@ -16,6 +16,34 @@ sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el
 
 ---
 
+## 🟡 2 LISTAS FIJAS QUE NO URGEN — de la auditoría del 2026-07-31
+
+Se auditaron **las 22 enumeraciones** de los validadores con un criterio: *¿esto se puede medir
+en vez de listar?* Resultado: **19 están bien**, 1 era grave (ya arreglada: `GUARDS` vigilaba 9
+de 21) y estas 2 quedan anotadas.
+
+**① `LIMITS` está escrita DOS VECES** — en `bin/check-blocks:34` y `bin/check-health:241`.
+Hoy son idénticas (verificado). Pero es exactamente lo que `expertise/doc-structure.md` llama
+*"una tabla duplicada es un puntero esperando a divergir"*, con el precedente medido de la tabla
+de decisiones que divergió **75 vs 37 filas**.
+**Por qué no se arregla hoy:** no ha divergido en dos días de uso intenso. Refactorizar sin
+evidencia de daño es trabajo sin retorno. **La señal para hacerlo:** la primera vez que difieran.
+
+**② `check-structure:REQUIRED_DIRS` declara 7 carpetas; en disco hay 13.**
+Faltan `memory/` `work/` `vision/` `bridges/` `Cerebro/` `Maestro/`. Consecuencia real: si se
+borra `memory/` —donde vive `RETOMAR.md`— el validador de estructura **no lo nota**.
+**Por qué no urge:** `check-health` sí vigila `RETOMAR.md` por otra vía. Es cobertura solapada,
+no un hueco abierto.
+
+> ⭐ **La regla que salió de la auditoría, y vale más que los dos arreglos:**
+> una lista que enumera **lo PROTEGIDO** debe medirse; una que enumera **lo PERMITIDO** puede
+> escribirse, siempre que lo desconocido **falle cerrado**.
+>
+> `SENSITIVE` enumeraba lo protegido y fallaba abriendo → mordió (expuso el token de GitHub).
+> `READ_ONLY` de `gate-handoff` enumera lo permitido y falla cerrando → es segura por diseño.
+
+---
+
 ## 📦 TRANSFER MODULES — anotado, NO construir hoy (2026-07-31)
 
 **Qué es:** empaquetar un trabajo completo para entregarlo a un tercero, con reporte de redacción

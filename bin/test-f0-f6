@@ -789,6 +789,29 @@ esac
 eq "pre-commit fails CLOSED when the validator cannot run" "1" "$?"
 chmod +x bin/check-blocks
 
+# ⭐ THE GUARD LIST IS DISCOVERED, NOT WRITTEN (audit of 2026-07-31).
+# It used to be a handwritten dict of 9 while bin/ and hooks/ held 21 executables. The 12
+# unwatched ones included check-clear-ready (the /clear lock) and test-f0-f6 itself — deleting
+# the battery would have been silent.
+#
+# The audit's rule: a list enumerating what is PROTECTED must be measured; one enumerating what
+# is PERMITTED may be written, if the unknown fails closed. This enumerates the protected.
+_watched=$(python3 -c "
+import glob, os
+print(len([f for d in ('bin','hooks') for f in glob.glob(d+'/*')
+           if os.path.isfile(f) and not f.endswith(('.md','.yml','.json'))]))")
+_greps=$(grep -c "GUARD_DIRS\|def _guards" bin/check-health)
+[ "$_greps" -ge 2 ] && ok "the guard list is discovered from disk, not hardcoded" \
+  || bad "guards discovered" "GUARD_DIRS scan" "a handwritten dict"
+
+# Deleting a guard git knows about must be LOUD. Tested on a validator the old list ignored.
+mv bin/generate-metrics /tmp/gm-probe.bak 2>/dev/null
+case "$("$M/bin/check-health" 2>/dev/null || true)" in
+  *"GUARD MISSING"*"generate-metrics"*) ok "a deleted guard is detected even if it was never listed" ;;
+  *) bad "missing guard detection" "GUARD MISSING generate-metrics" "silent" ;;
+esac
+mv /tmp/gm-probe.bak bin/generate-metrics 2>/dev/null; chmod +x bin/generate-metrics
+
 # ⭐ THE LOCK GUARDS ITSELF. Diagnosed 2026-07-31 by reproducing the flake: two concurrent runs
 # both failed on "the generated indexes are up to date", because this battery creates probe
 # blocks in the real tree and generate-index globs blocks/**.

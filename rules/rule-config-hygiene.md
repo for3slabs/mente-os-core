@@ -124,6 +124,25 @@ hardcoded list of three: `.ssh`, `secrets`, `.env`.
 > ## A fixed list of what is dangerous is a hole with a schedule.
 > The guard must **discover** what exists, not consult what someone remembered.
 
+### ⭐ The sharper rule, from auditing all 22 enumerations (2026-07-31)
+
+The first version of this said *"no fixed lists"*. That was too broad — 19 of the 22 lists in
+the validators are correct, and several are correct **on purpose**:
+
+> ## A list that enumerates what is PROTECTED must be measured.
+> ## A list that enumerates what is PERMITTED may be written — if the unknown fails CLOSED.
+
+| List | Enumerates | On an unknown | Verdict |
+|---|---|---|---|
+| `SENSITIVE` (credentials) | the **protected** | stayed silent | 🔴 bit — exposed the GitHub token |
+| `GUARDS` (the validators) | the **protected** | never checked it | 🔴 watched 9 of 21 |
+| `READ_ONLY` (`gate-handoff`) | the **permitted** | **blocks** | ✅ safe by design |
+| `STATUSES` · `VALID_TYPES` | closed vocabulary | rejects | ✅ a new status is a decision, not a discovery |
+| `FUTURE` · `PLANNED` (`check-links`) | known exceptions | false positive | ✅ noise, never a hole |
+
+**The test before writing a list:** *if this list is short by one, does the system become more
+permissive or more strict?* More permissive → measure it. More strict → writing it is fine.
+
 **The same shape hit three times in one day:** the deny that covered three tools but not Bash ·
 the test that counted exactly 3 rules per target · this list of three credential paths. In all
 three the guard reported green with the hole wide open. When a check enumerates, ask what the

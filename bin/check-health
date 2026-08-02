@@ -99,25 +99,57 @@ def check_misplaced():
 # 🔴 Found adversarially 2026-07-30: nothing protected the guards. A hook could be deleted,
 # emptied or stripped of its execute bit and NOTHING in the startup path noticed.
 # ⭐ A disarmed guard is worse than no guard: the system reports healthy while unprotected.
-GUARDS = {"hooks/session-start.sh": 15, "hooks/pre-edit-standards.py": 40,
-          "hooks/pre-commit.sh": 30, "hooks/gate-critical.py": 60,
-          "hooks/gate-handoff.py": 60,
-          "bin/check-blocks": 200, "bin/grade-block": 200, "bin/check-sufficiency": 40,
-          "bin/verify-handoff": 150}
+#
+# 🔴 Found again 2026-07-31, auditing every hardcoded list in the validators: this was a
+# HANDWRITTEN dict of 9 entries while bin/ and hooks/ held 21 executables. The 12 unwatched
+# ones included check-clear-ready (the /clear lock) and test-f0-f6 (the whole battery). Deleting
+# the battery would have been silent.
+#
+# ⭐ THE RULE THAT CAME OUT OF THE AUDIT: a list that enumerates what is PROTECTED must be
+# measured; a list that enumerates what is PERMITTED may be written, as long as the unknown
+# fails closed. This one enumerated the protected — so it is discovered now.
+#
+# The floor is a FRACTION of the file's committed size rather than a number per file: a
+# maintained number is a number that goes stale, and this whole audit started because one did.
+GUARD_DIRS = ("bin", "hooks")
+GUARD_FLOOR = 0.5          # gutted = under half of what git has
+
+
+def _guards():
+    """Every executable under bin/ and hooks/. Discovered, never listed.
+
+    mente_config.py has no execute bit — it is imported, not run — but gutting it breaks every
+    validator that reads the instance config, so it counts as a guard too.
+    """
+    out = []
+    for d in GUARD_DIRS:
+        for f in sorted(glob.glob(f"{d}/*")):
+            if os.path.isfile(f) and not f.endswith((".md", ".yml", ".json")):
+                out.append(f)
+    return out
 
 
 def check_guards():
-    for path, min_lines in GUARDS.items():
-        if not os.path.exists(path):
-            red(f"GUARD MISSING · {path} does not exist. Restore it from git.")
-            continue
-        if not os.access(path, os.X_OK):
+    for path in _guards():
+        if not os.access(path, os.X_OK) and not path.endswith("_config.py"):
             red(f"GUARD DISARMED · {path} is not executable.\n"
                 f"   A validator that cannot run is not a pass. Fix: chmod +x {path}")
             continue
         n = sum(1 for _ in open(path, encoding="utf-8", errors="replace"))
-        if n < min_lines:
-            red(f"GUARD GUTTED · {path} is {n} lines, expected at least {min_lines}.")
+        # Compare against what git has, so "gutted" means gutted RELATIVE TO ITS OWN history
+        # instead of relative to a threshold someone remembered to update.
+        head = sh("git", "show", f"HEAD:{path}", cwd=MENTE)
+        committed = head.count("\n") if head else 0
+        if committed and n < committed * GUARD_FLOOR:
+            red(f"GUARD GUTTED · {path} is {n} lines, was {committed} in git "
+                f"(under {int(GUARD_FLOOR * 100)}%).\n"
+                "   Restore it, or commit the reduction so the new size becomes the baseline.")
+
+    # A guard that git knows and disk does not = deleted without anyone noticing.
+    tracked = {p for p in sh("git", "ls-files", "bin", "hooks", cwd=MENTE).split()
+               if not p.endswith((".md", ".yml", ".json"))}
+    for path in sorted(tracked - set(_guards())):
+        red(f"GUARD MISSING · {path} is tracked in git but not on disk. Restore it.")
 
 
 # ── PERMISSIONS ──────────────────────────────────────────────────────────────

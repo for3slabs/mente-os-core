@@ -111,8 +111,8 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 413 |
-| `METRICS.md` | generated | current | 2026-07-31 | 94 |
+| `INDEX.md` | generated | — |  | 411 |
+| `METRICS.md` | generated | current | 2026-08-02 | 94 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -175,7 +175,7 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-07-31 | 3592 |
+| `PENDIENTES.md` | pending | current | 2026-07-31 | 3620 |
 | `RETOMAR.md` | entry-point | current | 2026-07-31 | 199 |
 
 ## `memory/archive/`
@@ -257,7 +257,7 @@
 | `contract-document.md` | rule | current | 2026-07-29 | 200 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
-| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 204 |
+| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 223 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |
 | `rule-friction.md` | rule | current | 2026-07-29 | 100 |
 | `rule-inheritance.md` | rule | current | 2026-07-29 | 167 |
