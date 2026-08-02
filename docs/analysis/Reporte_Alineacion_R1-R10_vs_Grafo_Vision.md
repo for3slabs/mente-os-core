@@ -18,9 +18,9 @@ Reporte Maestro — Alineación R1-R10 vs Grafo Maestro + Visión
 **Propósito:** Permitir ver de un vistazo si el diseño implementado (Cuerpo) sigue alineado con la filosofía (Cerebro) y la visión (Alma) — dónde sí, dónde no, y por qué. Mapa de dependencias entre R's + diagramas de conexión.
 
 **Documentos comparados:**
-- Fuente de verdad #1: [`Cerebro/For3s_OS_Grafo_Maestro.md`](../Cerebro/For3s_OS_Grafo_Maestro.md)
-- Fuente de verdad #2: [`vision/Vision_For3s_Frontier.md`](../vision/Vision_For3s_Frontier.md)
-- Bridge canónico: [`Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md`](../Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md)
+- Fuente de verdad #1: [`Cerebro/For3s_OS_Grafo_Maestro.md`](Cerebro/For3s_OS_Grafo_Maestro.md)
+- Fuente de verdad #2: [`vision/Vision_For3s_Frontier.md`](vision/Vision_For3s_Frontier.md)
+- Bridge canónico: [`Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md`](Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md)
 - Los 10 maestros R1-R10: `Mente/Cuerpo/Ronda_0X_*.md`
 
 ---

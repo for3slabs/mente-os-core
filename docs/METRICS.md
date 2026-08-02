@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **138** |
+| `battery.checks` | **141** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -48,7 +48,7 @@ is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the tot
 
 | Metric | Value |
 |---|---|
-| `links.broken` | **144** |
+| `links.broken` | **73** |
 
 ⭐ **This number is a CEILING, not a target.** `bin/test-f0-f6` fails if it goes UP from what is
 committed here — the debt is allowed to exist, never to grow unseen. It drifted from ~73 to 144

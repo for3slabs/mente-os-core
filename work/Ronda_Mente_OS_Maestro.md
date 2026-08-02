@@ -36,8 +36,8 @@
 > 4. **El Maestro APUNTA a Foresito** — Foresito es una rama/consumidor del Maestro (Pendiente A se
 >    alimenta del Maestro).
 > 5. **Fases F1→F6 aprobadas. F1 (el registro) es el primer paso.**
-> **Origen/visión:** `Alma/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md` (el contrato).
-> **Método:** `Cuerpo/ESTANDAR_Metodo_Fases_F.md` — explicar → **aprobar** → construir. NADA se
+> **Origen/visión:** `vision/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md` (el contrato).
+> **Método:** `rules/ESTANDAR_Metodo_Fases_F.md` — explicar → **aprobar** → construir. NADA se
 > construye hasta que Brian apruebe la arquitectura y las decisiones abiertas (§4).
 
 ---
@@ -154,7 +154,7 @@ tokens (por eso el Maestro INDEXA, no copia) · server-primero para lo que toque
 
 ---
 
-Relacionado: `Alma/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md` (visión) · `project_super_cerebro_conectado`
+Relacionado: `vision/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md` (visión) · `project_super_cerebro_conectado`
 (memoria) · `Cerebro/For3s_OS_Grafo_Maestro.md` (arquitectura actual) · `project_hito_identidad_viva`
 (el patrón mente-os/ por instancia) · `project_hito_entrenamiento` (para Pendiente A) ·
 [[feedback_for3s_inter_scope]] · [[feedback_puente_mentes_os_gate]] (⛔ gate a otros Mente OS).

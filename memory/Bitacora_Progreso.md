@@ -143,7 +143,7 @@ For3s vive en Telegram y analiza GitHub. Cierra la Épica A (MVP pilotable).
 - **H3 TELEGRAM:** For3s en Telegram (ticket 003). OwnerStore fail-closed, sistema de cupo en mensaje fijado (alerta 80%, /cupo de costo cero), md→telegram, split de mensajes largos.
 - **H4 TIENE MANOS:** integración GitHub (ticket 004). PR/issue/gist/blob, reporte QA estructurado, token cifrado (KEK), lint en sandbox Docker.
 - **ENDURECIMIENTO H4 (consolidación antes de seguir):** 8 mejoras verificadas con uso real — identidad honesta (dejó de mentir sobre sus capacidades) → luego = SEGUNDO CEREBRO (no se cierra a QA, ayuda con lo que sea); detección de issues; Bug E (canal por turno en BD); Bug H (token fuera de logs + cifrado en SecretStore); warning shutdown PTB (investigado→cosmético, doc); Bug F (refs cortas "el PR 134"); Bug G (cupo sin 400/parpadeo); "escribiendo..." persistente.
-- **MIGRACIÓN GitHub artesanal → MCP (estándar, alineado R4.2.1 LOCKED):** GitHub MCP server oficial + tool-use nativo (el modelo decide las tools, no regex). 7 pasos: infra MCP, migración 004 (tablas gh_resources/gh_files = persistencia consultable para H futuros), puente tool_use↔MCP, conectado al bot con huele_a_github (ahorra rate-limit), deprecación de lo artesanal. Capacidades nuevas: LISTAR issues/PRs, leer código completo, persistir datos. Diseño: `Cuerpo/Ronda_04_Anexo_GitHub_Migracion_MCP_Persistencia.md`.
+- **MIGRACIÓN GitHub artesanal → MCP (estándar, alineado R4.2.1 LOCKED):** GitHub MCP server oficial + tool-use nativo (el modelo decide las tools, no regex). 7 pasos: infra MCP, migración 004 (tablas gh_resources/gh_files = persistencia consultable para H futuros), puente tool_use↔MCP, conectado al bot con huele_a_github (ahorra rate-limit), deprecación de lo artesanal. Capacidades nuevas: LISTAR issues/PRs, leer código completo, persistir datos. Diseño: `work/Ronda_04_Anexo_GitHub_Migracion_MCP_Persistencia.md`.
 - **Hallazgo:** tool-use+OAuth consume rate-limit instantáneo rápido (ráfaga=429; espaciado=OK; bot real no topa). OAuth de suscripción FUNCIONA (verificado, ignorar advertencias web).
 - **FASE ACTUAL: pulir el MVP H4 a fondo (NO avanzar a H5+).** Brian prueba en Telegram, reporta fallos, se arreglan iterando hasta dejarlo muy pulido.
 
@@ -154,7 +154,7 @@ Sesión larga de Brian probando a fondo en Telegram → cazamos y arreglamos muc
 - **H-F resuelto:** forzar ejecución de tools (tool_choice=any) + prompt anti-invención. La causa real era un bug del detector (`huele_a_github` no reconocía "ISSUES" plural ni nombres de repo) → arreglado con **normalización de texto** (`text_normalize.py`: mayús/minús/acentos no afectan; estándar para todo el sistema) + `limpiar_urls` (quita ?fbclid).
 - **Identidad:** segundo cerebro + honestidad de fraseo. **Aviso de error garantizado** (_responder_seguro) — bug: el loop tragaba el RateLimitExceeded.
 - **Comandos admin en Telegram:** /estado /diagnostico /reiniciar (suave) /reiniciar_duro (os._exit→systemd). Solo dueño.
-- **🛡️ SISTEMA ANTI-RATE-LIMIT COMPLETO (A+B+C)** — diseño en `Cuerpo/Ronda_03_Anexo_Cola_RateLimit_ToolUse.md`: A espaciar+contar schemas, C prompt caching (75-90% menos input, verificado con OAuth), B cola serial con feedback "📋 en cola". HALLAZGO: la suscripción OAuth no expone rate-limit por-minuto en headers → bucket a ciegas → por eso espaciamos. No se puede "refrescar" el rate-limit.
+- **🛡️ SISTEMA ANTI-RATE-LIMIT COMPLETO (A+B+C)** — diseño en `work/Ronda_03_Anexo_Cola_RateLimit_ToolUse.md`: A espaciar+contar schemas, C prompt caching (75-90% menos input, verificado con OAuth), B cola serial con feedback "📋 en cola". HALLAZGO: la suscripción OAuth no expone rate-limit por-minuto en headers → bucket a ciegas → por eso espaciamos. No se puede "refrescar" el rate-limit.
 - **PENDIENTE (hallazgos de fondo, necesitan diseño tipo Ronda):** H-D tablas identidad+recursos, H-B GitHub cuenta propia, H-C sistema de pensamiento + multi-mensaje por etapas.
 
 **2026-06-15 a 18 → 🔬 PULIDO PROFUNDO del análisis de GitHub (2 sub-rachas)**
@@ -244,7 +244,7 @@ Brian declaró fase de pulido intensivo: "dejar H8 lo más perfecto, pulido, DIS
 - ⏳ Sigue abierto: AI7 (registry/miembros), AI3-p2/gate(E), pulido áreas B/C, BYOK(H), producto distribuible P1-P10.
 
 **2026-06-24/25 → 🎉🧬 H10-H11-H12 "APRENDE" COMPLETO (HITO MAYOR) — skills auto-generables y gobernadas**
-La "joya" de Hermes (skills auto-generables) adaptada a CÓDIGO PROPIO de For3s + el diseño LOCKED R6 (Meta-Orchestrator). Construido en orden sagrado H10→H11→H12 (el freno antes del motor), debatiendo cada sub-paso. **Referencia técnica detallada (el plano para modificar a futuro): `Cuerpo/H10_H11_H12_APRENDE_Referencia_Tecnica.md`.** Plan: `memory/archive/H10-H12_Plan_Maestro_APRENDE.md`.
+La "joya" de Hermes (skills auto-generables) adaptada a CÓDIGO PROPIO de For3s + el diseño LOCKED R6 (Meta-Orchestrator). Construido en orden sagrado H10→H11→H12 (el freno antes del motor), debatiendo cada sub-paso. **Referencia técnica detallada (el plano para modificar a futuro): `work/H10_H11_H12_APRENDE_Referencia_Tecnica.md`.** Plan: `memory/archive/H10-H12_Plan_Maestro_APRENDE.md`.
 - ✅ **H10 SKILLS** (tener+usar): migr 019 tabla `skills` DB-backed (lifecycle/provenance/pinned/uso) + `skills.py` SkillStore (crear/listar/ver/registrar_uso/buscar_relevantes) + el agente INYECTA la skill que aplica al contexto (conversation.py bloque 2h, carga progresiva) + comando `/skills`. NADA se auto-genera (correcto).
 - ✅ **H11 GOVERNOR** (el FRENO, decisiones LOCKED: scanner+3 frenos reales+hooks · muy conservador · kill switch solo dueño): migr 020 (`governor_estado` kill switch default OFF + `governor_bloqueos` append-only) + `governor.py` SkillEcosystemGovernor = **SCANNER ~17 regex anti-patrones FAIL-CLOSED** (rm-rf/curl|sh/KEK/secrets/.env/tokens/cron/reverse-shell/prompt-injection) + FRENO 1 gen≤3/día + FRENO 4 no-duplicar + FRENO 5 ≤100 activas + HOOKS honestos frenos 2/3/6 (para futuro: scoring/NO-GO/sandbox) + PROVENANCE (solo gestiona 'auto') + GATE único evaluar_skill_nueva + health_report + `/autogen on|off|status`. Test BD real 24/24.
 - ✅ **H12 APRENDE** (el MOTOR, módulo `aprende.py`, decisiones LOCKED: P1→P2→P3 por riesgo · fuente=conversación · P2 tras kill switch OFF): **P1** `/aprende [foco]` destila SKILL.md de los 12 turnos del hilo vía prompt OAuth-safe (system="", JSON) → governor → SkillStore (LLM real 10/10). **P2** auto-mejora background: si /autogen OFF ni llama al LLM; si pasa, skill nace en `stale` + GATE al dueño (botones ✅/❌, on_skill_gate); disparada tras corrida de equipo (10/10). **P3** curación nocturna job Arq 03:30 (auto sin uso active→stale 30d→archived 90d, recuperable; intocables usuario/pinned/usadas/propuestas-recientes; 8/8).
@@ -252,7 +252,7 @@ La "joya" de Hermes (skills auto-generables) adaptada a CÓDIGO PROPIO de For3s 
 - ⭐ Brian: documentar TODO H10-12 a detalle porque MÁS ADELANTE los modificará a fondo → creado el doc de referencia técnica arriba.
 
 **2026-06-25 → ✅ VERIFICACIÓN E2E EN VIVO de H10-H12 (Brian en Telegram) + fix de personalidad**
-Brian probó el ciclo completo en producción y se hizo trazabilidad mensaje por mensaje (BD + logs + audit chain). Detalle en `Cuerpo/H10_H11_H12_APRENDE_Referencia_Tecnica.md` §6.bis.
+Brian probó el ciclo completo en producción y se hizo trazabilidad mensaje por mensaje (BD + logs + audit chain). Detalle en `work/H10_H11_H12_APRENDE_Referencia_Tecnica.md` §6.bis.
 - ✅ **H11 kill switch:** `/autogen on/off` registrado en governor_estado con su user_id (0 tokens).
 - ✅ **H12-P1 `/aprende`:** creó skill #20 (prov=usuario), contenido real y fiel a lo que escribió.
 - ✅ **H12-P2 auto-mejora:** "analiza a fondo cli/cli" → equipo 5/5 (7969 tokens) → skill #21 (prov=auto) nacida en stale → gate aprobado por Brian (botón ✅) → active.
@@ -497,7 +497,7 @@ homónimas colisionaban · keys f3k_ y BYOK iban al agente equivocado · cupo de
 general · el logout no limpiaba la cookie de dueño · tema `hoteles` heredado del Incubathon.
 
 ### 🎓 CASO DE ESTUDIO (reutilizable)
-`Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md`. Brian cazó un fix mío **peligroso**: iba a poner
+`memory/archive/CASO_Default_Peligroso_Tema_Hilo.md`. Brian cazó un fix mío **peligroso**: iba a poner
 `general` como tema por defecto, pero ese nombre está RESERVADO al hilo del dueño → un cliente sin
 tema habría caído en su hilo privado. **Regla que sale de ahí: un default NUNCA debe apuntar a algo
 con dueño o significado reservado; debe ser un cajón neutro.** Más el orden de despliegue
@@ -561,7 +561,7 @@ enrutar correo→instancia (ya resuelto hoy), 2 hallazgos demo General.
 
 **Contexto — cambio de foco:** Brian PAUSÓ los pendientes grandes. Meta: volver For3s **operable
 sin él** ("que pueda decir: está listo para prestárselo a alguien"). Antes: análisis de la
-consultoría de Ángulo (primer paso comercial; doc `Alma/Analisis_Consultoria_Angulo_Primer_Paso.md`
+consultoría de Ángulo (primer paso comercial; doc `vision/Analisis_Consultoria_Angulo_Primer_Paso.md`
 — "For3s tiene un foso que Ángulo no supo nombrar y una debilidad: depende de Brian para todo").
 Modo de trabajo estricto: Brian dirige pieza por pieza, valida cada una, no encadenar, no analizar
 salvo que lo pida. **Casi todo el trabajo fue en el SITIO** (`marca-personal` → repo
@@ -663,7 +663,7 @@ generar stars · awesome-lists · GitHub Sponsors · GIF/vídeo demo.
 poder en las instancias INTERNAS de la empresa (@For3s_OS_bot=Foresito, @For3s_Brian_bot=brian,
 "nunca expuestas") pero blindar las expuestas. Decisión (AskUserQuestion): **PERFIL POR INSTANCIA**
 — cada una declara `FOR3S_PERFIL=interna` (root) o `expuesta` (non-root); DEFAULT SEGURO=expuesta.
-Ronda: `Cuerpo/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
+Ronda: `work/Ronda_SEC4c_NonRoot_Perfil_Instancia.md`.
 
 **El diseño (clave para no romper la KEK):** no se cambia DÓNDE vive nada, solo QUIÉN es dueño.
 Usuario `for3s` con **uid 1000 = el mismo del host** → dueño natural de los bind mounts sin
@@ -787,7 +787,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
 **2026-07-01 → 🧠 REDISEÑO DE MEMORIA COMPLETO (F1-F5 + M1-M4) — el cerebro dejó de ser 5 silos**
 - **Origen (Brian):** "existen tantos errores porque todo se hizo por separado; no es un sistema que
   pueda estar como producto. Analiza todo y determinemos un plan con base en lo que tenemos." →
-  Ronda de diseño `Cuerpo/Ronda_Rediseno_Memoria_Plan.md` (raíz: fragmentación de identidad + 17
+  Ronda de diseño `work/Ronda_Rediseno_Memoria_Plan.md` (raíz: fragmentación de identidad + 17
   tablas silo sin FK + recuperación en paralelo + sin capa central). Construcción fase por fase con
   la disciplina "sé curioso con los hermanos" (destapó bugs reales antes de que explotaran).
 - ✅ **F1** identidad canónica (migr 026 tabla `personas`, ancla única) · **F2** fachada `memoria.py`
@@ -859,7 +859,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
   preguntas — regla LOCKED: "primero pregúntame si estoy listo para las preguntas"). Visión LOCKED:
   el agente se auto-modifica DENTRO de su caja (contenedor local, NUNCA GitHub), ACTÚA SOLO (control
   ESTRUCTURAL, no permiso paso a paso), + Brian agregó el ENTORNO DE PRUEBA (probar antes, aplicar
-  solo si pasa). Diseño: `Cuerpo/Ronda_Auto_Conciencia_Automod_Plan.md`.
+  solo si pasa). Diseño: `work/Ronda_Auto_Conciencia_Automod_Plan.md`.
 - **AC2** introspección (se conoce en vivo: 6 fuentes reales) — `/introspeccion` `/soy` + auto en chat.
   Mejora AI5 (era ficha estática). 🐛 columna `lifecycle` no `estado` (habría reportado 0 skills).
 - **AC1** auto-detección (hashea al arrancar, distingue propio/externo, diario migr 030) — `/cambios`.
@@ -887,7 +887,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
 **2026-07-02 → 🏢 BLOQUE MULTI-INSTANCIA COMPLETO (MI-1 + MI-2 + MI-3) — HITO MAYOR**
 - Brian lo abrió en modo DEBATE primero. Visión LOCKED: gestor LOCAL (NO SaaS remoto — eso a EXTRAS),
   comando `for3s` (menú: agregar / entrar = chat de consola de esa instancia / encender-apagar / borrar),
-  aislamiento TOTAL, solo las encendidas, unido al instalador. Diseño: `Cuerpo/Ronda_Multi_Instancia_Plan.md`.
+  aislamiento TOTAL, solo las encendidas, unido al instalador. Diseño: `work/Ronda_Multi_Instancia_Plan.md`.
 - **MI-1** gestor `for3s` (script del host, orquesta `docker compose -p for3s-<nombre>` con plantilla
   `docker-compose.instancia.yml` que NO toca Foresito; estado por instancia en ~/.for3s/<nombre>/).
 - **MI-2** modo bot verificado (token→bot, vacío→consola) + validación del token Telegram antes de crear.
@@ -904,7 +904,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
 - Brian preguntó dónde darle "hacer código, instalar, crear archivos, correr código" → analizamos Hermes
   (Nous) → paridad `execute_code`. Debate LOCKED: For3s escribe código → lo EJECUTA en un SANDBOX aislado
   (SEPARADO del cerebro, hermano de red, sin-DinD) → responde; instala libs; crea proyectos; actúa solo.
-  Diseño: `Cuerpo/Ronda_Execute_Code_Plan.md`.
+  Diseño: `work/Ronda_Execute_Code_Plan.md`.
 - **EC-1** hermano `for3s-sandbox` (111MB python/bash/node, límites RLIMIT del SO, usuario sin privilegios).
   🐛 Node OOM con RLIMIT_AS (V8 CodeRange) → fix --max-old-space-size.
 - **EC-2** al compose + workspace PERSISTENTE + instalar deps (pip/npm). Red abierta (decisión Brian).
@@ -1025,7 +1025,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
   Trivy image-scan (manual) a workflow propio (ya no sale "Skipped"). De 8 checks a los esenciales, cobertura
   intacta. El Pilar 3 Gate se queda (dormido = freno de auto-generación H11/H12 = diferenciador).
 - **Docs del repo:** CHANGELOG 0.13.0/0.14.0 + ronda CI (inglés) + badge Trivy. Commits firmados aa36b4f /
-  2118907 / 063d9f6, **pusheados a GitHub, 5 checks verdes**. Plan: `Cuerpo/Ronda_CI_Confianza_Plan.md`.
+  2118907 / 063d9f6, **pusheados a GitHub, 5 checks verdes**. Plan: `work/Ronda_CI_Confianza_Plan.md`.
 - **Cada check del CI cazó bugs reales** — incl. un bug de SEGURIDAD (indentación de `_autorizar` abría la
   puerta a extraños; los tests lo cazaron). El CI probó su valor.
 
@@ -1041,11 +1041,11 @@ F1-F7, cada una con la batería §5-BIS (TODO el sistema, no el carril):
 - 8 commits FIRMADOS pusheados a GitHub (063d9f6→8c3a374); **5 checks verdes**. Bugs cazados con
   curiosidad: heredoc que comió variables shell (×2), init_persona sin recursión, detector incompleto.
 - 2 hallazgos registrados en PENDIENTES (MODS-VOL: /app/mods sin volumen; SALUD-MCP: 401 falso negativo).
-- Ronda: `Cuerpo/Ronda_Reconstruccion_FOR3S_ROLE.md`. Memoria: [[project_hito_identidad_viva]].
+- Ronda: `work/Ronda_Reconstruccion_FOR3S_ROLE.md`. Memoria: [[project_hito_identidad_viva]].
 
 **2026-07-04 → 🏗️ ESTÁNDAR "Método de Fases F" LOCKED (Brian) — nuestra forma por defecto de construir**
 Brian pidió codificar cómo se desarrolló cada F como estándar reutilizable. Doc:
-`Cuerpo/ESTANDAR_Metodo_Fases_F.md` + memoria [[feedback_estandar_metodo_fases_f]] + sección en CLAUDE.md.
+`rules/ESTANDAR_Metodo_Fases_F.md` + memoria [[feedback_estandar_metodo_fases_f]] + sección en CLAUDE.md.
 Los 4 principios: curiosidad que caza bugs · verificación afirmativa de TODO el sistema (batería §5-BIS,
 no el carril) · red de seguridad demostrable · reusar lo probado. Regla madre: explicar→aprobar→construir.
 
@@ -1168,7 +1168,7 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
 ## 📅 2026-07-14 → 07-15 — 🌉 FRENTE B "PUENTE DE MERCADO" COMPLETO (F1→F6) — el canal API se volvió PRODUCTO
 
 ✅ **De "demo que sobrevivió al Incubathon" a PRODUCTO para clientes de pago.** Método de Fases F.
-   Ronda: `Cuerpo/Ronda_FrenteB_Puente_Mercado.md`. Server=GitHub(×2)=local sincronizados.
+   Ronda: `work/Ronda_FrenteB_Puente_Mercado.md`. Server=GitHub(×2)=local sincronizados.
 - **F1-F3:** URL pública FIJA (túnel Tailscale systemd-persistente, mata la URL efímera) · control
   PRECISO de acceso (estados activo→suspendido→revocado terminal + keys `f3k_` por cliente, la
   identidad ES la key + scopes + expiración) · cuotas + metering persistente (facturación real).
@@ -1255,7 +1255,7 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
     ve SOLO su carril (Jazz ve diseño, NO el núcleo).
   - **F5** piloto Jazz: rama REAL creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve for3s.
   - Bugs cazados: submódulos habrían replicado (→ punteros efímeros) · password del server en 3 docs
-    (excluido) · slug se comía la ñ (transliterado). Detalle: `Cuerpo/Ronda_Mente_OS_Maestro.md`.
+    (excluido) · slug se comía la ñ (transliterado). Detalle: `work/Ronda_Mente_OS_Maestro.md`.
   - **Evoluciona a CARRIL** de mejora continua (puente E: Foresito lee el Maestro = cruza con 🅰️).
 - **📸 FOTOS E6 backlog VACÍO** — de 481→1169 con visión (**~688 fotos en el día**), 0 pendientes,
   0 fallos, ~8 tandas de 100 encadenadas con freno de cupo (nunca tocó 0.92; ventana 5h se renovó).
@@ -1295,13 +1295,13 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
 - Commits: `385ac46`+`c1f6d56`+`fafac3c`+`8d570f6`+`f50a5db` (for3s-os) · `cfc0431` (maestro).
 - Pendientes: CodeQL rojo DESDE EL 17 (pre-existente) · validar torch 2.13 · semillas H-4/H-6.
 - Registro maestro de la caza: `docs/analysis/Examen_Foresito_T6_Hallazgos.md` · Ronda:
-  `Cuerpo/Ronda_Entrenamiento_Foresito.md`.
+  `work/Ronda_Entrenamiento_Foresito.md`.
 
 ## 📅 2026-07-19 → 07-20 — 🔌 MAESTRO PUENTES C+D: de lista de punteros a SUPER-CEREBRO BUSCABLE Y NAVEGABLE
 
 - Brian pidió los planes de C (semántica) y D (grafo) con UNA condición arquitectónica: "que no se
   construya por separado ni se llame la misma acción varias veces". Ronda F0 diseñada, aprobada
-  ("continúa") y CONSTRUIDA la misma jornada: `Cuerpo/Ronda_Maestro_Puentes_C_D.md`.
+  ("continúa") y CONSTRUIDA la misma jornada: `work/Ronda_Maestro_Puentes_C_D.md`.
 - **Núcleo (N0-N2):** `Maestro/punteros.tsv` fuente única (mató la triplicación del v1) · `Maestro/maestro_lib.sh`
   puerta única fail-closed · `indexador.py` una pasada → chunks `rama:ruta#NNN` + cinturón
   anti-secretos (excluyó 5 chunks con pinta de credencial).
@@ -1442,7 +1442,7 @@ tools narra ejecuciones — ¿tool-loop para clientes API o documentar el límit
 - 🔌 **⭐ NUEVO PENDIENTE GRANDE (2026-07-20): CONECTORES SELF-SERVICE** — que el usuario conecte
   herramientas con UN botón (OAuth del proveedor) y su agente/rama las tenga al instante, sin pasar
   por Brian; correo admin por instancia; general multi-tenant (solo comparten el agente). Visión:
-  `Alma/Vision_Conectores_SelfService_Panel_Agente.md` · PENDIENTES §1. Arranca con Ronda F0.
+  `vision/Vision_Conectores_SelfService_Panel_Agente.md` · PENDIENTES §1. Arranca con Ronda F0.
 - 🅰️ nuevo frente de producto (🟡 C multi-canal · F-A2 sub-agentes paralelos de /mision · carriles).
 - ⏳ pilotos VIVOS externos: Jazz usa su bot (jazz verificada v0.19.0) + NavigoX retoma consumo.
 - Pendientes técnicos menores: **CodeQL rojo desde el 17** (pre-existente) · validar torch 2.13

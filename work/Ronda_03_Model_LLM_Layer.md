@@ -16,7 +16,7 @@
 - [Mente/Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md](../Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md) — Nodo 3 PFC
 - [Mente/Cuerpo/Ronda_01_Compute_Lenguaje.md](Ronda_01_Compute_Lenguaje.md) — Python 3.12 + anthropic SDK
 - [Mente/Cuerpo/Ronda_02_Data_Layer.md](Ronda_02_Data_Layer.md) — R2 100% cerrado
-- [Mente/Doc/Estado_Sesion_Continuidad.md](../Doc/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
+- [Mente/Doc/Estado_Sesion_Continuidad.md](memory/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
 
 **Sub-documentos detallados:**
 - ✅ [Ronda_03_Bloque_1_LLM_Principal.md](Ronda_03_Bloque_1_LLM_Principal.md) — LLM Principal (4/4 LOCKED)

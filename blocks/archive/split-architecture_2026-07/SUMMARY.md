@@ -16,9 +16,9 @@ Split the 2496-line architecture into readable pieces without losing a single po
 
 | # | Sub-block | Result |
 |---|---|---|
-| 1 | extract §3 THE BLOCK | `architecture/block-anatomy.md` — 454 lines |
-| 2 | extract §12-TER…SEPTIES | `architecture/validators-and-hygiene.md` — 780 lines |
-| 3 | extract §6+§7+§10 | `architecture/lifecycle-and-learning.md` — 434 lines |
+| 1 | extract §3 THE BLOCK | `docs/architecture/block-anatomy.md` — 454 lines |
+| 2 | extract §12-TER…SEPTIES | `docs/architecture/validators-and-hygiene.md` — 780 lines |
+| 3 | extract §6+§7+§10 | `docs/architecture/lifecycle-and-learning.md` — 434 lines |
 | 4 | entry point + 2 extra cuts | `docs/architecture/folder-structure.md` 292 · `docs/architecture/language-policy.md` 86 |
 | 5 | declare every piece | 5 lines added to `Maestro/piezas.tsv` |
 | 6 | verify | battery green · 0 broken pointers |

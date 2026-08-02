@@ -13,7 +13,7 @@
 **Documentos ancla:**
 - [Mente/Cerebro/For3s_OS_Grafo_Maestro.md](../Cerebro/For3s_OS_Grafo_Maestro.md) — fuente de verdad técnica
 - [Mente/Cuerpo/Ronda_01_Compute_Lenguaje.md](Ronda_01_Compute_Lenguaje.md) — stack Python LOCKED
-- [Mente/Doc/Estado_Sesion_Continuidad.md](../Doc/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
+- [Mente/Doc/Estado_Sesion_Continuidad.md](memory/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
 
 **Estatus:** ✅ **R2 — DATA LAYER 100% CERRADO** (20/20 sub-temas LOCKED) — 2026-06-01
 

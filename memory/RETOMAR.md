@@ -83,7 +83,7 @@ server vivía en 60 eps → redactada). 👉 `project_entrenamiento_foresito` ·
 
 **👉 PRÓXIMO PASO — no hay deuda técnica que valga la pena.** Lo único abierto es lo que
 ninguna IA puede escribir: **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`).
-Recomendación medida: empezar por `expertise/val-integration.md` — tiene 6 casos tuyos ya en la
+Recomendación medida: empezar por `principles/expertise/val-integration.md` — tiene 6 casos tuyos ya en la
 mesa, dos con producción caída. Sus §3 y §4 son dos preguntas.
 
 ⚠️ **Y lo que sigue sin cambiar:** el v2 **nunca ha gobernado trabajo real de producto**. Los 12

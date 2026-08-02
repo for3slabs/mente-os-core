@@ -36,7 +36,7 @@ Code, this file plus the pointers below is enough to work correctly.
 
 | # | Rule | Pointer |
 |---|---|---|
-| 1 | **Explain → approve → build.** Never build a milestone without explicit approval | `Cuerpo/ESTANDAR_Metodo_Fases_F.md` |
+| 1 | **Explain → approve → build.** Never build a milestone without explicit approval | `rules/ESTANDAR_Metodo_Fases_F.md` |
 | 2 | **The AI does not invent criterion.** Criterion is Brian's; the AI gives it form | ADR-003 |
 | 3 | **Do not state — report the measurement.** An unverified claim is banned | `principles/owner-0-voice.md` |
 | 4 | **Secrets are referenced, never pasted** | architecture §12-S.1 |

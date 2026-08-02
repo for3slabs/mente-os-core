@@ -15,7 +15,7 @@
 - [Mente/Cerebro/For3s_OS_Grafo_Maestro.md](../Cerebro/For3s_OS_Grafo_Maestro.md) — §4 Nodo 4 Ganglios Basales/Skills (R4 da el Tool Bus = infraestructura de ejecución del Nodo 4)
 - [Mente/Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md](../Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md) — Nodo 4 mapeo
 - [Mente/Cuerpo/Ronda_03_Model_LLM_Layer.md](Ronda_03_Model_LLM_Layer.md) — R3 100% CERRADO (foundation tools)
-- [Mente/Doc/Estado_Sesion_Continuidad.md](../Doc/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
+- [Mente/Doc/Estado_Sesion_Continuidad.md](memory/Estado_Sesion_Continuidad.md) — continuidad cross-sesión
 
 **Sub-documentos detallados:**
 - ✅ [Ronda_04_Bloque_1_MCP_Framework_Discovery.md](Ronda_04_Bloque_1_MCP_Framework_Discovery.md) — MCP Framework & Discovery (4/4 LOCKED)

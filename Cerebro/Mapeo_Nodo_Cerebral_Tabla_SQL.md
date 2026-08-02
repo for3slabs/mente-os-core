@@ -15,9 +15,9 @@
 
 **Documentos relacionados (fuentes):**
 - [`For3s_OS_Grafo_Maestro.md`](For3s_OS_Grafo_Maestro.md) — fuente de verdad cerebral
-- [`Ronda_02_Bloque_1_Storage_Foundation.md`](../Cuerpo/Ronda_02_Bloque_1_Storage_Foundation.md) — storage físico
-- [`Ronda_02_Bloque_2_Memory_Architecture.md`](../Cuerpo/Ronda_02_Bloque_2_Memory_Architecture.md) — arquitectura semántica
-- [`Ronda_02_Data_Layer.md`](../Cuerpo/Ronda_02_Data_Layer.md) — master R2
+- [`Ronda_02_Bloque_1_Storage_Foundation.md`](work/Ronda_02_Bloque_1_Storage_Foundation.md) — storage físico
+- [`Ronda_02_Bloque_2_Memory_Architecture.md`](work/Ronda_02_Bloque_2_Memory_Architecture.md) — arquitectura semántica
+- [`Ronda_02_Data_Layer.md`](work/Ronda_02_Data_Layer.md) — master R2
 
 **Documentos relacionados (espejos público-formales):**
 - [`for3s-inter/09-technical-architecture/storage-foundation.md`](../../for3s-inter/09-technical-architecture/storage-foundation.md)

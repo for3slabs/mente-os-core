@@ -1008,7 +1008,7 @@ existir:
 
 ### 10.1 · El precedente que ya funcionó
 
-`Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md` convirtió un error real en **método reutilizable con
+`memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` convirtió un error real en **método reutilizable con
 checklist**: síntoma → origen → el error que casi se comete → la lección como regla → checklist
 para la próxima vez.
 
@@ -1418,7 +1418,7 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | Archivo | Origen | Qué contiene | Quién lo escribe |
 |---|---|---|---|
 | `CLAUDE.md` | ✅ existe (6.5 KB) | arranque automático · apunta a todo lo demás | IA + Brian aprueba |
-| `Mente/base-rules.md` 🇺🇸 | 🆕 **nuevo** | reglas mínimas · **portátil a cualquier IA** | Brian define · IA redacta |
+| `base-rules.md` 🇺🇸 | 🆕 **nuevo** | reglas mínimas · **portátil a cualquier IA** | Brian define · IA redacta |
 | `CLAUDE.md` §enrutador | 🆕 **nuevo** ⭐ | **capa A** (§12-QUATER): ~15 líneas · qué estándar cargar según el trabajo | IA redacta |
 | `.claude/settings.json` hooks | 🆕 **nuevo** ⭐ | **capa D**: inyecta el estándar o **bloquea** las 3 acciones críticas | IA construye |
 
@@ -1464,8 +1464,8 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | `Cuerpo/_activos/<BLOQUE>/docs/` | 🆕 nuevo | el detalle largo (cronologías, análisis) | — | sin límite |
 | `Cuerpo/_activos/<BLOQUE>/cache/` | 🆕 nuevo | 💾 caché del bloque | — | — |
 | `Cuerpo/_bloqueados/` · `_archivados/` | 🆕 nuevo | estados del bloque | — | — |
-| `Cuerpo/ESTANDAR_Metodo_Fases_F.md` | ✅ **existe** (7 KB) | **se absorbe** en los 3 encargados | — | — |
-| `Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md` | ✅ **este archivo** | el plano | — | — |
+| `rules/ESTANDAR_Metodo_Fases_F.md` | ✅ **existe** (7 KB) | **se absorbe** en los 3 encargados | — | — |
+| `docs/Arquitectura_Mente_OS_v2_Bloques.md` | ✅ **este archivo** | el plano | — | — |
 
 ### D-bis · Los validadores 🔧 *(§12-TER — resuelven el bloqueante A)*
 
@@ -1493,7 +1493,7 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 
 | Archivo | Origen | Nota |
 |---|---|---|
-| `Tickets/Puentes_Mente_OS.md` | ✅ **existe** | el gate — **verificado: se cumple 100%** |
+| `bridges/Puentes_Mente_OS.md` | ✅ **existe** | el gate — **verificado: se cumple 100%** |
 | `Tickets/punteros.tsv` | ✅ **existe** | fuente única de ramas — funciona |
 | `Maestro/permisos.md` + `Maestro/maestro_lib.sh` | ✅ **existe** | fail-closed en **código** — 100% |
 | `secrets/*` | ✅ existe | secretos, fuera de git — no se toca |

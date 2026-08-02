@@ -9,7 +9,7 @@ superseded-by: —
 ## Context
 
 Taken during the v2 design session (2026-07-27). Full reasoning lives in
-`Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md`; this record exists so the decision has its own
+`docs/Arquitectura_Mente_OS_v2_Bloques.md`; this record exists so the decision has its own
 traceable, revertible file (see `rules/contract-adr.md`).
 
 ## Decision

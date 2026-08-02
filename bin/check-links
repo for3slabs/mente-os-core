@@ -71,6 +71,28 @@ OPENCLAW_MEMORY = re.compile(r"^memory/(\d{4}-\d{2}-\d{2}|AAAA-MM-DD)\.md$")
 OUTSIDE = tuple(cfg.outside())
 
 
+def in_sibling_repo(c):
+    """Does this citation resolve inside a repo declared `outside`?
+
+    🔴 Found 2026-08-02 auditing the 144: `startswith(OUTSIDE)` only excused a citation that
+    SPELLS the repo — but the round documents write the prefix in prose and the path in the
+    backticks (`09-technical-architecture/tools-mcp-layer.md` right under a line naming
+    for3s-inter/). Measured: 3 of 4 sampled resolve inside ../for3s-inter and were counted as
+    broken pointers into OUR tree.
+
+    ⭐ It RESOLVES the path instead of pattern-matching the name: a rule that excused
+    `NN-word/` by shape would excuse any future typo of that shape too. This one only goes
+    quiet when the file is really there — unknown paths still fail closed.
+    """
+    if "/" not in c:
+        return False
+    for repo in OUTSIDE:
+        cand = os.path.join("..", repo.rstrip("/"), c)
+        if os.path.exists(cand):
+            return True
+    return False
+
+
 # Folders whose internal citations MUST resolve — the v1 legacy plus every v2 destination.
 INSIDE = ("rules/", "principles/", "blocks/", "docs/", "bin/", "hooks/",
           "Cerebro/", "Maestro/",
@@ -116,6 +138,8 @@ def main():
                 continue
             if c in FUTURE or PLACEHOLDER.search(c) or c.startswith(OUTSIDE):
                 continue
+            if in_sibling_repo(c):
+                continue                      # resolves in a repo declared `outside`
             if name in GENERIC and "/" not in c:
                 continue                      # a kind of file, not a specific one
             if name in PARENT and os.path.exists(os.path.join("..", name)):

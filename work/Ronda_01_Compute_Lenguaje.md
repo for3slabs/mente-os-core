@@ -12,8 +12,8 @@
 **Capa:** Cuerpo — implementación ejecutable
 **Documentos ancla:**
 - [Mente/Cerebro/For3s_OS_Grafo_Maestro.md](../Cerebro/For3s_OS_Grafo_Maestro.md) — fuente de verdad técnica
-- [Mente/Doc/Banco_Filtro_Alineacion.md](../Doc/Banco_Filtro_Alineacion.md) — candidatos filtrados
-- [Mente/Doc/Estado_Sesion_Continuidad.md](../Doc/Estado_Sesion_Continuidad.md) — protocolo operativo
+- [Mente/Doc/Banco_Filtro_Alineacion.md](memory/archive/Banco_Filtro_Alineacion.md) — candidatos filtrados
+- [Mente/Doc/Estado_Sesion_Continuidad.md](memory/Estado_Sesion_Continuidad.md) — protocolo operativo
 
 **Anclas estratégicas aplicadas:**
 - 1.D — Dedicated SaaS

@@ -7,7 +7,7 @@ reads as an instruction. Spanish stays for Brian's own thinking.
 |---|---|---|
 | **Anything the AI reads as an INSTRUCTION** | 🇺🇸 **US English** | the AI resolves it precisely; it is the language of every convention this standard builds on |
 | **Brian's thinking** | 🇪🇸 Spanish | it is his criterion — another language strips the nuance |
-**In English:** `CLAUDE.md` · `output-styles/` · `Mente/base-rules.md` · `principles/owner-*.md` ·
+**In English:** `CLAUDE.md` · `output-styles/` · `base-rules.md` · `principles/owner-*.md` ·
 `principles/expertise/*` · `rules/*` · **`blocks/active/*/BLOCK.md`** · validator output · commits.
 **In Spanish:** the vision · the plan · the comparative analyses · `memory/RETOMAR.md` ·
 `Bitacora_Progreso` · `Registro_Conversaciones` · the memories · **and conversation with Brian**.

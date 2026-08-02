@@ -127,7 +127,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
   red (→ nohup SIEMPRE) · rebuild que mató al backfill (secuenciar recreates).
 - **Cierre:** hito doble CERRADO + ecosistema entero sincronizado + esta autopsia + RETOMAR
   podado → /clear seguro. Todo vive en: Bitácora (entrada completa) · `Doc/Examen_Foresito_
-  T6_Hallazgos.md` · `Cuerpo/Ronda_Entrenamiento_Foresito.md` · memorias actualizadas.
+  T6_Hallazgos.md` · `work/Ronda_Entrenamiento_Foresito.md` · memorias actualizadas.
 
 ---
 
@@ -159,7 +159,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 - **404 local que parecía la BD y era caché de `.next`** — costó rato; lección: 404 de FRAMEWORK
   (HTML) ≠ 404 de aplicación (JSON). Si caen varias rutas hermanas a la vez → es caché.
 - **Un fix mío PELIGROSO que Brian cazó** — iba a poner `general` (hilo del dueño) como tema por
-  defecto. De ahí salió el caso de estudio `Cuerpo/CASO_Default_Peligroso_Tema_Hilo.md` y la regla
+  defecto. De ahí salió el caso de estudio `memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` y la regla
   "un default nunca apunta a algo con dueño". **La revisión de Brian evitó un problema real.**
 - **Dije "esto rompería cualquier cliente API" sin medirlo** — al comprobarlo, solo afectaba a las
   keys f3k_. Lección registrada: las afirmaciones de impacto se comprueban.
@@ -268,7 +268,7 @@ del propio For3s.
 1. ⭐⭐ **LA CONTRASEÑA REAL DEL SERVIDOR (`«en secrets/Conectar_Servidor_For3s.md»`) llevaba en la arquitectura desde el
    27-jul**, dentro de un ejemplo de "qué NO hacer". Salió a la luz solo cuando partir el
    documento hizo que `grade-block` lo leyera. Redactada en los dos archivos.
-2. ⭐ **`Maestro/punteros.tsv` apuntaba a `Doc/RETOMAR.md`** — y Foresito lo lee EN VIVO por
+2. ⭐ **`Maestro/punteros.tsv` apuntaba a `memory/RETOMAR.md`** — y Foresito lo lee EN VIVO por
    MCP. Lo cazó el validador al mover RETOMAR. Sin ese aviso: índice roto en producción.
 3. 🔴 **`indexador.py` estaba roto**: su regex buscaba `Alma|Cerebro|Cuerpo|Doc|Maestro` y
    tres de esas carpetas fueron eliminadas en M1-M5. No encontraba NADA de la estructura v2.

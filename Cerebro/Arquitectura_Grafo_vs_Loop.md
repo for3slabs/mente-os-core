@@ -7,7 +7,7 @@
 **Estatus:** Documento de referencia arquitectónica. Iteración 1.
 **Origen:** Pregunta directa de Brian — "los agentes se sienten lineales, deberían ser grafos, ¿qué tan cierto?". Esa intuición resultó ser correcta y apuntar a frontier real de la industria.
 **Propósito:** Resolver de fondo la pregunta arquitectónica más importante para For3s QA: ¿loop o grafo? Con honestidad técnica, sin marketing.
-**Documentos relacionados:** [Primeros_Pasos.md](../Doc/Primeros_Pasos.md), [Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md), [Cerebro_Humano_acercamiento2.md](Cerebro_Humano_acercamiento2.md)
+**Documentos relacionados:** [Primeros_Pasos.md](vision/Primeros_Pasos.md), [Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md), [Cerebro_Humano_acercamiento2.md](Cerebro_Humano_acercamiento2.md)
 
 ---
 

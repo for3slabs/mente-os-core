@@ -9,13 +9,13 @@
 **Fecha:** 2026-05-28
 **Estatus:** Documento de visión fundacional. Iteración 1.
 **Capa:** Alma — el "por qué" no-negociable, el norte estratégico.
-**Origen:** Síntesis de todo el ecosistema For3s — `for3s-inter/` (Company OS) + `Mente/Cerebro/` (marcos teóricos) + `Mente/vision/Primeros_Pasos.md` (base neurocientífica) + experiencia previa del founder construyendo OpenClaw, Hermes y Kukulcan Brain.
+**Origen:** Síntesis de todo el ecosistema For3s — `for3s-inter/` (Company OS) + `Mente/Cerebro/` (marcos teóricos) + `vision/Primeros_Pasos.md` (base neurocientífica) + experiencia previa del founder construyendo OpenClaw, Hermes y Kukulcan Brain.
 **Documentos ancla:**
 - [for3s-inter/00-company-foundation/founder-thesis.md](../../for3s-inter/00-company-foundation/founder-thesis.md)
 - [for3s-inter/00-company-foundation/mission-vision.md](../../for3s-inter/00-company-foundation/mission-vision.md)
 - [for3s-inter/02-product/for3s-qa-product-brief.md](../../for3s-inter/02-product/for3s-qa-product-brief.md)
 - [for3s-inter/07-operations/pivot-brief-2026-05-18.md](../../for3s-inter/07-operations/pivot-brief-2026-05-18.md)
-- [Mente/Doc/Primeros_Pasos.md](../Doc/Primeros_Pasos.md)
+- [Mente/Doc/Primeros_Pasos.md](vision/Primeros_Pasos.md)
 - [Mente/Cerebro/Cerebro_Humano_acercamiento1.md](../Cerebro/Cerebro_Humano_acercamiento1.md)
 - [Mente/Cerebro/Cerebro_Humano_acercamiento2.md](../Cerebro/Cerebro_Humano_acercamiento2.md)
 - [Mente/Cerebro/Arquitectura_Grafo_vs_Loop.md](../Cerebro/Arquitectura_Grafo_vs_Loop.md)
@@ -28,7 +28,7 @@ Brian, llegamos a un punto donde el ecosistema For3s tiene piezas correctas pero
 
 - `for3s-inter/` tiene la estrategia comercial, la mission/vision, el QA wedge y los valores.
 - `Mente/Cerebro/` tiene la base científica y arquitectónica (cerebro humano, CLS, grafo vs loop).
-- `Mente/vision/Primeros_Pasos.md` tiene la conexión entre neurociencia y agentes.
+- `vision/Primeros_Pasos.md` tiene la conexión entre neurociencia y agentes.
 
 **Lo que falta es la pieza que une todo:** la **declaración de visión** que diga, sin ambigüedad:
 
