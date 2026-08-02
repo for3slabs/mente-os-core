@@ -84,6 +84,24 @@ def criterion_holes():
     return n, len(files)
 
 
+def broken_links():
+    """Citations inside Mente that point nowhere, from a real check-links run.
+
+    🔴 Added 2026-08-02. check-links was the only validator the battery never invoked, so the
+    count it measures drifted from ~73 to 144 with nothing reporting it. Same contract as
+    battery_checks(): an unreadable run is unknown, never zero — a validator that cannot run
+    is not a clean bill of health.
+    """
+    try:
+        r = subprocess.run(["./bin/check-links"], capture_output=True, text=True, timeout=300)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if r.returncode == 0:
+        return 0
+    m = re.search(r"(\d+)\s+citation\(s\) point nowhere", r.stdout)
+    return int(m.group(1)) if m else None
+
+
 def sessions():
     """Registered sessions vs .jsonl files on disk, and how many heavy ones lack an entry."""
     try:
@@ -133,6 +151,7 @@ def n(v):
 
 passed, failed = battery_checks()
 holes, hole_files = criterion_holes()
+links_broken = broken_links()
 reg, on_disk, heavy_unreg = sessions()
 perms = permissions()
 hooks_reg = registered_hooks()
@@ -186,6 +205,16 @@ state is the bug this file removes.
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
 is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the total right after a
 `/clear` is **expected, not a regression**.
+
+## links — citations that resolve
+
+| Metric | Value |
+|---|---|
+| `links.broken` | **{n(links_broken)}** |
+
+⭐ **This number is a CEILING, not a target.** `bin/test-f0-f6` fails if it goes UP from what is
+committed here — the debt is allowed to exist, never to grow unseen. It drifted from ~73 to 144
+precisely because nothing measured it. Fix a batch, regenerate, and the ceiling drops with it.
 
 ## criterion — what only Brian can write
 

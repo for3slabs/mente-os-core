@@ -44,6 +44,16 @@ state is the bug this file removes.
 is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the total right after a
 `/clear` is **expected, not a regression**.
 
+## links — citations that resolve
+
+| Metric | Value |
+|---|---|
+| `links.broken` | **144** |
+
+⭐ **This number is a CEILING, not a target.** `bin/test-f0-f6` fails if it goes UP from what is
+committed here — the debt is allowed to exist, never to grow unseen. It drifted from ~73 to 144
+precisely because nothing measured it. Fix a batch, regenerate, and the ceiling drops with it.
+
 ## criterion — what only Brian can write
 
 | Metric | Value |
@@ -59,7 +69,7 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 | Metric | Value |
 |---|---|
 | `sessions.registered` | **8** |
-| `sessions.on_disk` | 16 |
+| `sessions.on_disk` | 17 |
 | `sessions.heavy_unregistered` | **0** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
@@ -83,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 16 | 67 |
-| `permissions.local` (`settings.local.json`) | 190 | 67 |
+| `permissions.local` (`settings.local.json`) | 193 | 67 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

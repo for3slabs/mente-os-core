@@ -528,8 +528,12 @@ rm -rf "$t"
 sid=$(ls -t ~/.claude/projects/-home-brianweb3-for3s/*.jsonl 2>/dev/null | head -1)
 sid=$(basename "${sid:-none}" .jsonl | cut -c1-8)
 if grep -q "$sid" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
+# 🔴 `$?` was read INSIDE eq's own arguments, and the $(...) that builds the label runs
+# FIRST — so the label's exit code overwrote the one being measured. It only ever showed
+# when want=1: with want=0 the clobbered $? happened to match. Capture before anything runs.
 ./bin/check-clear-ready --quiet >/dev/null 2>&1
-eq "check-clear-ready agrees with the registry (registered=$( [ $want = 0 ] && echo yes || echo no ))" "$want" "$?"
+_ccr=$?
+eq "check-clear-ready agrees with the registry (registered=$( [ $want = 0 ] && echo yes || echo no ))" "$want" "$_ccr"
 
 # Found by the E2E flow 2026-07-30: an EMPTY docs block scored 🟢 PRODUCT — zero broken links
 # and zero orphans, because there was nothing to measure. Absence of evidence read as evidence.
@@ -774,19 +778,46 @@ head2 "ADVERSARIAL — what happens when someone attacks it"
 
 # A block name is a folder name. A glob silently graded a DIFFERENT block and titled the verdict
 # with what you typed. "not found" exiting 0 meant a hook read it as "sufficient".
+# 🔴 The 6 `bad` calls below read `$?` a SECOND time, inside the message — where it no longer
+# holds the validator's exit but the exit of the `[ ]` that just ran. Measured: a validator
+# returning 7 was reported as "expected exit 1, got exit 1". Detection still worked (FAIL rose),
+# but the diagnosis was a lie that read as agreement, on the day someone needs it most.
+# Capture ONCE into _e; `$?` survives exactly one command. Same shape as the check-clear-ready
+# bug fixed the same day — there it clobbered the verdict, here only the report.
 for v in grade-block check-sufficiency check-applied; do
   for arg in "../../../etc" "*" ".." "demo;rm -rf /tmp/x" "does-not-exist"; do
     ./bin/$v "$arg" >/dev/null 2>&1
-    [ "$?" -eq 1 ] || bad "$v rejects hostile arg $arg" "exit 1" "exit $?"
+    _e=$?; [ "$_e" -eq 1 ] || bad "$v rejects hostile arg $arg" "exit 1" "exit $_e"
   done
 done
 ok "the 3 name-taking validators reject globs, paths and missing blocks (15 cases)"
+
+# 🔴 Found 2026-08-02 measuring per-validator coverage: `new-block` and `migrate-doc` were
+# invoked ZERO times by this battery, against grade-block's 8. check-health watches that they
+# EXIST and are not gutted — nothing watched that they still WORK. Existing and working is a
+# seam, and this project's own rule is that the expensive bugs live at the seams.
+# Both are WRITERS (one creates a block, the other moves a document), so the coverage asserts
+# what must never happen: creating over an existing block, or acting on a source that is absent.
+for arg in "../../../etc" "*" ".." "demo;rm -rf /tmp/x"; do
+  ./bin/new-block "$arg" >/dev/null 2>&1
+  _e=$?; [ "$_e" -eq 1 ] || bad "new-block rejects hostile name $arg" "exit 1" "exit $_e"
+done
+./bin/new-block demo >/dev/null 2>&1
+_e=$?; [ "$_e" -eq 1 ] || bad "new-block refuses to overwrite an existing block" "exit 1" "exit $_e"
+ok "new-block rejects hostile names and never overwrites an open block (5 cases)"
+
+# --dry-run is what makes this testable without moving anything in the tree.
+./bin/migrate-doc no-such-source.md docs/analysis --dry-run >/dev/null 2>&1
+_e=$?; [ "$_e" -eq 1 ] || bad "migrate-doc refuses a source that does not exist" "exit 1" "exit $_e"
+./bin/migrate-doc >/dev/null 2>&1
+_e=$?; [ "$_e" -eq 1 ] || bad "migrate-doc refuses to run with no arguments" "exit 1" "exit $_e"
+ok "migrate-doc refuses a missing source and a bare invocation (2 cases)"
 
 # A hook that only warns must NEVER fail: an unexpected exit code can interfere with the edit.
 for h in pre-edit-standards gate-critical gate-handoff; do
   for j in '{}' 'null' '[]' '{"tool_input":null}' '{"tool_input":{"file_path":123}}' '42'; do
     printf '%s' "$j" | ./hooks/$h.py >/dev/null 2>&1
-    [ "$?" -le 2 ] || bad "$h survives $j" "exit<=2" "exit $?"
+    _e=$?; [ "$_e" -le 2 ] || bad "$h survives $j" "exit<=2" "exit $_e"
   done
 done
 ok "the 3 PreToolUse hooks survive malformed payloads (18 cases, no crash)"
@@ -796,16 +827,16 @@ ok "the 3 PreToolUse hooks survive malformed payloads (18 cases, no crash)"
 # warn read-only. A gate that made cheap delegation expensive would push straight back toward
 # the 20-jul saturation it exists to prevent.
 printf '{"tool_input":{"subagent_type":"Explore"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
-[ "$?" -eq 0 ] || bad "read-only specialist is allowed through" "exit 0" "exit $?"
+_e=$?; [ "$_e" -eq 0 ] || bad "read-only specialist is allowed through" "exit 0" "exit $_e"
 ok "a read-only specialist (Explore) needs no manifest"
 
 printf '{"tool_input":{"subagent_type":"general-purpose"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
-[ "$?" -eq 2 ] || bad "a writing specialist with no manifest is BLOCKED" "exit 2" "exit $?"
+_e=$?; [ "$_e" -eq 2 ] || bad "a writing specialist with no manifest is BLOCKED" "exit 2" "exit $_e"
 ok "a specialist that can WRITE is BLOCKED without a declared scope"
 
 # Fail closed: an unknown agent type could be anything, so it is treated as a writer.
 printf '{"tool_input":{"subagent_type":"some-unknown-agent"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
-[ "$?" -eq 2 ] || bad "unknown agent type fails CLOSED" "exit 2" "exit $?"
+_e=$?; [ "$_e" -eq 2 ] || bad "unknown agent type fails CLOSED" "exit 2" "exit $_e"
 ok "an unknown agent type fails CLOSED (assumed to write)"
 
 # ⭐ Presence is not compliance. A malformed manifest sitting on disk must NOT open the gate —
@@ -832,7 +863,7 @@ sed -e 's|^block: .*|block: blk-demo-2026-07|' \
     -e 's|^handoff_id: .*|handoff_id: 2026-07-31-0000-probe|' \
     -e 's|  artifact_path: .*|  artifact_path: ../../escape.md|' rules/template-handoff.yml > "$_m"
 ./bin/verify-handoff "$_m" >/dev/null 2>&1
-[ "$?" -eq 2 ] || bad "a write path escaping handoffs/ is refused" "exit 2" "exit $?"
+_e=$?; [ "$_e" -eq 2 ] || bad "a write path escaping handoffs/ is refused" "exit 2" "exit $_e"
 rm -f "$_m"
 ok "a return artifact written outside handoffs/ is REFUSED"
 
@@ -1021,6 +1052,27 @@ PY
 )
 printf '%s\n' "$broken" | grep -v COUNT | head -8
 eq "every Mente-internal cited path resolves" "0" "$(printf '%s' "$broken" | grep -oE 'COUNT=[0-9]+' | cut -d= -f2)"
+
+# 🔴 Found 2026-08-02 auditing which checks fail OPEN: `check-links` was the ONLY validator the
+# battery never invoked — 0 calls against grade-block's 8. Nothing ran it, so the count it
+# measures drifted from ~73 to 144 with the battery reporting 138/0 the whole way.
+# ⭐ The hole was never a badly written check. It was a check nobody executed.
+# The ceiling lives in docs/METRICS.md (links.broken), generated — never a number typed here,
+# which is the rule that file exists for. Debt may stay; it may not GROW unseen.
+_lb=$(timeout 300 ./bin/check-links 2>/dev/null); _lc=$?
+if [ $_lc -eq 0 ]; then _now=0
+else _now=$(printf '%s' "$_lb" | grep -oE '[0-9]+ citation\(s\) point nowhere' | grep -oE '^[0-9]+'); fi
+_cap=$(grep -F '`links.broken`' docs/METRICS.md | grep -oE '\*\*[0-9]+\*\*' | grep -oE '[0-9]+')
+# An unreadable count is NOT zero: without a number this must fail, never quietly pass.
+if [ -z "$_now" ] || [ -z "$_cap" ]; then
+  bad "broken citations stay at or below the committed ceiling" "two readable counts" \
+      "check-links='${_now:-unreadable}' METRICS='${_cap:-unreadable}'"
+elif [ "$_now" -le "$_cap" ]; then
+  ok "broken citations ($_now) stay at or below the ceiling ($_cap, docs/METRICS.md)"
+else
+  bad "broken citations stay at or below the committed ceiling" "≤ $_cap" \
+      "$_now — regenerate with bin/generate-metrics only after FIXING them, not to hide them"
+fi
 
 # ⭐ ZOMBIE CORRUPTIONS — two bad paths that came back FOUR times on 2026-07-30, because every
 # `migrate-doc` revert restores the HEAD version that still contains them. Fixed in the working
