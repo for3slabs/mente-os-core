@@ -30,3 +30,6 @@ __pycache__/
 # heartbeat — proof the SessionStart hook still runs. Local to each machine:
 # committing it would ship someone else's date and mask a dead hook on yours.
 .heartbeat
+
+# gate beats — proof each gate still fires. Per-machine, like .heartbeat.
+.beats/

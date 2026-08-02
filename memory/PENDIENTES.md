@@ -16,28 +16,28 @@ sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el
 
 ---
 
-## 🟡 F2 · LATIDO POR HOOK — anotado, no construido (2026-07-31)
+## ✅ EL LATIDO — F1 y F2 CONSTRUIDAS (2026-07-31)
 
-F1 (el latido de `SessionStart`) **está construido**: `hooks/session-start.sh` estampa la fecha
-en `.heartbeat` y `check-health` avisa 🔴 si lleva ≥3 días sin moverse. Eso cierra el caso que
-importaba — el guardia que reporta a todos los demás muriendo en silencio.
+**F1 · `SessionStart`:** estampa `.heartbeat`; `check-health` avisa 🔴 a los ≥3 días.
+**F2 · las 3 puertas:** cada una estampa `.beats/<nombre>` cuando dispara; 🔴 si una lleva
+≥7 días muda respecto a la última sesión viva.
 
-**Lo que F2 añadiría:** un latido por cada hook, no solo el de arranque. Un `gate-critical` que
-lleva 5 días sin dispararse mientras se editaron 40 archivos **es una puerta apagada**, y hoy
-nada lo notaría.
+**Lo que decidió el diseño de F2 — la evidencia que la justificó:** el día que se construyó,
+`gate-handoff` había bloqueado 3 lanzamientos (prueba de que dispara) y, tras decenas de
+ediciones, **no había forma de saber si `gate-critical` había corrido una sola vez**.
 
-**Por qué NO se construye ahora:**
-- toca las **tres puertas que ya funcionan y están probadas** — riesgo real sobre código sano
-- añade una escritura a disco **en cada edición**: coste en el camino caliente
-- el propio v2 lo desaconseja: *"una puerta que estorba más de lo que protege se apaga"*, y no
-  hay evidencia todavía de que este caso ocurra
+**El coste, medido antes de elegir el diseño:** Write+Edit disparó **97 veces** en esa sesión.
+Estampar en cada llamada = ~194 escrituras en el camino caliente. Por eso el latido **solo
+escribe cuando cambia el día**: una por puerta por día, y una lectura sin escritura las otras
+96 veces. Verificado en la batería: 5 llamadas seguidas, **cero escrituras**.
 
-**👉 LA SEÑAL PARA HACERLO:** la primera vez que un hook falle **sin que el latido lo delate**.
-Ahí deja de ser hipótesis y pasa a ser un fallo medido.
+**La comparación es contra la última sesión, no contra hoy** — las puertas solo disparan cuando
+trabajas, así que "callada mientras nadie estuvo" no es un fallo. El fallo es una puerta muda
+en un día en que la sesión sí estuvo viva.
 
-**Lo que ninguna fase cubre, y es honesto decirlo:** si se borran el hook **y** el `.heartbeat`
-a la vez, el sistema no puede distinguirlo de una instalación nueva. Eso es sabotaje
-deliberado, no deriva — y contra eso ningún guardia interno protege.
+**⚠️ Lo que ninguna fase cubre:** si se borran el hook **y** su latido a la vez, esto no lo
+distingue de una instalación nueva. Es sabotaje deliberado, no deriva — y contra eso ningún
+guardia interno protege.
 
 ---
 

@@ -451,6 +451,37 @@ rm -f /tmp/hb-probe.bak
 # It must never be committed: a beat from another machine masks a dead hook on yours.
 ( cd "$M" && git check-ignore -q .heartbeat ) && ok ".heartbeat is gitignored (it is per-machine)" \
   || bad ".heartbeat gitignored" "ignored" "TRACKED — would ship another machine's date"
+
+# ── F2 · EACH GATE LEAVES ITS OWN PROOF ──────────────────────────────────────
+# F1 covered SessionStart. The gates had the same blind spot for a different reason: one that
+# stopped firing looks exactly like one with nothing to block. Measured the day it was built:
+# gate-handoff had blocked three launches, and after dozens of edits there was NO way to tell
+# whether gate-critical had fired even once.
+for _g in gate-critical gate-handoff pre-edit-standards; do
+  [ -f ".beats/$_g" ] || bad "gate $_g leaves a beat" "a stamped date" "MISSING"
+done
+ok "the three gates stamp a beat when they fire"
+
+# ⭐ THE COST DECISION, and why the obvious design was rejected: Write+Edit fired 97 times in
+# the session this was built in. Stamping per call = ~194 disk writes on the hot path, and this
+# project's own rule is that a gate costing more than it protects gets switched off.
+# So the beat writes ONLY when the date changes. This proves it: repeated calls, zero writes.
+_before=$(stat -c %Y .beats/gate-handoff 2>/dev/null || echo 0)
+for _i in 1 2 3 4 5; do
+  printf '{"tool_input":{"subagent_type":"Explore"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+done
+_after=$(stat -c %Y .beats/gate-handoff 2>/dev/null || echo 0)
+eq "the beat is idempotent within a day (no write on the hot path)" "$_before" "$_after"
+
+# Telemetry must never change what a gate DOES. If adding the beat altered an exit code, the
+# measurement would have broken the thing it measures.
+printf '{"tool_input":{"subagent_type":"general-purpose"}}' | ./hooks/gate-handoff.py >/dev/null 2>&1
+eq "beating did not change gate-handoff's verdict" "2" "$?"
+printf '{"tool_input":{"file_path":"/tmp/zz.md"}}' | ./hooks/pre-edit-standards.py >/dev/null 2>&1
+eq "beating did not make pre-edit-standards block" "0" "$?"
+
+( cd "$M" && git check-ignore -q .beats ) && ok ".beats/ is gitignored (per-machine, like the heartbeat)" \
+  || bad ".beats gitignored" "ignored" "TRACKED"
 printf 'not json' | ./hooks/pre-edit-standards.py >/dev/null 2>&1
 eq "pre-edit survives malformed input" "0" "$?"
 

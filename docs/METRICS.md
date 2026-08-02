@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **133** |
+| `battery.checks` | **138** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -70,7 +70,7 @@ actually costs something. The 21-jul incident came from one of them.
 | Metric | Value |
 |---|---|
 | `system.validators` | 16 |
-| `system.hook_files` | 5 |
+| `system.hook_files` | 6 |
 | `system.hooks_registered` | **4** |
 | `system.blocks_active` | 1 |
 | `system.blocks_archived` | 1 |

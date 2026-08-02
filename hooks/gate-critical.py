@@ -27,6 +27,8 @@ import glob
 import json
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _beat import beat                                        # noqa: E402
 
 # A migration is irreversible unless it says how to go back. Measured, not assumed.
 DB_HINT = re.compile(r"(migration|migr|\d{3}_)|\.sql$", re.I)
@@ -73,6 +75,7 @@ def owning_block(target):
 
 
 def main():
+    beat(MENTE, "gate-critical")   # proof this gate still fires (hooks/_beat.py)
     try:
         payload = json.load(sys.stdin)
     except Exception:                                          # noqa: BLE001

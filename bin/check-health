@@ -131,7 +131,10 @@ def _guards():
 
 def check_guards():
     for path in _guards():
-        if not os.access(path, os.X_OK) and not path.endswith("_config.py"):
+        # Modules that are IMPORTED, never run: no execute bit expected. Gutting them still
+        # breaks everything downstream, so they stay in the guard list for the size check.
+        imported = os.path.basename(path).startswith("_") or path.endswith("_config.py")
+        if not os.access(path, os.X_OK) and not imported:
             red(f"GUARD DISARMED · {path} is not executable.\n"
                 f"   A validator that cannot run is not a pass. Fix: chmod +x {path}")
             continue
@@ -211,8 +214,11 @@ def check_hooks_wired():
 
     # ② every guard hook on disk should be registered — an unregistered gate is a gate that
     #    never fires. Warned, not blocked: a hook may legitimately be staged before wiring.
-    on_disk = {f for f in glob.glob("hooks/*") if os.path.isfile(f)
-               and not f.endswith(("pre-commit.sh", ".md"))}   # pre-commit is invoked by git
+    # pre-commit.sh is invoked by git, and files starting with "_" are shared modules the hooks
+    # import — neither is registered in settings.json, and neither is a fault.
+    on_disk = {f for f in glob.glob("hooks/*")
+               if os.path.isfile(f) and not f.endswith(("pre-commit.sh", ".md"))
+               and not os.path.basename(f).startswith("_")}
     reg_names = {os.path.basename(t) for t in registered}
     for f in sorted(on_disk):
         if os.path.basename(f) not in reg_names:
@@ -456,6 +462,37 @@ def check_heartbeat():
             "   This is the guard that reports every other guard. If it is dead, every 🔴 it\n"
             "   would have raised is invisible — and silence reads exactly like health.\n"
             "   Verify: .claude/settings.json → hooks.SessionStart")
+
+    # ── F2: the three gates leave their own proof ────────────────────────────
+    # F1 covered SessionStart. The gates had the same blind spot for a different reason: a gate
+    # that stopped firing looks exactly like a gate with nothing to block. Measured on the day
+    # this was written: gate-handoff had blocked three launches (proof it fires), and after
+    # dozens of edits there was NO way to tell whether gate-critical had run even once.
+    #
+    # Compared against the STARTUP beat, not against today: the gates only fire when you work,
+    # so "quiet while nobody was here" is not a fault. The fault is a gate quiet on a day the
+    # session itself was alive.
+    gates = {"gate-critical": "blocks destructive SQL and insufficient closes",
+             "pre-edit-standards": "injects the block's standards before an edit",
+             "gate-handoff": "blocks a writing specialist with no declared scope"}
+    for gname, what in gates.items():
+        gbeat = os.path.join(MENTE, ".beats", gname)
+        if not os.path.exists(gbeat):
+            if gap == 0:                       # startup ran today, so the gates should have too
+                yel(f"gate `{gname}` has never fired here — it {what}.\n"
+                    "   Expected on a fresh clone; otherwise check its matcher in settings.json")
+            continue
+        try:
+            gstamp = date.fromisoformat(open(gbeat, encoding="utf-8").read().strip())
+        except (OSError, ValueError):
+            continue
+        gap_g = (stamped - gstamp).days
+        # 7 days of sessions without one edit or one launch is implausible — that is a dead gate.
+        if gap_g >= 7:
+            red(f"GATE SILENT · `{gname}` last fired {gstamp}, {gap_g} days before the last "
+                f"session.\n   It {what}.\n"
+                "   A gate that stopped firing is indistinguishable from one with nothing to "
+                "block — until something gets through.")
 
 
 def check_session():

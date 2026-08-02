@@ -20,9 +20,12 @@ import glob
 import json
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _beat import beat                                        # noqa: E402
 
 
 def main():
+    beat(MENTE, "pre-edit-standards")   # proof this gate still fires (hooks/_beat.py)
     try:
         payload = json.load(sys.stdin)
     except Exception:                                          # noqa: BLE001

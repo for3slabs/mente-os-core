@@ -41,6 +41,8 @@ import json
 import subprocess
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _beat import beat                                        # noqa: E402
 
 # Read-only agent types: they return a conclusion and write nothing, so there is no write scope
 # to declare. Explore is defined read-only by the harness itself ("All tools except ... Edit,
@@ -71,6 +73,7 @@ def verified(path):
 
 
 def main():
+    beat(MENTE, "gate-handoff")   # proof this gate still fires (hooks/_beat.py)
     try:
         payload = json.load(sys.stdin)
     except Exception:                                          # noqa: BLE001
