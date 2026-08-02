@@ -10,6 +10,19 @@
 set -uo pipefail
 MENTE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# ── THE HEARTBEAT ───────────────────────────────────────────────────────────
+# 🔴 The structural gap, measured 2026-07-31: this hook is SILENT when everything is fine —
+# and equally silent if it is dead. Healthy silence and dead silence were indistinguishable,
+# so the guard that reports on every other guard could stop running and nobody would know.
+#
+# No check can catch that from the inside AS IT HAPPENS: a missing warning is exactly what a
+# healthy system looks like. But it is catchable AFTERWARDS. Stamping a date turns "it said
+# nothing" into "it has said nothing since Tuesday", and that IS distinguishable.
+#
+# Same shape as bin/flag-stale: "a block that goes quiet is not neutral." Neither is a guard.
+# Written FIRST, before check-health runs, so the beat lands even if the check below crashes.
+date -u +%Y-%m-%d > "$MENTE/.heartbeat" 2>/dev/null || true
+
 # Silence unless something is actually red. exit 2 = red (bin/check-health contract).
 out="$("$MENTE/bin/check-health" 2>/dev/null)" ; code=$?
 if [ "$code" -eq 2 ]; then

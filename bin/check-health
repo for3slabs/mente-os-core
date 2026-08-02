@@ -424,6 +424,40 @@ def check_isolation():
 
 
 # ── SESSION ──────────────────────────────────────────────────────────────────
+def check_heartbeat():
+    """Did the SessionStart hook actually run recently?
+
+    🔴 The gap this closes, measured 2026-07-31: session-start.sh is silent when everything is
+    fine — and equally silent if it is dead. The guard that reports on every OTHER guard could
+    stop firing and nothing would say so, because a missing warning looks exactly like health.
+
+    This cannot be caught in the moment (see the hook's own comment). It IS catchable after the
+    fact: the hook stamps a date, and any validator run afterwards compares it to today. That
+    turns "it said nothing" into "it has said nothing for N days" — which is distinguishable.
+
+    ⚠️ Honest limit: if the hook AND the stamp are removed together, this cannot tell that from
+    a fresh install. That is deliberate sabotage, not drift, and no internal guard covers it.
+    """
+    beat = os.path.join(MENTE, ".heartbeat")
+    if not os.path.exists(beat):
+        yel("no .heartbeat — the SessionStart hook has never run here.\n"
+            "   Expected on a fresh clone; if this is not fresh, check .claude/settings.json")
+        return
+    try:
+        stamped = date.fromisoformat(
+            open(beat, encoding="utf-8", errors="replace").read().strip())
+    except (OSError, ValueError):
+        yel(".heartbeat is unreadable — cannot tell whether the startup hook still runs")
+        return
+    gap = (date.today() - stamped).days
+    # 3 days: long enough that a weekend does not nag, short enough to catch it the same week.
+    if gap >= 3:
+        red(f"STARTUP HOOK SILENT · last ran {stamped} ({gap} days ago).\n"
+            "   This is the guard that reports every other guard. If it is dead, every 🔴 it\n"
+            "   would have raised is invisible — and silence reads exactly like health.\n"
+            "   Verify: .claude/settings.json → hooks.SessionStart")
+
+
 def check_session():
     # 🔴 This hardcoded the transcript path and returned SILENTLY when it did not resolve, so
     # on any other machine the session watch — the guard that exists BECAUSE of the 21-jul
@@ -490,6 +524,7 @@ def main():
         check_sizes()
         check_truth()
         check_isolation()
+        check_heartbeat()
         check_session()
 
     if quiet:

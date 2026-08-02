@@ -430,6 +430,27 @@ eq "the 9 global GSD hooks are untouched" "9" "$n"
 # The informing hooks must NEVER block, even on garbage input.
 ./hooks/session-start.sh >/dev/null 2>&1
 eq "session-start never blocks" "0" "$?"
+
+# ⭐ THE HEARTBEAT — the guard that reports every other guard leaves proof it ran.
+# Structural gap found 2026-07-31: session-start.sh is silent when healthy AND silent when
+# dead. A missing warning looks exactly like health, so nothing could tell them apart.
+# Cannot be caught in the moment; IS catchable after the fact by stamping a date.
+[ -f .heartbeat ] && ok "the startup hook leaves a heartbeat (silence becomes measurable)" \
+  || bad ".heartbeat" "written by session-start.sh" "MISSING — dead silence is indistinguishable"
+
+# A stale beat must be LOUD. Tested by aging it past the threshold and restoring.
+cp .heartbeat /tmp/hb-probe.bak 2>/dev/null
+echo "2026-01-01" > .heartbeat
+case "$("$M/bin/check-health" 2>/dev/null || true)" in
+  *"STARTUP HOOK SILENT"*) ok "a heartbeat that stopped is reported, not ignored" ;;
+  *) bad "stale heartbeat detection" "STARTUP HOOK SILENT" "silent" ;;
+esac
+cp /tmp/hb-probe.bak .heartbeat 2>/dev/null || ./hooks/session-start.sh >/dev/null 2>&1
+rm -f /tmp/hb-probe.bak
+
+# It must never be committed: a beat from another machine masks a dead hook on yours.
+( cd "$M" && git check-ignore -q .heartbeat ) && ok ".heartbeat is gitignored (it is per-machine)" \
+  || bad ".heartbeat gitignored" "ignored" "TRACKED — would ship another machine's date"
 printf 'not json' | ./hooks/pre-edit-standards.py >/dev/null 2>&1
 eq "pre-edit survives malformed input" "0" "$?"
 

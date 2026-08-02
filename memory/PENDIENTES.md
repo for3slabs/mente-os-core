@@ -16,6 +16,31 @@ sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el
 
 ---
 
+## 🟡 F2 · LATIDO POR HOOK — anotado, no construido (2026-07-31)
+
+F1 (el latido de `SessionStart`) **está construido**: `hooks/session-start.sh` estampa la fecha
+en `.heartbeat` y `check-health` avisa 🔴 si lleva ≥3 días sin moverse. Eso cierra el caso que
+importaba — el guardia que reporta a todos los demás muriendo en silencio.
+
+**Lo que F2 añadiría:** un latido por cada hook, no solo el de arranque. Un `gate-critical` que
+lleva 5 días sin dispararse mientras se editaron 40 archivos **es una puerta apagada**, y hoy
+nada lo notaría.
+
+**Por qué NO se construye ahora:**
+- toca las **tres puertas que ya funcionan y están probadas** — riesgo real sobre código sano
+- añade una escritura a disco **en cada edición**: coste en el camino caliente
+- el propio v2 lo desaconseja: *"una puerta que estorba más de lo que protege se apaga"*, y no
+  hay evidencia todavía de que este caso ocurra
+
+**👉 LA SEÑAL PARA HACERLO:** la primera vez que un hook falle **sin que el latido lo delate**.
+Ahí deja de ser hipótesis y pasa a ser un fallo medido.
+
+**Lo que ninguna fase cubre, y es honesto decirlo:** si se borran el hook **y** el `.heartbeat`
+a la vez, el sistema no puede distinguirlo de una instalación nueva. Eso es sabotaje
+deliberado, no deriva — y contra eso ningún guardia interno protege.
+
+---
+
 ## 🟡 2 LISTAS FIJAS QUE NO URGEN — de la auditoría del 2026-07-31
 
 Se auditaron **las 22 enumeraciones** de los validadores con un criterio: *¿esto se puede medir
