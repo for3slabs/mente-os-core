@@ -111,6 +111,24 @@ every time someone said yes.**
 > ## 🚫 A protection declared by TOOL is a protection with a back door.
 > The question is not *"did I deny Read?"* — it is **"can anything still reach it?"**
 
+### 🔴 The half-applied version of this rule, same day it was written
+
+On 2026-07-31 this rule was written covering the **tools** (Read/Edit/Write/Bash) — and the
+**targets** were never re-checked against what `allow` grants. `Read(//home/<user>/**)` was still
+exposing the GitHub token, AWS credentials, the GPG keyring, `~/.github-token` and
+`~/.git-credentials`.
+
+`check-health` had a guard for exactly this, and it stayed silent, because it consulted a
+hardcoded list of three: `.ssh`, `secrets`, `.env`.
+
+> ## A fixed list of what is dangerous is a hole with a schedule.
+> The guard must **discover** what exists, not consult what someone remembered.
+
+**The same shape hit three times in one day:** the deny that covered three tools but not Bash ·
+the test that counted exactly 3 rules per target · this list of three credential paths. In all
+three the guard reported green with the hole wide open. When a check enumerates, ask what the
+enumeration leaves out.
+
 **For every protected target, deny the real reach channels:**
 
 | Channel | Commands to cover |

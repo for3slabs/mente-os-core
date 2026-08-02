@@ -141,19 +141,60 @@ def _check_one(p, name):
         return
     perms = d.get("permissions", {})
 
-    # a broad Read grant with nothing walling off credentials
-    SENSITIVE = ("/.ssh/", "/secrets/", "/.env")
+    # A broad Read grant with nothing walling off credentials.
+    #
+    # 🔴 Found 2026-07-31: this used a HARDCODED list — (".ssh", "secrets", ".env") — so the
+    # guard existed, ran, and stayed silent while `Read(//home/<user>/**)` exposed the GitHub
+    # token in ~/.config/gh/hosts.yml, ~/.aws/credentials and ~/.gnupg. The guard was not
+    # broken; it was looking in the wrong places.
+    #
+    # ⭐ THE PATTERN, hit three times in one day: a fixed list written when only three dangers
+    # were known. Same shape as the deny that covered Read/Edit/Write but not Bash, and as the
+    # test that counted exactly 3 rules per target. In all three the guard reported green with
+    # the hole wide open.
+    #
+    # The fix is to DISCOVER instead of consult: walk the granted scope and flag whatever looks
+    # like a credential. A new tool that drops a token in ~/.something is caught the day it
+    # appears, without anyone remembering to extend a list.
+    CRED_NAMES = ("credentials", "hosts.yml", ".netrc", ".npmrc", ".pypirc",
+                  "id_rsa", "id_ed25519", "config.json", "token", "secring.gpg")
+    CRED_DIRS = (".ssh", ".aws", ".gnupg", ".config/gh", ".docker", ".kube", "secrets")
+
+    def _covered(path_fragment, deny_rules):
+        """Is this path walled off by ANY deny rule, on any tool?"""
+        key = path_fragment.strip("/").split("/")[-1]
+        return any(key in dr for dr in deny_rules)
+
     for a in perms.get("allow", []):
         m = re.match(r"Read\(/{0,2}(/home/[^*)]*)\*\*\)", a)
         if not m:
             continue
-        scope = m.group(1)
-        for s in SENSITIVE:
-            probe = scope.rstrip("/") + s
-            if not any(s.strip("/") in dr for dr in perms.get("deny", [])):
-                red(f"{name} · {a} grants {probe}* and no deny rule covers it.\n"
-                    f"   Add: Read(/{probe}**)  to deny — deny wins over allow.")
-                break
+        scope = m.group(1).rstrip("/")
+        uncovered = []
+        # ① the well-known credential directories that actually exist on this machine
+        for c in CRED_DIRS:
+            if os.path.isdir(os.path.join(scope, c)) and not _covered(c, perms.get("deny", [])):
+                uncovered.append(f"{scope}/{c}/")
+        # ② anything else at the top level whose NAME says credential
+        try:
+            for entry in os.listdir(scope):
+                p = os.path.join(scope, entry)
+                if os.path.isfile(p) and any(n in entry for n in CRED_NAMES) \
+                        and not _covered(entry, perms.get("deny", [])):
+                    uncovered.append(p)
+        except OSError:
+            pass
+        # ③ the original three, kept explicit: .env files are not a directory
+        for s in ("/.env",):
+            if not _covered(s, perms.get("deny", [])):
+                uncovered.append(f"{scope}{s}*")
+        if uncovered:
+            shown = "\n".join(f"     · {u}" for u in uncovered[:6])
+            more = f"\n     … +{len(uncovered) - 6} more" if len(uncovered) > 6 else ""
+            red(f"{name} · {a} grants credentials that NO deny rule covers:\n"
+                f"{shown}{more}\n"
+                "   Deny wins over allow. Add Read(...) AND Bash(cat ...) rules — a shell\n"
+                "   reads whatever the file tools refuse (rules/rule-config-hygiene.md §1.5).")
     deny = perms.get("deny", [])
     allow = perms.get("allow", [])
     dirs = perms.get("additionalDirectories", [])
@@ -244,6 +285,45 @@ def check_truth():
             yel(f"{gen} does not exist — no generated index (phase F7)")
 
 
+# ── ISOLATION ────────────────────────────────────────────────────────────────
+# 🔴 Found 2026-07-31 while auditing the system against its own rules:
+# `rules/rule-isolation.md` §5 promised that check-health flags "a block reading files from
+# another block with no declared connection" and "a §C connection pointing at a block that does
+# not exist". NEITHER existed in code — a rule in a document promising a rule in code, which is
+# exactly what v2 exists to stop.
+#
+# Latent today (one active block, so no cross is possible) — it bites the moment there are two.
+# Written now because a promise nobody implements teaches you to distrust the other promises.
+def check_isolation():
+    blocks = {}
+    for b in glob.glob("blocks/*/*/BLOCK.md"):
+        try:
+            text = open(b, encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        m = re.search(r"^id:\s*(\S+)", text, re.M)
+        if m:
+            blocks[m.group(1)] = (os.path.basename(os.path.dirname(b)), text)
+
+    for bid, (name, text) in blocks.items():
+        # ① a §C connection pointing at a block that does not exist
+        conn = re.search(r"##\s*Connections\s*\n((?:\s*-.*\n)+)", text)
+        if conn:
+            for ref in re.findall(r"\bblk-[a-z0-9-]+", conn.group(1)):
+                if ref not in blocks:
+                    yel(f"block `{name}` §C declares a connection to `{ref}`, "
+                        "which does not exist on disk")
+        # ② referencing another block's files with no declared connection
+        declared = conn.group(1) if conn else ""
+        for other_id, (other_name, _) in blocks.items():
+            if other_id == bid:
+                continue
+            path = f"blocks/active/{other_name}/"
+            if path in text and other_id not in declared and other_name not in declared:
+                yel(f"block `{name}` points into `{other_name}` with no §C connection "
+                    "(rules/rule-isolation.md §1)")
+
+
 # ── SESSION ──────────────────────────────────────────────────────────────────
 def check_session():
     # 🔴 This hardcoded the transcript path and returned SILENTLY when it did not resolve, so
@@ -310,6 +390,7 @@ def main():
         check_permissions()
         check_sizes()
         check_truth()
+        check_isolation()
         check_session()
 
     if quiet:

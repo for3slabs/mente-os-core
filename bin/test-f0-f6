@@ -143,6 +143,38 @@ print(sum(1 for k in ('secrets','.ssh','.env','5M-incubathon') if any(k in r for
   eq "Bash deny covers the protected targets in $f" "4" "$n"
 done
 
+# ⭐ CREDENTIALS BEYOND THE FAMOUS THREE (found 2026-07-31 auditing the system against itself).
+# check-health's credential guard used a HARDCODED list — .ssh, secrets, .env — so it ran, said
+# nothing, and `Read(//home/<user>/**)` exposed the GitHub token, AWS credentials, the GPG
+# keyring, ~/.github-token and ~/.git-credentials for months.
+#
+# Same shape as two other bugs the same day: the deny that covered Read/Edit/Write but not Bash,
+# and the test that counted exactly 3 rules per target. A fixed list is a hole with a schedule.
+# This asserts COVERAGE of what exists on disk, so a new credential file fails the battery.
+for f in settings.json settings.local.json; do
+  n=$(python3 -c "
+import json,os
+d=json.load(open('$REPO/.claude/$f'))
+dn=d['permissions'].get('deny',[])
+home=os.path.expanduser('~')
+targets=[c for c in ('.config/gh','.aws','.gnupg','.github-token','.git-credentials')
+         if os.path.exists(os.path.join(home,c))]
+print(sum(1 for t in targets if any(t.split('/')[-1] in r for r in dn)) == len(targets) and 1 or 0)")
+  eq "every credential store on disk is denied in $f" "1" "$n"
+done
+
+# The credential guard must DISCOVER, not consult a list. If someone reverts it to a fixed
+# tuple, this catches it: the guard has to name what it found, not what it was told to look for.
+grep -q "CRED_NAMES\|CRED_DIRS" bin/check-health \
+  && ok "the credential guard discovers instead of consulting a fixed list" \
+  || bad "credential guard discovers" "CRED_DIRS scan" "a hardcoded tuple"
+
+# rules/rule-isolation.md §5 promised check-health flags these two. It promised for two days
+# and nothing implemented it — a rule in a document promising a rule in code.
+grep -q "def check_isolation" bin/check-health \
+  && ok "isolation detection exists (rule-isolation.md §5 is not just a promise)" \
+  || bad "check_isolation" "implemented" "MISSING — the rule promises what nobody does"
+
 # A broad Read grant with no deny over credentials is an open door nothing was watching.
 for f in settings.json settings.local.json; do
   n=$(python3 -c "

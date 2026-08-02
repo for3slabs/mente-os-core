@@ -5,7 +5,7 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-07-31 · **Type:** generated
+**Generated:** 2026-08-02 · **Type:** generated
 
 
 **275 documents** · **2 blocks** · 19 directories
@@ -257,7 +257,7 @@
 | `contract-document.md` | rule | current | 2026-07-29 | 200 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
-| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 186 |
+| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 204 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |
 | `rule-friction.md` | rule | current | 2026-07-29 | 100 |
 | `rule-inheritance.md` | rule | current | 2026-07-29 | 167 |
