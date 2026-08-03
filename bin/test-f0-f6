@@ -639,6 +639,25 @@ else
   bad "CAPABILITIES.md" "exists" "MISSING — the agent has no capability map"
 fi
 
+# ⭐ THE ENGINE/INSTANCE LINE as a LOCK, not a paragraph (block `distribucion` §F-6).
+# CAPABILITIES.md §1 tells the agent it may run the engine but not rewrite it. In prose that is
+# this project's own 40-60% case. These verify the mechanism behind it — and that it is PORTABLE:
+# rules written with an absolute path do not survive a clone, which is the whole point of the block.
+_eng=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/settings.json'))['permissions']
+print(len([r for r in d.get('ask',[]) if 'CLAUDE_PROJECT_DIR/Mente' in r and
+      any(x in r for x in ('/bin/','/hooks/','/rules/','/principles/'))]))" 2>/dev/null)
+[ "${_eng:-0}" -ge 8 ] && ok "engine is write-gated on Edit+Write, portably ($_eng rules)" \
+  || bad "engine boundary" "≥8 portable ask rules" "${_eng:-0} — the agent can rewrite its own validators"
+
+# 🔴 Edit/Write do NOT cover Bash: measured 2026-08-03, a python one-liner rewrote a file under
+# bin/ without touching the Edit rule. Same tool-shaped back door as §1.5.
+_bash=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/settings.json'))['permissions']
+print(len([r for r in d.get('ask',[]) if r.startswith('Bash(') and 'Mente/bin/' in r]))" 2>/dev/null)
+[ "${_bash:-0}" -ge 5 ] && ok "engine write CHANNELS via Bash are gated too ($_bash on bin/)" \
+  || bad "engine bash channels" "≥5" "${_bash:-0} — Edit is gated but tee/sed/cp are not"
+
 grep -q "PROJECT-RULES.md" "$REPO/CLAUDE.md" && ok "CLAUDE.md routes to PROJECT-RULES.md" \
   || bad "router" "points at PROJECT-RULES.md" "does not"
 

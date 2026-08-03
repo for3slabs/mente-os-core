@@ -41,10 +41,10 @@ created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: sub-block 5 closed — the agent has a capability map, verified by the battery
-next: sub-block 6 — the engine/instance line as a portable LOCK (does not need a clone)
+phase: 5 and 6 closed — the agent knows what it can run, and the engine is write-gated
+next: sub-block 4 (check: no engine file carries owner name or absolute path) — no clone needed
 blockers: sub-block 1 needs a CLEAN CLONE to test; it cannot be proven from this session
-progress: 1/6 sub-blocks closed
+progress: 2/6 sub-blocks closed
 updated: 2026-08-03
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
@@ -56,7 +56,7 @@ updated: 2026-08-03
 | 3 | templates for the 3 startup files | `*.template` | 0 | open |
 | 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | open |
 | 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` | — | ✅ closed |
-| 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | open |
+| 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | ✅ closed |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
@@ -92,6 +92,9 @@ updated: 2026-08-03
 - 2026-08-02 · opened with the diagnosis measured, zero code written
 - 2026-08-03 · sub-block 5 ✅ `CAPABILITIES.md` + 2 checks: it may only name validators
   that exist, and `CLAUDE.md` must route to it (an unreferenced map is a map nobody reads)
+- 2026-08-03 · sub-block 6 ✅ engine write-gated PORTABLY (24 rules, `$CLAUDE_PROJECT_DIR`)
+  🔴 found doing it: Edit/Write do NOT cover Bash — a python one-liner rewrote a file
+  under bin/ untouched by the Edit rule. Same back door as rule-config-hygiene §1.5
 
 <!-- ══ J · CONTEXT ══ ≤80 lines · CURATED, not a log ══ -->
 ## Context
@@ -126,11 +129,6 @@ DENTRO DE MENTE OS V2 Y CÓMO EJECUTARLAS SIN TOCAR EL CÓDIGO DE MENTE OS V2."*
 
 That reframes the deliverable. A form assumes a human reads labels and types values. An agent
 needs two things a form does not give:
-
-| | Today | Measured |
-|---|---|---|
-| **What it CAN do** | nothing states it | `CLAUDE.md` routes *where to read*; `README.md` lists **1** command |
-| **Where the line is** | 3 `ask` rules | `Write(bin/**)` missing · all 3 carry an absolute path |
 
 **Why ① is correctness, not documentation:** an agent that does not know `bin/grade-block`
 exists hand-writes a verdict — inventing criterion (ADR-003). Same for `check-sufficiency`
