@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+# Implements ADR-019 — validators COMPLETE what is derivable; they never complete criterion
+"""init — turn a fresh clone of the engine into THIS user's instance.
+
+⭐ Brian, 2026-08-02: *"esto está local para mí y aun así tenemos errores. AÚN NO VEO QUE SEA ALGO
+QUE PODAMOS CONFIAR A QUE LA GENTE PUEDA OCUPAR."* — and the installer is an AGENT, not a person.
+
+WHAT IT DOES
+    Reads mente.config.yml, then GENERATES the three startup files from templates:
+    CLAUDE.md · PROJECT-RULES.md · .claude/settings.json (hooks block only).
+
+WHY GENERATED AND NOT HAND-EDITED
+    Measured 2026-08-02: those three carried 43 occurrences of one user's name and 34 absolute
+    paths, while mente.config.yml existed precisely so a new user edits ONE file. The validators
+    honoured that separation; the startup files did not. A value copied by hand is correct
+    exactly once — the same reason docs/METRICS.md exists.
+
+WHAT IT REFUSES TO DO
+    🔴 It never invents criterion (ADR-003). `owner.name` and the gates are ASKED, never guessed:
+    a gate the installer made up would be a boundary nobody decided.
+    🔴 It never overwrites a file that already differs from what it would generate, unless --force.
+    An instance that has been worked on is not a scaffold.
+
+Usage:
+  bin/init                 interactive — asks only what cannot be derived
+  bin/init --check         report what WOULD change, touch nothing
+  bin/init --force         regenerate even if the target was edited by hand
+Exit: 0 done / nothing to do · 1 refused (would overwrite) · 2 could not read the config
+"""
+import os
+import re
+import sys
+import json
+import shutil
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(MENTE, "bin"))
+import mente_config as cfg                                            # noqa: E402
+os.chdir(MENTE)
+REPO = os.path.dirname(MENTE)
+TPL = "templates"
+
+check_only = "--check" in sys.argv
+force = "--force" in sys.argv
+
+# The hook wiring is the one thing that MUST be portable: measured 2026-08-03, a clone whose
+# hooks carried an absolute path started with no gate running — and it failed silently.
+HOOKS = {
+    "SessionStart": [("bash", "session-start.sh")],
+    "PreToolUse": [("python3", "pre-edit-standards.py"),
+                   ("python3", "gate-critical.py"),
+                   ("python3", "gate-handoff.py")],
+}
+
+
+def ask(prompt, default=None):
+    """Ask, or take the default. Never guess a value that is criterion."""
+    if not sys.stdin.isatty():
+        if default is None:
+            print(f"🔴 `{prompt}` has no default and there is no terminal to ask on.\n"
+                  "   Fill it in mente.config.yml, or run bin/init interactively.", file=sys.stderr)
+            sys.exit(2)
+        return default
+    d = f" [{default}]" if default else ""
+    return input(f"   {prompt}{d}: ").strip() or (default or "")
+
+
+def render(name, values):
+    """Fill a template. A placeholder left unresolved is a bug, not a blank."""
+    src = os.path.join(TPL, name + ".template")
+    if not os.path.exists(src):
+        return None, f"template missing: {src}"
+    text = open(src, encoding="utf-8").read()
+    for k, v in values.items():
+        text = text.replace("{{" + k + "}}", str(v))
+    left = re.findall(r"\{\{(\w+)\}\}", text)
+    if left:
+        return None, f"{name}: unresolved placeholders {sorted(set(left))}"
+    return text, None
+
+
+def write(path, text):
+    """Refuse to clobber work. A file that already differs is an instance, not a scaffold."""
+    if os.path.exists(path):
+        current = open(path, encoding="utf-8").read()
+        if current == text:
+            return "unchanged"
+        if not force:
+            return "DIFFERS"
+        shutil.copy(path, path + ".bak")
+    if check_only:
+        return "would write"
+    open(path, "w", encoding="utf-8").write(text)
+    return "written"
+
+
+def wire_hooks():
+    """Register the four hooks with a PORTABLE path, preserving every other setting."""
+    p = os.path.join(REPO, ".claude", "settings.json")
+    try:
+        d = json.load(open(p)) if os.path.exists(p) else {}
+    except ValueError as e:
+        return f"🔴 {p} is not valid JSON ({e}) — fix it by hand, this will not overwrite it"
+    var = chr(36) + "{CLAUDE_PROJECT_DIR}"
+    blocks = {}
+    for event, entries in HOOKS.items():
+        blocks[event] = [{"hooks": [
+            {"type": "command", "command": f'{run} "{var}/Mente/hooks/{f}"'}
+            for run, f in entries]}]
+    if d.get("hooks") == blocks:
+        return "hooks already wired, portably"
+    if check_only:
+        return "would rewire 4 hooks with a portable path"
+    d.setdefault("permissions", d.get("permissions", {}))
+    d["hooks"] = blocks
+    json.dump(d, open(p, "w"), indent=2, ensure_ascii=False)
+    return "4 hooks wired with ${CLAUDE_PROJECT_DIR}"
+
+
+def main():
+    print("\n\033[1m── mente init ──\033[0m")
+    owner = cfg.owner_name()
+    if not owner or owner in ("", "None"):
+        print("\n   mente.config.yml has no owner. This is CRITERION — it is asked, never guessed.")
+        owner = ask("owner name")
+        if not owner:
+            print("🔴 an instance with no owner cannot say who decides. Aborted.", file=sys.stderr)
+            return 2
+    project = os.path.basename(REPO)
+    values = {"owner": owner, "project": project}
+
+    print(f"\n   owner   : {owner}")
+    print(f"   project : {project}")
+    print(f"   engine  : {MENTE}\n")
+
+    rc = 0
+    for name, target in (("CLAUDE.md", os.path.join(REPO, "CLAUDE.md")),
+                         ("PROJECT-RULES.md", os.path.join(REPO, "PROJECT-RULES.md"))):
+        text, err = render(name, values)
+        if err:
+            print(f"   🟡 {err}")
+            continue
+        status = write(target, text)
+        icon = {"DIFFERS": "🔴", "unchanged": "✅", "written": "🆕", "would write": "🔎"}[status]
+        print(f"   {icon} {name}: {status}")
+        if status == "DIFFERS":
+            print("      it was edited after generation — rerun with --force to overwrite "
+                  "(a .bak is kept)")
+            rc = 1
+
+    print(f"   🔌 {wire_hooks()}")
+    print("\n   next: bin/check-health · bin/test-f0-f6\n")
+    return rc
+
+
+if __name__ == "__main__":
+    sys.exit(main())

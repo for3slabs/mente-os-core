@@ -92,7 +92,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 148 |
+| `BLOCK.md` | — | — |  | 147 |
 
 ## `blocks/archive/split-architecture_2026-07/`
 

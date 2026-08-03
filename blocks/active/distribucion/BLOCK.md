@@ -41,10 +41,10 @@ created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 1·4·5·6 closed — hooks ARE portable (proven), engine nameless and write-gated
-next: sub-block 2 — bin/init, now unblocked: hooks generate with the portable form
+phase: 6/6 built — a clone with another owner installs itself, PROVEN on a real clone
+next: §K closing — the block is buildable-complete; closing needs grade-block + Brian
 blockers: none — sub-block 1 resolved from the documented behaviour, then proven by running it
-progress: 4/6 sub-blocks closed
+progress: 6/6 sub-blocks closed
 updated: 2026-08-03
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
@@ -52,8 +52,8 @@ updated: 2026-08-03
 | # | task | code piece | dependents | status |
 |---|---|---|---|---|
 | 1 | do the 4 hooks survive a portable path? | `.claude/settings.json` | 4 hooks | ✅ closed |
-| 2 | `bin/init` — ask, then generate | `bin/init` (new) | 0 | open |
-| 3 | templates for the 3 startup files | `*.template` | 0 | open |
+| 2 | `bin/init` — ask, then generate | `bin/init` | 0 | ✅ closed |
+| 3 | templates for the 3 startup files | `templates/*.template` | 0 | ✅ closed |
 | 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | ✅ closed |
 | 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` | — | ✅ closed |
 | 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | ✅ closed |
@@ -95,6 +95,10 @@ updated: 2026-08-03
 - 2026-08-03 · sub-block 6 ✅ engine write-gated PORTABLY (24 rules, `$CLAUDE_PROJECT_DIR`)
   🔴 found doing it: Edit/Write do NOT cover Bash — a python one-liner rewrote a file
   under bin/ untouched by the Edit rule. Same back door as rule-config-hygiene §1.5
+- 2026-08-03 · sub-blocks 1·2·3 ✅ PROVEN ON A REAL CLONE: engine copied to /tmp,
+  owner set to another name, `bin/init` generated CLAUDE.md + PROJECT-RULES.md with
+  6 mentions of the new owner and ZERO of Brian, wired 4 portable hooks, and a hook
+  of the clone RAN against the clone's own path
 - 2026-08-03 · sub-block 4 ✅ the engine carries no one's name. Found and fixed REAL
   contamination: `bin/test-f0-f6` had `-home-brianweb3-for3s` hardcoded — the engine
   shipping with one user's identity. Now asks mente_config. Comments exempt on purpose:
@@ -106,15 +110,10 @@ updated: 2026-08-03
 **Why this block exists** (Brian, 2026-08-02): *"esto está local para mí y aun así tenemos
 errores. AÚN NO VEO QUE SEA ALGO QUE PODAMOS CONFIAR A QUE LA GENTE PUEDA OCUPAR."*
 
-**The measured problem.** `mente.config.yml` was built so a new user edits one file and nothing
-else — its own header says *"if they ever have to touch `bin/` to make the system work, this
-separation failed"*. The validators honour it. **The three startup files do not:**
-
-| File | Brian's data baked in |
-|---|---|
-| `.claude/settings.json` | **43 occurrences** of `brianweb3`, **34 unique absolute paths** |
-| `PROJECT-RULES.md` | 11 mentions of "Brian" |
-| `CLAUDE.md` | 4 mentions of "Brian" |
+**The measured problem (2026-08-02, now solved).** `mente.config.yml` was built so a new user
+edits one file and nothing else. The validators honoured that; the three startup files did not —
+`.claude/settings.json` carried **43** occurrences of one username and **34** absolute paths,
+`PROJECT-RULES.md` 11 mentions of the owner, `CLAUDE.md` 4.
 
 🔴 **The hard blocker:** the 4 hooks — the system's three gates plus standards injection — point
 at `/home/brianweb3/for3s/Mente/hooks/`. A new user clones and **no gate starts**. It does not

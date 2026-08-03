@@ -11,13 +11,13 @@
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
 | 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-08-02 | `blocks/active/demo/BLOCK.md` |
-| 🟢 | **distribucion** | code | active | full-block | 0/2 |  | 2026-08-03 | `blocks/active/distribucion/BLOCK.md` |
+| 🟢 | **distribucion** | code | active | full-block | — |  | 2026-08-03 | `blocks/active/distribucion/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
 
 ## Phase
 
 - **demo**: 6 files raised to product; 3 blockers remain before 
-- **distribucion**: 1·4·5·6 closed — hooks ARE portable (proven), engine
+- **distribucion**: 6/6 built — a clone with another owner installs itse
 - **split-architecture_2026-07**: CLOSED — 2496 → 632 lines, 5 pieces, verdict 🟢 PRODU
 
 ---

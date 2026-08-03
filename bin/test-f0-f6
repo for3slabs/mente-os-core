@@ -654,6 +654,29 @@ else
   bad "CAPABILITIES.md" "exists" "MISSING — the agent has no capability map"
 fi
 
+# ⭐ THE INSTALLER (block `distribucion` §F-2/§F-3). `bin/init` turns a fresh clone into someone
+# else's instance: it reads mente.config.yml and GENERATES the startup files from templates.
+# Proven 2026-08-03 on a real clone with a different owner — 6 mentions of the new owner, ZERO of
+# Brian, and a hook of the clone ran against the clone's own path.
+[ -x bin/init ] && ok "bin/init exists and is executable" \
+  || bad "bin/init" "executable" "missing — a new user has nothing to run"
+_tpl=0
+for _t in templates/CLAUDE.md.template templates/PROJECT-RULES.md.template; do
+  [ -f "$_t" ] || { _tpl=$((_tpl+1)); printf '     ⤷ missing %s\n' "$_t"; continue; }
+  # 🔴 A template carrying the current owner's data would install THIS instance on someone
+  # else's machine — the exact contamination this block exists to remove.
+  _n=$(grep -cE "brian""web3|for3s\.vercel|5M-incubathon" "$_t" 2>/dev/null)
+  [ "$_n" -eq 0 ] || { _tpl=$((_tpl+1)); printf '     ⤷ %s carries instance data (%s lines)\n' "$_t" "$_n"; }
+done
+eq "templates exist and carry no instance data" "0" "$_tpl"
+
+# --check must be a REPORT, never a write: an installer that mutates while inspecting is one
+# nobody dares run on an instance that already has work in it.
+_before=$(md5sum "$REPO/CLAUDE.md" 2>/dev/null | cut -d' ' -f1)
+./bin/init --check >/dev/null 2>&1
+_after=$(md5sum "$REPO/CLAUDE.md" 2>/dev/null | cut -d' ' -f1)
+eq "bin/init --check touches nothing" "$_before" "$_after"
+
 # ⭐ THE 4 HOOKS MUST BE PORTABLE (block `distribucion` §F-1). They are the three gates plus the
 # standards injection: if their paths carry one user's home, a clone starts with NO gate running —
 # and it fails SILENTLY, which is the worst outcome for a system whose thesis is that code is
