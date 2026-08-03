@@ -28,9 +28,8 @@ created: 2026-08-02 · updated: 2026-08-03
 - DEPENDS ON: nothing — the config layer it extends is already built
 - DEPENDED ON BY: none declared
 - ISOLATED FROM: `demo` (that block lives in `marca-personal/`, this one in the engine)
-- 🔴 CRITICAL PIECES (measured 2026-08-02):
-  - `bin/mente_config.py` → 6 importers · `.claude/settings.json` → 4 registered hooks
-  - 34 unique absolute paths under `/home/brianweb3/` · 43 occurrences
+- 🔴 CRITICAL PIECES: `bin/mente_config.py` → 6 importers · `.claude/settings.json` → 4 hooks
+  (the 34 absolute paths that set the lane are recorded in §J)
 
 <!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤8 lines ══ -->
 ## Required standards
@@ -60,9 +59,15 @@ updated: 2026-08-03
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
-- **Sub-block 1 goes FIRST and may sink the plan.** If `$CLAUDE_PROJECT_DIR` does not expand in
-  `hooks[].command`, the hooks cannot be portable and `bin/init` must write absolute paths for
-  that machine instead. Building the templates before knowing this would be building on a guess.
+- **⭐ The blocker was asserted, not measured — and it did not exist.** Sub-block 1 was declared
+  "needs a clean clone" because a naive probe resolved to empty (the variable is undefined in the
+  session shell). **The source was never consulted.** The official docs state the placeholder is
+  exported into the hook process and the command runs through `sh -c`. Setting it as the harness
+  does and running each hook from `/tmp`: all four ran, gate-critical still exited 2.
+  **A limit you have not verified is not a limit — it is a guess wearing one's clothes.**
+  Kept as the block's most useful lesson: the same failure as every check that reported green
+  without measuring (`rules/rule-checks-must-measure.md`), one level up — a *plan* reporting
+  blocked without measuring.
 - **`bin/init` GENERATES, never hand-edits.** Same reason `docs/METRICS.md` exists: a value copied
   by hand is correct exactly once.
 - **Templates live in the engine; the generated files do not.** `CLAUDE.md` already declares
@@ -74,10 +79,8 @@ updated: 2026-08-03
   what `grade-block` measures. Measured: **no document states this.** `CLAUDE.md` routes *where
   to read*; `README.md` lists one command. An agent that does not know `bin/grade-block` exists
   will hand-write a verdict — inventing criterion, which ADR-003 forbids.
-  **② where the line is** — it edits the INSTANCE (its `mente.config.yml`, its blocks, its
-  documents) and never the ENGINE (`bin/` `hooks/` `rules/`). Today `ask` covers
-  `Edit(bin/**)`, `Edit(hooks/**)`, `Write(hooks/**)` — but **`Write(bin/**)` is missing**, and
-  all three carry Brian's absolute path, so they do not travel with a clone.
+  **② where the line is** — it edits the INSTANCE and never the ENGINE. Was 3 `ask` rules with
+  an absolute path (so they did not travel); now 24 portable ones. → §F-6.
 - **The boundary must be a LOCK, not a paragraph.** This project's own measured law: a rule in
   code is obeyed 100%, one in a document 40-60% — and `PROJECT-RULES.md` §1 now labels which is
   which. Telling the agent "do not touch the engine" in prose is the 40-60% case. Sub-block 6
@@ -115,9 +118,8 @@ edits one file and nothing else. The validators honoured that; the three startup
 `.claude/settings.json` carried **43** occurrences of one username and **34** absolute paths,
 `PROJECT-RULES.md` 11 mentions of the owner, `CLAUDE.md` 4.
 
-🔴 **The hard blocker:** the 4 hooks — the system's three gates plus standards injection — point
-at `/home/brianweb3/for3s/Mente/hooks/`. A new user clones and **no gate starts**. It does not
-fail loudly; it silently stops governing, which is the worst failure mode for a system whose
+🔴 **What made it urgent (solved by §F-1):** the 4 hooks pointed at one user's home, so a clone
+started with **no gate running** — silently. That is the worst failure mode for a system whose
 thesis is *"what is in code is obeyed 100%"*.
 
 **Sub-block 1 ✅ — and the lesson is the method, not the answer.** It was declared blocked

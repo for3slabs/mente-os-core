@@ -65,7 +65,7 @@
 | `README.md` | — | — |  | 17 |
 | `REGLAS_MAESTRO.md` | — | — |  | 124 |
 | `permisos.md` | — | — |  | 50 |
-| `registro.md` | — | — |  | 125 |
+| `registro.md` | — | — |  | 128 |
 | `relaciones.md` | — | — |  | 15 |
 
 ## `blocks/`
@@ -92,7 +92,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 147 |
+| `BLOCK.md` | — | — |  | 149 |
 
 ## `blocks/archive/split-architecture_2026-07/`
 

@@ -384,7 +384,12 @@ def check_truth():
     reg = "Maestro/registro.md"
     if os.path.exists(reg):
         text = open(reg, encoding="utf-8", errors="replace").read()
-        m = re.search(r"\((\d+)\s*docs", text)
+        # 🔴 2026-08-03: `(\d+ docs` matched the FIRST occurrence anywhere in the file — and
+        # registro.md lists SEVERAL Mente OS instances. When this repo's own count was turned
+        # into a pointer, the check silently started measuring the neighbour's ("5 docs" for
+        # marca-personal/Mente) against THIS tree's total. Anchor it to the line that names
+        # this instance, and stay quiet when the count has become a pointer.
+        m = re.search(r"`~/for3s/Mente/`[^\n]*?\((\d+)\s*docs", text)
         if m:
             claimed = int(m.group(1))
             real = len([f for f in glob.glob("**/*.md", recursive=True) if ".git/" not in f])
