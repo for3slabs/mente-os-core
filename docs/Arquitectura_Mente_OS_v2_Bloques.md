@@ -1494,7 +1494,7 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | Archivo | Origen | Nota |
 |---|---|---|
 | `bridges/Puentes_Mente_OS.md` | ✅ **existe** | el gate — **verificado: se cumple 100%** |
-| `Tickets/punteros.tsv` | ✅ **existe** | fuente única de ramas — funciona |
+| `Maestro/punteros.tsv` | ✅ **existe** | fuente única de ramas — funciona |
 | `Maestro/permisos.md` + `Maestro/maestro_lib.sh` | ✅ **existe** | fail-closed en **código** — 100% |
 | `secrets/*` | ✅ existe | secretos, fuera de git — no se toca |
 
@@ -1547,7 +1547,7 @@ El script **no decide nada**. Solo comprueba **lo comprobable**:
 | Validador | Qué comprueba | Cuándo corre |
 |---|---|---|
 | **`revisar-bloques`** | archivos presentes · campos obligatorios · **límites de tamaño** · ID único · conexiones válidas | al abrir y al cerrar |
-| **`generar-indice`** | 🤖 produce `Doc/INDICE.md` y `Doc/ESTADOS.md` **desde los bloques reales** | tras cualquier cambio |
+| **`generar-indice`** | 🤖 produce `docs/INDEX.md` y `docs/STATES.md` **desde los bloques reales** | tras cualquier cambio |
 | **`avisar-obsoletos`** | detecta `estado.md` sin actualizar y bloques activos sin movimiento | periódico |
 | **`verificar-suficiencia`** | ⭐ ¿las secciones **A-E** bastan para reiniciar? (§11.4) | al cerrar un bloque |
 | **`grade-block`** | ⭐⭐ **dead code · duplication · tests · dependents · cycles** (§12-Q.4) | al cerrar · a demanda |
@@ -1715,7 +1715,7 @@ Primera pasada manual, para calibrar qué debe detectar:
 **Hoy:** `memory/archive/README.md` inventaría **35 de 188 documentos** — regla incumplida ~150 veces, y lista
 "R2-R10 pendientes" cuando están todas LOCKED.
 
-**En el v2:** `Doc/INDICE.md` y `Doc/ESTADOS.md` se **generan**. Incluyen por bloque:
+**En el v2:** `docs/INDEX.md` y `docs/STATES.md` se **generan**. Incluyen por bloque:
 nombre · estado · fase · dueño · **salud** · ruta · última actualización.
 
 > Es el mismo criterio que Brian ya aplicó en `Maestro/punteros.tsv` — *"aquí NO se duplica la tabla:
@@ -2053,11 +2053,11 @@ Medido en este entorno (2026-07-27):
 | Archivo | Alcance | Precedencia |
 |---|---|---|
 | `~/.claude/output-styles/for3s.md` | **todos** los proyectos de Brian | reemplaza parte del prompt de sistema |
-| `Mente/Alma/ENCARGADO_0_Voz.md` | **este** Mente OS | se inyecta vía `CLAUDE.md` |
+| `principles/owner-0-voice.md` | **este** Mente OS | se inyecta vía `CLAUDE.md` |
 | `.claude/settings.json` → `"outputStyle": "for3s"` | activa el estilo global | — |
 
 > ⚠️ **Nota de portabilidad:** `output-styles` es específico de Claude Code. Por eso **el contenido
-> canónico vive en `Alma/ENCARGADO_0_Voz.md`** (portátil, cualquier IA lo lee) y el `output-style`
+> canónico vive en `principles/owner-0-voice.md`** (portátil, cualquier IA lo lee) y el `output-style`
 > es solo **el vehículo** que lo aplica aquí. Mismo criterio que los hooks: *aceleración, no fundamento*.
 
 ### 12-S.3 · ⭐ El contenido — reglas NEGATIVAS y verificables
@@ -2362,7 +2362,7 @@ del diseño** — y su madurez nos ahorra iteraciones.
 | 4 | **Aislamiento ENTRE bloques por defecto** | **§11.6** |
 | 5 | **Criterio de suficiencia** (¿el Tier 1 basta para reiniciar?) | **§11.4** + §4 Encargado 3 |
 | 6 | **Cierre como PROCEDIMIENTO de 8 pasos** | **§6.1-bis** |
-| 7 | **Índice generado con salud** | **§12-TER** + `Doc/INDICE.md` 🤖 |
+| 7 | **Índice generado con salud** | **§12-TER** + `docs/INDEX.md` 🤖 |
 | 8 | **Los 4 validadores** | **§12-TER** ⭐ |
 | 9 | **Anidamiento** → ✅ decidido: **máximo 3 niveles** | **§3.1-ter** |
 

@@ -54,11 +54,52 @@ DESCRIBES = ("docs/audit-", "docs/f4-execution-log.md", "docs/f5-execution-log.m
              "docs/plan-v1-to-v2-migration.md",
              # the framework comparisons quote OTHER systems' filenames as their subject
              "docs/analysis-")
+# ⭐ Names the ARCHITECTURE document discusses instead of pointing at (measured 2026-08-02).
+# It is the design record: it quotes the v1 vocabulary it REPLACED (`contexto.md`, `estado.md`,
+# `BLOQUE.md` → now `BLOCK.md`), a filename-convention EXAMPLE (`minusculas-con-guiones.md`,
+# listed beside `ADR-NNN-` and `rule-`), and — under a heading literally titled "Lo que NO se
+# copia" — another system's pieces (`tick.md`, `STAKEHOLDERS.md`, `cache/changelog.md`).
+#
+# ⛔ Why NOT the two easy routes: adding these to GENERIC would excuse `estado.md` in EVERY file
+# forever, and adding the document to DESCRIBES would blind all 2454 of its lines — on the same
+# day 5 real fossils were fixed inside it. The exemption is scoped to this document AND to the
+# names it demonstrably discusses; anything else it cites still fails closed.
+#
+# NAMING_CONVENTION.md is the same shape one level down: a document that DEFINES how to name
+# files necessarily prints sample names. Every entry below sits in the "example" column of its
+# table, beside the `spec-` and `ADR-NNN-` prefixes it is illustrating. `pointers.tsv` is the
+# English gloss of Maestro/punteros.tsv inside a measurement table — the real file exists in
+# Spanish, so translating the prose would be the actual error.
+DISCUSSED = {"docs/Arquitectura_Mente_OS_v2_Bloques.md": {
+    "contexto.md", "estado.md", "BLOQUE.md", "INDICE.md",
+    "minusculas-con-guiones.md", "tick.md", "STAKEHOLDERS.md", "cache/changelog.md"},
+    "rules/NAMING_CONVENTION.md": {
+    "lowercase-with-hyphens.md", "naming-convention.md", "pointers.tsv",
+    "spec-quality-verdict.md", "ADR-001-single-file-per-block.md"},
+    # The three docs/architecture/* files are the SPLIT of the architecture document above
+    # (block `split-architecture`, archived): same prose, same subject, same v1 vocabulary —
+    # verified identical, down to `minusculas-con-guiones.md` sitting beside `ADR-NNN-`.
+    "docs/architecture/folder-structure.md": {"minusculas-con-guiones.md", "INDICE.md"},
+    "docs/architecture/block-anatomy.md": {"BLOQUE.md", "contexto.md"},
+    "docs/architecture/validators-and-hygiene.md": {"estado.md", "cache/changelog.md"}}
 # Documents that legitimately name files the pending work will CREATE.
+# ⭐ Added 2026-08-02: both are ROADMAPS. Vision_For3s_Frontier §13 ("Corto/Mediano plazo")
+# and memory/archive/README §7 list documents to WRITE — "Iniciar Cerebro_Humano_acercamiento3.md",
+# "futura iteración". Naming work that does not exist yet is what a roadmap IS; reporting it as a
+# broken pointer asks the author to delete the plan. The v1 FOLDERS they wrote those plans into
+# (`Mente/Alma/`, `Mente/Cuerpo/`) were real fossils and were corrected to vision/ and work/.
 PLANNED = ("memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
-           "docs/plan-v1-to-v2-migration.md")
+           "docs/plan-v1-to-v2-migration.md",
+           "vision/Vision_For3s_Frontier.md", "memory/archive/README.md",
+           # A round's deliverable table names what the round WILL produce — `gdpr-program.md`
+           # sits in the same cell as `dsar_workflow.py`, equally unwritten. Same for the
+           # closing section of Arquitectura_Grafo_vs_Loop ("Considerar…", "basado en el boceto").
+           "work/Ronda_09_B3_Compliance_Framework.md",
+           "Cerebro/Arquitectura_Grafo_vs_Loop.md")
 # Generic filenames that name a KIND of file, not one file: `BLOCK.md` means "any block".
-GENERIC = {"BLOCK.md", "SUMMARY.md", "README.md", "MEMORY.md", "connections.md",
+# `SKILL.md` names a KIND too: every skill has one (.claude/skills/<name>/SKILL.md). The three
+# documents citing it are quoting the frozen-number incident, not linking to one skill.
+GENERIC = {"BLOCK.md", "SUMMARY.md", "README.md", "MEMORY.md", "connections.md", "SKILL.md",
            "settings.json", "settings.local.json", "package.json", "__init__.py"}
 # One level above Mente: the project root holds CLAUDE.md and PROJECT-RULES.md.
 PARENT = {"CLAUDE.md", "PROJECT-RULES.md", ".gitignore"}
@@ -69,6 +110,20 @@ OPENCLAW_MEMORY = re.compile(r"^memory/(\d{4}-\d{2}-\d{2}|AAAA-MM-DD)\.md$")
 
 # Declared per instance (mente.config.yml): pointers into these belong to other repos.
 OUTSIDE = tuple(cfg.outside())
+
+
+def is_harness_memory(c):
+    """A `project_*.md` / `feedback_*.md` citation naming a harness memory, not a file here.
+
+    🔴 Found 2026-08-02: 7 rounds cite `project_r6_critical_pre_code_review.md` and friends.
+    They EXIST — in ~/.claude/projects/<slug>/memory/, which is the harness's store and lives
+    outside this tree on purpose. Verified present before excusing them; the existence check is
+    what keeps this from becoming a blanket pardon for any `project_`-prefixed typo.
+    """
+    if "/" in c or not re.match(r"^(project|feedback|reference)_.+\.md$", c):
+        return False
+    d, _ = cfg.session_dir()
+    return bool(d) and os.path.exists(os.path.join(d, "memory", c))
 
 
 def in_sibling_repo(c):
@@ -84,11 +139,17 @@ def in_sibling_repo(c):
     `NN-word/` by shape would excuse any future typo of that shape too. This one only goes
     quiet when the file is really there — unknown paths still fail closed.
     """
-    if "/" not in c:
-        return False
     for repo in OUTSIDE:
-        cand = os.path.join("..", repo.rstrip("/"), c)
-        if os.path.exists(cand):
+        root = os.path.join("..", repo.rstrip("/"))
+        if "/" in c:
+            if os.path.exists(os.path.join(root, c)):
+                return True
+            continue
+        # A BARE name (`CHANGELOG.md`, `pentest-plan.md`) is excused only when the sibling repo
+        # holds EXACTLY ONE file by that name. Two matches means the citation is ambiguous, and
+        # an ambiguous pointer is a defect worth reporting — not something to silence by luck.
+        hits = glob.glob(f"{root}/**/{c}", recursive=True)
+        if len(hits) == 1:
             return True
     return False
 
@@ -140,6 +201,17 @@ def main():
                 continue
             if in_sibling_repo(c):
                 continue                      # resolves in a repo declared `outside`
+            if c in DISCUSSED.get(f, ()):
+                continue                      # this document's subject, not its pointer
+            if is_harness_memory(c):
+                continue                      # lives in the harness memory store, verified
+            # 🔴 secrets/ was skipped as a SOURCE (line below) but never as a DESTINATION, so
+            # RETOMAR.md pointing at the demo secrets — present on disk, gitignored on purpose
+            # (rule-config-hygiene §1.1) — read as a broken pointer. Reporting it invites
+            # deleting a correct one. Resolved by existence, so a wrong path still fails.
+            if re.sub(r"^Mente/", "", c).startswith("secrets/") \
+                    and os.path.exists(re.sub(r"^Mente/", "", c)):
+                continue
             if name in GENERIC and "/" not in c:
                 continue                      # a kind of file, not a specific one
             if name in PARENT and os.path.exists(os.path.join("..", name)):

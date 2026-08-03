@@ -1053,7 +1053,7 @@ Esta visión es Alma. Las decisiones que siguen son Cerebro (marcos teóricos re
 
 ### 13.2 Corto plazo (próximas semanas)
 
-- Iniciar `Mente/Cuerpo/` con los 3 primeros documentos técnicos:
+- Iniciar `work/` con los 3 primeros documentos técnicos:
   - `01-arquitectura-general-for3s-qa.md`
   - `02-hipocampo-knowledge-graph.md`
   - `04-pfc-metacognicion.md`
@@ -1062,7 +1062,7 @@ Esta visión es Alma. Las decisiones que siguen son Cerebro (marcos teóricos re
 ### 13.3 Mediano plazo (próximos meses)
 
 - Spike técnico: prototipo de Fase 1 con caso real de QA.
-- Empezar a poblar `Mente/Alma/` con documentos complementarios:
+- Empezar a poblar `vision/` con documentos complementarios:
   - `convicciones_founder.md` (las no-negociables)
   - `manifiesto_for3s.md` (versión más corta y pública de este documento)
 
