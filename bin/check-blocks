@@ -316,7 +316,10 @@ def check_adrs():
             red(f, f"supersedes {target} which does not exist")
             continue
         back = open(hits[0], encoding="utf-8").read()
-        if os.path.basename(f).split("-")[1] not in back:
+        # ⚠️ Match "ADR-016", never the bare "016": that substring hits `2016`, `F3-016b` or any
+        # number containing it, so a successor that never mentions the ADR would pass. Measured
+        # 2026-08-02 — the bug lived in this ORIGINAL check and was copied into the new one.
+        if f"ADR-{os.path.basename(f).split('-')[1]}" not in back:
             red(hits[0], f"one-sided supersede: {os.path.basename(f)} supersedes it, "
                          "but superseded-by does not point back")
 
@@ -334,7 +337,7 @@ def check_adrs():
         if not succ:
             red(f, f"superseded-by {m.group(1)} which does not exist")
             continue
-        if os.path.basename(f).split("-")[1] not in open(succ[0], encoding="utf-8").read():
+        if f"ADR-{os.path.basename(f).split('-')[1]}" not in open(succ[0], encoding="utf-8").read():
             red(f, f"one-sided supersede: it names {num} as its successor, "
                    "but that ADR never mentions it back")
 
