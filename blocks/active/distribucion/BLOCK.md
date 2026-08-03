@@ -13,6 +13,7 @@ created: 2026-08-02 · updated: 2026-08-02
 - `Mente/bin/init` (NEW — the piece that does not exist today)
 - templates for `CLAUDE.md` · `PROJECT-RULES.md` · `.claude/settings.json`
 - the 4 hook `command` paths in `.claude/settings.json`
+- `Mente/CAPABILITIES.md` (NEW — what the agent can do, and the engine/instance line)
 
 ## ⛔ OUT
 - DO NOT touch `Mente/Cerebro/` — DERIVED: it is the For3s product graph, not the engine
@@ -41,9 +42,9 @@ created: 2026-08-02 · updated: 2026-08-02
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
 phase: opened — diagnosis measured, nothing built
-next: sub-block 1 — verify whether $CLAUDE_PROJECT_DIR expands inside hooks[].command
+next: sub-block 1 (hooks portable?) — 5 and 6 do NOT depend on it and can start first
 blockers: sub-block 1 needs a CLEAN CLONE to test; it cannot be proven from this session
-progress: 0/4 sub-blocks closed
+progress: 0/6 sub-blocks closed
 updated: 2026-08-02
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
@@ -54,6 +55,8 @@ updated: 2026-08-02
 | 2 | `bin/init` — ask, then generate | `bin/init` (new) | 0 | open |
 | 3 | templates for the 3 startup files | `*.template` | 0 | open |
 | 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | open |
+| 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` (new) | — | open |
+| 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | open |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
@@ -64,6 +67,21 @@ updated: 2026-08-02
   by hand is correct exactly once.
 - **Templates live in the engine; the generated files do not.** `CLAUDE.md` already declares
   `Scope: documento de INSTANCIA` — this block makes that declaration true instead of a caveat.
+- **⭐ The installer is not a person — it is an AGENT** (Brian, 2026-08-02). Whoever fills the
+  instance in is an LLM, so the deliverable is not a form: it is a **capability map** the agent
+  reads. Two halves, and the second is the one nothing covers today:
+  **① what it CAN do** — which validator answers which question, which gate blocks and why,
+  what `grade-block` measures. Measured: **no document states this.** `CLAUDE.md` routes *where
+  to read*; `README.md` lists one command. An agent that does not know `bin/grade-block` exists
+  will hand-write a verdict — inventing criterion, which ADR-003 forbids.
+  **② where the line is** — it edits the INSTANCE (its `mente.config.yml`, its blocks, its
+  documents) and never the ENGINE (`bin/` `hooks/` `rules/`). Today `ask` covers
+  `Edit(bin/**)`, `Edit(hooks/**)`, `Write(hooks/**)` — but **`Write(bin/**)` is missing**, and
+  all three carry Brian's absolute path, so they do not travel with a clone.
+- **The boundary must be a LOCK, not a paragraph.** This project's own measured law: a rule in
+  code is obeyed 100%, one in a document 40-60% — and `PROJECT-RULES.md` §1 now labels which is
+  which. Telling the agent "do not touch the engine" in prose is the 40-60% case. Sub-block 6
+  makes it the 100% case, portably.
 
 <!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
 ## Friction log
@@ -99,6 +117,28 @@ verified for hooks from this session**: the variable is undefined in the session
 probe resolved to an empty path and proved nothing. Leaving all four gates changed on an
 unverified assumption is the exact defect this project spent 2026-08-02 correcting eight times.
 Reverted; `check-health` confirms the gates are intact.
+
+**⭐ WHO INSTALLS THIS IS AN AGENT, NOT A PERSON** (Brian, 2026-08-02): *"VA A HABER UN AGENTE DE
+IA O UN LLM QUE ES EL QUE EJECUTE TODAS ESAS INSTRUCCIONES. DEBE DE SABER QUÉ CAPACIDADES TIENE
+DENTRO DE MENTE OS V2 Y CÓMO EJECUTARLAS SIN TOCAR EL CÓDIGO DE MENTE OS V2."*
+
+That reframes the deliverable. A form assumes a human reads labels and types values. An agent
+needs two things a form does not give:
+
+| | Today | Measured |
+|---|---|---|
+| **What it CAN do** | nothing states it | `CLAUDE.md` routes *where to read*; `README.md` lists **1** command |
+| **Where the line is** | 3 `ask` rules | `Write(bin/**)` missing · all 3 carry an absolute path |
+
+**Why ① is not documentation but correctness:** an agent that does not know `bin/grade-block`
+exists will hand-write a product/MVP verdict. That is inventing criterion — ADR-003 forbids it,
+and the whole quality layer exists to stop exactly that. The same holds for `check-sufficiency`
+before closing a block, or `generate-metrics` instead of typing a number.
+
+**Why ② must be a lock:** *"do not touch the engine"* in prose is this project's own 40-60% case
+(`PROJECT-RULES.md` §1 now labels which rules are locks and which are discipline). The instance
+half must stay writable — the agent fills in blocks, documents and `mente.config.yml` as work
+advances — while `bin/` `hooks/` `rules/` stay closed to it. That asymmetry is the product.
 
 **Related, already registered:** `memory/PENDIENTES.md` §🚪 (`CLAUDE.md` §ESTADO carries instance
 state) is the same problem seen from the document side — this block is the mechanism that closes it.

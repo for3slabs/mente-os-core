@@ -116,7 +116,10 @@ PLANNED = ("memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
            # sits in the same cell as `dsar_workflow.py`, equally unwritten. Same for the
            # closing section of Arquitectura_Grafo_vs_Loop ("Considerar…", "basado en el boceto").
            "work/Ronda_09_B3_Compliance_Framework.md",
-           "Cerebro/Arquitectura_Grafo_vs_Loop.md")
+           "Cerebro/Arquitectura_Grafo_vs_Loop.md",
+           # A BLOCK names the pieces its sub-blocks will create — that is what §F is for.
+           # Reporting them as broken pointers would ask the author to delete the plan.
+           "blocks/active/distribucion/BLOCK.md")
 # Generic filenames that name a KIND of file, not one file: `BLOCK.md` means "any block".
 # `SKILL.md` names a KIND too: every skill has one (.claude/skills/<name>/SKILL.md). The three
 # documents citing it are quoting the frozen-number incident, not linking to one skill.
