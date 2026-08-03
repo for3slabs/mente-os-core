@@ -3,6 +3,42 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+## 🚪 `CLAUDE.md` §ESTADO — lo que impide publicarlo tal cual (2026-08-02)
+
+**✅ Ya resuelto** (`3223a5c` + `5f8a671`): cabecera §1 completa · Purpose + Related · 2 punteros
+rotos (`Maestro/piezas.tsv` → `Mente/Maestro/`, y la fila de `Mente/Doc/`, carpeta que ADR-029
+eliminó) · números → punteros · y **los validadores ya lo alcanzan** (barrían desde `Mente/`, y
+este archivo vive un nivel arriba).
+
+**⛔ Lo que queda NO es técnico.** `§ESTADO` conserva contenido de **instancia**, no de
+enrutamiento: `for3s.vercel.app/for3s-admin` · MOLDE "For3s Inside" · For3s TRACE · R1-R10, 11
+nodos, 3 pilares. Nada de eso enruta: **declara el producto For3s.**
+
+**Mitigación aplicada, no solución:** la cabecera ahora lo **DECLARA** —
+`**Scope:** ⚠️ documento de INSTANCIA, no del motor` — en vez de esconderlo. Un límite declarado
+es ingeniería; uno oculto es deuda ([[rule-config-hygiene]] §1.4, mismo criterio que los 9 hooks
+GSD no portables).
+
+> ⭐ **Por qué no lo decide la IA:** separar motor de instancia aquí obliga a elegir **qué ve
+> quien clona `mente-os` en su primer arranque**. Eso es diseño de producto — la primera
+> impresión del sistema publicado — no limpieza de archivos.
+
+**3 caminos (Brian elige):**
+
+| | Qué | Coste |
+|---|---|---|
+| ⭐ **1** | **Dejarlo y que el `Scope:` lo declare** (hoy) | cero · el motor publicado ya excluye este archivo |
+| **2** | Partir en `CLAUDE.md` (motor, portable) + `INSTANCE.md` (For3s), enrutando al segundo | medio · hay que verificar que el arranque sigue cargando lo necesario |
+| **3** | Plantilla `CLAUDE.md.template` en el motor + el real generado desde `mente.config.yml` | alto · es la solución limpia si `mente-os` gana usuarios |
+
+⚠️ **Dato que decide (INFERIDO, no medido contra el remoto):** `CLAUDE.md` vive **fuera** de
+`Mente/`, y lo publicado es `Mente/` — así que hoy **no debería haber fuga**. El problema solo
+aparece el día que alguien arranque una instancia nueva desde el motor y no tenga enrutador.
+Por eso la 1 es la recomendación y la 3 el escalón si `mente-os` gana usuarios.
+👉 **Verificar antes de actuar:** `git ls-files` en el clon público, o mirar el repo.
+
+---
+
 ## 🔐 `~/.claude.json` — las credenciales del harness. ARQUITECTURA, no configuración (2026-08-02)
 
 **Lo que guarda (medido):** `oauthAccount` + `customApiKeyResponses` — las credenciales OAuth con
