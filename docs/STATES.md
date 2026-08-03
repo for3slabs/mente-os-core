@@ -11,11 +11,13 @@
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
 | 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-08-02 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **distribucion** | code | active | full-block | 0/4 |  | 2026-08-02 | `blocks/active/distribucion/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
 
 ## Phase
 
 - **demo**: 6 files raised to product; 3 blockers remain before 
+- **distribucion**: opened — diagnosis measured, nothing built
 - **split-architecture_2026-07**: CLOSED — 2496 → 632 lines, 5 pieces, verdict 🟢 PRODU
 
 ---
