@@ -15,6 +15,13 @@ ADR-008 chose migration ON DEMAND: a file jumps to v2 when someone touches it. T
 while v2 was unproven — moving 186 files before the structure was validated would have been a bet.
 v2 is now built and verified (F0-F7, `bin/test-f0-f6` at 103/103), so the reason for waiting is gone.
 
+> 🆕 **This also supersedes ADR-016 · Folders coexist during migration** (recorded 2026-08-02;
+> the `supersedes:` field holds one entry, so it is stated here). Both governed **HOW to migrate**,
+> and this decision replaces that policy with "move everything, in risk order". ADR-016 was not
+> overturned — it was **fulfilled**: it demanded zero broken pointers across 218 at-risk paths,
+> and `bin/check-links` measures 0 today. With no v1 folders left on disk, coexistence has
+> nothing left to apply to.
+
 What remained was the cost, measured rather than guessed: **1,586 citations to v1 documents, spread
 across 209 documents.** Moving a file is not moving a file — it is rewriting its citations. And
 twice on 2026-07-30 a bulk path rewrite broke real citations (4 corrupted filenames inside

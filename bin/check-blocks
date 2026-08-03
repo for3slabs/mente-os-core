@@ -320,6 +320,24 @@ def check_adrs():
             red(hits[0], f"one-sided supersede: {os.path.basename(f)} supersedes it, "
                          "but superseded-by does not point back")
 
+    # 🔴 The other direction, missing until 2026-08-02: contract-adr §78 says "BOTH sides must
+    # point at each other", and only one side was measured. Found by ADR-016 declaring
+    # `superseded-by: ADR-029` while ADR-029 named ADR-008 and nothing else — a half pointer the
+    # validator called clean. ⭐ Same shape as every other finding this session: the rule was
+    # written whole, the check covered half of it.
+    for f in sorted(glob.glob("rules/decisions/ADR-*.md")):
+        m = re.search(r"^superseded-by:\s*(\S+)", open(f, encoding="utf-8").read(), re.M)
+        if not m or m.group(1) in ("—", "-"):
+            continue
+        num = "-".join(m.group(1).split("-")[:2])          # ADR-029-full-… → ADR-029
+        succ = glob.glob(f"rules/decisions/{num}-*.md")
+        if not succ:
+            red(f, f"superseded-by {m.group(1)} which does not exist")
+            continue
+        if os.path.basename(f).split("-")[1] not in open(succ[0], encoding="utf-8").read():
+            red(f, f"one-sided supersede: it names {num} as its successor, "
+                   "but that ADR never mentions it back")
+
 
 # ── MAIN ─────────────────────────────────────────────────────────────────────
 def main():

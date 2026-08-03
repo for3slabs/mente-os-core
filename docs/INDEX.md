@@ -175,7 +175,7 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-02 | 3847 |
+| `PENDIENTES.md` | pending | current | 2026-08-02 | 3854 |
 | `RETOMAR.md` | entry-point | current | 2026-08-02 | 199 |
 
 ## `memory/archive/`
@@ -285,7 +285,7 @@
 | `ADR-013-quality-verdict-two-layers.md` | — | — |  | 29 |
 | `ADR-014-brian-owns-qa-criterion.md` | — | — |  | 29 |
 | `ADR-015-max-three-nesting-levels.md` | — | — |  | 29 |
-| `ADR-016-folders-coexist-during-migration.md` | — | — |  | 29 |
+| `ADR-016-folders-coexist-during-migration.md` | — | — |  | 45 |
 | `ADR-017-learning-reuses-the-standard-mechanism.md` | — | — |  | 29 |
 | `ADR-018-owner-0-is-the-voice.md` | — | — |  | 29 |
 | `ADR-019-validators-complete-what-is-derivable.md` | — | — |  | 29 |
@@ -298,7 +298,7 @@
 | `ADR-026-permission-granularity-is-the-mechanism.md` | — | — |  | 29 |
 | `ADR-027-size-limits-per-document-type.md` | — | — |  | 29 |
 | `ADR-028-block-type-decides-metrics.md` | — | — |  | 56 |
-| `ADR-029-full-v1-to-v2-migration.md` | — | — |  | 69 |
+| `ADR-029-full-v1-to-v2-migration.md` | — | — |  | 76 |
 | `ADR-030-the-block-message-is-the-receipt.md` | — | — |  | 74 |
 
 ## `vision/`

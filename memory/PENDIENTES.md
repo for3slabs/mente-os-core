@@ -30,16 +30,23 @@ por el grafo). Construir una pantalla aparte habría sido tocar una de las 3 pue
 inexistente **y** llamaba "puerta cerrada" a los dependientes, cuando GATE 1 **avisa**
 (`return 0`, y `bin/test-f0-f6` lo verifica: *"GATE deps: WARNS but never blocks"*).
 
-### 🟡 ADR-016 «folders coexist during migration» — CUMPLIDO Y AGOTADO
+### ✅ ADR-016 «folders coexist during migration» — CERRADO 2026-08-02
 
-Sigue `accepted`, pero **cero carpetas v1 vivas** (`Alma/ Cuerpo/ Doc/ Tickets/` ya no existen,
-ADR-029). La decisión hizo su trabajo y terminó.
+`superseded-by: ADR-029`, **sin inventar un estado nuevo**: el precedente ya existía en el
+sistema — ADR-029 supersede también a **ADR-008** por la misma razón exacta. Los tres gobernaban
+**CÓMO migrar**, y ADR-029 cambió esa política a *"migrar todo, en orden de riesgo"*.
 
-> 🔴 **El hueco es del CONTRATO, no del ADR.** `contract-adr.md` §76 admite solo
-> `proposed · accepted · superseded · reverted` — **no existe un estado para "cumplida y
-> agotada"**. No inventé uno: un vocabulario cerrado es una decisión, no un descubrimiento
-> ([[rule-config-hygiene]] §1.5). 👉 **Decide Brian:** añadir `fulfilled` al contrato, o marcarlo
-> `superseded-by: ADR-029` (que fue quien completó la migración).
+**No se revirtió: se CUMPLIÓ.** Exigía cero punteros rotos sobre 218 rutas en riesgo, y
+`bin/check-links` mide **0** hoy. Sin carpetas v1 en disco, la coexistencia no tiene a qué
+aplicarse. Eso queda escrito en el propio ADR-016, porque el vocabulario
+(`proposed · accepted · superseded · reverted`) no puede expresar *"cumplida"* — y añadir
+`fulfilled` sigue siendo decisión de Brian, no un hueco que bloquee nada.
+
+> 🔴 **Y destapó un hueco en el validador:** `contract-adr` §78 dice *"AMBOS lados deben
+> apuntarse"*, y `check-blocks` **solo medía una dirección** (de `supersedes` hacia
+> `superseded-by`). ADR-016 apuntando a ADR-029 mientras ADR-029 solo nombraba a ADR-008 era un
+> puntero cojo que el validador daba por limpio. Cerrado: ahora verifica los dos sentidos.
+> ⭐ La misma forma de toda la jornada — **la regla escrita entera, el check cubriendo la mitad.**
 
 **Cableado hoy:** 11 piezas de código y 4 documentos declaran ya qué ADR implementan, y
 `bin/test-f0-f6` lo verifica: *"every accepted ADR is cited by something that implements it"*.
