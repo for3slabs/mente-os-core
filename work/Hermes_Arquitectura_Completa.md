@@ -1881,8 +1881,8 @@ Lo que reemplazas categóricamente:
 **Próximos pasos lógicos:**
 
 1. **Hacer un clone real de Hermes localmente** y leer el código. Esto te da intuición directa sobre el código que el reporte solo describe.
-2. **Generar `Mente/Cuerpo/01-arquitectura-general-for3s-qa.md`** que decida concretamente: ¿forkeamos Hermes o construimos paralelo? Hay argumentos para ambos.
-3. **Generar `Mente/Cuerpo/02-installer-for3s.md`** con el script bash real que usaremos.
+2. **Generar `01-arquitectura-general-for3s-qa.md`** que decida concretamente: ¿forkeamos Hermes o construimos paralelo? Hay argumentos para ambos.
+3. **Generar `02-installer-for3s.md`** con el script bash real que usaremos.
 4. **Decidir el stack final** basado en este reporte (lock-in decisions).
 
 ---

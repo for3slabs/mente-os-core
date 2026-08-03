@@ -131,7 +131,7 @@ núcleo BASE de For3s (blindado, v0.15.0) no se toca jamás.
 - Censo de las carpetas nunca miradas (godin-slots, subagents, canvas, sqlite…): qué son,
   cuánto pesan, si traen conocimiento o solo runtime.
 - Abrir los 2 sqlite y mapear sus tablas.
-- **Entregable:** `Doc/Entrenamiento_Manifiesto.md` ⚠️ (planned deliverable, **never produced** — verified 2026-07-30) (+ CSV/JSON de trabajo) — el tablero de
+- **Entregable:** `Entrenamiento_Manifiesto.md` ⚠️ (planned deliverable, **never produced** — verified 2026-07-30) (+ CSV/JSON de trabajo) — el tablero de
   TODO el hito. Nada se importa aún.
 
 ### F2 · DESPIECE PROFUNDO del agente 1 (el que Brian elija)

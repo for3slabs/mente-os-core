@@ -76,6 +76,7 @@ siblings:
 outside:
   - "For3s-OS"
   - ".claude/"
+  - ".codeviz"          # 2026-08-02 · generated code diagrams, sibling of Mente/
   - "for3s-inter"
   - "marca-personal"
   - "workspace"

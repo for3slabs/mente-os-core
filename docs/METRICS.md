@@ -36,8 +36,8 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **141** |
-| `battery.failed` | **0** |
+| `battery.checks` | **140** |
+| `battery.failed` | **1** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
@@ -48,7 +48,7 @@ is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the tot
 
 | Metric | Value |
 |---|---|
-| `links.broken` | **9** |
+| `links.broken` | **0** |
 
 ⭐ **This number is a CEILING, not a target.** `bin/test-f0-f6` fails if it goes UP from what is
 committed here — the debt is allowed to exist, never to grow unseen. It drifted from ~73 to 144
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 16 | 67 |
-| `permissions.local` (`settings.local.json`) | 193 | 67 |
+| `permissions.local` (`settings.local.json`) | 194 | 67 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

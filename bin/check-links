@@ -81,7 +81,28 @@ DISCUSSED = {"docs/Arquitectura_Mente_OS_v2_Bloques.md": {
     # verified identical, down to `minusculas-con-guiones.md` sitting beside `ADR-NNN-`.
     "docs/architecture/folder-structure.md": {"minusculas-con-guiones.md", "INDICE.md"},
     "docs/architecture/block-anatomy.md": {"BLOQUE.md", "contexto.md"},
-    "docs/architecture/validators-and-hygiene.md": {"estado.md", "cache/changelog.md"}}
+    "docs/architecture/validators-and-hygiene.md": {"estado.md", "cache/changelog.md"},
+    # ── the last 9, each verified individually (2026-08-02) ──────────────────
+    # "2. Generar X … 3. Generar Y" — a decision the round asks for, not a link.
+    # 🔴 First attempt rewrote the dead v1 folder `Mente/Cuerpo/` to `work/` — and the battery's
+    # own citation check caught it: work/01-… does not exist either. Repointing an unwritten
+    # deliverable at a second path it does not occupy is inventing a fact. A file that has no
+    # home yet is named BARE, which is exactly what it is.
+    "work/Hermes_Arquitectura_Completa.md": {
+        "01-arquitectura-general-for3s-qa.md", "02-installer-for3s.md"},
+    # The document ALREADY annotates it: "planned deliverable, never produced — verified
+    # 2026-07-30". Same reasoning: bare, because it was never produced anywhere.
+    "work/Ronda_Entrenamiento_Plan_Maestro.md": {"Entrenamiento_Manifiesto.md"},
+    # "El diario de Brian (`FOR3S-STACK-DEFINED.md`) declaraba en mayo:" — quoting a personal
+    # file of Brian's outside this tree, as the source of a quotation.
+    "work/Ronda_01_Compute_Lenguaje.md": {"FOR3S-STACK-DEFINED.md"},
+    # Deliverables of the extraction flow, one explicitly behind a "GATE Brian": drafts to be
+    # written, not files to be found.
+    "work/Flujo_Extraccion_Entrenamiento.md": {"persona/IDENTITY.md", "backlog_herramientas.md"},
+    "work/Plan_Implementacion_Entrenamiento.md": {"persona/IDENTITY.md"},
+    # "Equivalente a `godinez-studio/docs/onboarding-flow.md` pero para For3s" — an ANALOGY to
+    # another project's document. A comparison is not a pointer.
+    "memory/archive/PR4_Flujo_Usuario_Memoria.md": {"godinez-studio/docs/onboarding-flow.md"}}
 # Documents that legitimately name files the pending work will CREATE.
 # ⭐ Added 2026-08-02: both are ROADMAPS. Vision_For3s_Frontier §13 ("Corto/Mediano plazo")
 # and memory/archive/README §7 list documents to WRITE — "Iniciar Cerebro_Humano_acercamiento3.md",
