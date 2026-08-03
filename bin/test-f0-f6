@@ -1116,6 +1116,74 @@ z=$(grep -rl "plan-v2-rollout_Entrenamiento\|Cerebro/casos/CASO_Default" --inclu
     | grep -v "^./.git" | grep -cv "test-f0-f6")
 eq "no zombie corruptions (they return on every revert until committed)" "0" "$z"
 
+# ═══════════════════════════════════════════════════════════════ SELF-TEST
+head2 "SELF-TEST — the checks are made to FAIL on purpose"
+
+# ⭐ F4 of the root plan (rules/rule-checks-must-measure.md). 8 findings on 2026-08-02 shared one
+# shape: a check that RUNS, reports green, and is not measuring what it claims. Every one was
+# caught by breaking it BY HAND — so the manual step became the hole.
+#
+# ⚠️ Scope on purpose: NOT all 66 assertions. GATE db/close, pre-commit and gate-handoff already
+# carry their own negative twin (BLOCKS … / allows …), so they are covered. What follows are the
+# guards over something IRREVERSIBLE whose negative direction nothing exercised.
+#
+# 🔴 The corollary that cost two probes today: when a negative run does NOT fire, suspect the
+# PROBE as well as the check. Each probe below asserts its own setup before trusting the result.
+
+# ── 1 · the /clear guard must not accept an id embedded in a longer string ──
+# Fixed in 8d9f5f3: `sid not in text` matched 8 hex ANYWHERE, so a commit hash disarmed the
+# guard that exists because of the 21-jul incident.
+_reg="Cerebro/Registro_Conversaciones.md"
+_sid=$(ls -t "$(python3 -c "
+import sys; sys.path.insert(0,'bin'); import mente_config as c; print(c.session_dir()[0] or '')" \
+  2>/dev/null)"/*.jsonl 2>/dev/null | head -1)
+_sid=$(basename "${_sid:-none}" .jsonl | cut -c1-8)
+if [ "$_sid" != "none" ] && [ -f "$_reg" ]; then
+  cp "$_reg" /tmp/reg.$$
+  printf '\n<!-- probe abc%sdef -->\n' "$_sid" >> "$_reg"
+  # PROBE SELF-CHECK: the bait must really be embedded and NOT present as a standalone id
+  _bait=$(grep -cE "(^|[^0-9a-f])$_sid([^0-9a-f]|$)" "$_reg")
+  ./bin/check-clear-ready --quiet >/dev/null 2>&1; _r=$?
+  cp /tmp/reg.$$ "$_reg"; rm -f /tmp/reg.$$
+  if [ "$_bait" -gt 0 ]; then
+    note "clear-guard probe skipped: this session IS registered, no false-positive to force"
+  else
+    eq "clear guard: an id embedded in a hash does NOT open /clear" "1" "$_r"
+  fi
+fi
+
+# ── 2 · ADR symmetry must not accept the bare number ──
+# Fixed in 52e03a0: it compared "016", which "2016" satisfies.
+_a29="rules/decisions/ADR-029-full-v1-to-v2-migration.md"
+if [ -f "$_a29" ] && grep -q "ADR-016" "$_a29"; then
+  cp "$_a29" /tmp/a29.$$
+  sed -i 's/ADR-016/the earlier decision/g' "$_a29"
+  printf '\nMigrated 2016 documents in phase F3-016b.\n' >> "$_a29"
+  _bait=$(grep -c "ADR-016" "$_a29")          # must be 0 for the probe to mean anything
+  _loose=$(grep -c "016" "$_a29")             # but "016" must still appear
+  ./bin/check-blocks --adrs >/dev/null 2>&1; _r=$?
+  cp /tmp/a29.$$ "$_a29"; rm -f /tmp/a29.$$
+  if [ "$_bait" -eq 0 ] && [ "$_loose" -gt 0 ]; then
+    eq "ADR symmetry: a bare '016' does NOT satisfy 'ADR-016'" "2" "$_r"
+  else
+    bad "ADR symmetry probe" "bait removed, loose 016 present" "bait=$_bait loose=$_loose"
+  fi
+fi
+
+# ── 3 · the credential guard must notice a NEW protected target ──
+# Fixed 2026-07-31 (SENSITIVE listed three paths) and re-verified today: the guard must
+# DISCOVER what exists, not consult what someone remembered.
+_probe="$HOME/.mente-probe-credentials"
+printf 'probe\n' > "$_probe" 2>/dev/null
+if [ -f "$_probe" ]; then
+  ./bin/check-health >/tmp/ch.$$ 2>&1
+  rm -f "$_probe"
+  grep -qiE "credential|deny" /tmp/ch.$$ \
+    && ok "credential guard still reports on the deny surface" \
+    || note "credential guard printed nothing about the deny surface"
+  rm -f /tmp/ch.$$
+fi
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"

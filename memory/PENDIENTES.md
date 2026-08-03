@@ -13,19 +13,25 @@ jornada**: un check que corre, canta verde, y no mide lo que dice medir.
 | ✅ **F1** `8d9f5f3` | el guardia del `/clear` comparaba 8 hex como subcadena |
 | ✅ **F2** `bbaaaf9` | la familia A tenía **4** instancias, no 1 — las 4 cerradas |
 | ✅ **F3** | `rules/rule-checks-must-measure.md` — las 3 familias con sus casos medidos |
-| 🔜 **F4** | **el self-test — lo único que ataca la raíz** |
+| ✅ **F4** | sección `SELF-TEST` en `bin/test-f0-f6` — batería **145** |
 
-**Qué falta construir:** una sección `SELF-TEST` en `bin/test-f0-f6` que, para cada check crítico,
-**rompa su condición a propósito y exija que falle**. Hoy ese paso es **manual** — lo hice a mano
-6 veces esta jornada, y por eso aparecieron los hallazgos. Manual es exactamente cómo entraron los 8.
+**El plan de raíz está COMPLETO.** F4 resultó más pequeña de lo estimado, y por una razón que
+merece quedar escrita: **al medir el alcance apareció que la batería ya hacía la mitad.** `GATE
+db`, `GATE close`, `pre-commit` y `gate-handoff` ya llevan su gemelo negativo (`BLOCKS …` /
+`allows …`). Estimé 12-15 checks; los realmente huérfanos eran **3**.
 
-**Alcance recomendado (medido):** la batería tiene 66 aserciones; probarlas todas en dos sentidos
-es inasumible y enterraría las que importan. Acotar a lo que protege algo **irreversible**:
-el `/clear` · las 3 puertas · las credenciales · la simetría de ADRs. **Unos 12-15.**
+Los 3 self-tests rompen a propósito el fix de esta jornada y exigen que la batería lo cante:
+① un id embebido en un hash no abre el `/clear` · ② un `016` suelto no satisface `ADR-016` ·
+③ el guardia de credenciales sigue informando de su superficie.
 
-> ⭐ **Sin F4, F1 y F2 arreglan lo conocido y la siguiente instancia aparece en semanas.**
-> Es la diferencia entre la doctrina (documento, 40-60%) y la verificación (código, 100%) — la
-> ley que este proyecto ya midió.
+> ⭐ **Probado revirtiendo los fixes de F1 y F2 uno por uno.** Con el fix quitado, el self-test
+> falla (`expected: 1, got: 0`); con el fix puesto, verde. **Eso es lo que convierte la doctrina
+> en verificación:** el paso manual que encontró los 8 hallazgos ya no depende de que alguien se
+> acuerde de hacerlo.
+
+⚠️ **Cada sonda se auto-verifica antes de creerse su resultado** — el corolario que costó dos
+pruebas malas hoy: si la corrida negativa no dispara, puede ser la SONDA. La del `/clear` se
+declara `skipped` si esta sesión ya está registrada, en vez de fingir que probó algo.
 
 ⚠️ **Y lo que la propia regla avisa:** cuando una prueba negativa NO dispara, sospecha de la
 prueba **y** del check. El 2026-08-02 pasó dos veces — y fue investigar la prueba mala lo que

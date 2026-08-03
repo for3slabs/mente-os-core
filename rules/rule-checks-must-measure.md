@@ -120,7 +120,12 @@ is connected to what it claims to measure.
 |---|---|
 | every battery run | `bin/test-f0-f6` — the checks themselves |
 | at session start | `bin/check-health` — the guards exist, are armed, and are wired |
-| 🔜 **not yet automated** | F4 of the plan: a `SELF-TEST` section that breaks each critical check on purpose and requires it to fail. **Today that step is MANUAL — and manual is how these eight got in.** Tracked in `memory/PENDIENTES.md`, not as a criterion hole: it needs building, not deciding. |
+| ✅ every battery run | `bin/test-f0-f6` §SELF-TEST — breaks the critical guards **on purpose** and requires them to fail. The manual step that found these eight is no longer manual. |
+
+**Scope, measured rather than estimated:** the plan assumed 12-15 checks needed this. Measuring
+showed the battery already carried the negative twin for `GATE db`, `GATE close`, `pre-commit`
+and `gate-handoff` (`BLOCKS …` / `allows …`). Genuinely orphaned: **3**. Estimating would have
+produced a dozen redundant probes — and redundant probes are how a battery becomes noise.
 
 ---
 
