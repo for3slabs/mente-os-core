@@ -77,11 +77,20 @@ fix-over-fix directly.
 
 ## 5 · WHEN THE GATE BLOCKS
 
-Editing a piece with declared dependents is one of the **three closed gates**
-(architecture §12-QUATER). The gate does not just refuse — it emits an **approval receipt** showing
-the piece, its propagation, and the construction assessment required by §2 above.
+Editing a piece with declared dependents **WARNS** — it is not one of the three closed gates
+(ADR-012). Blocking the daily path would be pure friction, and the propagation is already handled
+by the **lane**: `rules/rule-lanes.md` sends anything with declared dependents to `full-block`,
+chosen from the graph and never from judgment.
+
+What the gate prints when it *does* block is the receipt itself (ADR-030): the piece, why it is
+irreversible, **what to assess** — which is §2 of this file — and the documented way out.
 
 **The gate opens when steps 2-4 are demonstrably done.**
+
+> 🔴 **Corrected 2026-08-02.** This section claimed the gate emitted an *"approval receipt"* and
+> that dependents were a closed gate. Neither was true: `grep -rl receipt hooks/ bin/` returned 0
+> files, and GATE 1 warns. Found auditing all 29 ADRs — see `ADR-030` for why the message was kept
+> as the receipt instead of building a separate one.
 
 ---
 

@@ -1,10 +1,10 @@
 # ADR-020 · Approval receipt on block
 
 date: 2026-07-27
-status: accepted
+status: superseded
 decided-by: brian
 supersedes: —
-superseded-by: —
+superseded-by: ADR-030-the-block-message-is-the-receipt.md
 
 ## Context
 

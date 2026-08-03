@@ -9,23 +9,26 @@ Auditados **los 29 uno por uno** (Brian: *"hazlo con todos, a lo mejor encontram
 y aparecieron). 10 no los citaba nadie; 8 solo les faltaba la atribución y ya está puesta.
 Los 2 que quedan **no se arreglan escribiendo una cita**: son estado real del sistema.
 
-### 🔴 ADR-020 «approval receipt on block» — DECIDIDO, NUNCA CONSTRUIDO
+### ✅ ADR-020 «approval receipt» — CERRADO 2026-08-02 por ADR-030
 
-Dice: *"cuando una puerta bloquea, se emite un RECIBO DE APROBACIÓN: una pantalla con la pieza,
-su propagación, la evaluación de construcción, y aprobar/inspeccionar/denegar."*
+Brian eligió **"la forma correcta"**: no editar un ADR aceptado (`contract-adr` regla 3 — eso
+borra la razón de la decisión vieja), sino escribir **`ADR-030 · The block message IS the
+receipt`** que lo supersede, con ambos lados apuntándose.
 
-**Medido:** `grep -rl "receipt" hooks/ bin/` → **0 archivos.** No existe.
-Y `rules/rule-fix-not-patch.md` §5 **lo promete al lector**: *"el gate no solo rechaza — emite un
-recibo de aprobación"*. Un documento vivo describe una función que no está.
+**Lo que la auditoría reveló, y cambió la decisión:** de las 4 cosas que ADR-020 pedía, el gate
+**ya emite 3** en cada bloqueo — la pieza, el porqué, qué evaluar y la salida documentada. Lo que
+ADR-020 quería evitar (*"bloquear con un error pelado"*) **nunca ocurrió**. Faltaba solo la
+propagación, y esa la reporta el **carril** (`rule-lanes`: dependientes → `full-block`, decidido
+por el grafo). Construir una pantalla aparte habría sido tocar una de las 3 puertas cerradas
+(ADR-012) por algo cosmético.
 
-> ⭐ **Su propio archivo lo explica:** `Evidence: none — adopted from an external reference
-> (action receipts)`. **Es el ÚNICO ADR sin evidencia medida, y el único sin implementar.**
-> Coincidencia que vale como regla: una decisión adoptada de fuera, sin dolor propio detrás, es
-> la que nadie construye.
+> ⭐ **El hallazgo que vale más que el arreglo:** ADR-020 era el ÚNICO con
+> `Evidence: none — adopted from an external reference` **y** el único sin implementar.
+> **Una decisión adoptada de fuera, sin dolor propio detrás, es la que nadie construye.**
 
-**2 caminos:** ① construir el recibo en `gate-critical.py` · ② marcar ADR-020 `reverted` y quitar
-la promesa de `rule-fix-not-patch` §5. **⛔ Lo que NO vale es dejarlo como está**: hoy la doctrina
-miente al que la lee.
+**Corregido también** `rules/rule-fix-not-patch.md` §5, que mentía dos veces: prometía el recibo
+inexistente **y** llamaba "puerta cerrada" a los dependientes, cuando GATE 1 **avisa**
+(`return 0`, y `bin/test-f0-f6` lo verifica: *"GATE deps: WARNS but never blocks"*).
 
 ### 🟡 ADR-016 «folders coexist during migration» — CUMPLIDO Y AGOTADO
 
