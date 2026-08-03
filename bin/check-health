@@ -193,6 +193,12 @@ def check_hooks_wired():
         for entry in arr:
             for h in entry.get("hooks", []):
                 cmd = h.get("command", "")
+                # 🔴 2026-08-03: hooks became portable, and this guard compared the LITERAL
+                # string — so it reported all four gates DANGLING while every one of them ran.
+                # A guard that does not expand what the shell expands checks a path nobody uses,
+                # and here it would have screamed that a healthy system was dead.
+                cmd = cmd.replace(chr(36) + "{CLAUDE_PROJECT_DIR}", REPO) \
+                         .replace(chr(36) + "CLAUDE_PROJECT_DIR", REPO)
                 m = re.search(r"([^\s\"']+/(?:hooks|bin)/[\w.-]+)", cmd)
                 if m:
                     registered.append(m.group(1))

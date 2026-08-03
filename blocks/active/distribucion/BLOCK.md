@@ -41,17 +41,17 @@ created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 4·5·6 closed — engine is nameless, write-gated, and the agent knows what it runs
-next: 1·2·3 all need the CLEAN CLONE — the block cannot advance from this machine
-blockers: 🔴 the 3 remaining sub-blocks all wait on sub-block 1, which needs a clean clone
-progress: 3/6 sub-blocks closed
+phase: 1·4·5·6 closed — hooks ARE portable (proven), engine nameless and write-gated
+next: sub-block 2 — bin/init, now unblocked: hooks generate with the portable form
+blockers: none — sub-block 1 resolved from the documented behaviour, then proven by running it
+progress: 4/6 sub-blocks closed
 updated: 2026-08-03
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
 | # | task | code piece | dependents | status |
 |---|---|---|---|---|
-| 1 | do the 4 hooks survive a portable path? | `.claude/settings.json` | 4 hooks | open |
+| 1 | do the 4 hooks survive a portable path? | `.claude/settings.json` | 4 hooks | ✅ closed |
 | 2 | `bin/init` — ask, then generate | `bin/init` (new) | 0 | open |
 | 3 | templates for the 3 startup files | `*.template` | 0 | open |
 | 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | ✅ closed |
@@ -121,11 +121,13 @@ at `/home/brianweb3/for3s/Mente/hooks/`. A new user clones and **no gate starts*
 fail loudly; it silently stops governing, which is the worst failure mode for a system whose
 thesis is *"what is in code is obeyed 100%"*.
 
-**Sub-block 1, the blocker.** `$CLAUDE_PROJECT_DIR` is PROVEN to work in permission rules
-(sub-block 6 relies on it). For `hooks[].command` it could **not** be verified from this session
-— the variable is undefined in the session shell, so the probe resolved to empty and proved
-nothing. The rewrite was reverted rather than left on an unverified assumption. **It needs a
-clean clone.**
+**Sub-block 1 ✅ — and the lesson is the method, not the answer.** It was declared blocked
+("needs a clean clone") because the variable is undefined in the session shell, so a naive probe
+resolved to empty. **That was a blocker I asserted without checking the source.** The official
+docs state the placeholder is exported into the hook process and the command runs through
+`sh -c`. Setting it as the harness does and running each hook from `/tmp`: all four ran, and
+gate-critical still exited **2**. ⭐ A limit you have not verified is not a limit — it is a guess
+wearing one's clothes.
 
 **⭐ WHO INSTALLS THIS IS AN AGENT, NOT A PERSON** (Brian, 2026-08-02): *"VA A HABER UN AGENTE DE
 IA O UN LLM QUE ES EL QUE EJECUTE TODAS ESAS INSTRUCCIONES. DEBE DE SABER QUÉ CAPACIDADES TIENE

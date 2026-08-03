@@ -456,7 +456,15 @@ bad = 0
 for arr in (d.get('hooks') or {}).values():
     for e in arr:
         for h in e.get('hooks', []):
-            m = re.search(r'([^\s\"\']+/(?:hooks|bin)/[\w.-]+)', h.get('command', ''))
+            # 🔴 2026-08-03: hooks became portable and this check tested the LITERAL string,
+            # so all 4 read as missing while every one of them ran. A guard that does not expand
+            # what the shell expands is measuring a path nobody uses.
+            # The placeholder is built at runtime: writing it literally here would let the
+            # surrounding shell expand it to empty before python ever sees the string.
+            _v = chr(36) + 'CLAUDE_PROJECT_DIR'
+            _c = h.get('command', '').replace(chr(36) + '{CLAUDE_PROJECT_DIR}', '$REPO') \
+                                     .replace(_v, '$REPO')
+            m = re.search(r'([^\s\"\']+/(?:hooks|bin)/[\w.-]+)', _c)
             if m and not os.path.exists(m.group(1)):
                 bad += 1
 print(bad)")
@@ -645,6 +653,18 @@ if [ -f "$_cap" ]; then
 else
   bad "CAPABILITIES.md" "exists" "MISSING — the agent has no capability map"
 fi
+
+# ⭐ THE 4 HOOKS MUST BE PORTABLE (block `distribucion` §F-1). They are the three gates plus the
+# standards injection: if their paths carry one user's home, a clone starts with NO gate running —
+# and it fails SILENTLY, which is the worst outcome for a system whose thesis is that code is
+# obeyed 100%. Verified 2026-08-03 against the documented behaviour (`${CLAUDE_PROJECT_DIR}` is
+# exported into the hook process and the command runs through `sh -c`), then proven by running
+# each hook from /tmp with the variable set: all four ran, and gate-critical still exited 2.
+_hp=$(python3 -c "
+import json;d=json.load(open('$REPO/.claude/settings.json'))
+c=[h['command'] for a in d.get('hooks',{}).values() for e in a for h in e['hooks']]
+print(sum(1 for x in c if 'CLAUDE_PROJECT_DIR' in x), len(c))" 2>/dev/null)
+eq "all registered hooks use a portable path" "${_hp##* } ${_hp##* }" "$_hp"
 
 # ⭐ THE ENGINE CARRIES NO ONE'S NAME (block `distribucion` §F-4). mente.config.yml exists so a
 # new user edits ONE file — its own header says "if they ever have to touch bin/ to make the
