@@ -79,6 +79,11 @@ def yel(f, msg):
 # ── DOCUMENTS ────────────────────────────────────────────────────────────────
 def check_documents():
     candidates = [f for f in glob.glob("**/*.md", recursive=True) if ".git/" not in f]
+    # 🔴 The two steering documents live one level ABOVE Mente/, so this glob never reached them:
+    # CLAUDE.md — read automatically at every session start, the one no session can skip — had
+    # zero of the four header fields contract-document §1 requires, while PROJECT-RULES.md beside
+    # it had all four. ⭐ The file read FIRST was the only one nothing audited (measured 2026-08-02).
+    candidates += [p for p in ("../CLAUDE.md", "../PROJECT-RULES.md") if os.path.exists(p)]
     for f in candidates:
         text = open(f, encoding="utf-8").read()
         if is_exempt(f, text):

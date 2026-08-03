@@ -196,6 +196,12 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     files = args or [f for f in glob.glob("**/*.md", recursive=True)
                      if ".git/" not in f and not f.startswith("secrets/")]
+    # 🔴 The two documents that STEER live one level up, outside this glob — so the router read
+    # on every single session start was never audited. Measured 2026-08-02: CLAUDE.md carried
+    # `Maestro/piezas.tsv` (it is Mente/Maestro/) and a row for `Mente/Doc/`, a folder ADR-029
+    # deleted. ⭐ The file read FIRST was the least watched.
+    if not args:
+        files += [p for p in ("../CLAUDE.md", "../PROJECT-RULES.md") if os.path.exists(p)]
 
     broken = []
     for f in files:
@@ -209,7 +215,10 @@ def main():
             return 1
         # ⚠️ Maestro/ is a separate repo: its root is Maestro/, so a path written from the Mente
         # root is wrong INSIDE it. Its citations resolve against its own root.
-        base = "Maestro" if f.startswith("Maestro/") else "."
+        # A document one level up (CLAUDE.md, PROJECT-RULES.md) writes its paths from the PROJECT
+        # root — `Mente/rules/x.md`, not `rules/x.md`. Resolving those against Mente/ would look
+        # for Mente/Mente/… and silently find nothing, which is a green that means "not checked".
+        base = "Maestro" if f.startswith("Maestro/") else (".." if f.startswith("../") else ".")
         try:
             text = open(f, encoding="utf-8", errors="replace").read()
         except OSError:
@@ -248,7 +257,13 @@ def main():
             if c.startswith(("http", "/")):
                 continue
             # resolves from the Mente root, from its own directory, or from its repo root?
-            for cand in (os.path.join(base, c), os.path.join(os.path.dirname(f), c), c):
+            # ⚠️ For a document ABOVE Mente the bare `c` fallback must NOT apply: it would resolve
+            # `Maestro/piezas.tsv` from inside Mente/ and call it valid, while a reader starting at
+            # the project root finds nothing there. That fallback turned a real broken pointer green.
+            cands = ((os.path.join(base, c), os.path.join(os.path.dirname(f), c))
+                     if f.startswith("../")
+                     else (os.path.join(base, c), os.path.join(os.path.dirname(f), c), c))
+            for cand in cands:
                 if os.path.exists(cand):
                     break
             else:
