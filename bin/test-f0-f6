@@ -619,6 +619,26 @@ done
 # CLAUDE.md is a ROUTER: it points, it does not store. A rule written there has no declared level.
 n=$(grep -cE "^- \*\*(NO|NUNCA)|^- \*\*Foco" "$REPO/CLAUDE.md" 2>/dev/null); n=${n:-0}
 eq "CLAUDE.md stores no project rules (it routes)" "0" "$n"
+# ⭐ CAPABILITIES.md tells the AGENT what it can run and what it must not rewrite. It is the
+# piece a new instance needs most and the one nothing covered (measured 2026-08-02: CLAUDE.md
+# routes WHERE TO READ, README lists one command). An agent that does not know grade-block
+# exists hand-writes a verdict — inventing criterion, which ADR-003 forbids.
+# 🔴 It must not describe capabilities that do not exist: a capability map that lies is worse
+# than none, because the agent acts on it. Every `bin/x` it names has to be on disk.
+_cap="$M/CAPABILITIES.md"
+if [ -f "$_cap" ]; then
+  _miss=0
+  for _b in $(grep -oE '`bin/[a-z0-9-]+' "$_cap" | sed 's/`bin\///' | sort -u); do
+    [ -x "bin/$_b" ] || { _miss=$((_miss+1)); printf '     ⤷ names bin/%s which is not executable\n' "$_b"; }
+  done
+  eq "CAPABILITIES names only validators that exist" "0" "$_miss"
+  grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
+    && ok "the router points the agent at its capability map" \
+    || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"
+else
+  bad "CAPABILITIES.md" "exists" "MISSING — the agent has no capability map"
+fi
+
 grep -q "PROJECT-RULES.md" "$REPO/CLAUDE.md" && ok "CLAUDE.md routes to PROJECT-RULES.md" \
   || bad "router" "points at PROJECT-RULES.md" "does not"
 

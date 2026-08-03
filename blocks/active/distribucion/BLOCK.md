@@ -5,7 +5,7 @@ id: blk-distribucion-2026-08
 type: code
 intent: make Mente OS v2 installable by someone who is not Brian — config-driven, not hand-filled
 status: active · lane: full-block · owner: brian
-created: 2026-08-02 · updated: 2026-08-02
+created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ B · SCOPE ══ required to OPEN · ≤15 lines ══ -->
 ## ✅ IN
@@ -41,11 +41,11 @@ created: 2026-08-02 · updated: 2026-08-02
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: opened — diagnosis measured, nothing built
-next: sub-block 1 (hooks portable?) — 5 and 6 do NOT depend on it and can start first
+phase: sub-block 5 closed — the agent has a capability map, verified by the battery
+next: sub-block 6 — the engine/instance line as a portable LOCK (does not need a clone)
 blockers: sub-block 1 needs a CLEAN CLONE to test; it cannot be proven from this session
-progress: 0/6 sub-blocks closed
-updated: 2026-08-02
+progress: 1/6 sub-blocks closed
+updated: 2026-08-03
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
@@ -55,7 +55,7 @@ updated: 2026-08-02
 | 2 | `bin/init` — ask, then generate | `bin/init` (new) | 0 | open |
 | 3 | templates for the 3 startup files | `*.template` | 0 | open |
 | 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | open |
-| 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` (new) | — | open |
+| 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` | — | ✅ closed |
 | 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | open |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
@@ -90,6 +90,8 @@ updated: 2026-08-02
 <!-- ══ I · CHECKPOINTS ══ -->
 ## Checkpoints
 - 2026-08-02 · opened with the diagnosis measured, zero code written
+- 2026-08-03 · sub-block 5 ✅ `CAPABILITIES.md` + 2 checks: it may only name validators
+  that exist, and `CLAUDE.md` must route to it (an unreferenced map is a map nobody reads)
 
 <!-- ══ J · CONTEXT ══ ≤80 lines · CURATED, not a log ══ -->
 ## Context
@@ -130,10 +132,9 @@ needs two things a form does not give:
 | **What it CAN do** | nothing states it | `CLAUDE.md` routes *where to read*; `README.md` lists **1** command |
 | **Where the line is** | 3 `ask` rules | `Write(bin/**)` missing · all 3 carry an absolute path |
 
-**Why ① is not documentation but correctness:** an agent that does not know `bin/grade-block`
-exists will hand-write a product/MVP verdict. That is inventing criterion — ADR-003 forbids it,
-and the whole quality layer exists to stop exactly that. The same holds for `check-sufficiency`
-before closing a block, or `generate-metrics` instead of typing a number.
+**Why ① is correctness, not documentation:** an agent that does not know `bin/grade-block`
+exists hand-writes a verdict — inventing criterion (ADR-003). Same for `check-sufficiency`
+before closing, or `generate-metrics` instead of typing a number.
 
 **Why ② must be a lock:** *"do not touch the engine"* in prose is this project's own 40-60% case
 (`PROJECT-RULES.md` §1 now labels which rules are locks and which are discipline). The instance

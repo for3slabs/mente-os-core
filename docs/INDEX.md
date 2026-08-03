@@ -8,12 +8,12 @@
 **Generated:** 2026-08-03 · **Type:** generated
 
 
-**278 documents** · **3 blocks** · 20 directories
+**279 documents** · **3 blocks** · 20 directories
 
 
 | Directory | Docs |
 |---|---|
-| `./` | 2 |
+| `./` | 3 |
 | `Cerebro/` | 6 |
 | `Maestro/` | 7 |
 | `blocks/` | 1 |
@@ -41,6 +41,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
+| `CAPABILITIES.md` | entry-point | current | 2026-08-03 | 135 |
 | `README.md` | entry-point | current | 2026-07-31 | 189 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
 
@@ -91,7 +92,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 148 |
+| `BLOCK.md` | — | — |  | 149 |
 
 ## `blocks/archive/split-architecture_2026-07/`
 
@@ -118,7 +119,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 422 |
+| `INDEX.md` | generated | — |  | 421 |
 | `METRICS.md` | generated | current | 2026-08-02 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 25 |
