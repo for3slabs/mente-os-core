@@ -632,6 +632,38 @@ for k in "acceder mente" "Server-first" "KEK" "$_OWNER"; do
     || bad "migrated rule: $k" "present" "LOST"
 done
 
+# ⭐ The four checks above ask "is it WRITTEN?" — which was their job: proving the migration lost
+# nothing. They do NOT ask whether the rule GOVERNS. Measured 2026-08-02: §1 and §2 are backed by
+# deny rules, §3 only by an `ask`, and §4's KEK by nothing at all — while the file presented them
+# all identically. These verify the MECHANISM behind each rule that can have one.
+_perm="$REPO/.claude/settings.json"
+_n=$(python3 -c "
+import json;d=json.load(open('$_perm'))['permissions']
+print(len([r for r in d['deny'] if '5M-incubathon' in r]))" 2>/dev/null)
+[ "${_n:-0}" -ge 3 ] && ok "§3 the gate is a LOCK: $_n deny rules on the other Mente OS" \
+  || bad "§3 gate enforcement" "≥3 deny rules" "${_n:-0} — the gate is doctrine again"
+
+_n=$(python3 -c "
+import json;d=json.load(open('$_perm'))['permissions']
+print(len([r for r in d['deny'] if 'marca-personal/Mente' in r]))" 2>/dev/null)
+[ "${_n:-0}" -ge 3 ] && ok "§2 out-of-scope is a LOCK: $_n deny rules on marca-personal/Mente" \
+  || bad "§2 scope enforcement" "≥3 deny rules" "${_n:-0}"
+
+# §3 is the only rule with a PRODUCTION consequence: Vercel deploys from main, so a push to main
+# IS a deploy. `Bash(git push *)` requires an argument — the bare `git push`, the commonest form
+# on a branch with upstream, was uncovered until today.
+_n=$(python3 -c "
+import json;d=json.load(open('$_perm'))['permissions']
+print(len([r for r in d.get('ask',[])+d['deny'] if 'git push' in r]))" 2>/dev/null)
+[ "${_n:-0}" -ge 2 ] && ok "§4 server-first: $_n rules cover git push (bare form included)" \
+  || bad "§4 push enforcement" "≥2 rules (bare + argument forms)" "${_n:-0}"
+
+# The file must SAY which rules nothing can enforce. A rule presented as a lock when it is
+# discipline is worse than one honestly labelled.
+grep -q "WHICH RULES ARE LOCKS" "$REPO/PROJECT-RULES.md" \
+  && ok "PROJECT-RULES declares which rules are locks and which are discipline" \
+  || bad "enforcement table" "present" "MISSING — doctrine reads as enforcement"
+
 # base-rules must no longer be the SOURCE of the 2 project rules — only a pointer.
 grep -q "PROJECT-RULES.md" "$M/base-rules.md" \
   && ok "base-rules points the 2 project rules at their new level" \
