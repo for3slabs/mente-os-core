@@ -66,6 +66,20 @@ permission. A secret pasted into an approved command is **recorded forever**.
 **Measured when the rule was written:** 9 entries, **none justified**. Three pointed at paths that
 did not exist; one contradicted the NavigoX gate.
 
+#### 🆕 The live roster (2026-08-02) — settings.json carries no comments, so the WHY lives here
+
+| Path | File | Why |
+|---|---|---|
+| `Mente/` | shared | the documentation brain — every session reads it |
+| `for3s-inter/` | shared | sibling repo cited by the rounds; `check-links` resolves into it |
+| `/tmp` | local | scratch for probes and backups; nothing durable lives there |
+| `marca-personal/app/[locale]` | local | the demo's route tree — the only part of that repo in scope |
+| `.claude/` | local | the config this rule governs, editable under `ask` |
+
+> 🔴 **`/dev` was removed the day this table was written.** It granted system devices and **no
+> document, rule or commit said why it had been added.** A path nobody can justify is a path that
+> goes — that is what §1.2 means when it says the WHY is required, not decorative.
+
 ---
 
 ### 1.3 · ⭐ ONE MECHANISM, ONE ENTRY
