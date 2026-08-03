@@ -36,8 +36,8 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **140** |
-| `battery.failed` | **1** |
+| `battery.checks` | **142** |
+| `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
@@ -70,7 +70,7 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 |---|---|
 | `sessions.registered` | **8** |
 | `sessions.on_disk` | 17 |
-| `sessions.heavy_unregistered` | **0** |
+| `sessions.heavy_unregistered` | **1** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
 actually costs something. The 21-jul incident came from one of them.
@@ -92,8 +92,8 @@ by the harness, so it is a file without a settings entry.
 
 | Metric | allow | deny |
 |---|---|---|
-| `permissions.shared` (`settings.json`) | 16 | 67 |
-| `permissions.local` (`settings.local.json`) | 194 | 67 |
+| `permissions.shared` (`settings.json`) | 16 | 212 |
+| `permissions.local` (`settings.local.json`) | 188 | 212 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

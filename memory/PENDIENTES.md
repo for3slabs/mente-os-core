@@ -3,6 +3,36 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+## 🧪 F4 — el self-test: que la batería pruebe sus checks en AMBOS sentidos (2026-08-02)
+
+**Plan de raíz, F1-F3 ✅ hechas · F4 abierta.** Nace de **8 hallazgos del mismo tipo en una sola
+jornada**: un check que corre, canta verde, y no mide lo que dice medir.
+
+| | |
+|---|---|
+| ✅ **F1** `8d9f5f3` | el guardia del `/clear` comparaba 8 hex como subcadena |
+| ✅ **F2** `bbaaaf9` | la familia A tenía **4** instancias, no 1 — las 4 cerradas |
+| ✅ **F3** | `rules/rule-checks-must-measure.md` — las 3 familias con sus casos medidos |
+| 🔜 **F4** | **el self-test — lo único que ataca la raíz** |
+
+**Qué falta construir:** una sección `SELF-TEST` en `bin/test-f0-f6` que, para cada check crítico,
+**rompa su condición a propósito y exija que falle**. Hoy ese paso es **manual** — lo hice a mano
+6 veces esta jornada, y por eso aparecieron los hallazgos. Manual es exactamente cómo entraron los 8.
+
+**Alcance recomendado (medido):** la batería tiene 66 aserciones; probarlas todas en dos sentidos
+es inasumible y enterraría las que importan. Acotar a lo que protege algo **irreversible**:
+el `/clear` · las 3 puertas · las credenciales · la simetría de ADRs. **Unos 12-15.**
+
+> ⭐ **Sin F4, F1 y F2 arreglan lo conocido y la siguiente instancia aparece en semanas.**
+> Es la diferencia entre la doctrina (documento, 40-60%) y la verificación (código, 100%) — la
+> ley que este proyecto ya midió.
+
+⚠️ **Y lo que la propia regla avisa:** cuando una prueba negativa NO dispara, sospecha de la
+prueba **y** del check. El 2026-08-02 pasó dos veces — y fue investigar la prueba mala lo que
+destapó el defecto real (`check-blocks` comparaba `"016"`, y `"2016"` lo satisfacía).
+
+---
+
 ## 🔗 2 ADRs que la auditoría de conectividad dejó al descubierto (2026-08-02)
 
 Auditados **los 29 uno por uno** (Brian: *"hazlo con todos, a lo mejor encontramos procesos"* —

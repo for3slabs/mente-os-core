@@ -104,4 +104,6 @@ irreversible, **what to assess** — which is §2 of this file — and the docum
 ---
 
 Related: `rule-lanes.md` · `contract-block.md` §C/§F · `case-dangerous-default.md` ·
-`principles/owner-2-dev.md` · architecture §7 · §12-T.2 (the receipt).
+`principles/owner-2-dev.md` · architecture §7 · `rule-checks-must-measure.md` (the same
+question — *where else does it live* — applied to the checks themselves) ·
+`rules/decisions/ADR-030-the-block-message-is-the-receipt.md` (why there is no separate receipt).

@@ -146,6 +146,9 @@ the validators are correct, and several are correct **on purpose**:
 > ## A list that enumerates what is PROTECTED must be measured.
 > ## A list that enumerates what is PERMITTED may be written — if the unknown fails CLOSED.
 
+> 🔗 **Sibling rule:** this one governs LISTS. `rules/rule-checks-must-measure.md` governs the
+> other three ways a check goes blind — loose comparison, short reach, clobbered value.
+
 | List | Enumerates | On an unknown | Verdict |
 |---|---|---|---|
 | `SENSITIVE` (credentials) | the **protected** | stayed silent | 🔴 bit — exposed the GitHub token |
