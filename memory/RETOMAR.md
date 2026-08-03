@@ -81,10 +81,12 @@ server vivía en 60 eps → redactada). 👉 `project_entrenamiento_foresito` ·
 > **PERMITIDO** puede escribirse, si lo desconocido **falla cerrado**. (Auditadas las 22
 > enumeraciones: 19 estaban bien, varias a propósito.) → `rules/rule-config-hygiene.md`
 
+**🔑 ABIERTO — FIRMA GPG, decide Brian** (sin clave aquí; `deny` de `secrets/` respetado). ✅ identidad: `Brian Lopez <brayan002150@gmail.com>`. → `PENDIENTES.md` §🔑.
+
 **👉 PRÓXIMO PASO — no hay deuda técnica que valga la pena.** Lo único abierto es lo que
 ninguna IA puede escribir: **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`).
-Recomendación medida: empezar por `principles/expertise/val-integration.md` — tiene 6 casos tuyos ya en la
-mesa, dos con producción caída. Sus §3 y §4 son dos preguntas.
+Recomendación medida: empezar por `principles/expertise/val-integration.md` — 6 casos tuyos ya en
+la mesa, dos con producción caída. Son **8 huecos** (las 6 dimensiones de §2 + §3 + §4), no 2.
 
 ⚠️ **Y lo que sigue sin cambiar:** el v2 **nunca ha gobernado trabajo real de producto**. Los 12
 commits de S8 son el sistema arreglándose a sí mismo. Cero sesiones de demo o de agente.

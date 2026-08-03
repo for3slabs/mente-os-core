@@ -1,7 +1,60 @@
 # PENDIENTES — For3s OS
 
-**Status:** current · **Type:** pending · **Updated:** 2026-07-31 · **Owner:** brian
+**Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
+
+## 🔑 FIRMA GPG DE LOS COMMITS — PENDIENTE, decisión de Brian (2026-08-02)
+
+**Estado medido hoy:** este WSL2 **no tiene ninguna clave GPG** (llavero vacío: ni secreta ni
+pública). `gpg` sí está instalado. `commit.gpgsign` y `user.signingkey` sin configurar en el repo.
+El Método F pide "commit firmado" — hoy **no se cumple**.
+
+**✅ Lo que SÍ se resolvió (2026-08-02):** la identidad. Los commits salían como
+`Fruterito Devrel <ema@frutero.club>`; ahora el repo usa **`Brian Lopez <brayan002150@gmail.com>`**
+y los 4 commits de esa jornada se reescribieron con ella. `819b5ab` (S8) se dejó intacto a
+propósito: es de Brian, no de la sesión.
+
+**⛔ Por qué quedó abierto — 3 topes, ninguno técnico:**
+
+1. **No hay clave que recuperar aquí.** Generarla decide identidad, passphrase y respaldo:
+   es de Brian, no de la IA.
+2. **No hay acceso al servidor.** Sin llave SSH; el password extraído de
+   `secrets/Conectar_Servidor_For3s.md` con un patrón fue rechazado (campo equivocado).
+3. **El `deny` de `secrets/` bloqueó afinar el patrón** — y se respetó. Son 11 reglas
+   (`Read` + `cat/head/tail/less/more/strings/xxd/od/base64/cp`), commiteadas en `3419ba8`,
+   la superficie completa que cerró el agujero de S8.
+
+> ⭐ **La razón de fondo, y es la que importa:** leer ese archivo aquí **vuelca el password a la
+> transcripción**, y los `.jsonl` no se editan. `rule-config-hygiene.md` §1.1: un secreto filtrado
+> se **ROTA**, no se borra. Es el caso H-11 del examen de Foresito — la contraseña del server vivía
+> en 60 episodios. **Desarmar la guardia Y quemar la credencial, para algo que se consigue con una
+> línea, no compra nada.**
+
+**⚠️ Brian pidió "editar el `deny` para que cuando yo te pida puedas continuar" → NO SE HIZO.**
+`deny` **no tiene modo condicional**: o está denegado o está permitido para siempre, en toda sesión
+futura, con o sin petición. Si se quiere relajar, la opción menos mala es **`ask`** (prompt por
+acceso, decisión activa de Brian cada vez), nunca borrar las reglas.
+
+**👉 3 SALIDAS, en orden de coste (Brian elige):**
+
+| | Qué | Coste |
+|---|---|---|
+| ⭐ **1** | Brian corre `ssh …@100.112.177.53 'gpg --list-secret-keys --keyid-format=long'` y pega la salida | cero — son IDs y UIDs, sin material privado |
+| **2** | Pasar el password por entorno (`export FOR3S_SSH_PASS=…`), nunca pegado en el chat | bajo — no toca la transcripción |
+| **3** | **Generar clave nueva** (lo recomendado si esto se alarga) | mínimo — los 4 commits son locales y sin push; solo se pierde verificar commits viejos |
+
+⚠️ **Si aparece en el servidor: NO copiar `~/.gnupg/` con `scp`** — arrastra permisos y corrompe el
+llavero. Se exporta con `gpg --export-secret-keys` (pide su passphrase, que solo tiene Brian) y se
+transfiere cifrada.
+
+**Para activarla cuando exista la clave:**
+```bash
+git config user.signingkey <KEY_ID>
+git config commit.gpgsign true
+git rebase --exec 'git commit --amend --no-edit -S' 819b5ab   # firma los 4 de la jornada
+```
+
+---
 
 ## ✅ 3 SESIONES HISTÓRICAS SIN REGISTRO — CERRADO 2026-07-31
 
