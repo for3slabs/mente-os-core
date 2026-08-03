@@ -234,4 +234,4 @@ either one approved, any command runs by wrapping it in `bash -c`. Removed 2026-
 
 Related: `rules/rule-moving-files.md` (what this file used to be) ·
 `docs/architecture/validators-and-hygiene.md` §12-S (the origin of rules 1.1-1.4) ·
-`bin/check-health` · `bin/test-f0-f6` (§F0 security) · `principles/owner-0-voice.md` §2.7.
+`bin/check-health` · `bin/test-f0-f6` (§F0 security) · `principles/owner-0-voice.md` §2.7 · Implements ADR-026 (permission granularity IS the mechanism (§1.3)).

@@ -20,6 +20,7 @@ A gate with no escape hatch gets deleted.
 
 Contract: PreToolUse payload on stdin. exit 0 = allow · exit 2 = BLOCK (Claude Code convention).
 """
+# Implements ADR-012 — one of the ONLY THREE closed gates
 import os
 import re
 import sys

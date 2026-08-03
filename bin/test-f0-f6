@@ -223,6 +223,34 @@ done
 eq "ADR numbering has no gaps" "$(ls rules/decisions/ADR-*.md | wc -l)" \
    "$(ls rules/decisions/ADR-*.md | sed 's/.*ADR-0*\([0-9]*\).*/\1/' | sort -n | tail -1)"
 
+# ⭐ TRACEABILITY — a decision nobody cites is a decision that exists only in a document, and
+# this project's own law says that gets obeyed 40-60%. Measured 2026-08-02: 10 of 29 ADRs were
+# cited NOWHERE, including "only three closed gates" and "the system audits itself" — all four
+# sampled were correctly IMPLEMENTED, just not attributed. So the code obeyed a decision it
+# could not name, and a future edit would revert it without anyone noticing.
+# Scope: `accepted` only. A superseded/reverted ADR is history and needs no live citer.
+_untraced=0; _list=""
+for _a in rules/decisions/ADR-*.md; do
+  grep -qE "^status: *accepted" "$_a" || continue
+  _id=$(basename "$_a" | grep -oE "ADR-[0-9]{3}")
+  # Cited anywhere OUTSIDE decisions/ and outside the generated indexes?
+  # ⚠️ NO --include filter: every validator in bin/ is extensionless (`generate-index`, not
+  # `generate-index.py`), so filtering by extension hides exactly the files that IMPLEMENT the
+  # decisions — the check would report a correctly-cited ADR as orphaned. Scan bin/ and hooks/
+  # explicitly, and skip .git via the directory list rather than a pattern.
+  _n=$(grep -rl "$_id" rules/ principles/ docs/ memory/ bin/ hooks/ blocks/ vision/ work/ \
+        "$REPO/CLAUDE.md" "$REPO/PROJECT-RULES.md" 2>/dev/null \
+        | grep -vE "rules/decisions/|docs/INDEX\.md|docs/DECISIONS\.md" | wc -l)
+  [ "$_n" -eq 0 ] && { _untraced=$((_untraced+1)); _list="$_list $_id"; }
+done
+# ⚠️ Being CITED is not being IMPLEMENTED. ADR-020 now passes this check because PENDIENTES.md
+# §🔗 names it — while `grep -rl receipt hooks/ bin/` still returns 0 files. This check guards
+# the weaker property on purpose: an uncited decision is invisible, and invisible is the state
+# that lets a future edit revert it silently. Whether the code HONOURS it is what owner-3 and
+# the gates measure. Registering a gap is progress; it is not a fix.
+[ "$_untraced" -eq 0 ] && ok "every accepted ADR is cited by something that names it" \
+  || bad "accepted ADRs with no citer" "0" "$_untraced —$_list"
+
 # ═══════════════════════════════════════════════════════════════════ F2 · OWNERS
 head2 "F2 · OWNERS — 3 max + the voice, and every hole asked not assumed"
 

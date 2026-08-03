@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-011 — four layers guarantee reading — /clear is the last one
 """check-clear-ready — is it safe to /clear right now?
 
 ⭐ This exists because of the single worst failure of the project (2026-07-24/26):

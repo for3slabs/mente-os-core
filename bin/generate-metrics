@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-019 — validators COMPLETE what is derivable (the live numbers)
 """generate-metrics — publish every live number ONCE, so documents can point instead of copy.
 
 ⭐ Brian, 2026-07-31:

@@ -3,6 +3,47 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+## 🔗 2 ADRs que la auditoría de conectividad dejó al descubierto (2026-08-02)
+
+Auditados **los 29 uno por uno** (Brian: *"hazlo con todos, a lo mejor encontramos procesos"* —
+y aparecieron). 10 no los citaba nadie; 8 solo les faltaba la atribución y ya está puesta.
+Los 2 que quedan **no se arreglan escribiendo una cita**: son estado real del sistema.
+
+### 🔴 ADR-020 «approval receipt on block» — DECIDIDO, NUNCA CONSTRUIDO
+
+Dice: *"cuando una puerta bloquea, se emite un RECIBO DE APROBACIÓN: una pantalla con la pieza,
+su propagación, la evaluación de construcción, y aprobar/inspeccionar/denegar."*
+
+**Medido:** `grep -rl "receipt" hooks/ bin/` → **0 archivos.** No existe.
+Y `rules/rule-fix-not-patch.md` §5 **lo promete al lector**: *"el gate no solo rechaza — emite un
+recibo de aprobación"*. Un documento vivo describe una función que no está.
+
+> ⭐ **Su propio archivo lo explica:** `Evidence: none — adopted from an external reference
+> (action receipts)`. **Es el ÚNICO ADR sin evidencia medida, y el único sin implementar.**
+> Coincidencia que vale como regla: una decisión adoptada de fuera, sin dolor propio detrás, es
+> la que nadie construye.
+
+**2 caminos:** ① construir el recibo en `gate-critical.py` · ② marcar ADR-020 `reverted` y quitar
+la promesa de `rule-fix-not-patch` §5. **⛔ Lo que NO vale es dejarlo como está**: hoy la doctrina
+miente al que la lee.
+
+### 🟡 ADR-016 «folders coexist during migration» — CUMPLIDO Y AGOTADO
+
+Sigue `accepted`, pero **cero carpetas v1 vivas** (`Alma/ Cuerpo/ Doc/ Tickets/` ya no existen,
+ADR-029). La decisión hizo su trabajo y terminó.
+
+> 🔴 **El hueco es del CONTRATO, no del ADR.** `contract-adr.md` §76 admite solo
+> `proposed · accepted · superseded · reverted` — **no existe un estado para "cumplida y
+> agotada"**. No inventé uno: un vocabulario cerrado es una decisión, no un descubrimiento
+> ([[rule-config-hygiene]] §1.5). 👉 **Decide Brian:** añadir `fulfilled` al contrato, o marcarlo
+> `superseded-by: ADR-029` (que fue quien completó la migración).
+
+**Cableado hoy:** 11 piezas de código y 4 documentos declaran ya qué ADR implementan, y
+`bin/test-f0-f6` lo verifica: *"every accepted ADR is cited by something that implements it"*.
+Antes: 8 de 22 piezas citaban su decisión.
+
+---
+
 ## 🚪 `CLAUDE.md` §ESTADO — lo que impide publicarlo tal cual (2026-08-02)
 
 **✅ Ya resuelto** (`3223a5c` + `5f8a671`): cabecera §1 completa · Purpose + Related · 2 punteros

@@ -33,6 +33,7 @@ Deliberate and visible: it prints that the gate was skipped and what that costs.
 
 Contract: PreToolUse payload on stdin. exit 0 = allow · exit 2 = BLOCK.
 """
+# Implements ADR-012 — one of the ONLY THREE closed gates
 import os
 import re
 import sys

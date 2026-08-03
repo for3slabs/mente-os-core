@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-010 — progressive, with a HARD MINIMUM (§A-E)
 """check-sufficiency — can this block be restarted from disk alone?
 
 The test that turns "being owner of the context" into something measurable instead of

@@ -125,4 +125,4 @@ pregunta "¿por qué?", casi siempre hay un matiz que la medición corrige.
 
 Related: `rules/rule-fix-not-patch.md` · `rules/qa-dimensions.md` §2.2 ·
 `principles/owner-0-voice.md` §2.7 (source of *"a claim is VERIFIED, not assumed"*) ·
-`principles/expertise/dev-database.md` · ADR-017.
+`principles/expertise/dev-database.md` · ADR-017 · Implements ADR-021 (this is what an error becoming a CASE looks like).

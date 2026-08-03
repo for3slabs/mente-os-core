@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-019 — completes the scaffold; never the criterion
 """new-block — creates a block scaffold from the contract, never from memory.
 
 Writes blocks/active/<name>/ with BLOCK.md (sections A-K), docs/ and cache/.

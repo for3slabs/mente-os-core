@@ -165,4 +165,4 @@ Before sending a response, three questions:
 
 Related: `.claude/output-styles/for3s.md` (the vehicle) ·
 `docs/Arquitectura_Mente_OS_v2_Bloques.md` §12-SEXIES (the design) · §12-Q.3 (the same rule for
-code) · `rules/NAMING_CONVENTION.md` (language policy) · `case-dangerous-default.md` (source of §2.7).
+code) · `rules/NAMING_CONVENTION.md` (language policy) · `case-dangerous-default.md` (source of §2.7) · Implements ADR-018 (owner-0 is the VOICE, not a fourth owner).

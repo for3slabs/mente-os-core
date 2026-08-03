@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-013 — quality verdict in two layers · ADR-028 type decides metrics
 """grade-block — layer 1 of the quality verdict: is this a product or an MVP?
 
 Answers with NUMBERS, not with an opinion. The reason this exists (architecture §12-QUINQUIES):

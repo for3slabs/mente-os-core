@@ -9,6 +9,7 @@
 #   2. Speak ONLY on 🔴. A validator that talks every time is a validator that gets ignored.
 set -uo pipefail
 MENTE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Implements ADR-024 — the audit runs by itself — asking for it means it is not automated
 
 # ── THE HEARTBEAT ───────────────────────────────────────────────────────────
 # 🔴 The structural gap, measured 2026-07-31: this hook is SILENT when everything is fine —

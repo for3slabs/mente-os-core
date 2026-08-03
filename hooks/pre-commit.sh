@@ -15,6 +15,7 @@
 #   Fix: resolve from the repo root (git rev-parse), and FAIL CLOSED if the validator is
 #   missing — a validator that cannot run is not a pass.
 set -uo pipefail
+# Implements ADR-012 — one of the ONLY THREE closed gates
 
 REPO="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 

@@ -332,4 +332,4 @@ Related: `contract-document.md` · `rule-lanes.md` · `rule-fix-not-patch.md` ·
 `rule-isolation.md` · `qa-dimensions.md` · `NAMING_CONVENTION.md` ·
 ADR-009 (single file) · ADR-010 (progressive) · ADR-011 (reading guarantee) · ADR-015 (nesting).
 
-ADR: `decisions/ADR-028-block-type-decides-metrics.md` (the `type` field).
+ADR: `decisions/ADR-028-block-type-decides-metrics.md` (the `type` field) · Implements ADR-006 (blocks live in git — versioned, revertible) · ADR-007 (a closed block is ARCHIVED, never deleted).

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Implements ADR-024 — the system audits ITSELF at SessionStart
 """check-health — the system audits its own state, without being asked.
 
 Rule behind this file (Brian, 2026-07-27): **if you have to ASK for it, it is not automated.**
