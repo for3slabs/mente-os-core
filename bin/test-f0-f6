@@ -653,7 +653,13 @@ eq "the generated indexes are up to date after regenerating" "0" "$?"
 # Scope is deliberately narrow: only the documents a session actually steers by. Execution logs,
 # the registry and archives are DATED EVIDENCE — a measurement of a moment that must not change.
 _frozen=0
+# 🔴 CLAUDE.md was NOT on this list until 2026-08-02 — the one document loaded on EVERY session
+# start, and the only one no session can choose to skip. It carried `103/103` (already 141),
+# `v0.19.0` (already v0.20.0) and "F8 al 75%" (F8 closed), frozen since 30-jul.
+# ⭐ Same shape as the S8 finding, one level up: a list enumerating what is PROTECTED, one entry
+# short. The steering documents were guarded; the one that steers FIRST was not.
 for _d in memory/RETOMAR.md docs/architecture/how-it-runs.md \
+          "$REPO/CLAUDE.md" "$REPO/PROJECT-RULES.md" \
           "$REPO/.claude/skills/session-wrap/SKILL.md"; do
   [ -f "$_d" ] || continue
   # "N/N" battery scores and "N checks" are the shapes that went stale in practice.
