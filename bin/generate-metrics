@@ -120,9 +120,14 @@ def sessions():
         pass
     # Threshold declared per instance (mente.config.yml · session.heavy_mb).
     _, _, heavy_mb = cfg.thresholds()
+    # 🔴 Family A (2026-08-02): a bare substring match on 8 hex would publish
+    # `sessions.heavy_unregistered = 0` while a session sat unregistered, because its id
+    # happened to appear inside a commit hash. A metric that guesses is worse than absent.
+    def _logged(sid):
+        return re.search(rf"(?<![0-9a-f]){re.escape(sid)}(?![0-9a-f])", body)
     heavy_unreg = sum(1 for p in js
                       if os.path.getsize(p) > heavy_mb * 1_000_000
-                      and os.path.basename(p)[:8] not in body)
+                      and not _logged(os.path.basename(p)[:8]))
     return reg, len(js), heavy_unreg
 
 

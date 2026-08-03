@@ -542,8 +542,13 @@ def check_session():
     regc = "Cerebro/Registro_Conversaciones.md"
     if os.path.exists(regc) and len(js) > 1:
         text = open(regc, encoding="utf-8", errors="replace").read()
+        # 🔴 Family A (2026-08-02): `[:8] not in text` matches those 8 hex characters ANYWHERE
+        # — inside a commit hash, a path, a longer id — and reports a heavy unregistered
+        # session as registered. Same defect fixed in check-clear-ready (8d9f5f3).
+        def _logged(sid):
+            return re.search(rf"(?<![0-9a-f]){re.escape(sid)}(?![0-9a-f])", text)
         missing = [os.path.basename(f)[:8] for f in js[1:]
-                   if os.path.getsize(f) > 2e6 and os.path.basename(f)[:8] not in text]
+                   if os.path.getsize(f) > 2e6 and not _logged(os.path.basename(f)[:8])]
         if missing:
             yel(f"{len(missing)} past session(s) over 2 MB with no entry in "
                 f"Registro_Conversaciones.md: {', '.join(missing[:4])}")
