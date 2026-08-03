@@ -163,6 +163,21 @@ def check_documents():
 # ── BLOCKS ───────────────────────────────────────────────────────────────────
 def check_blocks():
     files = glob.glob("blocks/**/BLOCK.md", recursive=True)
+
+    # 🔴 ORPHAN DIRECTORIES — measured 2026-08-02: a folder under blocks/active/ with no BLOCK.md
+    # was INVISIBLE to check-blocks, check-health and flag-stale alike. That matters because
+    # `blocks/active/*` is the sweep check-clear-ready and flag-stale both depend on: an orphan is
+    # live work that nothing watches, and the /clear guard would not know it exists.
+    # ⭐ Every other check here starts from BLOCK.md, so none of them can ever see its absence.
+    # The scan has to start from the DIRECTORY to find what the file-based sweep structurally
+    # cannot. Same shape as family B in rules/rule-checks-must-measure.md: short reach.
+    for d in sorted(glob.glob("blocks/*/*/")):
+        if os.path.basename(d.rstrip("/")).startswith("zz-"):
+            continue                          # probe blocks created by bin/test-f0-f6
+        if not os.path.exists(os.path.join(d, "BLOCK.md")):
+            red(d.rstrip("/"), "orphan directory: it sits in blocks/ with no BLOCK.md, so every "
+                               "validator that sweeps BLOCK.md files is blind to it")
+
     if not files:
         OK.append("no blocks yet (F3 creates the first one)")
         return
@@ -171,6 +186,24 @@ def check_blocks():
     for f in files:
         text = open(f, encoding="utf-8").read()
         lines = text.count("\n") + 1
+
+        # 🔴 PER-SECTION LIMITS — the block declares them in its own banners (`≤5 lines`, `≤15`…)
+        # and NOTHING measured them; only the 150-line total was enforced. A §E State that grows
+        # to 40 lines still fits the file limit while defeating what §E is FOR: the two lines a
+        # cold start reads. ⭐ The threshold is READ FROM THE FILE, never hardcoded here — a
+        # number copied into a validator is a number that drifts from the contract it enforces.
+        # An ARCHIVED block is frozen evidence: warning about its shape is busywork nobody acts
+        # on, and 67 unactioned warnings is how a validator became noise once already (M1).
+        for m in ([] if "/archive/" in f else
+                  re.finditer(r"══ ([A-K]) · ([A-Z ]+?) ══[^=]*?≤(\d+) lines", text)):
+            sec, name, cap = m.group(1), m.group(2).strip(), int(m.group(3))
+            nxt = re.search(rf"══ {sec} ·.*?══.*?\n(.*?)(?=<!-- ══|\Z)", text, re.S)
+            if not nxt:
+                continue
+            body = [ln for ln in nxt.group(1).split("\n") if ln.strip()
+                    and not ln.strip().startswith(("<!--", "-->"))]
+            if len(body) > cap:
+                yel(f, f"§{sec} {name}: {len(body)} lines — over the ≤{cap} it declares")
 
         bid = (re.search(r"^id:\s*(\S+)", text, re.M) or [None, None])[1]
         status = (re.search(r"^status:\s*(\w+)", text, re.M) or [None, None])[1]

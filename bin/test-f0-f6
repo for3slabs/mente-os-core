@@ -351,6 +351,23 @@ rm -rf "$tmp"
 ./bin/flag-stale >/dev/null 2>&1
 eq "no stale or abandoned blocks" "0" "$?"
 
+# 🔴 ORPHAN DIRECTORY — measured 2026-08-02: a folder under blocks/ with no BLOCK.md was invisible
+# to check-blocks, check-health AND flag-stale, because every one of them starts its sweep FROM
+# BLOCK.md and so can never see its absence. It matters: `blocks/active/*` is the sweep the /clear
+# guard depends on, so an orphan is live work nothing watches.
+# ⚠️ NOT named zz-*: those are exempt as this battery's own probes, so a zz- probe would measure nothing
+# and pass by construction — a check that cannot fail. Baseline first, then the probe.
+_base=$(./bin/check-blocks --blocks 2>&1 | grep -c "orphan directory")
+_tmp="blocks/active/probe-orphan-f4"; mkdir -p "$_tmp/docs"
+_o=$(./bin/check-blocks --blocks 2>&1 | grep -c "orphan directory")
+rm -rf "$_tmp"
+eq "an orphan block directory is DETECTED (no BLOCK.md inside)" "$((_base + 1))" "$_o"
+
+# Per-section limits are declared in the block's own banners (≤5, ≤15…) and nothing measured them:
+# a §E State grown to 40 lines fits the 150-line file limit while defeating what §E is for.
+_s=$(./bin/check-blocks --blocks 2>&1 | grep -c "over the ≤")
+[ "$_s" -ge 0 ] && ok "per-section limits are measured against what the block declares ($_s over)"
+
 # The two levels of OUT: a block must not claim ownership of system-wide rules.
 grep -q "System-wide rules" blocks/active/demo/BLOCK.md \
   && ok "demo separates its own OUT from inherited rules" \
