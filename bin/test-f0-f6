@@ -570,9 +570,16 @@ rm -rf "$t"
 # (2026-07-30, session unregistered). Registering S7 made the lock correctly return 0 and the
 # test failed while the system was right. A test that pins today's state is a test that breaks
 # the moment the work it guards gets DONE.
-sid=$(ls -t ~/.claude/projects/-home-brianweb3-for3s/*.jsonl 2>/dev/null | head -1)
+# 🔴 This hardcoded ~/.claude/projects/-home-brianweb3-for3s — the engine carrying ONE user's
+# path, which is exactly what mente.config.yml exists to prevent (block `distribucion` §F-4).
+# Ask the config, which computes the slug from the working directory.
+sid=$(ls -t "$(python3 -c "
+import sys; sys.path.insert(0,'$M/bin')
+import mente_config as c; print(c.session_dir()[0] or '')" 2>/dev/null)"/*.jsonl 2>/dev/null | head -1)
 sid=$(basename "${sid:-none}" .jsonl | cut -c1-8)
-if grep -q "$sid" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
+# Family A (rules/rule-checks-must-measure.md): 8 hex as a bare substring matches inside any
+# longer hash. The neighbours must not be hex — same fix as check-clear-ready (8d9f5f3).
+if grep -qE "(^|[^0-9a-f])$sid([^0-9a-f]|$)" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
 # 🔴 `$?` was read INSIDE eq's own arguments, and the $(...) that builds the label runs
 # FIRST — so the label's exit code overwrote the one being measured. It only ever showed
 # when want=1: with want=0 the clobbered $? happened to match. Capture before anything runs.
@@ -638,6 +645,26 @@ if [ -f "$_cap" ]; then
 else
   bad "CAPABILITIES.md" "exists" "MISSING — the agent has no capability map"
 fi
+
+# ⭐ THE ENGINE CARRIES NO ONE'S NAME (block `distribucion` §F-4). mente.config.yml exists so a
+# new user edits ONE file — its own header says "if they ever have to touch bin/ to make the
+# system work, this separation failed". Measured 2026-08-03: bin/test-f0-f6 had the session path
+# `-home-brianweb3-for3s` hardcoded, so the engine shipped with one user's identity inside it.
+# ⚠️ COMMENTS ARE EXEMPT ON PURPOSE: four validators document the incident where that same path
+# was hardcoded. Deleting that history to satisfy a grep would erase the reason the rule exists —
+# dated evidence stays (rules/contract-document.md §0-bis). Only executable lines are measured.
+_dirty=0
+for _f in bin/* hooks/* rules/*.md principles/*.md; do
+  case "$_f" in *__pycache__*|*.md) [ "${_f##*.}" = "md" ] && continue;; esac
+  [ -f "$_f" ] || continue
+  # The pattern is split so this check does not match ITSELF — measured: it flagged its own
+  # grep line. And a docstring BODY (no leading quotes) is prose too: python modules explain
+  # the incident across several lines, so anything without code punctuation is exempt.
+  _n=$(grep -nE "/home/[a-z]|brian""web3" "$_f" 2>/dev/null \
+       | grep -vE ':[[:space:]]*#|"""|`|^[0-9]+:[^=(]*$' | wc -l)
+  [ "$_n" -eq 0 ] || { _dirty=$((_dirty+1)); printf '     ⤷ %s has %s executable line(s) with a personal path\n' "$_f" "$_n"; }
+done
+eq "no engine FILE carries an owner name or absolute path in code" "0" "$_dirty"
 
 # ⭐ THE ENGINE/INSTANCE LINE as a LOCK, not a paragraph (block `distribucion` §F-6).
 # CAPABILITIES.md §1 tells the agent it may run the engine but not rewrite it. In prose that is

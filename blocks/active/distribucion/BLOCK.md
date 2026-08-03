@@ -41,10 +41,10 @@ created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 5 and 6 closed — the agent knows what it can run, and the engine is write-gated
-next: sub-block 4 (check: no engine file carries owner name or absolute path) — no clone needed
-blockers: sub-block 1 needs a CLEAN CLONE to test; it cannot be proven from this session
-progress: 2/6 sub-blocks closed
+phase: 4·5·6 closed — engine is nameless, write-gated, and the agent knows what it runs
+next: 1·2·3 all need the CLEAN CLONE — the block cannot advance from this machine
+blockers: 🔴 the 3 remaining sub-blocks all wait on sub-block 1, which needs a clean clone
+progress: 3/6 sub-blocks closed
 updated: 2026-08-03
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
@@ -54,7 +54,7 @@ updated: 2026-08-03
 | 1 | do the 4 hooks survive a portable path? | `.claude/settings.json` | 4 hooks | open |
 | 2 | `bin/init` — ask, then generate | `bin/init` (new) | 0 | open |
 | 3 | templates for the 3 startup files | `*.template` | 0 | open |
-| 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | open |
+| 4 | check: no engine file carries an owner name or absolute path | `bin/test-f0-f6` | — | ✅ closed |
 | 5 | ⭐ the agent's CAPABILITY MAP — what it can do, and the engine/instance line | `CAPABILITIES.md` | — | ✅ closed |
 | 6 | make the engine/instance boundary a LOCK, portable | `.claude/settings.json` | 4 hooks | ✅ closed |
 
@@ -95,6 +95,11 @@ updated: 2026-08-03
 - 2026-08-03 · sub-block 6 ✅ engine write-gated PORTABLY (24 rules, `$CLAUDE_PROJECT_DIR`)
   🔴 found doing it: Edit/Write do NOT cover Bash — a python one-liner rewrote a file
   under bin/ untouched by the Edit rule. Same back door as rule-config-hygiene §1.5
+- 2026-08-03 · sub-block 4 ✅ the engine carries no one's name. Found and fixed REAL
+  contamination: `bin/test-f0-f6` had `-home-brianweb3-for3s` hardcoded — the engine
+  shipping with one user's identity. Now asks mente_config. Comments exempt on purpose:
+  4 validators document that same incident, and deleting history to satisfy a grep
+  would erase why the rule exists
 
 <!-- ══ J · CONTEXT ══ ≤80 lines · CURATED, not a log ══ -->
 ## Context
@@ -116,12 +121,11 @@ at `/home/brianweb3/for3s/Mente/hooks/`. A new user clones and **no gate starts*
 fail loudly; it silently stops governing, which is the worst failure mode for a system whose
 thesis is *"what is in code is obeyed 100%"*.
 
-**What was tried and reverted (2026-08-02).** The hooks were rewritten with
-`$CLAUDE_PROJECT_DIR` — which demonstrably works in permission rules. But it could **not be
-verified for hooks from this session**: the variable is undefined in the session shell, so the
-probe resolved to an empty path and proved nothing. Leaving all four gates changed on an
-unverified assumption is the exact defect this project spent 2026-08-02 correcting eight times.
-Reverted; `check-health` confirms the gates are intact.
+**Sub-block 1, the blocker.** `$CLAUDE_PROJECT_DIR` is PROVEN to work in permission rules
+(sub-block 6 relies on it). For `hooks[].command` it could **not** be verified from this session
+— the variable is undefined in the session shell, so the probe resolved to empty and proved
+nothing. The rewrite was reverted rather than left on an unverified assumption. **It needs a
+clean clone.**
 
 **⭐ WHO INSTALLS THIS IS AN AGENT, NOT A PERSON** (Brian, 2026-08-02): *"VA A HABER UN AGENTE DE
 IA O UN LLM QUE ES EL QUE EJECUTE TODAS ESAS INSTRUCCIONES. DEBE DE SABER QUÉ CAPACIDADES TIENE
@@ -133,11 +137,6 @@ needs two things a form does not give:
 **Why ① is correctness, not documentation:** an agent that does not know `bin/grade-block`
 exists hand-writes a verdict — inventing criterion (ADR-003). Same for `check-sufficiency`
 before closing, or `generate-metrics` instead of typing a number.
-
-**Why ② must be a lock:** *"do not touch the engine"* in prose is this project's own 40-60% case
-(`PROJECT-RULES.md` §1 now labels which rules are locks and which are discipline). The instance
-half must stay writable — the agent fills in blocks, documents and `mente.config.yml` as work
-advances — while `bin/` `hooks/` `rules/` stay closed to it. That asymmetry is the product.
 
 **Related, already registered:** `memory/PENDIENTES.md` §🚪 (`CLAUDE.md` §ESTADO carries instance
 state) is the same problem seen from the document side — this block is the mechanism that closes it.
