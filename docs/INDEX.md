@@ -111,7 +111,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 412 |
+| `INDEX.md` | generated | — |  | 414 |
 | `METRICS.md` | generated | current | 2026-08-02 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 23 |
