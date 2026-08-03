@@ -81,7 +81,7 @@ server vivía en 60 eps → redactada). 👉 `project_entrenamiento_foresito` ·
 > **PERMITIDO** puede escribirse, si lo desconocido **falla cerrado**. (Auditadas las 22
 > enumeraciones: 19 estaban bien, varias a propósito.) → `rules/rule-config-hygiene.md`
 
-**🔑 ABIERTO — FIRMA GPG, decide Brian** (sin clave aquí; `deny` de `secrets/` respetado). ✅ identidad: `Brian Lopez <brayan002150@gmail.com>`. → `PENDIENTES.md` §🔑.
+**🔑🔐 2 ABIERTOS, decide Brian** — FIRMA GPG (sin clave aquí; ✅ identidad ya es `Brian Lopez <brayan002150@gmail.com>`) · `~/.claude.json` guarda el OAuth del harness y **`deny` no es sandbox**: el matcher lee el TEXTO del comando, no la ruta — `"$(ls …)"` lo esquiva. Ambos con sus opciones en `PENDIENTES.md` §🔑 §🔐.
 
 **👉 PRÓXIMO PASO — no hay deuda técnica que valga la pena.** Lo único abierto es lo que
 ninguna IA puede escribir: **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`).

@@ -3,6 +3,53 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+## 🔐 `~/.claude.json` — las credenciales del harness. ARQUITECTURA, no configuración (2026-08-02)
+
+**Lo que guarda (medido):** `oauthAccount` + `customApiKeyResponses` — las credenciales OAuth con
+las que corre Claude Code. 51 KB, permisos `-rw-------`.
+
+**Lo que se hizo hoy** (`474c375`): `deny` en 13 canales para `*claude.json*`, que cubre también
+los temporales `.claude.json.tmp.<pid>.<hash>` que el harness escribe al guardar — uno llevaba
+`oauthAccount` desde el **30-jul** y el `deny` del nombre EXACTO no lo alcanzaba.
+
+> ## 🔴 EL LÍMITE ESTRUCTURAL — medido en vivo, no deducido
+>
+> ```
+> head -c 12 "/home/brianweb3/.claude.json"   → DENEGADO ✅
+> head -c 15 "$(ls ~/.claude.json.tmp.*)"     → LEYÓ EL ARCHIVO 🔴
+> ```
+>
+> **El matcher evalúa el TEXTO del comando, no la ruta que ese comando acaba abriendo.** Si el
+> nombre no aparece literal — una variable, un `$(...)`, un glob — **ninguna regla lo ve.**
+>
+> **Ninguna lista de patrones cierra esto.** No es un fallo de las reglas escritas: es el techo del
+> mecanismo. El `deny` es una barrera contra el acceso **accidental** y contra el descuido —
+> **no es un sandbox.**
+
+**👉 POR QUÉ ESTO NO LO DECIDE LA IA.** Lo que nunca debe leerse no se protege con `deny`: se saca
+del alcance o se cifra. Eso cambia dónde vive un fichero del que depende el arranque del harness —
+es arquitectura del entorno, y equivocarse deja la herramienta sin poder autenticarse.
+
+**3 caminos (Brian elige):**
+
+| | Qué | Coste / riesgo |
+|---|---|---|
+| **1** | **Dejarlo como está** y asumir que el `deny` cubre lo accidental | cero trabajo · el hueco sigue abierto, pero **conocido y escrito** |
+| **2** | Sacar `.claude.json` de `$HOME` (variable de entorno del harness → ruta fuera de `additionalDirectories`) | medio · verificar que Claude Code sigue autenticando |
+| **3** | Cifrado en reposo del home / disco | alto · protege todo, no solo esto · fuera del alcance de una sesión |
+
+⭐ **Mi recomendación medida: la 1, y que quede escrita.** Un hueco documentado que se conoce vale
+más que un parche que da sensación de cierre. Añadir más patrones al `deny` sería exactamente eso —
+y **peor que saberlo abierto**. Si algún día el riesgo cambia (equipo compartido, máquina ajena),
+la 2 es el siguiente escalón.
+
+⚠️ Relacionado: el harness **reescribe `settings.local.json` en cada aprobación**. Durante la
+propia auditoría, `Bash(python3 -)` reapareció **dos veces** después de borrarlo. Por eso §1.3
+(182 allow, umbral 120) queda abierto a propósito: podar sin cambiar el hábito de aprobación es
+trabajo que se deshace solo.
+
+---
+
 ## 🔑 FIRMA GPG DE LOS COMMITS — PENDIENTE, decisión de Brian (2026-08-02)
 
 **Estado medido hoy:** este WSL2 **no tiene ninguna clave GPG** (llavero vacío: ni secreta ni

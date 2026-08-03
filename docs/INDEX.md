@@ -175,8 +175,8 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-07-31 | 3667 |
-| `RETOMAR.md` | entry-point | current | 2026-08-02 | 197 |
+| `PENDIENTES.md` | pending | current | 2026-08-02 | 3720 |
+| `RETOMAR.md` | entry-point | current | 2026-08-02 | 199 |
 
 ## `memory/archive/`
 
@@ -257,7 +257,7 @@
 | `contract-document.md` | rule | current | 2026-07-29 | 200 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
-| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 223 |
+| `rule-config-hygiene.md` | rule | current | 2026-07-31 | 237 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 98 |
 | `rule-friction.md` | rule | current | 2026-07-29 | 100 |
 | `rule-inheritance.md` | rule | current | 2026-07-29 | 167 |
