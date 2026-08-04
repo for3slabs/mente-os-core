@@ -41,6 +41,8 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S6 | `dac2ce13` | 2026-07-26 ~06:00 | 2026-07-26 ~23:50 (~18h) | 5.9 MB 🟢 | ~60 | ~n/d | **LA JORNADA DE LOS CIMIENTOS DE LA DEMO** — 6 archivos a producto + Ronda F0 `userStore` (U1-U6, C6p2 cerrado) + `container.ts` activado + `DEMO_ENC_KEY` unificada + rebuild del agente. ~15 bugs (3 de seguridad). **2 caídas de producción causadas por mí.** Sana en disco |
 | S7 | `4fc1996c` | 2026-07-27 00:03 | 2026-07-31 19:41 (**~116h**) 🔴 | 12 MB 🟢 | 1,087 turnos | **998K tokens** 🔴 | **LA JORNADA DE MENTE OS v2** — el sistema pasa de documentar a GOBERNAR: 11 validadores + 4 hooks + 3 niveles de reglas + migración v1→v2 completa (M0-M5, 186 docs, 4 carpetas eliminadas). `test-f0-f6` = 105/105. **Contexto máximo del proyecto — supera a S1 (985K), la monstruo.** 9 bugs propios, todos cazados por validadores |
 | S8 | `523998b8` | 2026-07-31 19:51 | 2026-08-02 22:09 (**~50h**) 🔴 | 5.6 MB 🟢 | 670 turnos | **722K** 🔴 | **LA JORNADA DE ENDURECER EL v2** — F8-4 pasó (el brief bastó) y luego 12 commits cerrando huecos que la propia auditoría destapó: el token de GitHub expuesto · el guardia que vigilaba 9 de 21 · el cableado de los hooks · el latido F1+F2. Mente OS v2 **publicado en GitHub**. Batería 105 → 138 |
+| S10 | `1b9338a4` | 2026-08-03 18:51 | 2026-08-04 01:32 (**~7h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
+| S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -404,6 +406,176 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 ### Cosas raras
 
 Ninguna. Sesión sana en todos los ejes.
+
+
+## S10 · `1b9338a4` — LA JORNADA DE LA VOZ (2026-08-03 18:51 → 08-04 01:32, ~7h)
+
+**Medido del `.jsonl`:** 2.1 MB 🟢 · 237 turnos · **contexto pico 261K 🟡** · 207K tokens de
+salida · 35.7M de lectura de caché. Batería en verde todo el día. **Cero commits — todo en disco.**
+
+### Cómo empezó y en qué acabó
+
+Brian abrió pidiendo retomar. El plan era ① cerrar `distribucion` y ② los huecos de criterio.
+**Ninguno de los dos se tocó.** A los tres turnos preguntó otra cosa:
+
+> *"se me hace muy escueta la respuesta, a veces mucho texto que no me ayuda porque no está
+> dividido y no entiendo qué leer ni cómo leerlo… ni sé qué sigue ni cómo continuar y eso es
+> frustrante."*
+
+Eso desvió la sesión entera, y con razón: era un defecto real del sistema, no una preferencia.
+
+### El hallazgo de raíz — la voz se saboteaba a sí misma
+
+`~/.claude/output-styles/for3s.md` tenía **8 reglas, todas sobre qué NO hacer**. Cero sobre
+estructura. Y dos de ellas **causaban** el problema que Brian reportaba:
+
+| Regla | Decía | Efecto medido |
+|---|---|---|
+| **2.5** | *"nunca cierres repitiendo · termina en la última frase útil"* | me **ordenaba cortar el cierre** — justo lo que él necesitaba para saber qué sigue |
+| **2.8** | *"omite lo que no importa"* | se leía como permiso para entregar hallazgos sin explicar |
+
+⭐ **No faltaban reglas: sobraban dos mal escritas.** Añadir estructura sin corregirlas habría
+dejado el contrato compitiendo contra el estilo, cumpliéndose a medias.
+
+### §6 · BRIAN'S ADDITIONS — un hueco de criterio se llenó
+
+`owner-0-voice.md` §6 llevaba días marcado `⬜ PENDING · BRIAN`. Lo que él dictó durante la sesión
+**era exactamente ese hueco**, así que se estructuró con sus citas y su autoría, siguiendo el
+método que `qa-dimensions.md` §5 exige (*la IA pregunta, Brian responde, la IA estructura*):
+la entrega no debe necesitar una segunda pregunta · radiografía, no bitácora · el largo no es el
+enemigo · leer no debe cansar · registro ni condescendiente ni excluyente.
+
+### Lo que se construyó, en capas
+
+**① El contrato de entrega** (`§7`): 4 partes por apartado · jerarquía H1/H2/H3 · gráficos que
+explican · techo de tamaño · lectura por niveles · bloque `📦 ENTREGA` con 🩺 salud, antes/después
+/puente y la etiqueta escrita UNA vez.
+
+**② Los 3 modos** (`§7.0`), la corrección que más faltaba: *"¿cómo cierro?"* eran dos líneas y
+recibió índice, salud y seis campos. **El contrato no tenía noción de peso.** 🟢 BÁSICO (el
+default de Claude Code) · 🟡 MEDIO · 🔵 BLOQUE, con el default en 🟢 — *sobre-formatear cuesta
+atención en cada turno; sub-formatear cuesta una pregunta de seguimiento.*
+
+**③ El respaldo externo** (`§8`): 5 reglas coinciden con doctrina publicada de Anthropic
+(evidencia sobre afirmación · incertidumbre calibrada de la Constitución de enero 2026 · explicar
+la lógica · todos para mostrar progreso). Y declara qué **NO** lo tiene: la estructura de
+secciones, el bloque, el techo y los niveles son invención de este proyecto. **Anthropic no
+publica plantilla de respuesta.**
+
+### Consumo — el vehículo era la fuga, no lo que parecía
+
+Brian avisó del gasto. Medido: el Artifact costaba ~6,678 tokens (44% CSS repetible), pero
+**el vehículo se paga en CADA turno** y había crecido de ~1,100 a **5,167**. Adelgazado a **2,644
+(−48%)** dejando solo la regla operativa; el porqué vive en la fuente canónica. Verificadas
+16/16 reglas presentes tras comprimir.
+
+### Errores propios
+
+- **Repetí `✅ HECHO —` cuatro veces seguidas** en un mismo bloque. Brian: *"los hechos no
+  deberías de repetir la palabra."* La etiqueta repetida deja de marcar frontera y se vuelve ruido.
+- **No existía un H1.** Todo abría en `##` y vivía en un nivel plano: nada marcaba dónde empieza
+  ni acaba una parte.
+- **Apliqué formato de auditoría a una pregunta de dos líneas** — el fallo que originó los 3 modos.
+- **Propuse Artifacts por iniciativa propia.** Brian: *"es todo sobre Claude Code, al menos que te
+  diga lo contrario."* Retirados de ambos archivos y escrito como **prohibición explícita**, no
+  como omisión: una regla ausente se rellena con lo que la IA crea razonable.
+- 🔴 **Cité `intern-os` dentro de un archivo del MOTOR.** El motor se publica bajo MIT; una cita
+  ahí arrastra linaje ajeno a cada clon. Purgado a 0 en ambos. ⭐ *Antes de citar una fuente
+  externa: ¿este archivo viaja a otros repos?*
+- ⭐ **Dejé `owner-0-voice.md` en 582 líneas con un límite de 250** — el mismo día que escribí la
+  regla del techo de tamaño. *La regla que escribes no se aplica sola al archivo donde la
+  escribes.* Registrado en `PENDIENTES.md`, no resuelto.
+
+### Consumo — dónde creció
+
+Arranque normal y crecimiento lineal: 6 rondas de refinamiento del contrato, cada una releyendo
+ambos archivos y corriendo la batería (≈2 min). **261K con 237 turnos en 7h: la sesión más sana
+de las últimas cuatro** — comparar con S9 (681K) y S7 (998K).
+
+### Lo raro
+
+Nada anómalo. Un `Edit` falló dos veces por un archivo sin salto de línea final — resuelto con
+`python3`, no es defecto del sistema.
+
+### Por qué se cierra
+
+Límite natural y **una razón de método**: el contrato pasó de 8 a ~24 reglas en una sola sesión y
+**nunca ha gobernado una respuesta real** — todas las de hoy las maqueté a mano. Solo entra en
+vigor en una sesión nueva. Brian, tras 6 rondas: *"me gusta más que como iniciamos pero no me
+fascina"* — y la séptima ronda de diseño rinde menos que un día de uso real.
+
+---
+
+## S9 · `dc733bc1` — LA JORNADA DEL AGENTE INSTALADOR (2026-08-02 22:43 → 08-03 18:39, ~20h)
+
+**Medido del `.jsonl`:** 7.7 MB 🟢 · 1,637 turnos · **contexto pico 681K 🔴** · 679K tokens de
+salida · 586M de lectura de caché. Batería **138 → 160**. 37 commits locales, sin push.
+
+### Qué se hizo, en tres bloques
+
+**① El plan de raíz (F1-F4).** Empezó arreglando UN check roto y acabó encontrando que **8
+hallazgos del día eran la misma familia**: un check que corre, reporta verde, y no mide lo que
+dice medir. No checks ausentes — presentes, activos y en los que se confiaba.
+
+| | |
+|---|---|
+| F1 | el guardia del `/clear` comparaba 8 hex como SUBCADENA — un hash de commit lo desarmaba |
+| F2 | esa familia tenía **4 instancias**, no 1 (`check-blocks` · `check-clear-ready` · `check-health` · `generate-metrics`) |
+| F3 | `rules/rule-checks-must-measure.md` — las 3 familias con sus casos medidos |
+| F4 | sección `SELF-TEST` en la batería: rompe los guardias A PROPÓSITO y exige que canten |
+
+**② Citas rotas 144 → 0.** El reparto es la conclusión: de 135 resueltas, **69 eran citas
+CORRECTAS** que `check-links` contaba mal (nombres que un documento DISCUTE, roadmaps, memorias
+del harness, repos hermanos) y 66 fósiles reales de la migración v1→v2. Cuando la cita es
+correcta, cambiar la prosa es el error.
+
+**③ Bloque `distribucion` — abierto y 6/6 construido.** Nace de Brian: *"esto está local para mí
+y aun así tenemos errores. AÚN NO VEO QUE SEA ALGO QUE PODAMOS CONFIAR A QUE LA GENTE PUEDA
+OCUPAR."* Y su reencuadre decisivo: **quien instala no es una persona, es un AGENTE.**
+`bin/init` + plantillas + `CAPABILITIES.md` + la frontera motor/instancia como candado portable.
+**Probado en un clon real**: otro dueño, 6 menciones suyas, CERO de Brian, y un hook del clon
+corriendo contra su propia ruta.
+
+### Seguridad — dos agujeros probados, no deducidos
+
+- 🔴 `python3 -c "open('~/.ssh/...')"` **leyó** lo que el `deny` prohibía. `Bash(python3*)`,
+  `perl`, `xargs`, `node`, `bun` estaban en `allow` y ejecutan código arbitrario.
+- 🔴 `~/.claude.json` — `oauthAccount` del propio harness — **sin ninguna regla**. Su temporal
+  `.tmp.<pid>` llevaba lo mismo desde el 30-jul. `deny` 67 → 212, `ask` creado (48 reglas).
+
+### Errores propios, y son la parte que más enseña
+
+- **Declaré un bloqueo que no existía.** Dije que el sub-bloque 1 necesitaba un clon limpio
+  porque mi sonda resolvió a vacío. **No consulté la fuente.** La documentación lo respondía.
+  ⭐ *Un límite que no has verificado no es un límite: es una suposición disfrazada.*
+- **Escribí una prueba que no probaba nada.** La primera sonda del huérfano se llamó `zz-*`,
+  nombre EXENTO por ser sonda de la batería: pasaba por construcción. Un check que no puede fallar.
+- **Copié un defecto al arreglar su gemelo.** La simetría de ADRs comparaba `"016"` (y `2016` lo
+  satisface). El defecto estaba en el check ORIGINAL y lo repliqué sin cuestionarlo — justo lo que
+  `rule-fix-not-patch` §3 manda preguntar: *¿dónde MÁS vive?*
+- **Mi comando de prueba quedó archivado como permiso permanente.** Al aprobarse, el harness
+  escribió `Bash(python3 -c "print(open('/home/brianweb3/.ssh/known_hosts')…` en
+  `settings.local.json`. §1.1 en vivo. Y reapareció **tres veces** al purgarlo.
+
+### Consumo — dónde creció
+
+Arranque normal. El contexto escaló a partir de la auditoría de los 29 ADRs uno por uno y no bajó:
+a partir de ahí cada corrida de batería (≈2 min) y cada verificación cruzada sumaban. **681K de
+pico con 1,637 turnos: murió de EDAD y de densidad, no de tamaño** — 7.7 MB es 🟢.
+
+### Lo raro
+
+Tres corridas de la batería dieron un fallo transitorio por **solaparse con `generate-metrics`**,
+que la ejecuta internamente y toma el mismo lock. No es defecto: es el lock haciendo su trabajo,
+pero conviene saberlo antes de creerse un rojo.
+
+### Por qué se cierra
+
+Límite natural: bloque 6/6 construido, plan de raíz completo, `check-health` sin 🔴 y batería en
+verde. Lo que queda del bloque **no lo decide la IA** — prueba de campo real y la capa 2 del
+veredicto (`qa-dimensions`, 9 huecos de criterio).
+
+---
 
 ---
 

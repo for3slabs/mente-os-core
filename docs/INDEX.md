@@ -54,7 +54,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 453 |
+| `Registro_Conversaciones.md` | — | — |  | 625 |
 
 ## `Maestro/`
 
@@ -92,7 +92,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 149 |
+| `BLOCK.md` | — | — |  | 148 |
 
 ## `blocks/archive/split-architecture_2026-07/`
 
@@ -119,8 +119,8 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 421 |
-| `METRICS.md` | generated | current | 2026-08-02 | 104 |
+| `INDEX.md` | generated | — |  | 423 |
+| `METRICS.md` | generated | current | 2026-08-03 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
 | `STATES.md` | generated | — |  | 25 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
@@ -183,8 +183,8 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-02 | 3890 |
-| `RETOMAR.md` | entry-point | current | 2026-08-02 | 199 |
+| `PENDIENTES.md` | pending | current | 2026-08-02 | 3924 |
+| `RETOMAR.md` | entry-point | current | 2026-08-04 | 198 |
 
 ## `memory/archive/`
 
@@ -233,7 +233,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `owner-0-voice.md` | contract | current | 2026-07-29 | 168 |
+| `owner-0-voice.md` | contract | current | 2026-08-03 | 581 |
 | `owner-1-docs.md` | contract | current | 2026-07-29 | 96 |
 | `owner-2-dev.md` | contract | current | 2026-07-29 | 108 |
 | `owner-3-validation.md` | contract | current | 2026-07-29 | 163 |

@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-02 · **Owner:** brian
-**Generated:** 2026-08-02 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-03 · **Owner:** brian
+**Generated:** 2026-08-03 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **142** |
+| `battery.checks` | **159** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -68,9 +68,9 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 
 | Metric | Value |
 |---|---|
-| `sessions.registered` | **8** |
-| `sessions.on_disk` | 17 |
-| `sessions.heavy_unregistered` | **1** |
+| `sessions.registered` | **10** |
+| `sessions.on_disk` | 18 |
+| `sessions.heavy_unregistered` | **0** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
 actually costs something. The 21-jul incident came from one of them.
@@ -79,10 +79,10 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 16 |
+| `system.validators` | 17 |
 | `system.hook_files` | 6 |
 | `system.hooks_registered` | **4** |
-| `system.blocks_active` | 1 |
+| `system.blocks_active` | 2 |
 | `system.blocks_archived` | 1 |
 
 ⚠️ `hook_files` and `hooks_registered` differ on purpose: `pre-commit.sh` is invoked by git, not
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 16 | 212 |
-| `permissions.local` (`settings.local.json`) | 188 | 212 |
+| `permissions.local` (`settings.local.json`) | 208 | 212 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

@@ -3,6 +3,40 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+## 📏 ARCHIVOS SOBRE SU LÍMITE — la deuda que el techo destapó (2026-08-04)
+
+`bin/check-health` los marca 🟡. Ninguno bloquea, pero **el más irónico es el primero**: escribí
+ahí la regla del techo de tamaño y dejé el archivo al 233% del suyo.
+
+| Archivo | Líneas | Límite | Nota |
+|---|---|---|---|
+| ⭐ `principles/owner-0-voice.md` | **582** | 250 | el contrato de entrega se escribió el 04-ago; el archivo dobló su tamaño |
+| `docs/Arquitectura_Mente_OS_v2_Bloques.md` | 2,454 | 800 | el plano completo del v2 |
+| `rules/contract-block.md` | 336 | 250 | |
+| `rules/NAMING_CONVENTION.md` | 266 | 250 | |
+| `docs/plan-v2-rollout.md` | 423 | 400 | además su fecha lee 2026-08-02 |
+| `MEMORY.md` (memorias del harness) | 107 | 80 | **la pieza más pesada del arranque** |
+
+⭐ **La lección, y es de método:** *la regla que escribes no se aplica sola al archivo donde la
+escribes.* Por eso la doctrina es documento y la **verificación es script** — `check-health` lo
+cazó el mismo día.
+
+**Opciones para `owner-0-voice.md`** (decide Brian):
+
+| Opción | Qué implica | Costo |
+|---|---|---|
+| **Partir en dos** (recomendado) | `owner-0-voice.md` = las 8 reglas + §6; `contract-delivery.md` = todo el §7 | hay que actualizar quien lo cite |
+| Subir el límite del tipo `contract` | reconoce que 250 no da para un contrato con ejemplos | debilita el techo para TODOS los contratos |
+| Dejarlo 🟡 | cero trabajo | un 🟡 permanente enseña a ignorar los 🟡 |
+
+**Recomendación: partirlo.** Razón: el §7 es un contrato distinto del de la voz — uno gobierna la
+prosa y el otro la entrega. Separarlos es fix, no parche. El tradeoff es tocar las citas.
+
+⚠️ **El vehículo NO tiene este problema:** `~/.claude/output-styles/for3s.md` quedó en 203 líneas
+tras adelgazarlo (−48% de tokens). El límite duele solo en la fuente canónica.
+
+---
+
 ## 🧪 F4 — el self-test: que la batería pruebe sus checks en AMBOS sentidos (2026-08-02)
 
 **Plan de raíz, F1-F3 ✅ hechas · F4 abierta.** Nace de **8 hallazgos del mismo tipo en una sola

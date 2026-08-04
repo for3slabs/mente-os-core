@@ -88,7 +88,10 @@ updated: 2026-08-03
 
 <!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
 ## Friction log
-- (none recorded)
+- **`generate-metrics` corre la batería entera (~2 min) y toma su lock.** Lanzarlo mientras otra
+  corrida está viva publica números de la corrida VIEJA sin avisar: pasó en el wrap de S9
+  (`battery.checks` salió 142 con la batería en 160). No es defecto —el lock hace su trabajo—
+  pero conviene esperar a que libere antes de creerse un número recién publicado.
 
 <!-- ══ I · CHECKPOINTS ══ -->
 ## Checkpoints
@@ -136,10 +139,6 @@ DENTRO DE MENTE OS V2 Y CÓMO EJECUTARLAS SIN TOCAR EL CÓDIGO DE MENTE OS V2."*
 
 That reframes the deliverable. A form assumes a human reads labels and types values. An agent
 needs two things a form does not give:
-
-**Why ① is correctness, not documentation:** an agent that does not know `bin/grade-block`
-exists hand-writes a verdict — inventing criterion (ADR-003). Same for `check-sufficiency`
-before closing, or `generate-metrics` instead of typing a number.
 
 **Related, already registered:** `memory/PENDIENTES.md` §🚪 (`CLAUDE.md` §ESTADO carries instance
 state) is the same problem seen from the document side — this block is the mechanism that closes it.

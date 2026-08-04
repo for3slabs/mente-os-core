@@ -54,7 +54,7 @@ next: sub-block 7 — jazz/mashe owners into the DB, delete allowedEmails.ts DEV
 blockers: sub-block 9 waits on the hosting decision → BRIAN
 progress: 6/9 sub-blocks closed
 updated: 2026-08-02
-note: untouched through 2026-08-02 (S7 built Mente OS v2, S8 hardened and published it).
+note: untouched through 2026-08-03 (S7 built the v2, S8 hardened it, S9 made it installable).
       A stale date here is not forgotten work: the blockers are where 2026-07-26 left them.
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
