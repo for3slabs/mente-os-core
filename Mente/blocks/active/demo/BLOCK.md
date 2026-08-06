@@ -58,9 +58,9 @@ created: 2026-07-24 · updated: 2026-07-29
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
 phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead code 1→0, tests 0→4
-next: todo lo abierto espera un dato de Brian — ver blockers
-blockers: §F-9 hosting · §F-11 rutas OAuth dormidas → BRIAN
-progress: 10/12 cerrados · 🟢 **23/23 tests en verde**, los 4 caminos vivos contra BD real
+next: §F-11 — reestructurar CÓMO se ejecuta lo de las rutas OAuth (Brian lo pidió así)
+blockers: ninguno. §F-11 queda pendiente de reestructurar, no bloquea
+progress: **11/12 cerrados** · 🟢 23/23 tests en verde contra BD real. Solo queda §F-11
 note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR y el bloque NO cierra —
       §F-7 sigue abierto con un agujero de autorización real.
 updated: 2026-08-05
@@ -79,24 +79,32 @@ note: the red test is the deliverable, not a defect — how to run them and what
 | 6 | real agent on/off, owner only (model C) | lib/demo/container.ts | 2 | closed |
 | 7 | ⭐ CERRADO por la raíz: jazz/mashe BORRADAS y `allowedEmails.ts` eliminado | (archivo borrado) | 0 | ✅ closed |
 | 8 | ⭐ CERRADO: los 4 caminos con **23/23 en verde** contra la rama de Neon | tests/apagar.test.ts | 0 | ✅ closed |
-| 9 | decide the hosting | (infrastructure) | 0 | blocked |
+| 9 | ⛔ hosting — **CERRADO 2026-08-06: no se hace.** Brian: *"aún no es momento y es ruido"* | (infraestructura) | 0 | ✅ closed |
 | 10 | delete the orphan (0 importers since 2026-06-16) | components/demo/ConnectClaude.tsx | 0 | ✅ closed |
-| 11 | decidir si las 3 rutas OAuth + el guard se borran o siguen dormidas | lib/demo/oauthGuard.ts | 2 | BRIAN |
+| 11 | 3 rutas OAuth dormidas — **se reestructura la forma de ejecutarlo**, no se decide hoy | lib/demo/oauthGuard.ts | 2 | pendiente |
 | 12 | error de eslint PREEXISTENTE (setState síncrono en un effect) | components/demo/ProfilePanel.tsx | 1 | ✅ closed |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
-- ⭐⭐ 2026-08-06 · **§F-8 CERRADO: 23/23 en verde contra una rama de Neon.** Brian creó la rama
-  `test` (`ep-polished-paper`, forkeada en 0.59s, auto-delete **Never**). Los 13 tests que se
-  saltaban ahora corren contra Postgres real: **0 saltados, 0 rojos**.
-  🔬 **No se dio por bueno el verde:** se saboteó el freno de reenvío de `verificacion.ts`
-  (`if (false && previo…)`) para reproducir el bug de V2, y el test **⭐ REGRESIÓN V2 se puso
-  ROJO**. Restaurado byte a byte, `git status` limpio. Un test que pasa a la primera y nunca se
-  vio fallar no ha demostrado nada (`val-functional.md` §2.2).
-  🔴 **Verificado que producción NO se tocó:** `demo_verificaciones` de la Neon viva tiene **0
-  filas `@for3s.invalid`**. La separación por `DEMO_DATABASE_URL_TEST` funciona.
-  ⚠️ **El archivo llegó sin el prefijo `DEMO_DATABASE_URL_TEST=`** (solo la cadena). Corregido;
-  vale como aviso de que el paso manual es donde se pierde el dato, no la conexión.
+- 🔴 2026-08-06 · **Mi propio vocabulario abrió un agujero en una puerta de seguridad.** Escribí
+  `pendiente` como estado del §F-11, y `gate-critical.py` solo reconocía `active|open|blocked`:
+  la puerta que impide **cerrar un bloque con trabajo abierto** dejó pasar el cierre (exit 0 donde
+  debía ser 2). Fallo silencioso, cazado por la batería. Corregido a lista blanca invertida —
+  **cualquier palabra que no signifique CERRADO cuenta como abierta**. Reprobado: vuelve a exit 2.
+- ⛔ 2026-08-06 · **§F-9 HOSTING CERRADO SIN HACERLO — decisión de Brian, no deuda olvidada.**
+  *"Aún no es momento de tener un hosting y es ruido para mí."* Llevaba `blocked` desde julio
+  esperando una decisión que ahora está tomada: **el servidor sigue en la laptop de Brian.**
+  ⚠️ **El riesgo se acepta con los ojos abiertos, y queda escrito para que nadie lo redescubra
+  como hallazgo:** todo For3s OS (los bots, la BD de los agentes, el canal API) corre en una
+  laptop doméstica; si se apaga o cae la red, el producto entero cae. **Ya pasó dos veces el
+  2026-07-26.** Mientras esto sea demo y pruebas internas es una respuesta defendible; deja de
+  serlo el día que un cliente externo dependa de su disponibilidad. **Ese día, y no antes, se
+  reabre.**
+- 📌 2026-08-06 · **§F-11 (3 rutas OAuth) NO se decide hoy: se reestructura cómo se ejecuta.**
+  Brian pidió replantear la forma antes que el contenido. Se queda como pendiente **vivo**, no
+  bloqueante. Estado medido: 138 líneas sin ningún consumidor web (el botón `ConnectClaude.tsx`
+  se borró el 2026-08-05), **seguras mientras no exista `DEMO_OAUTH_INTERNAL=1`** — sin esa
+  variable devuelven 403.
 - ⭐⭐ 2026-08-06 · **§F-7 CERRADO POR LA RAÍZ, no parcheando el assert.** Brian: *"elimina las
   instancias de jazz y mashe, son ruido y no se han ocupado"*. Medido antes de borrar: `jazz` 4
   episodios / 3 personas · `mashe` 8 / 4 — restos de las pruebas E2E de julio, **cero dueños
@@ -130,18 +138,6 @@ note: the red test is the deliverable, not a defect — how to run them and what
   colisionar: **2 tests en rojo**. Restaurado byte a byte (`git status` limpio). `val-functional.md`
   §2.2: *un check debe verse fallar antes de que su verde signifique algo* — un test que pasa a la
   primera y nunca se vio en rojo no ha demostrado nada.
-- ⭐ 2026-08-05 · **`gate-critical.py` ahora exime a un test de integración — con condición.**
-  La puerta bloqueó `tests/entrar.test.ts` por hacer `DELETE`/`UPDATE` desde un `.ts`. Era correcto:
-  la regla se escribió cuando no existía ningún test. Pero un test de integración **debe** limpiar
-  lo que escribe, y prohibirlo forzaría un `db()` simulado — que prueba el simulacro, no el freno
-  (`val-functional.md` §2.3). **La exención NO es "es un test":** solo aplica si el archivo nombra
-  una conexión dedicada (`DATABASE_URL_TEST`). Un test que alcanza la URL de producción **sigue
-  bloqueado**, y ese es justo el caso que vale la pena cazar. Probado en los 3 casos: exento ✅ ·
-  test sin variable dedicada → exit 2 ✅ · código de aplicación → exit 2 ✅.
-- 🔴 2026-08-05 · **`DEMO_DATABASE_URL` apunta a Neon de PRODUCCIÓN** (medido: 4 instancias vivas,
-  1 verificación en curso). Por eso ① lee `DEMO_DATABASE_URL_TEST` y **se salta** si falta, en vez
-  de caer de vuelta. Un default que apunta a algo con dueño es el error ya registrado en
-  `feedback_default_nunca_apunta_a_algo_con_dueno`.
 - 2026-08-05 · **`dev-backend.md` added to §D** — this block declares `app/api/demo/**` in its
   Scope IN, so it **is** backend. Caught by the check written the same day (*every filled expertise
   file must reach an active block*): the criterion was written and nothing declared it, so the hook

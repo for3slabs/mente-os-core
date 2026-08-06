@@ -84,14 +84,14 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 195 |
+| `BLOCK.md` | — | — |  | 191 |
 
 ## `blocks/active/demo/docs/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
 | `como-correr-los-tests.md` | analysis | current | 2026-08-05 | 104 |
-| `decisiones-tests.md` | analysis | current | 2026-08-05 | 57 |
+| `decisiones-tests.md` | analysis | current | 2026-08-05 | 82 |
 | `decisions-julio.md` | block | current | 2026-08-05 | 64 |
 | `demo-progress.md` | analysis | fossil | 2026-06-16 | 215 |
 | `guide-github-oauth-app.md` | analysis | current | 2026-07-20 | 63 |

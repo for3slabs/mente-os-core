@@ -177,7 +177,13 @@ def main():
             own = open(target, encoding="utf-8", errors="replace").read()
         except OSError:
             own = text or ""
-        if re.search(r"\|\s*(active|open|blocked)\s*\|", own):
+        # ⚠️ La lista es una LISTA BLANCA de estados CERRADOS invertida, y por eso incluye
+        # `pendiente`: el 2026-08-06 se escribió ese estado en el §F-11 de `demo` y la puerta
+        # dejó pasar un cierre con trabajo abierto. **Un vocabulario nuevo abrió un agujero en
+        # una puerta de seguridad**, y el fallo fue silencioso: exit 0 donde debía ser 2.
+        # Regla que se deriva: cualquier palabra que no signifique CERRADO cuenta como abierta.
+        if re.search(r"\|\s*(active|open|blocked|pendiente|pending|abierto|en curso)\s*\|",
+                     own, re.I):
             print(f"🔴 BLOCKED · block `{bname}` still has open sub-blocks in §F.\n"
                   "   A parent does not close over unfinished children (block-lifecycle.md §5).",
                   file=sys.stderr)

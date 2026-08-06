@@ -51,6 +51,31 @@ el BLOCK.md pasó su techo de 200 líneas. ⛔ Nada se resumió ni se borró.
   existen: una credencial suelta, no compatibilidad. En la BD quedaron **inactivas, no borradas**
   (UPDATE reversible).
 
+- ⭐ 2026-08-05 · **`gate-critical.py` ahora exime a un test de integración — con condición.**
+  La puerta bloqueó `tests/entrar.test.ts` por hacer `DELETE`/`UPDATE` desde un `.ts`. Era correcto:
+  la regla se escribió cuando no existía ningún test. Pero un test de integración **debe** limpiar
+  lo que escribe, y prohibirlo forzaría un `db()` simulado — que prueba el simulacro, no el freno
+  (`val-functional.md` §2.3). **La exención NO es "es un test":** solo aplica si el archivo nombra
+  una conexión dedicada (`DATABASE_URL_TEST`). Un test que alcanza la URL de producción **sigue
+  bloqueado**, y ese es justo el caso que vale la pena cazar. Probado en los 3 casos: exento ✅ ·
+  test sin variable dedicada → exit 2 ✅ · código de aplicación → exit 2 ✅.
+- 🔴 2026-08-05 · **`DEMO_DATABASE_URL` apunta a Neon de PRODUCCIÓN** (medido: 4 instancias vivas,
+  1 verificación en curso). Por eso ① lee `DEMO_DATABASE_URL_TEST` y **se salta** si falta, en vez
+  de caer de vuelta. Un default que apunta a algo con dueño es el error ya registrado en
+  `feedback_default_nunca_apunta_a_algo_con_dueno`.
+
+- ⭐⭐ 2026-08-06 · **§F-8 CERRADO: 23/23 en verde contra una rama de Neon.** Brian creó la rama
+  `test` (`ep-polished-paper`, forkeada en 0.59s, auto-delete **Never**). Los 13 tests que se
+  saltaban ahora corren contra Postgres real: **0 saltados, 0 rojos**.
+  🔬 **No se dio por bueno el verde:** se saboteó el freno de reenvío de `verificacion.ts`
+  (`if (false && previo…)`) para reproducir el bug de V2, y el test **⭐ REGRESIÓN V2 se puso
+  ROJO**. Restaurado byte a byte, `git status` limpio. Un test que pasa a la primera y nunca se
+  vio fallar no ha demostrado nada (`val-functional.md` §2.2).
+  🔴 **Verificado que producción NO se tocó:** `demo_verificaciones` de la Neon viva tiene **0
+  filas `@for3s.invalid`**. La separación por `DEMO_DATABASE_URL_TEST` funciona.
+  ⚠️ **El archivo llegó sin el prefijo `DEMO_DATABASE_URL_TEST=`** (solo la cadena). Corregido;
+  vale como aviso de que el paso manual es donde se pierde el dato, no la conexión.
+
 ---
 
 Related: `blocks/active/demo/BLOCK.md` §F-8 · `blocks/active/demo/docs/como-correr-los-tests.md`
