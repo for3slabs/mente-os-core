@@ -15,7 +15,7 @@
 > **LO CONSTRUIDO (todo en `Mente/Maestro/`, repo `for3slabs/mente-os-maestro` privado):**
 > - **F1 registro** (`Maestro/registro.md`): apunta a 5 ramas (For3s OS, marca-personal, Foresito, instancias, NavigoX-gate) + Diseño Jazz.
 > - **F2 puentes**: `maestro` — A (git efímero, `leer`/`grep`, no replica) + B (canal API vivo, `vivo`). Rama madre versionada en `mente-os-for3s`.
-> - **Bienvenida** (`BIENVENIDA.md`): protocolo de onboarding al clonar (lee CLAUDE.md/.claude/.agents + pregunta rama/descripción obligatoria).
+> - **Bienvenida** (`Maestro/BIENVENIDA.md`): protocolo de onboarding al clonar (lee CLAUDE.md/.claude/.agents + pregunta rama/descripción obligatoria).
 > - **F3 crear rama** (`mente-os-nueva`): genera {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla, descripción obligatoria, ficha para registro.
 > - **F4 permisos** (`Maestro/permisos.md` + puerta en `maestro`): por persona/carril, fail-closed, reusa H8. Colaborador ve solo su carril.
 > - **F5 piloto Jazz**: rama REAL `mente-os-diseno-jazz` (privado) creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve el núcleo.

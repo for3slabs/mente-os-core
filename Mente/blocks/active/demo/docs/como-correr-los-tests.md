@@ -39,7 +39,7 @@ FAIL  tests/autorizar.test.ts > 🔴 EL AGUJERO ABIERTO
 variable de entorno — **un dominio que nadie controla.** El test afirma que debería rechazarse.
 No se cumple, así que falla.
 
-⛔ **Debilitar el assert lo convierte en decoración.** `val-functional.md` §2.2: *un check debe
+⛔ **Debilitar el assert lo convierte en decoración.** `principles/expertise/val-functional.md` §2.2: *un check debe
 verse fallar antes de que su verde signifique algo.* Aquí empieza rojo a propósito, y **su verde
 ES la definición de cerrar el sub-bloque 7** — que necesita un dato que solo tiene Brian: quién es
 dueño de jazz y de mashe.
@@ -76,7 +76,7 @@ salen.
 
 ## 4 · ⛔ LO QUE NO SE HACE
 
-- **No se simula `db()` ni `fetch`.** `val-functional.md` §2.3: donde cruza un proceso, solo cuenta
+- **No se simula `db()` ni `fetch`.** `principles/expertise/val-functional.md` §2.3: donde cruza un proceso, solo cuenta
   el sistema real. Un mock probaría el mock — y los tres frenos de `verificacion.ts` viven en
   `demo_config` y en un `ON CONFLICT`, invisibles a cualquier simulacro.
 - **No se llama al agente For3s de verdad.** Mandaría un mensaje a una instancia viva y gastaría

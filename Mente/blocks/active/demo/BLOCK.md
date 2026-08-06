@@ -4,32 +4,27 @@
 id: blk-demo-2026-07
 type: code
 intent: turn the web demo from an MVP into something that can be handed to a client
-status: active · lane: full-block
-owner: brian
-created: 2026-07-24 · updated: 2026-07-29
+status: active · lane: full-block · owner: brian
+created: 2026-07-24 · updated: 2026-08-06
 
 <!-- ══ B · SCOPE ══ required to OPEN · ≤15 lines ══ -->
 ## ✅ IN
 - marca-personal/lib/demo/*.ts · components/demo/* · components/for3s-admin/*
 - marca-personal/app/api/demo/**
-- marca-personal/tests/*.test.ts (§F-8; declarados ahí desde 2026-08-05, en el scope el 08-06:
-  el §F los gobernaba y el §B no los cubría, así que los hooks enmudecían sobre ellos)
+- marca-personal/tests/*.test.ts (añadidos al scope 2026-08-06: el §F ya los gobernaba y el §B
+  no los cubría, así que los hooks enmudecían sobre ellos — ver §G)
 - Neon DB `for3s_demo` (demo_* tables)
 
 ## ⛔ OUT
-<!-- Only limits SPECIFIC to this block. System-wide rules are not repeated here —
-     they apply with or without a block and live in CLAUDE.md / base-rules.md.
-     Repeating them made this block look like their source, which it is not. -->
-- DO NOT touch the For3s-OS agent (`for3slabs/for3s`) — separate repo. This block only
-  CONSUMES 5 endpoints: /v1/chat · /v1/conector · /v1/miskeys · /v1/oauth · /v1/token
-- DO NOT change `api_channel.py` — DERIVED: it lives in the agent's repo, so by the
-  block-lifecycle.md §2 test it is separate work, not a sub-block of this one
-- DO NOT touch the admin panel's non-demo sections — outside this block's intent
+<!-- Solo límites ESPECÍFICOS de este bloque; las reglas del sistema viven en CLAUDE.md. -->
+- ⛔ el agente For3s-OS (`for3slabs/for3s`) — repo aparte; este bloque solo CONSUME 5 endpoints:
+  /v1/chat · /v1/conector · /v1/miskeys · /v1/oauth · /v1/token
+- ⛔ `api_channel.py` — vive en el repo del agente: trabajo separado (block-lifecycle.md §2)
+- ⛔ las secciones no-demo del panel admin — fuera del intent de este bloque
 
 ## 🌐 System-wide rules that also apply (inherited, not owned here)
-- `CLAUDE.md`: never touch marca-personal/Mente/ · never read ~/5M-incubathon/ without the gate
-- `base-rules.md` #7: server-first — push to GitHub only on explicit order
-  ⚠️ Vercel deploys from `main`, so **any push to main is a production deploy**
+- `CLAUDE.md`: nunca tocar marca-personal/Mente/ · nunca leer ~/5M-incubathon/ sin el gate
+- `base-rules.md` #7: server-first. ⚠️ Vercel despliega desde `main`: un push ahí ES producción
 
 <!-- ══ C · CONNECTIONS ══ required to OPEN · ≤10 lines ══ -->
 ## Connections
@@ -40,7 +35,10 @@ created: 2026-07-24 · updated: 2026-07-29
   - lib/demo/session.ts → 12 · lib/demo/userStore.ts → 12
   - lib/demo/instancias.ts → 9 · for3sChat.ts → 6 · eventos.ts → 6
 
-<!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤8 lines ══ -->
+<!-- ══ D · REQUIRED STANDARDS ══ required to OPEN · ≤12 lines ══ -->
+<!-- Techo 8 → 12 el 2026-08-06: este bloque declara 9 estándares REALES (los 7 de expertise
+     tras llenarse el criterio + 4 reglas) y con su encabezado no cabía en 8. Un techo que el
+     contenido legítimo no puede cumplir no mide nada: solo genera un warning permanente. -->
 ## Required standards
 - rules/rule-fix-not-patch.md
 - rules/rule-lanes.md
@@ -51,9 +49,7 @@ created: 2026-07-24 · updated: 2026-07-29
 - principles/expertise/val-functional.md
 - principles/expertise/val-integration.md
 - principles/expertise/dev-frontend.md
-<!-- dev-frontend was removed 2026-07-30 ("re-add when sub-block 10 touches a component") and
-     re-added 2026-08-05: sub-block 10 IS that case — deleting components/demo/ConnectClaude.tsx,
-     145 lines with 0 importers. The condition it set for its own return was met. -->
+<!-- dev-frontend salió 2026-07-30 y volvió el 08-05 al cumplirse su condición (§G y docs/). -->
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State

@@ -78,7 +78,7 @@ forma de decir *cuál* está corriendo. Eso es lo que abre esta entrada.
 | Bugs reportados por usuarios externos | 🔴 ninguno |
 
 > ⭐ **Por eso `0.x`.** El sistema está verificado **contra sí mismo**, que es exactamente lo que
-> `val-functional.md` §2.2 llama *reproducible* — y exactamente lo que no es *prueba de campo*.
+> `principles/expertise/val-functional.md` §2.2 llama *reproducible* — y exactamente lo que no es *prueba de campo*.
 
 ---
 

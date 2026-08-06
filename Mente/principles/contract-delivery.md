@@ -5,11 +5,11 @@
 
 ## Purpose
 
-The **shape** of a delivery: its modes, its headings, its closing block. `owner-0-voice.md` governs
+The **shape** of a delivery: its modes, its headings, its closing block. `principles/owner-0-voice.md` governs
 the PROSE — how a sentence is written. This file governs the DELIVERY — what a response must carry
 and how it is laid out. Two subjects, two documents.
 
-> ⭐ **Why this was split off (2026-08-05).** `owner-0-voice.md` reached **582 lines against a
+> ⭐ **Why this was split off (2026-08-05).** `principles/owner-0-voice.md` reached **582 lines against a
 > ceiling of 350** — and it is the file where the size rule itself was written. Brian's own
 > criterion, written the same day in `principles/expertise/doc-structure.md` §2.1:
 > *"si el tamaño excede el límite **debe partirse en dos y estar relacionados o apuntando**."*

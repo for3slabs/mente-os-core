@@ -32,7 +32,7 @@ Comparación FUNCIONAL — For3s OS vs Hermes (lo que el usuario VIVE)
 **Capa:** Doc — análisis funcional (qué puede hacer cada uno HOY)
 
 **Fuentes (código real, no diseño):**
-- For3s OS: servidor `for3s` (MVP H1-H4 en producción) + `memory/RETOMAR.md` + `For3s_LO_QUE_NO_PUEDE_HACER.md`
+- For3s OS: servidor `for3s` (MVP H1-H4 en producción) + `memory/RETOMAR.md` + `memory/archive/For3s_LO_QUE_NO_PUEDE_HACER.md`
 - Hermes: `/home/brianweb3/fruterito-openclaw-repo/` (instancia REAL en uso) + `/home/brianweb3/openclaw-official/` (plataforma base)
 
 **⚠️ Cambio clave vs el doc de junio 9:**
@@ -176,7 +176,7 @@ preferir Hermes":
 ## 7. Punteros
 
 - Doc hermano (arquitectónico): `Comparacion_For3s_OS_vs_Hermes.md` (2026-06-09)
-- Lo que For3s NO puede hacer: `For3s_LO_QUE_NO_PUEDE_HACER.md`
+- Lo que For3s NO puede hacer: `memory/archive/For3s_LO_QUE_NO_PUEDE_HACER.md`
 - Estado actual For3s: `memory/RETOMAR.md`
 - Hermes real: `/home/brianweb3/fruterito-openclaw-repo/`
 - OpenClaw plataforma: `/home/brianweb3/openclaw-official/docs/`

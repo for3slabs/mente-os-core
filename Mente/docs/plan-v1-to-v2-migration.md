@@ -175,7 +175,7 @@ M1 ya se había llevado casi todo. M2 movió los **4 restantes** y **borró las 
 
 | Qué | Destino |
 |---|---|
-| `SPIKE_OpenCode_segundo_proveedor.md` | `work/` — es investigación, no un puente |
+| `work/SPIKE_OpenCode_segundo_proveedor.md` | `work/` — es investigación, no un puente |
 | 3 binarios (`.docx`, 2 `.html`) | `vision/assets/` |
 
 🗑️ **`Alma/` y `Tickets/` ELIMINADAS.** Dos carpetas v1 menos.
@@ -198,8 +198,8 @@ M1 y M2 ya se habían llevado 57. M3 movió **13 de los 18 restantes**, leídos 
 |---|---|---|
 | `docs/analysis/` | 6 | los 2 análisis de internOS · comparativa Hermes · examen Foresito · `For3s_OS_En_Bloques` |
 | `work/` | 5 | los 3 carriles · los 2 de entrenamiento |
-| `vision/` | 1 | `Primeros_Pasos.md` — documento fundacional del 28-may |
-| `bridges/` | 1 | ⭐ `Puentes_Mente_OS.md` — **el gate**, y `bridges/` es literalmente su nombre |
+| `vision/` | 1 | `vision/Primeros_Pasos.md` — documento fundacional del 28-may |
+| `bridges/` | 1 | ⭐ `bridges/Puentes_Mente_OS.md` — **el gate**, y `bridges/` es literalmente su nombre |
 | `memory/archive/` | 1 | el snapshot del 7-jul |
 
 **`Doc/` pasó de 75 → 5 documentos.**
@@ -227,23 +227,23 @@ El grueso. Las `Ronda_*` a `work/`, las que son regla (`rules/ESTANDAR_Metodo_Fa
 
 | # | Documento | Citas | Destino |
 |---|---|---|---|
-| 1 | `Bitacora_Progreso.md` | 32 | `memory/` |
-| 2 | `Estado_Sesion_Continuidad.md` | 110 | `memory/` |
+| 1 | `memory/Bitacora_Progreso.md` | 32 | `memory/` |
+| 2 | `memory/Estado_Sesion_Continuidad.md` | 110 | `memory/` |
 | 3 | `README.md` | 87 | `memory/archive/` — ya superseded en F7 |
-| 4 | `PENDIENTES.md` | 138 | `memory/` |
+| 4 | `memory/PENDIENTES.md` | 138 | `memory/` |
 | 5 | ⭐ `RETOMAR.md` | 106 | `memory/` — **el punto de entrada** |
 
 🗑️ **`Doc/` ELIMINADA.** Cuarta y última carpeta v1 de documentos.
 
 **Arranque verificado:** `CLAUDE.md` → `Mente/memory/RETOMAR.md` ✅ · el archivo existe ✅ ·
-`punteros.tsv` (que lee Foresito por MCP) actualizado ✅.
+`Maestro/punteros.tsv` (que lee Foresito por MCP) actualizado ✅.
 
 ### ⭐ Los 4 hallazgos de M5 — el más importante de toda la migración
 
 | # | Hallazgo |
 |---|---|
 | 1 | 🔴🔴 **`migrate-doc` comparaba TOTALES, no conjuntos.** Reportaba 30 citas rotas cuando el movimiento solo añadía 1 — y revertía por deuda que el documento ya traía. `README.md` revirtió **tres veces** por esto. Ahora compara el **conjunto de pares (archivo, cita)** y responde la única pregunta que importa: *¿qué añadió ESTE movimiento?* |
-| 2 | 🔴 **`migrate-doc` no veía fuera de `Mente/`.** `CLAUDE.md` y `PROJECT-RULES.md` viven en la raíz del proyecto y son **lo que se inyecta en cada sesión**. Mover `Estado_Sesion_Continuidad.md` dejó la regla de arranque *"NO leer ese archivo"* apuntando a la nada |
+| 2 | 🔴 **`migrate-doc` no veía fuera de `Mente/`.** `CLAUDE.md` y `PROJECT-RULES.md` viven en la raíz del proyecto y son **lo que se inyecta en cada sesión**. Mover `memory/Estado_Sesion_Continuidad.md` dejó la regla de arranque *"NO leer ese archivo"* apuntando a la nada |
 | 3 | ⭐ **El aviso que salvó el arranque:** al mover `RETOMAR.md`, el validador reportó `pointers.tsv`. Investigado, era real — **`Maestro/punteros.tsv` apuntaba a `Doc/RETOMAR.md`**, y lo lee Foresito EN VIVO por MCP. Sin ese aviso, el índice de la rama `for3s` habría quedado roto en producción |
 | 4 | **Corrupciones zombi:** dos rutas malas volvieron **cuatro veces** — cada revert restaura la versión de HEAD que las contiene. Ya son un check permanente de la batería; mueren de verdad al commitear |
 

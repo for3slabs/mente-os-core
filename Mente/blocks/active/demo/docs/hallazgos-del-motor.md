@@ -1,6 +1,6 @@
 # HALLAZGOS DEL MOTOR encontrados desde el bloque `demo`
 **Status:** current · **Type:** analysis · **Updated:** 2026-08-05 · **Owner:** brian
-**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `doc-structure.md`
+**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `principles/expertise/doc-structure.md`
 
 ## Purpose
 
@@ -13,7 +13,7 @@ gobierna todos los bloques. ⛔ Movidos ÍNTEGROS, sin resumir.
 - 🔴 2026-08-05 · **`bin/check-applied` tenía un FALSO POSITIVO — preexistente, no lo introdujo este
   bloque** (verificado contra HEAD: la línea era idéntica). Aceptaba un estándar como *aplicado* si
   las palabras de su nombre aparecían SUELTAS en cualquier parte de la evidencia. Sonda: declaré
-  `rule-session-close.md` en este bloque, que jamás lo usó → **el check lo dio por ✅** (el §G
+  `rules/rule-session-close.md` en este bloque, que jamás lo usó → **el check lo dio por ✅** (el §G
   menciona `session.ts` y `closed` por motivos ajenos). Corregido a exigir el nombre del estándar.
   Reprobado: la sonda ahora sale 🟡 y los 9 reales siguen ✅.
 - ⭐ 2026-08-05 · **Este BLOCK.md se PARTIÓ al pasar su techo (206 → 165 líneas)** y eso destapó un

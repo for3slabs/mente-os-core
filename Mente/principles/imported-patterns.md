@@ -15,7 +15,7 @@ the vendor is never named, because measured, it appears **zero times** in For3s.
 > judgement — the precise failure ADR-003 exists to prevent, and the reason these sections were
 > kept apart from the start.
 
-> ⭐ **Why they were gathered here (2026-08-05).** `dev-database.md` reached **381 lines against a
+> ⭐ **Why they were gathered here (2026-08-05).** `principles/expertise/dev-database.md` reached **381 lines against a
 > ceiling of 350**, and Brian's own rule — `principles/expertise/doc-structure.md` §2.1, written
 > that same day — says a document over its ceiling **must be split, with the halves pointing at
 > each other**. The three `§4-BIS` sections were the natural cut: **same source, same status, and

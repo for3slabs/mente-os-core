@@ -57,9 +57,9 @@ Code, this file plus the pointers below is enough to work correctly.
 |---|---|
 | Where we left off | `memory/RETOMAR.md` |
 | The voice | `principles/owner-0-voice.md` |
-| The three owners | `principles/owner-1-docs.md` · `owner-2-dev.md` · `owner-3-validation.md` |
+| The three owners | `principles/owner-1-docs.md` · `principles/owner-2-dev.md` · `principles/owner-3-validation.md` |
 | Expert criterion | `principles/expertise/{database,backend,frontend}.md` |
-| Contracts | `rules/contract-block.md` · `contract-document.md` · `contract-adr.md` |
+| Contracts | `rules/contract-block.md` · `rules/contract-document.md` · `rules/contract-adr.md` |
 | Rules | `rules/rule-{lanes,fix-not-patch,friction,isolation,session-close}.md` |
 | Decisions | `docs/DECISIONS.md` (generated) + `rules/decisions/ADR-*.md` |
 | Naming | `rules/NAMING_CONVENTION.md` |

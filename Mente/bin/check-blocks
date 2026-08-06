@@ -116,7 +116,13 @@ def check_documents():
             yel(f, f"Updated is not ISO YYYY-MM-DD: {updated!r}")
 
         # size limit for the declared type
-        if dtype in LIMITS and LIMITS[dtype] and lines > LIMITS[dtype]:
+        # ⛔ Un ARCHIVADO no: es evidencia congelada. Avisar de su tamaño pide EDITARLO, que es
+        # justo lo que un archivo no debe recibir — y el propio check ya exime a `/archive/` de
+        # las demás comprobaciones de forma (abajo), solo que el tamaño se medía ANTES.
+        # Medido 2026-08-06: `blocks/archive/expertise-programacion_2026-08` en 201/200 generaba
+        # un warning permanente e inarreglable sin tocar historia.
+        if (dtype in LIMITS and LIMITS[dtype] and lines > LIMITS[dtype]
+                and "/archive/" not in f):
             yel(f, f"{lines} lines — over the {dtype} limit of {LIMITS[dtype]}")
 
         # superseded must name its replacement
@@ -147,7 +153,10 @@ def check_documents():
         # paths: a bare filename with no directory prefix cannot be resolved
         for m in re.finditer(r"`([A-Za-z0-9_-]+\.(?:md|tsv|sh|py|json))`", text):
             name = m.group(1)
-            if name in ("BLOCK.md", "SUMMARY.md", "CLAUDE.md", "README.md",
+            # ⭐ `connections.md` añadido 2026-08-06: como BLOCK.md y SUMMARY.md, es un
+            # nombre GENÉRICO que cada bloque tiene. Pedir "escríbelo desde la raíz" sobre él
+            # es pedir una ruta que depende de qué bloque se esté leyendo.
+            if name in ("BLOCK.md", "SUMMARY.md", "CLAUDE.md", "README.md", "connections.md",
                         "MEMORY.md", "RETOMAR.md", "settings.json"):
                 continue  # entry points and generic block filenames are unambiguous
             hits = glob.glob(f"**/{name}", recursive=True)
@@ -155,6 +164,15 @@ def check_documents():
                 continue  # not ours (external system, template, example)
             # a sibling in the same directory is unambiguous — that is how humans read
             if any(os.path.dirname(h) == os.path.dirname(f) for h in hits):
+                continue
+            # 🔴 FALSO POSITIVO CORREGIDO (2026-08-06): un archivo que vive EN LA RAÍZ de Mente
+            # ya está escrito desde la raíz — su ruta completa ES su nombre. El check pedía
+            # "escríbelo desde la raíz de Mente" sobre `base-rules.md`, `CAPABILITIES.md` y
+            # `CHANGELOG.md`, que no tienen otra forma de escribirse. Un script que obedecía el
+            # aviso reescribía el nombre por sí mismo y el warning reaparecía: **bucle infinito
+            # que no convergía**, medido al arreglar los 76 warnings.
+            # ⭐ Un check que pide algo imposible no señala deuda: fabrica ruido permanente.
+            if os.path.isfile(name):
                 continue
             yel(f, f"bare path `{name}` — write it from the Mente root")
             break
@@ -295,7 +313,11 @@ def check_blocks():
         # limits — the ceiling is READ from the LIMITS table above, never repeated here.
         # It was hardcoded twice until 2026-08-05: raising it in one place left the other lying.
         block_cap = LIMITS["block"]
-        if lines > block_cap:
+        # ⛔ Un bloque ARCHIVADO no recibe este aviso: es evidencia congelada, y pedirle que
+        # adelgace es pedir que se edite historia. Ya se exime de las demás comprobaciones de
+        # forma; el tamaño era el hueco. (Medido 2026-08-06: `expertise-programacion_2026-08`
+        # en 201/200, inarreglable sin tocar lo archivado.)
+        if lines > block_cap and "/archive/" not in f:
             yel(f, f"{lines} lines — over the {block_cap}-line block limit")
 
         # nesting depth (ADR-015: max 3)

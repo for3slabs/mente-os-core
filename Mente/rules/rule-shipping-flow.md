@@ -13,8 +13,8 @@ The workflow that turns a ticket into a reviewable PR: **branch → verify → P
 > *"no solo los PR deben ir en backend, porque va a haber PR de frontend, de base de datos."*
 >
 > **Measured, and it is what makes this a real defect:** `hooks/pre-edit-standards.py` injects
-> **only what the block declares in its §D**. A frontend block declares `dev-frontend.md`, so if
-> the PR flow lived in `dev-backend.md` it would **never reach that block** — the agent shipping a
+> **only what the block declares in its §D**. A frontend block declares `principles/expertise/dev-frontend.md`, so if
+> the PR flow lived in `principles/expertise/dev-backend.md` it would **never reach that block** — the agent shipping a
 > frontend ticket would not know how to open the PR. Same for a database block.
 >
 > The flow is **transversal**: it does not change with the discipline. What changes per discipline

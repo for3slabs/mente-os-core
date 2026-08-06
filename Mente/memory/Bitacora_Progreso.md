@@ -3,7 +3,14 @@
 **Status:** current · **Type:** append-only · **Updated:** 2026-07-30 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
-> **Qué es:** registro periódico de "qué decidimos / qué cerramos" en bloques de tiempo, con herencia entre periodos. DISTINTO del `Banco_Diario_Mayo_2026.md` (ese es archivo histórico único del pensamiento de Brian en mayo, NO una bitácora recurrente).
+
+## Purpose
+
+El registro cronológico de qué se decidió y qué se cerró, por periodos, con herencia entre ellos.
+Permite ver el progreso real en orden sin leer el Estado_Sesion completo. **Append-only:** se añade
+al final, nunca se reescribe lo anterior.
+
+> **Qué es:** registro periódico de "qué decidimos / qué cerramos" en bloques de tiempo, con herencia entre periodos. DISTINTO del `memory/archive/Banco_Diario_Mayo_2026.md` (ese es archivo histórico único del pensamiento de Brian en mayo, NO una bitácora recurrente).
 >
 > **Para qué:** que cualquier sesión futura (o Brian) vea el progreso real en orden cronológico sin leer el Estado_Sesion completo. Cada periodo HEREDA contexto del anterior.
 
@@ -27,7 +34,7 @@
 
 ### Heredado de Mayo 2026
 
-> Contexto previo (de `Banco_Diario_Mayo_2026.md` + arranque del proyecto): Brian había escrito 3 docs borrador (15-18 mayo) con su forma de pensar inicial sobre For3s (stack, arquitectura servidor, recursos). El pivote estratégico For3s → QA-wedge ya estaba definido. Se estableció Mente OS como cerebro documental del proyecto. Anclas LOCKED: 1.D Dedicated SaaS, 2.B Open Core, 3.D equipo pequeño. Al cierre de mayo: arrancaba el proceso de las 10 rondas técnicas de diseño.
+> Contexto previo (de `memory/archive/Banco_Diario_Mayo_2026.md` + arranque del proyecto): Brian había escrito 3 docs borrador (15-18 mayo) con su forma de pensar inicial sobre For3s (stack, arquitectura servidor, recursos). El pivote estratégico For3s → QA-wedge ya estaba definido. Se estableció Mente OS como cerebro documental del proyecto. Anclas LOCKED: 1.D Dedicated SaaS, 2.B Open Core, 3.D equipo pequeño. Al cierre de mayo: arrancaba el proceso de las 10 rondas técnicas de diseño.
 
 ### Hitos de Junio (cronológico)
 
@@ -56,8 +63,8 @@
 - **DISEÑO COMPLETO.** Costo v1 ~$97-137/mo.
 
 **2026-06-09 → Re-revisiones críticas pre-programación**
-- ✅ Re-revisión R6 (Pilar 3): añadido **Meta-Orchestrator** (governor 6 frenos para el bucle auto-generativo) + calibración muy conservadora v1 + failure modes (re-plan+rollback) + plan programación foundation-first. → `Ronda_06_Pre_Code_Review_Detailed.md`
-- ✅ Refinamiento DMN 5.4.2: 8 tasks detalladas (2 clases housekeeping/generativas) + auto-improvement loop REUSA el Meta-Orchestrator + ROI medible per task. Sinergia confirmada: DMN (Nodo 6) + Skills (Nodo 4) = 2 mitades de Pilar 3 con governance unificada. → `Ronda_05_DMN_Tasks_Detailed.md`
+- ✅ Re-revisión R6 (Pilar 3): añadido **Meta-Orchestrator** (governor 6 frenos para el bucle auto-generativo) + calibración muy conservadora v1 + failure modes (re-plan+rollback) + plan programación foundation-first. → `work/Ronda_06_Pre_Code_Review_Detailed.md`
+- ✅ Refinamiento DMN 5.4.2: 8 tasks detalladas (2 clases housekeeping/generativas) + auto-improvement loop REUSA el Meta-Orchestrator + ROI medible per task. Sinergia confirmada: DMN (Nodo 6) + Skills (Nodo 4) = 2 mitades de Pilar 3 con governance unificada. → `work/Ronda_05_DMN_Tasks_Detailed.md`
 
 **2026-06-09 → Mejora de Mente OS (proceso)**
 - Nombre oficial "Mente OS" para `/home/brianweb3/for3s/Mente/`.
@@ -75,7 +82,7 @@ Brian pidió leer TODO Cuerpo (46 archivos, R1-R10) + Alma + Cerebro a detalle, 
 
 **Refuerzo #2 (de los 3 pre-código) — reconciliación de numeración de nodos:**
 - ✅ Numeración CANÓNICA fijada: 1=KG, 2=Hipocampo(+Pattern Sep), 3=PFC, 4=Ganglios/Skills(+Action Sel), 5=Microglía, 6=DMN, 7=Amígdala, 8=Tálamo, 9=Dual-Process, 10=CLS, 11=Neuromod. Autoridad = Grafo §4 = Visión §6.1.
-- Corregido: `Mapeo_Nodo_Cerebral_Tabla_SQL.md` (nuevo §0 autoritativo + §3 + §4 tabla maestra) tenía nodos 5-9 corridos. `Ronda_04_Tools_MCP_Layer.md` (3 menciones de "Cuerpo Calloso/Cerebelo" — nombres inventados que no existen en el Grafo). Grafo/Visión/R5/R6/R9 ya estaban bien.
+- Corregido: `Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md` (nuevo §0 autoritativo + §3 + §4 tabla maestra) tenía nodos 5-9 corridos. `work/Ronda_04_Tools_MCP_Layer.md` (3 menciones de "Cuerpo Calloso/Cerebelo" — nombres inventados que no existen en el Grafo). Grafo/Visión/R5/R6/R9 ya estaban bien.
 - **Los 3 refuerzos pre-código quedan CERRADOS** (#1 plan, #2 numeración, #3 tiempo).
 
 **2026-06-10 → 🧭 Reconciliación de la FUENTE DE VERDAD (Grafo Maestro §0)**
@@ -310,7 +317,7 @@ Foresito (el For3s de producción de Brian, en Telegram) corría SUELTO con syst
 Tras la migración, Brian identificó que For3s *funciona* pero NO se gestiona como producto. 10 frentes en PENDIENTES §PROFESIONALIZACIÓN: PR1 claridad código · PR2🔴 salud/monitoreo · PR3🔴 datos/analítica · PR4🔴 bugs memoria+auditoría archivo×archivo · PR5 datos empresa · PR6🔴 dueños (frágil, lo probó la migración) · PR7 revisar cada H · PR8 entrenamiento/importar 2 agentes a Foresito · PR9 UX producto · PR10🔴 comandos soporte/auto-diagnóstico. NADA de golpe. Memoria: project_profesionalizacion.
 
 **2026-06-28/29 → 📐 PR4 AUDITORÍA + 6 pendientes mayores nuevos registrados**
-- PR4 (auditoría del código): ✅ Parte B (flujo memoria/usuario, doc `PR4_Flujo_Usuario_Memoria.md` con 10 diagramas mermaid + caso de uso end-to-end) + ✅ Parte C (auditoría total de los 46 módulos + contenedores, grafo de dependencias). Estilo godinez-studio/onboarding-flow, verificado contra el código real.
+- PR4 (auditoría del código): ✅ Parte B (flujo memoria/usuario, doc `memory/archive/PR4_Flujo_Usuario_Memoria.md` con 10 diagramas mermaid + caso de uso end-to-end) + ✅ Parte C (auditoría total de los 46 módulos + contenedores, grafo de dependencias). Estilo godinez-studio/onboarding-flow, verificado contra el código real.
 - Nuevos pendientes registrados (Brian): 🏢 **MULTI-INSTANCIA** (varios For3s aislados por server) · 🎓 **ENTRENAMIENTO** (6 agentes OpenClaw → 1 For3s; material copiado a `~/entrenamiento/`: Fruterito-principal + Fruterito-wsl, 6 agentes identificados) · 🧠 **REDISEÑO MEMORIA** (MEM-1 conectar, MEM-2 temas equipo, MEM-3 cascada). Memorias: project_multi_instancia, project_entrenamiento_6_agentes, project_rediseno_memoria_cerebro.
 
 **2026-06-29 → 🐛🔧 SESIÓN MAYOR DE BUGS — 9 bugs resueltos (PR4-A) + mejoras de raíz**
@@ -971,7 +978,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
 
 **2026-07-03 → 🐛 SESIÓN DE PRUEBAS: 10 BUGS ARREGLADOS + bot→AGENTE + sync GitHub**
 - Brian probó For3s a fondo en Telegram → 11 hallazgos. Los tracé mensaje-por-mensaje (screenshot + timeline
-  de logs + BD + código). Docs: `REPORTE_MAESTRO_BUGS_2026-07-02.md` + `AUTOPSIA_MENSAJES_2026-07-02.md`.
+  de logs + BD + código). Docs: `memory/archive/REPORTE_MAESTRO_BUGS_2026-07-02.md` + `memory/archive/AUTOPSIA_MENSAJES_2026-07-02.md`.
 - 🔥 **Raíz:** cache → 127.0.0.1 hardcodeado (no leía VALKEY_HOST), fallo de 3.84s/tool → "no funciona nada"
   era LENTITUD. Muchos "bugs" eran funciones sanas que se sentían rotas por lentitud.
 - **10 fixes** (E2E + horneados): cache · typing en comandos (@con_typing) · parser /estado_tema tolerante ·
@@ -982,7 +989,7 @@ confianza**: la confianza no se fabrica con tests, se GANA viendo trabajo real c
 - **4 bugs EXTRA cazados** (no reportados): create_issue MCP renombrado, cost-control opus-4-8=$0,
   huele_a_codigo lenguaje suelto, timeout cache 3.84s. + 3 falsos bugs (nombre/comandos/C1 = lentitud).
 - 🧠 **bot → AGENTE:** Brian preguntó si sigue siendo bot. Respuesta: YA NO, es AGENTE (10/12 criterios de
-  Hermes + 2 que Hermes NO tiene: auto-modificación, multi-instancia). Doc `For3s_Bot_vs_Agente_vs_Hermes.md`.
+  Hermes + 2 que Hermes NO tiene: auto-modificación, multi-instancia). Doc `memory/archive/For3s_Bot_vs_Agente_vs_Hermes.md`.
   FOR3S_ROLE actualizado (se reconoce agente). 2 brechas para paridad total (NO agencia): multi-canal + cron
   conversacional → registradas en PENDIENTES §FUTURO.
 - **Sincronizado a GitHub 2026-07-03** (server→local→GitHub, con orden de Brian).
@@ -1247,7 +1254,7 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   - **F1** registro (apunta a 6 ramas: For3s OS, marca-personal, Foresito, instancias, NavigoX-gate, Jazz).
   - **F2** puentes — comando `maestro`: A (git efímero `leer`/`grep`, clon `--depth 1`, NO replica) +
     B (canal API vivo `vivo`, pregunta al agente por `/v1/chat`). Verificado E2E.
-  - **Bienvenida** (`BIENVENIDA.md`): la IA que clona LEE los archivos de comportamiento
+  - **Bienvenida** (`Maestro/BIENVENIDA.md`): la IA que clona LEE los archivos de comportamiento
     (`CLAUDE.md`/`.claude`/`.agents`) + PREGUNTA (rama existente o nueva) + exige DESCRIPCIÓN
     obligatoria (por qué ocupa Mente OS + qué hará), fail-closed.
   - **F3** `mente-os-nueva`: crea rama {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla orientadora.
@@ -1303,7 +1310,7 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   construya por separado ni se llame la misma acción varias veces". Ronda F0 diseñada, aprobada
   ("continúa") y CONSTRUIDA la misma jornada: `work/Ronda_Maestro_Puentes_C_D.md`.
 - **Núcleo (N0-N2):** `Maestro/punteros.tsv` fuente única (mató la triplicación del v1) · `Maestro/maestro_lib.sh`
-  puerta única fail-closed · `indexador.py` una pasada → chunks `rama:ruta#NNN` + cinturón
+  puerta única fail-closed · `Maestro/indexador.py` una pasada → chunks `rama:ruta#NNN` + cinturón
   anti-secretos (excluyó 5 chunks con pinta de credencial).
 - **Server (N3/C/D, commit firmado `0cac57a`, SIN push):** migración 046 (maestro_chunks pgvector
   HNSW + grafo AGE `maestro_kg`) · módulo `maestro_indice.py` · superficie `/v1/maestro/*` en
@@ -1311,7 +1318,7 @@ DEUDA no-urgente: H9 D1-D8 · H10 HP1-HP6 · intern-os C1-C3 · Hermes P3.
   del compose principal.
 - **E2E:** semántica real (halló permisos.md sin palabras literales) · jazz SOLO su carril ·
   randito/401 fail-closed · grafo automático (CONTIENE/REFIERE/ENLAZA de `[[links]]`) + curado
-  (`relaciones.md` declarativo: diseno-jazz DEPENDE_DE for3s) · `buscar --contexto` = híbrido C×D.
+  (`Maestro/relaciones.md` declarativo: diseno-jazz DEPENDE_DE for3s) · `buscar --contexto` = híbrido C×D.
 - **Batería:** 264 tests (4 nuevos) · ruff/format · ty 0 nuevos · 4 bugs cazados construyendo
   (--relaciones colado como rama · AGE una-columna/mapa · alcance marca-personal → columna
   `indexar` · restart mató el one-shot → el diseño resumible por hash lo salvó).
@@ -1512,7 +1519,7 @@ usuario (Brian)**, sin operación/alertas, y el `DEV_FALLBACK` de `allowedEmails
 
 ## 📦 Movido de RETOMAR.md el 2026-08-05 (regla de higiene: RETOMAR ≤250 líneas)
 
-⚠️ **Se mueve, no se borra** — `doc-structure.md`: ⛔ nunca borrar historia para que un check pase.
+⚠️ **Se mueve, no se borra** — `principles/expertise/doc-structure.md`: ⛔ nunca borrar historia para que un check pase.
 El punto ② de "3 TAPONES" **ya cambió**: la demo pasó de 0 a 1 test el 2026-08-05.
 
 ### 2026-07-31 (S7) — el v2 se construyó y F8-4 lo verificó
@@ -1562,18 +1569,53 @@ que nadie controla. Su verde ES la definición de cerrar el sub-bloque 7 de `blk
 
 ### La regla que gobernó la jornada
 
-> **Un check debe verse fallar antes de que su verde signifique algo** (`val-functional.md` §2.2).
+> **Un check debe verse fallar antes de que su verde signifique algo** (`principles/expertise/val-functional.md` §2.2).
 
 Se aplicó a todo: cada test escrito se saboteó y se restauró byte a byte. Eso destapó **5 defectos**
 — cuatro del motor (dos preexistentes) y uno mío: un caso de prueba que no distinguía el fallo.
 
 ### Decisiones que quedan
 
-- ⛔ **Una fuente de verdad NO se parte por tamaño** (Brian) — endurece `doc-structure.md`.
-- ⭐ **`gate-critical.py` exime a un test de integración SOLO si nombra su propia base.** Un test
+- ⛔ **Una fuente de verdad NO se parte por tamaño** (Brian) — endurece `principles/expertise/doc-structure.md`.
+- ⭐ **`hooks/gate-critical.py` exime a un test de integración SOLO si nombra su propia base.** Un test
   que alcanza la URL de producción sigue bloqueado.
 - 🔬 **Un puntero que una máquina no sigue no es un puntero** — `check-applied` ahora los sigue.
 
 **Commits:** ninguno en `marca-personal` (Vercel despliega desde `main`; lo decide Brian).
 Detalle: `Cerebro/Registro_Conversaciones.md` §S11 · bloqueos en `memory/PENDIENTES.md` §B1-B3.
 
+---
+
+Related: `memory/RETOMAR.md` (el estado actual) · `Cerebro/Registro_Conversaciones.md` (la telemetría de cada sesión).
+
+---
+
+## 📦 Movido de RETOMAR.md el 2026-08-06 (higiene: RETOMAR ≤250 líneas)
+
+⚠️ **Se mueve, no se borra** — `principles/expertise/doc-structure.md`: nunca borrar historia para
+que un check pase.
+
+### 2026-08-03 (S9, ~20h) — **UN CLON CON OTRO DUEÑO SE INSTALA SOLO**
+
+37 commits, sin push. Detalle: `Cerebro/Registro_Conversaciones.md` §S9.
+
+- 🧩 **Bloque `distribucion` 6/6 construido** (cerrado en S11) — `bin/init` + `templates/` +
+  `CAPABILITIES.md` + frontera motor/instancia como candado portable. **Probado en clon real**.
+- 🔗 **Citas rotas 144 → 0** (69 eran correctas y el validador las contaba mal) · 🔒 **Seguridad**:
+  `python3 -c "open(...)"` leía lo prohibido · `deny` 67 → 212 · `ask` creado (48).
+- 🧪 **Plan de raíz F1-F4** — 8 hallazgos de UNA familia: checks que corren, dicen verde y no miden
+  lo que dicen → `rules/rule-checks-must-measure.md` + sección `SELF-TEST`.
+
+> ⭐ **LA LECCIÓN:** declaré el bloque BLOQUEADO sin consultar la fuente; la documentación lo
+> respondía y los 3 sub-bloques se hicieron en una hora.
+> **Un límite que no has verificado no es un límite: es una suposición disfrazada.**
+
+**🔑🔐 2 ABIERTOS, decide Brian** — FIRMA GPG (sin clave aquí) · `~/.claude.json` guarda el OAuth
+del harness y **`deny` no es sandbox**: el matcher lee el TEXTO — `"$(ls …)"` lo esquiva.
+Opciones en `PENDIENTES.md` §🔑 §🔐.
+
+**S8 (31-jul→02-ago):** el v2 se endureció y se **publicó** en `github.com/fruterito101/mente-os`
+(MIT, solo motor). Hallazgo: *nadie vigilaba la costura* → `rules/rule-config-hygiene.md`.
+
+⚠️ **Y lo que sigue sin cambiar:** el v2 **nunca ha gobernado trabajo real de producto** — los 49
+commits de S8+S9 son el sistema arreglándose a sí mismo. Esa es la prueba que falta.

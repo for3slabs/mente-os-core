@@ -213,7 +213,7 @@ required, and that ambiguity produced the 6-file bug of §2.2.
 >   (`feedback_probar_flujo_completo_encadenado`, Brian 2026-07-20)
 >
 > **How it connects to the rest of the system:**
-> - the §5-BIS battery (`owner-3-validation.md` §4) is how this gets exercised — checks B-G
+> - the §5-BIS battery (`principles/owner-3-validation.md` §4) is how this gets exercised — checks B-G
 > - **affirmative verification** is mandatory: *"recovered X"*, never *"seems connected"*
 > - deployment order, already recorded in `blk-demo` §G: **senders send the field first, the
 >   receiver goes strict second.** The reverse breaks everything not yet sending it.

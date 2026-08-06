@@ -85,4 +85,25 @@ if [ -x "$IDX" ]; then
     exit 1
   fi
 fi
+
+# ── ⭐ TECHO DE WARNINGS (2026-08-06) ────────────────────────────────────────
+# 🔴 EL DEFECTO QUE ESTO CIERRA, señalado por Brian: *"el sistema está permitiendo tener
+# warnings y no verificarlos"*. Este hook solo miraba `-eq 2` (errores). Los warnings no los
+# miraba NADIE, así que crecieron de 31 (2026-07-30) a **76** en cinco días sin resistencia
+# alguna — y entre ellos había 5 defectos reales del bloque `demo` mezclados con falsos
+# positivos del propio validador.
+#
+# ⭐ El techo NO es cero, y es deliberado: `grown section` es una SEÑAL de partir, no un
+# defecto, y forzarla a cero empujaría a partir documentos por obediencia. Lo que se prohíbe
+# es la ACUMULACIÓN silenciosa: por encima del techo hay que bajar la deuda o subirlo a
+# conciencia, que es una decisión visible en el diff.
+WARN_CAP=15
+w=$("$CHECK" 2>/dev/null | grep -oE '[0-9]+ warnings' | grep -oE '^[0-9]+' | head -1)
+if [ -n "$w" ] && [ "$w" -gt "$WARN_CAP" ]; then
+  printf '🔴 COMMIT BLOCKED — %s warnings, por encima del techo de %s.\n\n' "$w" "$WARN_CAP"
+  printf '   Un warning que nadie mira se acumula: pasaron de 31 a 76 en cinco días.\n'
+  printf '   Míralos: %s   y baja la deuda, o sube WARN_CAP a conciencia.\n' "$CHECK"
+  printf '\n   Or: git commit --no-verify   (and log why in the block §H)\n'
+  exit 1
+fi
 exit 0

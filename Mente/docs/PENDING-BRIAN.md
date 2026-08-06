@@ -59,11 +59,11 @@ derivable, never for criterion*.
 >
 > | Closed | What it unlocked |
 > |---|---|
-> | `qa-dimensions.md` (row 2) | **layer 2 stopped being an empty form** — a criterion review can now be run on any block |
-> | `dev-database.md` (row 3) | **phase F1 closed** · owner-2 has a body of criterion |
-> | `val-integration.md` (row 9) | the seams: fail loudly · data decides stop-vs-degrade · assume nothing |
-> | `val-functional.md` (row 8) | ⭐ **owner-3 FULLY covered** — the only owner that can REFUSE to close a block now judges with its own criterion, both halves |
-> | `dev-backend.md` (row 4) | one guard per rule · expected failures ARE the contract · security/money unified always · no generic endpoint |
+> | `rules/qa-dimensions.md` (row 2) | **layer 2 stopped being an empty form** — a criterion review can now be run on any block |
+> | `principles/expertise/dev-database.md` (row 3) | **phase F1 closed** · owner-2 has a body of criterion |
+> | `principles/expertise/val-integration.md` (row 9) | the seams: fail loudly · data decides stop-vs-degrade · assume nothing |
+> | `principles/expertise/val-functional.md` (row 8) | ⭐ **owner-3 FULLY covered** — the only owner that can REFUSE to close a block now judges with its own criterion, both halves |
+> | `principles/expertise/dev-backend.md` (row 4) | one guard per rule · expected failures ARE the contract · security/money unified always · no generic endpoint |
 >
 > ✅ **`criterion.holes = 0`.** El último no era criterio: era la etiqueta `NO HECHO` de la
 > plantilla del bloque de entrega, y el contador sumaba el glifo. Se fue con el contrato a

@@ -35,7 +35,7 @@ later. The measured failure was structural, not editorial: **15 of 188 documents
 | Documents with no auditable header | **15 of 188** had a date |
 | An index that inventoried a fraction of reality | **35 of 188** |
 | A duplicated table instead of a pointer | the decisions table diverged: **75 vs 37 rows** |
-| Files far over any readable size | `PENDIENTES.md` at **240 KB** |
+| Files far over any readable size | `memory/PENDIENTES.md` at **240 KB** |
 | `-bis` / `-TER` numbering | the smell that says *split me* |
 
 > ⭐ **The measured law:** the only file with a declared limit (`RETOMAR.md`, ~200 lines) is the
@@ -60,7 +60,7 @@ later. The measured failure was structural, not editorial: **15 of 188 documents
 >
 > | # | Split when… | Why |
 > |---|---|---|
-> | 1 | **it contains TWO DISTINCT THINGS** | ADR-027's master rule. `owner-0-voice.md` mixes the voice and the delivery contract: two subjects, two documents |
+> | 1 | **it contains TWO DISTINCT THINGS** | ADR-027's master rule. `principles/owner-0-voice.md` mixes the voice and the delivery contract: two subjects, two documents |
 > | 2 | **two different people maintain it** | same criterion Brian set for components (`dev-frontend.md` §2.1): two reasons to change = two pieces |
 > | 3 | ⭐ **it exceeds its declared size limit** | Brian, 2026-08-05 — see below |
 >
@@ -101,7 +101,7 @@ long is not being authoritative. Today exactly one file claims it.
 ---
 
 > ⚠️ **Consequence of §2.1, stated plainly:** files over their ceiling are **pending splits**, not
-> warnings. Done 2026-08-05: `owner-0-voice.md` (582 → 285, its §7 became
+> warnings. Done 2026-08-05: `principles/owner-0-voice.md` (582 → 285, its §7 became
 > `principles/contract-delivery.md`) · `dev-database.md` (381 → 364, its imported section became
 > `principles/imported-patterns.md`) · `memory/RETOMAR.md`. **Exempt as a source of truth:**
 > `docs/Arquitectura_Mente_OS_v2_Bloques.md`.
@@ -247,7 +247,7 @@ long is not being authoritative. Today exactly one file claims it.
 > | 1 | ⭐ **You cannot tell whether it is still current or a fossil** | **15 of 188 documents had a date.** Without a date and a status you must read it whole to find out if it still applies — and you still do not know |
 > | 2 | **It asserts numbers that are no longer true** | a number copied by hand is correct **exactly once**. This is why `docs/METRICS.md` exists and why `CLAUDE.md` stopped declaring state |
 > | 3 | **It does not say why it exists or who it serves** | with no Purpose, whoever inherits it cannot decide whether to keep it or delete it — so they keep it, forever |
-> | 4 | **You must read it whole to find one thing** | with no index and no navigable sections, a long file is a file nobody opens twice. `PENDIENTES.md` reached **240 KB** |
+> | 4 | **You must read it whole to find one thing** | with no index and no navigable sections, a long file is a file nobody opens twice. `memory/PENDIENTES.md` reached **240 KB** |
 >
 > ⚠️ **Signals 1 and 2 are the pair that costs most**, because they fail in opposite directions:
 > the undated document makes you distrust something true, and the stale number makes you trust

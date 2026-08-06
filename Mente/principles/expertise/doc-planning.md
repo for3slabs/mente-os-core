@@ -37,7 +37,7 @@ a perfectly formatted plan can still be unexecutable.
 | *"nunca plan global; por pieza → alinear visión → aprobar → construir"* | 2026-07-20 |
 
 **Precedents this criterion should formalize:**
-- the default plan sections (`owner-1-docs.md` §2) — purpose · **why this order** · phases and
+- the default plan sections (`principles/owner-1-docs.md` §2) — purpose · **why this order** · phases and
   tickets · what can go wrong · what it does NOT do
 - *"the contract is a floor, not a ceiling"* — a plan that discovered something new says so
 - the Método F: `rules/ESTANDAR_Metodo_Fases_F.md`
@@ -201,7 +201,7 @@ The frame lives in `rules/qa-dimensions.md`. What each demands **here** is Brian
 > | Requirement | ⛔ Not enough |
 > |---|---|
 > | **filed** in `memory/PENDIENTES.md`, not only mentioned in passing | a note inside a file nobody opens |
-> | **assigned to Brian by name**, with the decision stated in one line | *"pending"* with no owner — that is an abandoned block (`block-lifecycle.md` §5) |
+> | **assigned to Brian by name**, with the decision stated in one line | *"pending"* with no owner — that is an abandoned block (`rules/block-lifecycle.md` §5) |
 > | ⭐ **everything that does NOT depend on it keeps moving** | stopping the whole plan over one decision |
 >
 > **This is the counterweight to rule 3.** Rule 3 forbids inventing a hole out of laziness; this

@@ -38,7 +38,7 @@ backtracking**: a plan that fails its criteria goes back to owner-1.
 | Backend | `expertise/dev-backend.md` | ✅ **FILLED 2026-08-05** (§4-BIS is imported material, separate from his criterion) |
 | Frontend | `expertise/dev-frontend.md` | ✅ **FILLED 2026-08-05** |
 
-> ⭐ **`dev-database.md` is live since 2026-08-05.** What owner-2 can now demand before code is
+> ⭐ **`principles/expertise/dev-database.md` is live since 2026-08-05.** What owner-2 can now demand before code is
 > written: **five categories that never live in code** (anything with an owner · anything that
 > changes without deploying · fixed lists · thresholds · sensitive user data — env vars are for
 > wiring, never content) · **four impossible states** the schema must forbid *by constraint, not by
@@ -89,8 +89,8 @@ of seven files hides which owner each one answers to — which is exactly how th
 | 🔴 Returned to owner-1 | Why |
 |---|---|
 | The plan does not say what must NOT be touched | no boundary → the AI expands on its own |
-| It does not declare which pieces it touches | the lane cannot be computed (`rule-lanes.md`) |
-| A fix with no construction assessment | `rule-fix-not-patch.md` §2 |
+| It does not declare which pieces it touches | the lane cannot be computed (`rules/rule-lanes.md`) |
+| A fix with no construction assessment | `rules/rule-fix-not-patch.md` §2 |
 | No verifiable success criterion | *"it works"* is not a criterion |
 | It contradicts a declared required standard | the standard wins |
 
@@ -107,7 +107,7 @@ These do **not** depend on Brian's pending criterion — they are already decide
 | 3 | **Defensive** — a new function never breaks startup or the turn | Método F §2.3 |
 | 4 | **One single point** for what was scattered | `memoria.recordar()` pattern |
 | 5 | **Demonstrable safety net** when refactoring something live | byte-identical or equivalent behavior |
-| 6 | **`fix ≠ patch`** | `rule-fix-not-patch.md` |
+| 6 | **`fix ≠ patch`** | `rules/rule-fix-not-patch.md` |
 | 7 | **Reuse the existing pattern** — do not invent a new one | Método F §2.1 |
 
 ---
@@ -116,7 +116,7 @@ These do **not** depend on Brian's pending criterion — they are already decide
 
 - It does not decide the lane → **propagation**
 - It does not issue the quality verdict → **owner-3**
-- It does not change a rule that gets in the way → **logs the friction** (`rule-friction.md`)
+- It does not change a rule that gets in the way → **logs the friction** (`rules/rule-friction.md`)
 
 ---
 

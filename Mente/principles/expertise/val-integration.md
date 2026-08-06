@@ -51,7 +51,7 @@ flow still be broken — that is the failure this discipline exists for.
 
 ### The reconnection test — already LOCKED
 
-`owner-3-validation.md` §4-D: *restart a sibling, run the flow again, confirm it reconnects from
+`principles/owner-3-validation.md` §4-D: *restart a sibling, run the flow again, confirm it reconnects from
 ENV and not from a hardcoded host.*
 
 ---

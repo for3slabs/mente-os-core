@@ -546,7 +546,7 @@ dejado el contrato compitiendo contra el estilo, cumpliéndose a medias.
 
 ### §6 · BRIAN'S ADDITIONS — un hueco de criterio se llenó
 
-`owner-0-voice.md` §6 llevaba días marcado `⬜ PENDING · BRIAN`. Lo que él dictó durante la sesión
+`principles/owner-0-voice.md` §6 llevaba días marcado `⬜ PENDING · BRIAN`. Lo que él dictó durante la sesión
 **era exactamente ese hueco**, así que se estructuró con sus citas y su autoría, siguiendo el
 método que `qa-dimensions.md` §5 exige (*la IA pregunta, Brian responde, la IA estructura*):
 la entrega no debe necesitar una segunda pregunta · radiografía, no bitácora · el largo no es el
@@ -589,7 +589,7 @@ Brian avisó del gasto. Medido: el Artifact costaba ~6,678 tokens (44% CSS repet
 - 🔴 **Cité `intern-os` dentro de un archivo del MOTOR.** El motor se publica bajo MIT; una cita
   ahí arrastra linaje ajeno a cada clon. Purgado a 0 en ambos. ⭐ *Antes de citar una fuente
   externa: ¿este archivo viaja a otros repos?*
-- ⭐ **Dejé `owner-0-voice.md` en 582 líneas con un límite de 250** — el mismo día que escribí la
+- ⭐ **Dejé `principles/owner-0-voice.md` en 582 líneas con un límite de 250** — el mismo día que escribí la
   regla del techo de tamaño. *La regla que escribes no se aplica sola al archivo donde la
   escribes.* Registrado en `PENDIENTES.md`, no resuelto.
 

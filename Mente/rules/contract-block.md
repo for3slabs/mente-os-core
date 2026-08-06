@@ -149,7 +149,7 @@ Measured on the first real block: of 4 limits written in `OUT`, **2 were system-
 
 > ⭐ **`DERIVED:` exists because of a real slip (2026-07-29):** an OUT line cited
 > `block-lifecycle.md §2` as if that section said it. §2 gives the *test*; the conclusion was the
-> AI's. **Presenting your own reasoning as a written rule is exactly what `owner-0-voice.md` §2.7
+> AI's. **Presenting your own reasoning as a written rule is exactly what `principles/owner-0-voice.md` §2.7
 > bans.** Reasoning is fine — it just has to be labeled as reasoning.
 
 > ⭐ **Why this is the most important field in the contract:** it is the half that does not exist

@@ -44,7 +44,7 @@ which command answers which question.
 >
 > **Cómo leerlo:** `git --git-dir=.git-for3s-absorbido log --oneline`
 >
-> ⛔ **No se borra** — `doc-structure.md`: nunca borrar historia para que algo quede limpio.
+> ⛔ **No se borra** — `principles/expertise/doc-structure.md`: nunca borrar historia para que algo quede limpio.
 > Si algún día estorba, primero se vuelcan los 12 mensajes a un documento de `Mente/`.
 
 **Published engine:** `github.com/fruterito101/mente-os` (MIT, engine only — no `memory/`,

@@ -61,3 +61,7 @@ GITHUB_OAUTH_CLIENT_SECRET=<el Client Secret>
 
 *Relacionado: `work/Plan_Pieza_C_Conectores_OAuth.md` (en el Mente OS de For3s) ·
 `lib/demo/githubOAuth.ts` · `app/api/demo/connectors/github/*`.*
+
+---
+
+Related: `blocks/active/demo/BLOCK.md` §F (el conector de GitHub) · `blocks/active/demo/docs/plan-piece-e-admin.md`.

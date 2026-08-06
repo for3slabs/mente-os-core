@@ -2,6 +2,13 @@
 **Status:** current · **Type:** architecture · **Updated:** 2026-07-31 · **Owner:** brian
 **Purpose:** qué se dispara, cuándo, y qué pasa en cada rama. El mapa operativo.
 **Medido en disco el 2026-07-31** — ninguna cifra de este documento viene de memoria.
+
+## Purpose
+
+Cómo funciona Mente OS v2 EN EJECUCIÓN: qué corre solo, en qué orden y quién dispara a quién —
+las puertas, los hooks y los validadores. ⚠️ Todas sus cifras se midieron en disco el 2026-07-31;
+ninguna viene de memoria.
+
 ---
 
 > **La ley que decide qué va a script y qué queda escrito:**
@@ -89,7 +96,7 @@ propagación ya fuerza la evaluación. Una segunda parada no añade nada.
 
 ## 3 · MOMENTO 03 — vas a lanzar un especialista
 
-**Disparo:** `PreToolUse(Agent|Task)` → `gate-handoff.py`
+**Disparo:** `PreToolUse(Agent|Task)` → `hooks/gate-handoff.py`
 
 ```mermaid
 flowchart TD
@@ -309,7 +316,7 @@ impide que la IA se autoapruebe.
   copiado en prosa es correcto exactamente una vez.
 - **Las 4 puertas operan.** Probado en vivo: lanzar un `general-purpose` quedó bloqueado; un
   `Explore` pasó y devolvió su respuesta.
-- **El cableado del expertise funciona.** Editar `userStore.ts` nombra `dev-database.md` antes de
+- **El cableado del expertise funciona.** Editar `userStore.ts` nombra `principles/expertise/dev-database.md` antes de
   la edición, sin que nadie lo pida.
 - **Los tres fallos del diagnóstico se cerraron:** 0 → 221 documentos con metadata · índice de
   35 → 286 archivos · 5 de 11 sesiones sin registrar → **11 de 11**.
@@ -349,3 +356,7 @@ demostrando primero que el criterio funciona.
 Relacionado: `docs/architecture/` (el diseño completo) · `principles/owner-*.md` (los encargados) ·
 `principles/expertise/` (las disciplinas) · `rules/qa-dimensions.md` (las 6 dimensiones) ·
 `docs/PENDING-BRIAN.md` (los huecos, por encargado) · `rules/contract-handoff.md` (la puerta de delegación).
+
+---
+
+Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (la fuente de verdad estructural) · `CAPABILITIES.md` (qué puede ejecutarse) · `docs/WORKSPACE.md`.

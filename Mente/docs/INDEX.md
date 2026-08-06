@@ -84,7 +84,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 191 |
+| `BLOCK.md` | — | — |  | 187 |
 
 ## `blocks/active/demo/docs/`
 
@@ -93,10 +93,10 @@
 | `como-correr-los-tests.md` | analysis | current | 2026-08-05 | 104 |
 | `decisiones-tests.md` | analysis | current | 2026-08-05 | 82 |
 | `decisions-julio.md` | block | current | 2026-08-05 | 64 |
-| `demo-progress.md` | analysis | fossil | 2026-06-16 | 215 |
-| `guide-github-oauth-app.md` | analysis | current | 2026-07-20 | 63 |
+| `demo-progress.md` | analysis | fossil | 2026-06-16 | 219 |
+| `guide-github-oauth-app.md` | analysis | current | 2026-07-20 | 67 |
 | `hallazgos-del-motor.md` | analysis | current | 2026-08-05 | 66 |
-| `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 166 |
+| `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 170 |
 | `rama-neon-de-test.md` | analysis | current | 2026-08-06 | 101 |
 
 ## `blocks/archive/distribucion_2026-08/`
@@ -164,15 +164,15 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-05 | 2459 |
+| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-05 | 2470 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
 | `INDEX.md` | generated | — |  | 475 |
 | `METRICS.md` | generated | current | 2026-08-06 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 29 |
 | `WORKSPACE.md` | entry-point | current | 2026-08-05 | 143 |
-| `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
-| `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 283 |
+| `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 211 |
+| `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 293 |
 | `audit-adversarial.md` | analysis | current | 2026-07-30 | 105 |
 | `audit-f0-f5.md` | analysis | current | 2026-07-30 | 142 |
 | `f4-execution-log.md` | analysis | current | 2026-07-30 | 88 |
@@ -223,7 +223,7 @@
 |---|---|---|---|---|
 | `block-anatomy.md` | architecture | current | 2026-07-30 | 454 |
 | `folder-structure.md` | architecture | current | 2026-07-30 | 292 |
-| `how-it-runs.md` | architecture | current | 2026-07-31 | 351 |
+| `how-it-runs.md` | architecture | current | 2026-07-31 | 362 |
 | `language-policy.md` | architecture | current | 2026-07-30 | 86 |
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
 | `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 781 |
@@ -232,10 +232,10 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1579 |
+| `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1621 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-05 | 4639 |
-| `RETOMAR.md` | entry-point | current | 2026-08-05 | 249 |
+| `PENDIENTES.md` | pending | current | 2026-08-05 | 4651 |
+| `RETOMAR.md` | entry-point | current | 2026-08-05 | 234 |
 
 ## `memory/archive/`
 
@@ -290,7 +290,7 @@
 | `owner-1-docs.md` | contract | current | 2026-07-29 | 104 |
 | `owner-2-dev.md` | contract | current | 2026-07-29 | 124 |
 | `owner-3-validation.md` | contract | current | 2026-07-29 | 181 |
-| `vision-mente-os-v2.md` | architecture | current | 2026-07-29 | 285 |
+| `vision-mente-os-v2.md` | architecture | current | 2026-07-29 | 289 |
 
 ## `principles/expertise/`
 

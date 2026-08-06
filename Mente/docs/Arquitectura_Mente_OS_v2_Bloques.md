@@ -1,6 +1,13 @@
 # 🏗️ ARQUITECTURA — Mente OS v2: el sistema de BLOQUES
 
 **Status:** current · **Type:** architecture · **Updated:** 2026-08-05 · **Owner:** brian
+
+## Purpose
+
+La FUENTE DE VERDAD estructural de Mente OS v2: qué es un bloque, qué secciones lleva, cómo se
+abre y se cierra, y cómo se relacionan las piezas. **46 documentos la citan para RESOLVER**, no
+para consultar — cuando dos documentos se contradicen, manda este.
+
 ⛔ **FUENTE DE VERDAD — EXENTA DEL TECHO DE TAMAÑO, POR DECISIÓN DE BRIAN (2026-08-05).**
 *"Déjalo intacto como en v1. Es fuente de verdad, y las fuentes de verdad no importa el tamaño."*
 **No se parte, no se resume, no se poda.** 46 documentos la citan para RESOLVER, no para consultar;
@@ -284,9 +291,9 @@ DEMO                             ← NIVEL 1 · BLOQUE (unidad de trabajo)
 
 | Archivo nuestro | Tamaño | ¿Tenía límite? | Resultado |
 |---|---|---|---|
-| `PENDIENTES.md` | **240 KB** | ❌ | ilegible · leído 39× en una sesión |
-| `Estado_Sesion_Continuidad.md` | 196 KB | ❌ | fósil que sigue vivo |
-| `Bitacora_Progreso.md` | 162 KB | ❌ | crece sin recorte |
+| `memory/PENDIENTES.md` | **240 KB** | ❌ | ilegible · leído 39× en una sesión |
+| `memory/Estado_Sesion_Continuidad.md` | 196 KB | ❌ | fósil que sigue vivo |
+| `memory/Bitacora_Progreso.md` | 162 KB | ❌ | crece sin recorte |
 | `MEMORY.md` (memorias) | 19.5 KB | ❌ | la pieza **más pesada** del arranque |
 | **`memory/RETOMAR.md`** | **14.4 KB** | ✅ ~200 líneas | **no se desbordó** |
 
@@ -322,17 +329,17 @@ DEMO                             ← NIVEL 1 · BLOQUE (unidad de trabajo)
 
 | Archivo | Líneas | ¿Tenía límite? |
 |---|---|---|
-| `Estado_Sesion_Continuidad.md` | **4,779** | ❌ |
-| `PENDIENTES.md` | **3,138** | ❌ |
+| `memory/Estado_Sesion_Continuidad.md` | **4,779** | ❌ |
+| `memory/PENDIENTES.md` | **3,138** | ❌ |
 | **`Arquitectura_Mente_OS_v2_Bloques.md`** (este) | **2,347** | ❌ 🔴 |
-| `Bitacora_Progreso.md` | 1,506 | ❌ |
-| `For3s_OS_Grafo_Maestro.md` | 1,279 | ❌ |
+| `memory/Bitacora_Progreso.md` | 1,506 | ❌ |
+| `Cerebro/For3s_OS_Grafo_Maestro.md` | 1,279 | ❌ |
 | `MEMORY.md` | 107 líneas / **19 KB** | ❌ — **la pieza más pesada del arranque** |
 | `memory/RETOMAR.md` | 224 | ✅ **≤200 → el único que no se desbordó** |
 
 > 🔴 **Este documento pasó de 995 a 2,347 líneas en UNA sesión (+1,352).**
 > **El documento que predica límites de tamaño no tenía límite.** Va camino de ser el próximo
-> `PENDIENTES.md`, que también empezó siendo útil.
+> `memory/PENDIENTES.md`, que también empezó siendo útil.
 
 #### La tabla de límites
 
@@ -345,7 +352,7 @@ DEMO                             ← NIVEL 1 · BLOQUE (unidad de trabajo)
 | **`BLOCK.md`** | **≤150** | ver §3.2-bis (ya diseñado) |
 | **`MEMORY.md`** (índice de memorias) | **≤80** | archivar memorias viejas |
 | **Registro append-only** (bitácora · decisiones · roces) | **sin límite** | pero **rotación anual** |
-| **`PENDIENTES.md`** ⭐ | **sin límite** | **rotación por CIERRE**, no por fecha (ver abajo) |
+| **`memory/PENDIENTES.md`** ⭐ | **sin límite** | **rotación por CIERRE**, no por fecha (ver abajo) |
 | **Índice generado** (`INDEX` · `STATES` · `DECISIONS`) | sin límite | se **genera**, no se escribe |
 | **Fósil** | **congelado** | no crece · se mueve a `docs/archive/` |
 
@@ -358,7 +365,7 @@ Aplicado a este documento: **2,347 líneas significan que ya contiene varios doc
 §12-BIS a §12-SEPTIES son un manual de configuración; §10 es el sistema de aprendizaje. **Crecieron
 dentro de un sitio que no era el suyo.** El tamaño solo lo hizo visible.
 
-#### ⭐ El caso especial: `PENDIENTES.md` — rotación por CIERRE, no por fecha
+#### ⭐ El caso especial: `memory/PENDIENTES.md` — rotación por CIERRE, no por fecha
 
 **Medido 2026-07-29: 3,213 líneas · 253 KB.** Es el archivo más grande del sistema después de los
 fósiles, y **el único tipo que la tabla no cubría** — el archivo donde se registran los pendientes
@@ -373,10 +380,10 @@ La fecha no dice nada sobre su vigencia. **Lo que la dice es si está cerrado.**
 | Regla | Cómo funciona |
 |---|---|
 | **Un pendiente CERRADO sale del archivo** | se mueve a `docs/archive/pendientes-<año>.md` con su fecha de cierre |
-| **`PENDIENTES.md` contiene SOLO lo abierto** | su tamaño mide la deuda real, no la historia |
+| **`memory/PENDIENTES.md` contiene SOLO lo abierto** | su tamaño mide la deuda real, no la historia |
 | **La rotación la dispara el cierre**, no el calendario | ✅ un pendiente resuelto = una línea menos |
 
-> ⭐ **El efecto que importa:** el tamaño de `PENDIENTES.md` pasa a ser **una métrica útil**.
+> ⭐ **El efecto que importa:** el tamaño de `memory/PENDIENTES.md` pasa a ser **una métrica útil**.
 > Si crece, la deuda crece. Hoy no dice nada porque mezcla lo abierto con lo ya resuelto.
 
 **Lo que `check-health` comprueba:**
@@ -430,7 +437,7 @@ evidencia — y de la evidencia forense salió el incidente del 21-jul que no es
 | **Al CERRAR** | **todo**, incluida la suficiencia | cerrar mal le cuesta a la **siguiente sesión**, que arranca ciega |
 
 > **Asimetría deliberada: barato de abrir, caro de cerrar.** Es lo que ya se observa en el sistema:
-> `memory/RETOMAR.md` es fácil de actualizar → está fresco. `PENDIENTES.md` exige rigor → 240 KB ilegibles.
+> `memory/RETOMAR.md` es fácil de actualizar → está fresco. `memory/PENDIENTES.md` exige rigor → 240 KB ilegibles.
 
 #### El archivo, sección por sección
 
@@ -911,7 +918,7 @@ de las veces** — porque dependía de acordarse.
 **La diferencia no es esfuerzo: es el paso 3.** El fix-sobre-fix pregunta *"¿dónde falla?"*.
 El bloque mejorado pregunta *"¿por qué existe este fallo y dónde más vive?"*.
 
-> Este mismo criterio ya está probado en Mente OS: `CASO_Default_Peligroso_Tema_Hilo.md` §2
+> Este mismo criterio ya está probado en Mente OS: `memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` §2
 > — *"el código suele decir de dónde viene. Antes de teorizar: grep + leer el comentario +
 > contrastar con Mente OS. En 3 comandos se supo el origen exacto."*
 
@@ -1100,7 +1107,7 @@ consulta **no es aprendizaje: es un archivo**.
 ### 10.5 · ✅ CUÁNDO UN ERROR MERECE SER CASO — *F0-1, decidido 2026-07-27*
 
 **El problema que resuelve:** si todo error se vuelve caso, en tres meses hay 80 y **ninguno se
-consulta** — sería el nuevo `PENDIENTES.md`. Si ninguno lo hace, los errores se repiten.
+consulta** — sería el nuevo `memory/PENDIENTES.md`. Si ninguno lo hace, los errores se repiten.
 
 #### La prueba de las 3 preguntas — debe cumplir LAS TRES
 
@@ -2453,7 +2460,11 @@ del contexto.
 👉 **Plan de construcción: `docs/plan-v2-rollout.md`** (9 fases · 38 tickets · las 4 leyes del orden).
 
 Relacionado: `principles/vision-mente-os-v2.md` (el porqué + el diagnóstico medido) ·
-`ESTANDAR_Metodo_Fases_F.md` (se absorbe en los encargados) ·
-`CASO_Default_Peligroso_Tema_Hilo.md` (el patrón de caso reutilizable, semilla de §10) ·
+`rules/ESTANDAR_Metodo_Fases_F.md` (se absorbe en los encargados) ·
+`memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` (el patrón de caso reutilizable, semilla de §10) ·
 [[project_mente_os_v2_bloques]] · [[project_ser_duenos_del_contexto]] ·
 [[project_incidente_degradacion_21jul]].
+
+---
+
+Related: `principles/vision-mente-os-v2.md` (el porqué) · `docs/architecture/how-it-runs.md` (el flujo) · `rules/contract-block.md` (la forma que impone).

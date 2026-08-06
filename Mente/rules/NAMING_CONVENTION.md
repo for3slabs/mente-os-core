@@ -98,8 +98,8 @@ blocks/
 | `case-` | a learning case | `case-dangerous-default.md` |
 | `contract-` | a contract / template | `contract-block.md` |
 | `spec-` | a specification | `spec-quality-verdict.md` |
-| `analysis-` | external research | `analysis-internos-v1.md` |
-| `plan-` | an implementation plan | `plan-v2-rollout.md` |
+| `analysis-` | external research | `docs/analysis-internos-v1.md` |
+| `plan-` | an implementation plan | `docs/plan-v2-rollout.md` |
 | *(none)* | anything else | `naming-convention.md` |
 
 ### 4.3 · ⭐ THE UPPERCASE EXCEPTION — entry points only
@@ -160,7 +160,7 @@ CLAUDE.md                      ← project rules (auto-injected)
 | `Doc/` | singular, capitalized, non-standard. Every repo on earth uses `docs/` |
 | `Tickets/` | **lies** — it holds bridges to other Mente OS, not tickets. Frozen since 14-jun |
 | `secrets/` | underscore + accent-adjacent + Spanish. `secrets/` is unambiguous |
-| `Ronda_SEC4c_NonRoot_Perfil_Instancia.md` | 4 conventions in one name; unsearchable |
+| `work/Ronda_SEC4c_NonRoot_Perfil_Instancia.md` | 4 conventions in one name; unsearchable |
 
 > **The test this standard must pass:** *someone who has never seen Mente OS opens the root folder
 > and can guess what is in each directory.* Today it fails that test.
@@ -261,5 +261,5 @@ signal separating alive from fossil; a blanket rename destroys that signal.
 
 ---
 
-Related: `Arquitectura_Mente_OS_v2_Bloques.md` §12 (folder structure) ·
+Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` §12 (folder structure) ·
 `principles/owner-0-voice.md` (content stays Spanish) · [[project_mente_os_v2_bloques]].

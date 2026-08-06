@@ -41,15 +41,15 @@ the only one that can refuse to close a block.
 >
 > | Now enforceable | Where |
 > |---|---|
-> | 4 conditions for a datum to count as **proof** (concrete datum · before→after · seen to fail · reproducible after `/clear`) | `val-functional.md` §2.2 |
+> | 4 conditions for a datum to count as **proof** (concrete datum · before→after · seen to fail · reproducible after `/clear`) | `principles/expertise/val-functional.md` §2.2 |
 > | **Absence of evidence is not evidence** — a green over zero cases is not a pass | §2.5 |
 > | A check that **cannot fail is deleted**, not kept | §2.6 |
 > | ⛔ Never close something **whose failure you would not notice** | §3 |
-> | Seams: **fail loudly, never silently**; DATA decides stop-vs-degrade | `val-integration.md` §2.5 |
+> | Seams: **fail loudly, never silently**; DATA decides stop-vs-degrade | `principles/expertise/val-integration.md` §2.5 |
 > | Nothing is assumed across a seam — **identity is verified, never assumed** | §2.2 |
 >
 > ⚠️ **Criterion 1 (functional) is no longer just the §5-BIS battery.** The battery says the checks
-> ran; `val-functional.md` says whether their result counts as proof. Both apply — the stricter
+> ran; `principles/expertise/val-functional.md` says whether their result counts as proof. Both apply — the stricter
 > wins (`rules/rule-inheritance.md`).
 
 ```

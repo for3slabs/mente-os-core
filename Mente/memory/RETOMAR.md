@@ -3,6 +3,11 @@
 **Status:** current · **Type:** entry-point · **Updated:** 2026-08-05 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
+
+## Purpose
+
+El cold-start brief: el ÚNICO archivo que leer al retomar. Dónde quedamos, el próximo paso y los punteros. Máximo 250 líneas, lo aplica `bin/check-health`; al cerrar, la historia va a la Bitácora.
+
 > **El ÚNICO archivo que necesitas leer al retomar.** Pequeño a propósito: **máximo 250 líneas**,
 > lo aplica `bin/check-health`. Al cerrar, la historia va a la Bitácora, no aquí.
 > ⚠️ **UNA sola fecha, la de la cabecera** (dos fue un hueco real de F8-4).
@@ -71,7 +76,7 @@ es la definición de cerrar `blocks/active/demo` §F-7, y eso necesita un dato q
 **quién es dueño de jazz y de mashe.**
 📊 demo: `test files` **0 → 1** — cae uno de sus 2 rojos (queda el muerto `ConnectClaude.tsx`). Corredor: **Vitest 4.1.10**.
 ⛔ **Nada commiteado ni empujado** — Vercel despliega `marca-personal` desde `main`: lo decide Brian.
-🔬 **Un validador lee la CELDA, no la intención:** decorar la celda de estado del §F apagó en silencio un aviso de `pre-edit-standards.py`. El matiz va en la descripción; la celda es UNA palabra.
+🔬 **Un validador lee la CELDA, no la intención** — el matiz va en la descripción; la celda, UNA palabra.
 
 ### ⚡ RENDIMIENTO: el sistema es **86x más rápido** (2026-08-05)
 
@@ -89,35 +94,35 @@ es la definición de cerrar `blocks/active/demo` §F-7, y eso necesita un dato q
 
 - 🔌 **3ª ronda de cableado**: el criterio LLENO tampoco llegaba (2 `val-*` sin declarar, 2 dueños
   diciendo `pending` de lo lleno) → corregido + **2 checks** que lo impiden.
-- 🏁⭐ **LOS 3 DUEÑOS CON CRITERIO PROPIO — huecos 66 → 3.** `doc-structure.md` cerró el último:
+- 🏁⭐ **LOS 3 DUEÑOS CON CRITERIO PROPIO — huecos 66 → 3.** `principles/expertise/doc-structure.md` cerró el último:
   ⭐ **si un documento excede su techo DEBE partirse**, y las mitades se apuntan (endurece ADR-027) ·
   puntero siempre que el dato tenga dueño en otro sitio · `Status: current` es un contrato de 4
   términos (**quién lo verificó y con qué**) · ⛔ nunca borrar historia para que un check pase.
   **Los 3 restantes NO son criterio:** 2 punteros de índice + 1 falso positivo del contador.
-- 🎓 **`doc-planning.md` LLENO** — **todo límite que un plan declare se MIDE** · una fase entrega
+- 🎓 **`principles/expertise/doc-planning.md` LLENO** — **todo límite que un plan declare se MIDE** · una fase entrega
   UNA cosa · ⛔ nada de fases "pulir" · **si tocar algo obliga a BD+frontend+backend, es UN BLOQUE**
   · un hueco real **se marca como pendiente asignado a Brian** · ⛔ *no omitas algo porque crees
   que ya lo sé*, ni te excuses con *"no sabía"*.
 - 🔴 **Brian cazó un SESGO DE DISEÑO:** mi check exigía que todo criterio aterrizara en un bloque
   de código — *"los usuarios pueden hacer código o no, no es ley"*. Corregido + nace el bloque
   `plan-tests-demo` (`type: docs`), el primero que ejercita owner-1.
-- 🎓⭐ **OWNER-2 COMPLETO** — `dev-frontend.md`: **el servidor es dueño del estado, React lo
+- 🎓⭐ **OWNER-2 COMPLETO** — `principles/expertise/dev-frontend.md`: **el servidor es dueño del estado, React lo
   refleja** · lo que el usuario decidió sobrevive al refresh · 🔴 **un control nunca miente** · el
   nombre dice qué MUESTRA · ⛔ secreto en el cliente, botón oculto como única autorización.
-- 🎓 **`dev-backend.md` LLENO** — **guardián único por regla** (`session.ts` 12→0) · el fallo
+- 🎓 **`principles/expertise/dev-backend.md` LLENO** — **guardián único por regla** (`session.ts` 12→0) · el fallo
   esperable **es** el contrato · seguridad o dinero **se unifican siempre** · ⛔ endpoint genérico,
   exponer control, confiar en un id del cliente. 🔬 **El check de cableado me cazó a mí.**
 - 🎓⭐ **OWNER-3 COMPLETO** — *fallar ruidosamente* · **los DATOS deciden** detener vs degradar ·
   *no se asume nada* · **ausencia de evidencia NO es evidencia** · *nunca cierres algo cuyo fallo
   no sabrías detectar*.
-- 🎓 **`dev-database.md` LLENO → fase F1 CERRADA.** 5 categorías que nunca viven en código · 4
+- 🎓 **`principles/expertise/dev-database.md` LLENO → fase F1 CERRADA.** 5 categorías que nunca viven en código · 4
   estados imposibles · **FK siempre** · 4 condiciones antes de una migración. ⭐ Su raíz: *"debe
   existir un PLAN DE IMPLEMENTACIÓN que valide por qué la tabla existe"*.
 - 🧩 **2 skills externas desmanteladas** → bloque `expertise-programacion` **CERRADO 🟢 PRODUCTO**
   + nace `rules/rule-shipping-flow.md` (rama → verificar → PR → ⛔ no mergear), **transversal**.
 - 🔧 **`grade-block`: 3 defectos** → arreglados + **5 self-tests** · nace **`docs/WORKSPACE.md`**.
 - 🔌 **2ª ronda de cableado**: piezas escritas y no conectadas — **las 20 reglas ya tienen script**
-  (eran 17) + `WORKSPACE.md` con check propio. 🔬 Verificados **por reversión**.
+  (eran 17) + `docs/WORKSPACE.md` con check propio. 🔬 Verificados **por reversión**.
 
 ✅ **P1·P2·P4·P5 HECHOS** (batería **173 → 175**): el commit **bloquea un índice desfasado** (cazó
 3 derivas reales, la primera a mí) · `/clear` **lee la batería** y se niega si está roja · nace
@@ -142,7 +147,7 @@ LLENO con sus citas · **3 modos 🟢🟡🔵** (el contrato no medía el peso d
 **−48%** (5,167 → 2,644 tokens, se paga en cada turno), 16/16 reglas verificadas.
 
 > ⭐ **LA LECCIÓN:** *no faltaban reglas, sobraban dos mal escritas.* Y la que me toca: **dejé
-> `owner-0-voice.md` en 582 líneas con límite de 250, el mismo día que escribí la regla del techo.**
+> `principles/owner-0-voice.md` en 582 líneas con límite de 250, el mismo día que escribí la regla del techo.**
 
 **✅ RESUELTO EN S11 — el contrato YA gobernó una sesión real** (el cierre de `distribucion` + las
 6 dimensiones), sin tocarlo durante el uso. Brian seguía en *"me gusta más, pero no me fascina"*
@@ -150,30 +155,10 @@ tras 6 rondas: **eso sigue abierto.**
 ⛔ **Superficie = terminal SIEMPRE** — nada de web/navegador salvo que Brian lo pida para esa
 entrega. Prohibición escrita en ambos archivos.
 
-### LO ANTERIOR (2026-08-03, S9 ~20h) — **UN CLON CON OTRO DUEÑO SE INSTALA SOLO**
+### LO ANTERIOR (2026-08-03, S9) — un clon con otro dueño se instala solo
 
-37 commits, sin push. Detalle: `Cerebro/Registro_Conversaciones.md` §S9.
-
-- 🧩 **Bloque `distribucion` 6/6 construido** (cerrado en S11) — `bin/init` + `templates/` +
-  `CAPABILITIES.md` + frontera motor/instancia como candado portable. **Probado en clon real**.
-- 🔗 **Citas rotas 144 → 0** (69 eran correctas y el validador las contaba mal) · 🔒 **Seguridad**:
-  `python3 -c "open(...)"` leía lo prohibido · `deny` 67 → 212 · `ask` creado (48).
-- 🧪 **Plan de raíz F1-F4** — 8 hallazgos de UNA familia: checks que corren, dicen verde y no miden
-  lo que dicen → `rules/rule-checks-must-measure.md` + sección `SELF-TEST`.
-
-> ⭐ **LA LECCIÓN:** declaré el bloque BLOQUEADO sin consultar la fuente; la documentación lo
-> respondía y los 3 sub-bloques se hicieron en una hora.
-> **Un límite que no has verificado no es un límite: es una suposición disfrazada.**
-
-**🔑🔐 2 ABIERTOS, decide Brian** — FIRMA GPG (sin clave aquí) · `~/.claude.json` guarda el OAuth
-del harness y **`deny` no es sandbox**: el matcher lee el TEXTO — `"$(ls …)"` lo esquiva.
-Opciones en `PENDIENTES.md` §🔑 §🔐.
-
-**S8 (31-jul→02-ago):** el v2 se endureció y se **publicó** en `github.com/fruterito101/mente-os`
-(MIT, solo motor). Hallazgo: *nadie vigilaba la costura* → `rules/rule-config-hygiene.md`.
-
-⚠️ **Y lo que sigue sin cambiar:** el v2 **nunca ha gobernado trabajo real de producto** — los 49
-commits de S8+S9 son el sistema arreglándose a sí mismo. Esa es la prueba que falta.
+8 hallazgos de la misma familia (checks que corrían, decían verde y **no medían**) → `rule-checks-must-measure`. Citas rotas 144 → 0. Bloque `distribucion` 6/6.
+📦 Detalle → `memory/Bitacora_Progreso.md` (movido el 2026-08-06).
 
 ### LO ANTERIOR (2026-07-31, S7) — el v2 se construyó y F8-4 lo verificó
 

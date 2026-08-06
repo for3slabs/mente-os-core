@@ -109,7 +109,7 @@ Repeating an argument is filler. **Reporting the state is the deliverable.**
 ✅ Measure, then state the number. Or state that it was not measured.
 
 **Why:** this is rule §1 in operational form, and it comes from a real case —
-`case-dangerous-default.md` §6: *"'it would break X' is a claim to be VERIFIED, not assumed."*
+`rules/case-dangerous-default.md` §6: *"'it would break X' is a claim to be VERIFIED, not assumed."*
 When Brian asked *"why would it break?"*, measurement showed the claim was overly cautious.
 
 ### 2.8 · Omit what does not matter
@@ -166,7 +166,7 @@ the duplication, the misplaced code — **none of it came from the language.**
 ## 6 · BRIAN'S ADDITIONS
 
 ✅ **FILLED by Brian, 2026-08-03.** Dictated across one session; the AI structured, it did not
-invent (method: `qa-dimensions.md` §5 — *the AI asks, Brian answers, the AI structures*).
+invent (method: `rules/qa-dimensions.md` §5 — *the AI asks, Brian answers, the AI structures*).
 
 ### 6.1 · A delivery must not need a second question
 
@@ -282,4 +282,4 @@ the rest are noise. Questions 4-13 govern 🟡 and 🔵.
 
 Related: `.claude/output-styles/for3s.md` (the vehicle) ·
 `docs/Arquitectura_Mente_OS_v2_Bloques.md` §12-SEXIES (the design) · §12-Q.3 (the same rule for
-code) · `rules/NAMING_CONVENTION.md` (language policy) · `case-dangerous-default.md` (source of §2.7) · Implements ADR-018 (owner-0 is the VOICE, not a fourth owner).
+code) · `rules/NAMING_CONVENTION.md` (language policy) · `rules/case-dangerous-default.md` (source of §2.7) · Implements ADR-018 (owner-0 is the VOICE, not a fourth owner).

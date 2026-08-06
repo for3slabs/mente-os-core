@@ -20,12 +20,12 @@ como checklist.
 
 | # | Hueco | Cierre |
 |---|---|---|
-| ① | **La batería §5-BIS desapareció** — owner-3 tenía 3 criterios pero no los 7 checks A-G | ✅ `owner-3-validation.md` §3-BIS, **copiada del Método F, no reinventada** + verificación afirmativa |
+| ① | **La batería §5-BIS desapareció** — owner-3 tenía 3 criterios pero no los 7 checks A-G | ✅ `principles/owner-3-validation.md` §3-BIS, **copiada del Método F, no reinventada** + verificación afirmativa |
 | ② | **La regla `/clear` no estaba en el v2** — la que se incumplió 5 de 11 veces | ✅ `rules/rule-session-close.md` + no-negociable **#8** de `base-rules.md` |
 | ③ | **Nada decía CÓMO se crea un bloque** — el contrato dice qué campos, no quién los llena | ✅ `rules/block-lifecycle.md` — 6 pasos + quién hace qué |
-| +⑦ | `case-dangerous-default.md` no existía (4 archivos lo referenciaban) | ✅ migrado a `rules/` |
+| +⑦ | `rules/case-dangerous-default.md` no existía (4 archivos lo referenciaban) | ✅ migrado a `rules/` |
 
-**⭐ `block-lifecycle.md` cerró además 3 huecos medianos:** nuevo bloque vs existente (§2) ·
+**⭐ `rules/block-lifecycle.md` cerró además 3 huecos medianos:** nuevo bloque vs existente (§2) ·
 el estado `blocked` con dueño del bloqueo (§5) · conflicto entre bloques (§7).
 
 > ⭐ **El hallazgo de método:** *diseñar mirando lo que falta pierde lo que ya funcionaba.*
@@ -34,7 +34,7 @@ el estado `blocked` con dueño del bloqueo (§5) · conflicto entre bloques (§7
 
 > ✅ **F2 CERRADO 2026-07-29 — 14 archivos, todos en inglés, todos bajo su límite (≤250).**
 > Cada uno lleva el header del contrato (`Status`/`Type`/`Updated`/`Owner`) y **referencias a ADRs
-> verificadas**. `owner-2-dev.md` aplica solo sus 7 reglas duras mientras el criterio de Brian
+> verificadas**. `principles/owner-2-dev.md` aplica solo sus 7 reglas duras mientras el criterio de Brian
 > (`expertise/*`) siga vacío — **no inventa criterio** (ADR-003).
 
 > 🇺🇸 **Todos los archivos de F2 nacen en inglés de EE.UU.** (decisión 23) y con la convención de
@@ -79,7 +79,7 @@ decide la regla de medir. Lo que no aplica imprime `n/a` **con su razón** — y
 | bloque sin `type` | 🔴 rechaza y explica, **no adivina** (exit 1) |
 | secreto pegado en un `.md` | 🔴 lo encontró y nombró el archivo |
 
-**Cableado en los 3 consumidores:** `contract-block.md` §A · `bin/new-block --type` (deriva del
+**Cableado en los 3 consumidores:** `rules/contract-block.md` §A · `bin/new-block --type` (deriva del
 `--piece`, pide cuando no puede) · `bin/check-blocks` (falta `type` = 🔴).
 
 ---

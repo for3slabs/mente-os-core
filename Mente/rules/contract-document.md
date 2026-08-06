@@ -135,13 +135,13 @@ never overflowed. `memory/PENDIENTES.md` reached 3,213 lines · `Estado_Sesion` 
 
 | # | Rule | Why |
 |---|---|---|
-| 1 | **A claim carries its evidence** — a number, a file, a command | `owner-0-voice.md` §2.7: an unverified claim is banned |
+| 1 | **A claim carries its evidence** — a number, a file, a command | `principles/owner-0-voice.md` §2.7: an unverified claim is banned |
 | 2 | **Point, never copy** | a duplicated table desynchronizes. Measured: the decisions table lived in two documents and diverged (75 vs 37 rows) |
 | 3 | **Long detail goes to `docs/`** | keeps the document inside its limit |
 | 4 | **Quotes from Brian are verbatim** | Método F §1: *they are the contract* |
 | 5 | **Dates in ISO** `YYYY-MM-DD` | avoids MM/DD vs DD/MM ambiguity |
 | 6 | **No dates or versions in filenames** | `NAMING_CONVENTION.md` §4.4 — git already knows |
-| 7 | ⭐ **Every path is written from the Mente root**, never as a bare filename | `punteros.tsv` is ambiguous; `Maestro/punteros.tsv` resolves. Files outside Mente carry their real prefix (`.claude/settings.json`, `For3s-OS/...`) |
+| 7 | ⭐ **Every path is written from the Mente root**, never as a bare filename | `Maestro/punteros.tsv` is ambiguous; `Maestro/punteros.tsv` resolves. Files outside Mente carry their real prefix (`.claude/settings.json`, `For3s-OS/...`) |
 
 ---
 

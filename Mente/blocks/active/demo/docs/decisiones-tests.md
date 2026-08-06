@@ -1,6 +1,6 @@
 # DECISIONES de los tests de los 4 caminos · bloque `demo`
 **Status:** current · **Type:** analysis · **Updated:** 2026-08-05 · **Owner:** brian
-**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `doc-structure.md`
+**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `principles/expertise/doc-structure.md`
 
 ## Purpose
 
@@ -26,7 +26,7 @@ el BLOCK.md pasó su techo de 200 líneas. ⛔ Nada se resumió ni se borró.
 - ⭐ 2026-08-05 · **§F-12 CERRADO: `agentOn` deja de ser estado local y pasa a ser la prop.**
   El error (*setState síncrono en un effect → renders en cascada*) no era estilo: el componente
   **copiaba** `agentOn` a un `useState` y un `useEffect` la resincronizaba en cada latido —
-  contradice `dev-frontend.md` §2 (**el servidor es dueño del estado**) y creaba un segundo valor
+  contradice `principles/expertise/dev-frontend.md` §2 (**el servidor es dueño del estado**) y creaba un segundo valor
   que podía divergir. Verificado en la raíz antes de tocar: la verdad llega del heartbeat
   (`GeneralExperience.tsx:53` → `DemoShell` → la prop). El tránsito ("Encendiendo…") se **deriva
   del render**, así que el interruptor sigue sin mentir (el fix del 26-jul se conserva).
@@ -51,11 +51,11 @@ el BLOCK.md pasó su techo de 200 líneas. ⛔ Nada se resumió ni se borró.
   existen: una credencial suelta, no compatibilidad. En la BD quedaron **inactivas, no borradas**
   (UPDATE reversible).
 
-- ⭐ 2026-08-05 · **`gate-critical.py` ahora exime a un test de integración — con condición.**
+- ⭐ 2026-08-05 · **`hooks/gate-critical.py` ahora exime a un test de integración — con condición.**
   La puerta bloqueó `tests/entrar.test.ts` por hacer `DELETE`/`UPDATE` desde un `.ts`. Era correcto:
   la regla se escribió cuando no existía ningún test. Pero un test de integración **debe** limpiar
   lo que escribe, y prohibirlo forzaría un `db()` simulado — que prueba el simulacro, no el freno
-  (`val-functional.md` §2.3). **La exención NO es "es un test":** solo aplica si el archivo nombra
+  (`principles/expertise/val-functional.md` §2.3). **La exención NO es "es un test":** solo aplica si el archivo nombra
   una conexión dedicada (`DATABASE_URL_TEST`). Un test que alcanza la URL de producción **sigue
   bloqueado**, y ese es justo el caso que vale la pena cazar. Probado en los 3 casos: exento ✅ ·
   test sin variable dedicada → exit 2 ✅ · código de aplicación → exit 2 ✅.
@@ -70,7 +70,7 @@ el BLOCK.md pasó su techo de 200 líneas. ⛔ Nada se resumió ni se borró.
   🔬 **No se dio por bueno el verde:** se saboteó el freno de reenvío de `verificacion.ts`
   (`if (false && previo…)`) para reproducir el bug de V2, y el test **⭐ REGRESIÓN V2 se puso
   ROJO**. Restaurado byte a byte, `git status` limpio. Un test que pasa a la primera y nunca se
-  vio fallar no ha demostrado nada (`val-functional.md` §2.2).
+  vio fallar no ha demostrado nada (`principles/expertise/val-functional.md` §2.2).
   🔴 **Verificado que producción NO se tocó:** `demo_verificaciones` de la Neon viva tiene **0
   filas `@for3s.invalid`**. La separación por `DEMO_DATABASE_URL_TEST` funciona.
   ⚠️ **El archivo llegó sin el prefijo `DEMO_DATABASE_URL_TEST=`** (solo la cadena). Corregido;

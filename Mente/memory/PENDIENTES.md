@@ -3,6 +3,13 @@
 **Status:** current · **Type:** pending · **Updated:** 2026-08-05 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
+
+## Purpose
+
+Todo lo que queda abierto en For3s OS y en Mente OS v2, con su estado medido. ⚠️ Conserva el
+ENUNCIADO original junto al estado actual, así que un encabezado ⬜ puede referirse a algo ya
+cerrado — el estado real está en el cuerpo de cada entrada.
+
 ## 🙋 ESPERANDO A BRIAN — lo que bloquea trabajo YA ESCRITO (2026-08-05)
 
 > Estos tres no son ideas: hay código escrito y verificado esperando el dato. Cada uno dice
@@ -30,7 +37,9 @@ abría la fuerza bruta y hoy no hay nada que lo vigile.
 motivo visible — nunca cae de vuelta a producción. Y `Mente/hooks/gate-critical.py` **bloquea al
 escribirlo** cualquier test con SQL destructivo que no nombre su propia base.
 
-### 🔴 B2 · QUIÉN ES DUEÑO DE JAZZ Y DE MASHE — desbloquea el sub-bloque 7 y un test ROJO
+### ✅ B2 · DUEÑOS DE JAZZ/MASHE — **CERRADO 2026-08-06 sin necesitar el dato.** Brian borró
+las instancias (eran ruido, cero uso); `allowedEmails.ts` desapareció con ellas y el test rojo
+se puso verde. Las 9 menciones que quedan en el código son COMENTARIOS históricos, cero vivo.
 
 **Qué falta:** los dos correos reales, para meterlos en la BD y borrar el `DEV_FALLBACK` de
 `lib/demo/allowedEmails.ts` — que hoy autoriza `jazz@example.com`, un dominio que **nadie
@@ -40,7 +49,7 @@ controla**.
 (`tests/autorizar.test.ts`: `expected false, received true`). ⛔ **No se arregla debilitando el
 assert** — su verde ES la definición de que ese sub-bloque cerró.
 
-### ⛔ B3 · COMMIT Y PUSH DE `marca-personal` — decisión tuya, no técnica
+### ✅ B3 · COMMIT Y PUSH — **CERRADO 2026-08-06.** Los 3 repos publicados; árboles limpios.
 
 **Qué hay sin commitear:** `tests/` (4 archivos) · `vitest.config.ts` · `package.json` ·
 `package-lock.json`. **Vercel despliega desde `main`, así que un push ahí ES un despliegue a
@@ -69,7 +78,7 @@ silencio: quien añada otra tiene que escribirla ahí.
 ### 🐛 4 DEFECTOS REALES que P3 destapó, todos corregidos
 
 1. 🔴 **Los 2 bloques archivados hoy no tenían `SUMMARY.md` ni `connections.md`** — que
-   `contract-archive.md` §0 exige. `check-structure` daba **exit 2** y **nada de la batería lo
+   `rules/contract-archive.md` §0 exige. `check-structure` daba **exit 2** y **nada de la batería lo
    vigilaba**. *"Un bloque cerrado que no se puede consultar es un bloque que se perdió."* Escritos.
 2. 🔴 **Sus encabezados estaban en español** (*"Qué se aprendió"*) y el validador busca `learn` —
    así que la ÚNICA sección que no es copia se marcaba como vacía. Corregidos a `## What was learned`.
@@ -206,7 +215,7 @@ para que estén dentro de Mente OS v2"*.
 > impecable cuando Brian lo usa; nada garantiza que funcione cuando lo usa otro. Misma conclusión
 > que dejó `graphify`: **las cicatrices que faltan son las de usuarios reales.**
 
-### ⬜ P1 · 🔴 QUE ALGO EJECUTE LA BATERÍA — el hueco más grande
+### ✅ P1 · LA BATERÍA SE EJECUTA SOLA — verificado: `hooks/pre-commit.sh` la llama
 
 Ningún hook llama a `bin/test-f0-f6`: los **173 checks corren solo si alguien se acuerda**.
 ⭐ **La ironía medible:** la ley del propio sistema dice *código 100%, disciplina 40-60%* — y su
@@ -214,7 +223,7 @@ verificación central está del lado del 40-60%.
 **Lo que falta decidir (🙋 Brian):** *cuándo* corre. La batería tarda ~2 min y toma su lock, así que
 en cada commit molesta. Candidatos: al cerrar sesión · antes de un push · en CI (→ P3).
 
-### ⬜ P2 · 🔴 `--check` DE DERIVA CABLEADO A LA PUERTA
+### ✅ P2 · `--check` DE DERIVA — cableado en `hooks/pre-commit.sh`
 
 ⚠️ **CORRECCIÓN a lo reportado antes:** el `--check` **ya existe** en `bin/generate-index` y
 `bin/generate-metrics`, y `test-f0-f6` lo ejecuta. Lo que falta es que lo ejecute **la puerta**:
@@ -224,14 +233,14 @@ archivos creados hoy. Regenerado; ambos generadores en exit 0.
 **Esto es el `skillgen --check` de `graphify` adaptado:** ellos hacen imposible la deriva porque el
 CI la caza; aquí la puerta del commit es el equivalente.
 
-### ⬜ P3 · 🔴 CI EN EL REPO PUBLICADO
+### ✅ P3 · CI — `.github/workflows/ci.yml` existe en el repo publicado
 
 `.github/workflows/` **no existe** en `mente-os`. `graphify` tiene 3 (`ci` · `publish` ·
 `release-graph`). **Nadie verifica un PR externo antes de mezclarlo** — y `rules/rule-shipping-flow.md`
 (escrita hoy) declara un flujo de PR que ningún automatismo respalda.
 Mínimo: correr la batería + `check-links` + `check-blocks` en cada PR. Cierra P1 de paso.
 
-### ⬜ P4 · 🔴 VERSION + CHANGELOG — el motor debe saber qué es
+### ✅ P4 · VERSION + CHANGELOG — ambos existen
 
 No hay `VERSION` ni `CHANGELOG.md`. **Un motor que no sabe su versión no se puede depurar en casa
 ajena**, que es exactamente el escenario de la prueba de campo pendiente.
@@ -239,7 +248,7 @@ Ya estaba registrado por dos vías: pendiente `intern-os` #5 y el viejo P4/G4 de
 `intern-os` valida en CI que la versión coincida en **3 sitios**; `graphify` la tiene en **uno**
 (`pyproject.toml`) y la propaga. **Recomendación medida: una sola fuente**, como graphify.
 
-### ⬜ P5 · 🟡 `allow` EN 220 ENTRADAS (umbral 120)
+### ✅ P5 · `allow` — medido 2026-08-06: **45 entradas**, muy por debajo del umbral 120
 
 Crece en cada aprobación. `rules/rule-config-hygiene.md` §1.3 ya lo dice: **la granularidad debe
 estar en el mecanismo, no en la invocación**. Y hay una trampa registrada — el harness reescribe
@@ -482,7 +491,7 @@ de tenerlo sin eliminar nada de texto pero sin perder funcionalidad por partici�
 
 | Antes | Ahora | Cómo |
 |---|---|---|
-| ⭐ `owner-0-voice.md` **582/350** | **285** | su §7 (el contrato de entrega, 315 líneas) → 🆕 `principles/contract-delivery.md` (343) |
+| ⭐ `principles/owner-0-voice.md` **582/350** | **285** | su §7 (el contrato de entrega, 315 líneas) → 🆕 `principles/contract-delivery.md` (343) |
 | `dev-database.md` **381/350** | **364** | su §4-BIS → 🆕 `principles/imported-patterns.md`, junto con los de backend y frontend |
 | `RETOMAR.md` **251/250** | **249** | condensado, sin perder contenido |
 
@@ -564,7 +573,7 @@ apuntando**"*. Con eso, estos 6 dejan de ser advertencias 🟡 y pasan a ser **t
 | `memory/RETOMAR.md` | 250 / 250 | ⚠️ **en el límite exacto**: la próxima línea lo rompe |
 | `MEMORY.md` (memorias del harness) | 109 / 80 | **la pieza más pesada del arranque** |
 
-> ⭐ **La ironía, y queda escrita:** `owner-0-voice.md` es donde se escribió la regla del techo, y
+> ⭐ **La ironía, y queda escrita:** `principles/owner-0-voice.md` es donde se escribió la regla del techo, y
 > es el que peor la incumple. **Ninguno bloquea nada** — son 🟡 — pero por la regla nueva ya no son
 > deuda tácita: son particiones con dueño.
 >
@@ -736,11 +745,11 @@ ahí la regla del techo de tamaño y dejé el archivo al 233% del suyo.
 escribes.* Por eso la doctrina es documento y la **verificación es script** — `check-health` lo
 cazó el mismo día.
 
-**Opciones para `owner-0-voice.md`** (decide Brian):
+**Opciones para `principles/owner-0-voice.md`** (decide Brian):
 
 | Opción | Qué implica | Costo |
 |---|---|---|
-| **Partir en dos** (recomendado) | `owner-0-voice.md` = las 8 reglas + §6; `contract-delivery.md` = todo el §7 | hay que actualizar quien lo cite |
+| **Partir en dos** (recomendado) | `principles/owner-0-voice.md` = las 8 reglas + §6; `contract-delivery.md` = todo el §7 | hay que actualizar quien lo cite |
 | Subir el límite del tipo `contract` | reconoce que 250 no da para un contrato con ejemplos | debilita el techo para TODOS los contratos |
 | Dejarlo 🟡 | cero trabajo | un 🟡 permanente enseña a ignorar los 🟡 |
 
@@ -4123,7 +4132,7 @@ un `__pycache__`) y 2 que **contradecían el `deny`** (`5M-incubathon` · `marca
 
 | # | Qué falta | Quién | Bloquea |
 |---|---|---|---|
-| 1 | **§6 de `owner-0-voice.md` — "Brian's additions"** está en blanco a propósito | ⭐ **Brian** | nada — la voz ya funciona con las 8 reglas medidas |
+| 1 | **§6 de `principles/owner-0-voice.md` — "Brian's additions"** está en blanco a propósito | ⭐ **Brian** | nada — la voz ya funciona con las 8 reglas medidas |
 | 2 | **Verificar la voz en una sesión nueva** — los output styles cargan al arrancar, no en caliente | los dos | nada |
 | 3 | **Las 26 decisiones están DUPLICADAS** en Arquitectura §17.1 y Visión §6 | IA | 🔴 **ya empezaron a desincronizarse** |
 | 4 | **No existe estándar para tomar decisiones nuevas** | ver bloque siguiente | 🔴 sí |
@@ -4637,3 +4646,6 @@ como producto, y sobrevive a que el bloque se cierre.
 
 **Cuándo:** sub-bloque 8 del bloque demo — Brian marca el momento.
 
+---
+
+Related: `memory/RETOMAR.md` (el estado actual) · `docs/PENDING-BRIAN.md` (los huecos que solo Brian llena).

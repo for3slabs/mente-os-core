@@ -87,7 +87,7 @@ picture turned out different from the one foreseen.
 | A file over the limit for its type | ADR-027 |
 | A duplicated table instead of a pointer | measured: the decisions table diverged (75 vs 37 rows) |
 | Section numbering with `-bis` / `-TER` | the smell that says *split me* |
-| A claim with no evidence | `owner-0-voice.md` §2.7 |
+| A claim with no evidence | `principles/owner-0-voice.md` §2.7 |
 
 ---
 
@@ -96,9 +96,9 @@ picture turned out different from the one foreseen.
 - It does not judge whether the code is good → **owner-2**
 - It does not verify the system still works → **owner-3**
 - It does not invent criterion → **Brian** (ADR-003)
-- It does not decide the lane → **propagation** (`rule-lanes.md`)
+- It does not decide the lane → **propagation** (`rules/rule-lanes.md`)
 
 ---
 
-Related: `owner-0-voice.md` (transversal) · `owner-2-dev.md` · `owner-3-validation.md` ·
+Related: `principles/owner-0-voice.md` (transversal) · `owner-2-dev.md` · `owner-3-validation.md` ·
 `rules/contract-document.md` · `rules/contract-block.md` · `rules/contract-adr.md`.

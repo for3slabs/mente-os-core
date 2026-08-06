@@ -49,7 +49,7 @@ Every check confirms with **a datum**: *"recovered X"* · *"vector = 1024 dims"*
 
 ### The §5-BIS battery — inherited from v1, seven checks
 
-Already written in `owner-3-validation.md` §4 (A base suite · B real startup · C `/salud` · D memory
+Already written in `principles/owner-3-validation.md` §4 (A base suite · B real startup · C `/salud` · D memory
 in depth · E every milestone · F tools · G what the phase added). **This file does not restate it —
 it captures the criterion for judging its results.**
 

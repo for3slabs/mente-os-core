@@ -213,3 +213,7 @@ para apps de terceros (vigente desde abril 2026, caso OpenClaw/OpenCode → bane
 vía oficial de la demo es **el usuario pega su propia API key** (legal, su billing paga).
 El OAuth quedó implementado SOLO para pruebas internas, tras un guard (`DEMO_OAUTH_INTERNAL=1`)
 que lo mantiene **muerto por defecto** en cualquier deploy.
+
+---
+
+Related: `blocks/active/demo/BLOCK.md` (el bloque dueño) · `blocks/active/demo/docs/como-correr-los-tests.md`.

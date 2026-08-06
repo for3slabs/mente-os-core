@@ -2,14 +2,20 @@
 **Status:** current · **Type:** analysis · **Updated:** 2026-07-29 · **Owner:** brian
 **Fecha:** 2026-07-27 · **Repo:** `github.com/fruteroclub/intern-os` · **Versión analizada:** v1.0.0 (2026-07-24)
 **Petición de Brian:** *"analizar a detalle para ver qué podemos incorporar, la estructura está muy buena con ese v2"*
+
+## Purpose
+
+Qué de internOS v1.0.0 vale la pena incorporar a Mente OS v2, y qué no. Es el cuarto framework
+analizado; los tres primeros están en `docs/analysis-frameworks-v2.md`.
+
 > ✅ **ESTADO (2026-07-27): las 9 incorporaciones YA ESTÁN INTEGRADAS** en el plano
 > (`Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md`). Este documento queda como **registro del análisis
 > y su trazabilidad** — ver §6 para el mapa de dónde quedó cada una.
 >
 > ⚠️ **Notación INTERNA de Mente OS.** Aquí se nombra la fuente para el análisis; **el código o los
 > documentos que salgan NO citan el origen** (regla LOCKED, Método F §1).
-> **Análisis previos:** `Analisis_internOS_vs_For3s_OS.md` (2026-06-23, v0.4.1, 62 archivos) ·
-> `Analisis_intern-os_para_For3s.md` (2026-07-01). **Este doc cubre lo NUEVO de v1.0.0 y su
+> **Análisis previos:** `docs/analysis/Analisis_internOS_vs_For3s_OS.md` (2026-06-23, v0.4.1, 62 archivos) ·
+> `docs/analysis/Analisis_intern-os_para_For3s.md` (2026-07-01). **Este doc cubre lo NUEVO de v1.0.0 y su
 > cruce específico con el v2 de bloques.**
 ---
 
@@ -85,15 +91,15 @@ al v2 le faltan: **checkpoints curados, contenedores anidados y validación por 
 | Nuestro archivo | Tamaño | Problema |
 |---|---|---|
 | `memory/PENDIENTES.md` | **240 KB** | ilegible; se lee 39 veces en una sesión |
-| `Estado_Sesion_Continuidad.md` | 196 KB | fósil que sigue vivo |
-| `Bitacora_Progreso.md` | 162 KB | crece sin recorte |
+| `memory/Estado_Sesion_Continuidad.md` | 196 KB | fósil que sigue vivo |
+| `memory/Bitacora_Progreso.md` | 162 KB | crece sin recorte |
 | `MEMORY.md` (memorias) | 19.5 KB | **la pieza más pesada del arranque, sin regla** |
 | `memory/RETOMAR.md` | 14.4 KB | ✅ **tiene límite (~200 líneas) y funciona** |
 
 **El único archivo nuestro con límite es el único que no se desbordó.** Eso confirma la regla.
 
-**→ INCORPORAR:** límite declarado **por tipo de archivo** en `contract-block.md` y
-`contract-document.md`, con **validador que lo verifique** (no una nota de buena voluntad).
+**→ INCORPORAR:** límite declarado **por tipo de archivo** en `rules/contract-block.md` y
+`rules/contract-document.md`, con **validador que lo verifique** (no una nota de buena voluntad).
 
 ### 🥈 4.2 · RESOLUCIÓN DETERMINISTA — *"exacta, determinista, no heurística"*
 
@@ -279,5 +285,9 @@ tenemos el plano. **Podemos saltarnos varias de esas iteraciones.**
 
 Relacionado: `Cuerpo/Arquitectura_Mente_OS_v2_Bloques.md` (el plano) ·
 `principles/vision-mente-os-v2.md` (el porqué) ·
-`Analisis_internOS_vs_For3s_OS.md` + `Analisis_intern-os_para_For3s.md` (análisis previos, v0.4.1) ·
+`docs/analysis/Analisis_internOS_vs_For3s_OS.md` + `docs/analysis/Analisis_intern-os_para_For3s.md` (análisis previos, v0.4.1) ·
 [[project_intern_os_adopcion]] (lo ya adoptado: AI1-AI7, C1-C3) · [[project_mente_os_v2_bloques]].
+
+---
+
+Related: `docs/analysis-frameworks-v2.md` (el análisis hermano) · `memory/PENDIENTES.md` (dónde aterrizaron sus hallazgos).

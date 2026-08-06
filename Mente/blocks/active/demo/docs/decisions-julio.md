@@ -1,11 +1,11 @@
 # DECISIONES DE JULIO · blk-demo-2026-07
 **Status:** current · **Type:** block · **Updated:** 2026-08-05 · **Owner:** brian
-**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `doc-structure.md`
+**Block:** `blocks/active/demo` §G · **Split:** 2026-08-05, `principles/expertise/doc-structure.md`
 
 ## Purpose
 
 Las 7 decisiones de julio del bloque `demo`, movidas ÍNTEGRAS desde su §G cuando el BLOCK.md pasó
-su techo de 200 líneas. ⛔ **No se resumió ni se borró nada** — `doc-structure.md`: sobre el techo
+su techo de 200 líneas. ⛔ **No se resumió ni se borró nada** — `principles/expertise/doc-structure.md`: sobre el techo
 un documento SE PARTE y las mitades se apuntan; nunca se borra historia para que un check pase.
 
 Cubren los sub-bloques **1-6, todos `closed`**. Las decisiones VIVAS siguen en el §G del bloque.

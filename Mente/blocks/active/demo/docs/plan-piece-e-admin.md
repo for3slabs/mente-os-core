@@ -164,3 +164,7 @@ la interfaz ya tenía la IP). Tras el restart: bind en `127.0.0.1:5432` **Y** `1
 *Este es el proyecto `marca-personal` (⚠️ Next.js con breaking changes — leer
 `node_modules/next/dist/docs/` antes de codear, regla del AGENTS.md). La lógica del panel/demo
 vive aquí, no en For3s OS. Relacionado: `marca-personal/Mente/Doc/Demo_For3s_Avance.md` ⚠️ (otro proyecto, tras el gate) (terreno del sitio).*
+
+---
+
+Related: `blocks/active/demo/BLOCK.md` (el bloque dueño) · `blocks/active/demo/docs/demo-progress.md`.

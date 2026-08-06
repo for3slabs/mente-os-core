@@ -145,7 +145,7 @@ describes a world that does not exist* — usually a block that moved or was ren
 was **not delegating at all**. There is no history of specialists writing where they should not;
 there is a history of everything happening in one context until it hit 999K.
 
-So the gate follows the law of `gate-critical.py`: *a gate that obstructs more than it protects
+So the gate follows the law of `hooks/gate-critical.py`: *a gate that obstructs more than it protects
 degrades to a warning.*
 
 | The specialist can… | Level | Why |

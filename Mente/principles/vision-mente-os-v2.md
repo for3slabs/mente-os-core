@@ -283,3 +283,7 @@ lo demás.
 Relacionado: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (el plano) ·
 [[project_ser_duenos_del_contexto]] · [[project_incidente_degradacion_21jul]] ·
 [[feedback_estandar_metodo_fases_f]] · `rules/ESTANDAR_Metodo_Fases_F.md` (lo que se absorbe).
+
+---
+
+Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (cómo se construyó lo que esta visión pedía) · `docs/architecture/how-it-runs.md` (el flujo vivo) · `CAPABILITIES.md`.

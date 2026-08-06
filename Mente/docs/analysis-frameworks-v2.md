@@ -1,6 +1,13 @@
 # 🔬 ANÁLISIS COMPARATIVO — 3 frameworks vs Mente OS v2
 **Status:** current · **Type:** analysis · **Updated:** 2026-07-29 · **Owner:** brian
 **Fecha:** 2026-07-27 · **Petición de Brian:** *"compara Mente OS con opentag, agent-os y open-swe"*
+
+## Purpose
+
+Contrastar Mente OS v2 contra 3 frameworks externos para saber qué le falta y qué ya hace mejor.
+El hallazgo que decidió el rumbo: **ninguno responde "¿esto es producto o MVP?"** — ese veredicto
+medido es el diferenciador del sistema.
+
 > ⚠️ **Notación INTERNA.** Aquí se nombran las fuentes para el análisis; **lo que se construya NO
 > cita el origen** (regla LOCKED, Método F §1).
 > **Complementa:** `docs/analysis-internos-v1.md` (el 4º framework analizado).
@@ -198,3 +205,7 @@ Relacionado: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (el plano) ·
 `principles/vision-mente-os-v2.md` (el porqué) ·
 `docs/analysis-internos-v1.md` (el 4º framework) ·
 [[project_mente_os_v2_bloques]].
+
+---
+
+Related: `principles/vision-mente-os-v2.md` (la visión que este análisis contrastó) · `docs/analysis-internos-v1.md` (el otro análisis comparativo).

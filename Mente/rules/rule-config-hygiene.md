@@ -120,7 +120,7 @@ every time someone said yes.**
 `deny` covered `Read`, `Edit` and `Write`. **No Bash rule.** So `cat` read what `Read` forbade.
 
 **Proven live, before the fix:** `ls Mente/secrets/` listed the files with zero friction, including
-`Secretos_Demo_Sitio.md` — a directory under an explicit `deny Read`.
+`secrets/Secretos_Demo_Sitio.md` — a directory under an explicit `deny Read`.
 
 > ## 🚫 A protection declared by TOOL is a protection with a back door.
 > The question is not *"did I deny Read?"* — it is **"can anything still reach it?"**
