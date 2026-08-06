@@ -566,7 +566,11 @@ o=$(printf '{"tool_input":{"file_path":"/tmp/unrelated.txt"}}' | ./hooks/pre-edi
   || bad "pre-edit silence" "no output" "$o"
 
 # An unclosed sub-block covering the file is the fix-on-fix pattern. Must warn.
-o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/lib/demo/allowedEmails.ts"}}' "$REPO" \
+# ⚠️ El sujeto es un sub-bloque ABIERTO, y se elige por eso. Antes apuntaba a
+# `allowedEmails.ts`; ese archivo se BORRÓ el 2026-08-06 al cerrar §F-7 por la raíz, y el
+# check se cayó sin que nada estuviera mal — tercera vez hoy que un check atado a trabajo en
+# curso caduca solo. `tests/apagar.test.ts` (§F-8) es el sujeto vivo: es el único sub-bloque abierto con archivo.
+o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/tests/apagar.test.ts"}}' "$REPO" \
     | ./hooks/pre-edit-standards.py 2>&1)
 printf '%s' "$o" | grep -q "sub-block" && ok "pre-edit warns on an unclosed sub-block" \
   || bad "sub-block warning" "warns" "silent"

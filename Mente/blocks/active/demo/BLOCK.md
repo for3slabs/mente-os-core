@@ -12,6 +12,8 @@ created: 2026-07-24 · updated: 2026-07-29
 ## ✅ IN
 - marca-personal/lib/demo/*.ts · components/demo/* · components/for3s-admin/*
 - marca-personal/app/api/demo/**
+- marca-personal/tests/*.test.ts (§F-8; declarados ahí desde 2026-08-05, en el scope el 08-06:
+  el §F los gobernaba y el §B no los cubría, así que los hooks enmudecían sobre ellos)
 - Neon DB `for3s_demo` (demo_* tables)
 
 ## ⛔ OUT
@@ -57,9 +59,8 @@ created: 2026-07-24 · updated: 2026-07-29
 ## State
 phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead code 1→0, tests 0→4
 next: todo lo abierto espera un dato de Brian — ver blockers
-blockers: §F-7 dueños jazz/mashe · §F-9 hosting · §F-11 rutas OAuth dormidas · rama de Neon
-          para 8 tests de integración (memory/PENDIENTES.md §B1) — los cuatro → BRIAN
-progress: 8/12 cerrados · §F-8 4/4 escritos, 1 rojo A PROPÓSITO · eslint 1 error → 0
+blockers: §F-9 hosting · §F-11 rutas OAuth dormidas · rama de Neon para 13 tests (§B1) → BRIAN
+progress: 9/12 cerrados · §F-8 4/4 escritos · 🟢 **0 tests en rojo** (§F-7 cerrado por la raíz)
 note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR y el bloque NO cierra —
       §F-7 sigue abierto con un agujero de autorización real.
 updated: 2026-08-05
@@ -76,7 +77,7 @@ note: the red test is the deliverable, not a defect — how to run them and what
 | 4 | safety net + identity without `kind` (U1-U6) | lib/demo/userStore.ts | 12 | closed |
 | 5 | per-instance telemetry | lib/demo/eventos.ts | 6 | closed |
 | 6 | real agent on/off, owner only (model C) | lib/demo/container.ts | 2 | closed |
-| 7 | jazz/mashe owners to DB, drop DEV_FALLBACK 🔴 **held by a red test** | lib/demo/allowedEmails.ts | 2 | active |
+| 7 | ⭐ CERRADO por la raíz: jazz/mashe BORRADAS y `allowedEmails.ts` eliminado | (archivo borrado) | 0 | ✅ closed |
 | 8 | tests 4 caminos: ② ✅ · ③ ✅ · ④ ✅ · ① + integración esperan rama Neon → **`blocks/active/demo/docs/como-correr-los-tests.md`** | tests/apagar.test.ts | 0 | active |
 | 9 | decide the hosting | (infrastructure) | 0 | blocked |
 | 10 | delete the orphan (0 importers since 2026-06-16) | components/demo/ConnectClaude.tsx | 0 | ✅ closed |
@@ -85,19 +86,26 @@ note: the red test is the deliverable, not a defect — how to run them and what
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
-- ⭐ 2026-08-05 · **§F-12 CERRADO: `agentOn` deja de ser estado local y pasa a ser la prop.**
-  El error (*setState síncrono en un effect → renders en cascada*) no era estilo: el componente
-  **copiaba** `agentOn` a un `useState` y un `useEffect` la resincronizaba en cada latido —
-  contradice `dev-frontend.md` §2 (**el servidor es dueño del estado**) y creaba un segundo valor
-  que podía divergir. Verificado en la raíz antes de tocar: la verdad llega del heartbeat
-  (`GeneralExperience.tsx:53` → `DemoShell` → la prop). El tránsito ("Encendiendo…") se **deriva
-  del render**, así que el interruptor sigue sin mentir (el fix del 26-jul se conserva).
-  📊 **eslint 5 problemas/1 error → 3/0** · `tsc` exit 0 · tests idénticos. 🔬 Los 6 puntos de
-  `setBusyAgent` se conservan uno a uno: el botón no cambió, solo desapareció la copia.
-- ⚠️ 2026-08-05 · **`kind` sigue en el contrato de `ProfilePanel`, sin desestructurar.** Sin uso
-  desde que S4a la sustituyó por `esPago`. ⛔ No se retira del tipo (`DemoShell` la pasa: sería un
-  cambio de API), ni se usa `_kind` (esta config de eslint no ignora el guion bajo y **no se toca
-  `eslint.config.mjs` por un aviso**). No desestructurarla resuelve ambas sin tocar nada más.
+- ⭐⭐ 2026-08-06 · **§F-7 CERRADO POR LA RAÍZ, no parcheando el assert.** Brian: *"elimina las
+  instancias de jazz y mashe, son ruido y no se han ocupado"*. Medido antes de borrar: `jazz` 4
+  episodios / 3 personas · `mashe` 8 / 4 — restos de las pruebas E2E de julio, **cero dueños
+  registrados** en `demo_duenos`. Respaldadas (`pg_dump`, 46 tablas cada una, verificado) antes de
+  ejecutar `for3s borrar`. Resultado: **0 volúmenes y 0 contenedores residuales**, `general` intacta.
+  🟢 **Y con eso el agujero desapareció:** sin instancias 1:1 legado que compatibilizar,
+  `lib/demo/allowedEmails.ts` perdió su razón de existir y se BORRÓ, junto con el paso *"autorizado
+  por ENV"* de `resolverAcceso()`. Quedan 2 fuentes de verdad, ambas en BD: `demo_duenos` y
+  `demo_llaves` — **ninguna se satisface con un correo inventado**.
+  📊 **tests: 1 rojo → 0.** `bun run build` exit 0 · `tsc` exit 0.
+- 🔬 2026-08-06 · **El test de ② pasó de puro a INTEGRACIÓN, y eso ES la mejora.** Antes se probaba
+  sin BD porque la autorización vivía en una constante; ahora exige Postgres porque la verdad vive
+  ahí. Sus 5 tests se suman a los saltados hasta la rama de Neon (§B1). ⚠️ **Menos verdes no siempre
+  es peor**: el que se perdió medía un `DEV_FALLBACK` que no debería existir.
+- ⚠️ 2026-08-06 · **jazz/mashe retiradas de 5 listas del código, cada una por su razón.**
+  `INSTANCIAS_SEMILLA` es el fallback si Neon cae (degradar a una instancia borrada sería peor que
+  no degradar) · `INSTANCIAS` valida el panel admin · `OAUTH_KINDS` sigue FIJA a propósito, ahora
+  con solo `brian` · `accounts.ts` llevaba **tokens de dev en claro** para instancias que ya no
+  existen: una credencial suelta, no compatibilidad. En la BD quedaron **inactivas, no borradas**
+  (UPDATE reversible).
 - ⭐ 2026-08-05 · **Sub-bloque 10 CERRADO: `ConnectClaude.tsx` borrado (145 líneas, 0 importadores).**
   Verificado antes de borrar: la única mención en todo el repo era su propia declaración. Borrado con
   `git rm` (la historia sobrevive) + copia fuera del repo. Comprobado después: **`tsc --noEmit` exit 0**
@@ -110,9 +118,6 @@ note: the red test is the deliverable, not a defect — how to run them and what
   una capacidad que Brian decidió conservar para pruebas internas). Quedan **dormidas y seguras**: sin
   `DEMO_OAUTH_INTERNAL=1` devuelven 403. **Brian eligió el alcance del bloque, no el del árbol** →
   nuevo §F-11.
-- ⚠️ 2026-08-05 · **1 error de eslint PREEXISTENTE en `ProfilePanel.tsx`** (setState síncrono dentro
-  de un effect → renders en cascada). Verificado contra HEAD: viene del commit `9c756e2` y este trabajo
-  no lo tocó. **No se arregla aquí** — está fuera del sub-bloque 10; queda como §F-12.
 - ⭐ 2026-08-05 · **③ TALK se partió en dos mitades, y la línea es una MEDICIÓN.** Medido antes de
   escribir: `for3sChat.ts` cruza **dos** fronteras (Postgres vía `instancias`/`userStore`, y HTTP al
   agente por `fetch`). La mitad pura (`clientIdDeCorreo`) corre siempre; la de integración se salta
@@ -136,16 +141,6 @@ note: the red test is the deliverable, not a defect — how to run them and what
   1 verificación en curso). Por eso ① lee `DEMO_DATABASE_URL_TEST` y **se salta** si falta, en vez
   de caer de vuelta. Un default que apunta a algo con dueño es el error ya registrado en
   `feedback_default_nunca_apunta_a_algo_con_dueno`.
-- 2026-08-05 · **`principles/expertise/dev-frontend.md` RE-ADDED to §D.** It was removed on
-  2026-07-30 with a measured reason (6 closed sub-blocks, zero frontend decisions) and a written
-  condition: *"re-add when sub-block 10 touches a component"*. **Sub-block 10 is exactly that** —
-  deleting `components/demo/ConnectClaude.tsx`, 145 lines with 0 importers, one of the two reds in
-  this block's layer-1 verdict. Its §2.6 governs that deletion: *nobody imports it → it is deleted*,
-  measured with importers and never with mentions.
-  🔬 **Found by a check that had a hole:** *every filled expertise reaches an active block* was
-  passing because it read the §D range verbatim and matched the **comment saying the standard had
-  been REMOVED**. Fixed to count only real `- ` entries — a comment about a standard is not a
-  declaration of it.
 - 2026-08-05 · **`dev-backend.md` added to §D** — this block declares `app/api/demo/**` in its
   Scope IN, so it **is** backend. Caught by the check written the same day (*every filled expertise
   file must reach an active block*): the criterion was written and nothing declared it, so the hook

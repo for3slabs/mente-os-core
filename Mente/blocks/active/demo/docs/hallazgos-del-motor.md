@@ -49,6 +49,17 @@ sustitución no escribía nada porque `blocks/active/demo/BLOCK.md` **no tiene**
 — habría sido un verde falso. La versión final AÑADE la línea y la retira siempre; verificado con
 md5 que el bloque queda intacto.
 
+- 2026-08-05 · **`principles/expertise/dev-frontend.md` RE-ADDED to §D.** It was removed on
+  2026-07-30 with a measured reason (6 closed sub-blocks, zero frontend decisions) and a written
+  condition: *"re-add when sub-block 10 touches a component"*. **Sub-block 10 is exactly that** —
+  deleting `components/demo/ConnectClaude.tsx`, 145 lines with 0 importers, one of the two reds in
+  this block's layer-1 verdict. Its §2.6 governs that deletion: *nobody imports it → it is deleted*,
+  measured with importers and never with mentions.
+  🔬 **Found by a check that had a hole:** *every filled expertise reaches an active block* was
+  passing because it read the §D range verbatim and matched the **comment saying the standard had
+  been REMOVED**. Fixed to count only real `- ` entries — a comment about a standard is not a
+  declaration of it.
+
 ---
 
 Related: `blocks/active/demo/BLOCK.md` §G (las decisiones del bloque) ·
