@@ -44,10 +44,13 @@
       "Bash(bin/generate-index:*)",
       "Bash(./bin/generate-index:*)",
       "Bash(bin/generate-metrics:*)",
-      "Bash(./bin/generate-metrics:*)"
+      "Bash(./bin/generate-metrics:*)",
+      "Bash(cd /home/brianweb3/for3s/marca-personal *)"
     ],
     "additionalDirectories": [
-      "${CLAUDE_PROJECT_DIR}/Mente"
+      "/tmp",
+      "/home/brianweb3/for3s/marca-personal/app/[locale]",
+      "/home/brianweb3/for3s/.claude"
     ],
     "deny": [
       "Bash(base64 *.aws/*)",
@@ -224,7 +227,17 @@
       "Bash(xxd *.ssh/*)",
       "Bash(xxd *claude.json*)",
       "Bash(xxd /etc/shadow)",
-      "Read(/etc/shadow)"
+      "Read(/etc/shadow)",
+      "Bash(cat *5M-incubathon/*)",
+      "Bash(cat *marca-personal/Mente/*)",
+      "Bash(head *5M-incubathon/*)",
+      "Bash(tail *5M-incubathon/*)",
+      "Edit(//home/brianweb3/5M-incubathon/**)",
+      "Edit(//home/brianweb3/for3s/marca-personal/Mente/**)",
+      "Read(//home/brianweb3/5M-incubathon/**)",
+      "Read(//home/brianweb3/for3s/marca-personal/Mente/**)",
+      "Write(//home/brianweb3/5M-incubathon/**)",
+      "Write(//home/brianweb3/for3s/marca-personal/Mente/**)"
     ],
     "ask": [
       "Bash(chmod *Mente/bin/*)",

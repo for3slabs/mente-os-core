@@ -1,0 +1,32 @@
+# .gitignore de la RAÍZ · Mente OS
+#
+# Nació el 2026-08-05, cuando el `.git` subió un nivel (de `Mente/` a aquí) para que el repo
+# publicado tuviera la forma real: `.claude/` + `CLAUDE.md` + `PROJECT-RULES.md` + `Mente/`.
+#
+# ⚠️ Ese movimiento tuvo un efecto que hay que sujetar: desde esta raíz, git ve TODOS los
+# proyectos vecinos que conviven en el disco de Brian. Sin este archivo, un `git add -A`
+# metería `marca-personal/` (43,986 archivos), `For3s-OS/` y hasta otro Mente OS ajeno
+# dentro del repositorio del motor. El .gitignore de `Mente/` ya no alcanza aquí arriba.
+
+# ── Proyectos vecinos · cada uno es su propio repo ──────────────────────────
+marca-personal/
+For3s-OS/
+for3s-inter/
+Wiki-hackathons/
+ramas-mente-os/
+Varios/
+
+# ── Restos de la mudanza ────────────────────────────────────────────────────
+# El repo `for3s` que se absorbió (12 commits). Se conserva en disco por si hiciera falta
+# consultar su historia; nunca se commitea dentro del repo que lo sustituyó.
+.git-for3s-absorbido/
+
+# ── Local de la máquina, nunca del motor ────────────────────────────────────
+.vscode/
+.codeviz/
+.claude/skills/
+.claude/settings.local.json
+
+# 🔑 El permiso de secrets: atado a ESTE caché y ESTA máquina. Commitearlo lo haría
+# heredable por otro clon, que es lo contrario de atarlo al contexto que lo emitió.
+Mente/.secrets-lease.json
