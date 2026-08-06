@@ -8,7 +8,7 @@
 **Generated:** 2026-08-06 · **Type:** generated
 
 
-**302 documents** · **5 blocks** · 25 directories
+**303 documents** · **5 blocks** · 25 directories
 
 
 | Directory | Docs |
@@ -18,7 +18,7 @@
 | `Maestro/` | 7 |
 | `blocks/` | 1 |
 | `blocks/active/demo/` | 1 |
-| `blocks/active/demo/docs/` | 7 |
+| `blocks/active/demo/docs/` | 8 |
 | `blocks/archive/distribucion_2026-08/` | 3 |
 | `blocks/archive/distribucion_2026-08/docs/` | 1 |
 | `blocks/archive/expertise-programacion_2026-08/` | 3 |
@@ -97,6 +97,7 @@
 | `guide-github-oauth-app.md` | analysis | current | 2026-07-20 | 63 |
 | `hallazgos-del-motor.md` | analysis | current | 2026-08-05 | 66 |
 | `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 166 |
+| `rama-neon-de-test.md` | analysis | current | 2026-08-06 | 101 |
 
 ## `blocks/archive/distribucion_2026-08/`
 
@@ -165,7 +166,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-05 | 2459 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 474 |
+| `INDEX.md` | generated | — |  | 475 |
 | `METRICS.md` | generated | current | 2026-08-06 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 29 |
@@ -233,7 +234,7 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1579 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-05 | 4635 |
+| `PENDIENTES.md` | pending | current | 2026-08-05 | 4639 |
 | `RETOMAR.md` | entry-point | current | 2026-08-05 | 249 |
 
 ## `memory/archive/`

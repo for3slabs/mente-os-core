@@ -8,7 +8,7 @@
 > Estos tres no son ideas: hay código escrito y verificado esperando el dato. Cada uno dice
 > **exactamente** qué desbloquea, para que no haya que reconstruir el contexto.
 
-### 🔴 B1 · UNA RAMA DE NEON PARA TESTS — desbloquea 8 tests ya escritos
+### 🔴 B1 · UNA RAMA DE NEON PARA TESTS — desbloquea 13 tests · 📋 GUÍA: `blocks/active/demo/docs/rama-neon-de-test.md`
 
 **Qué falta:** la cadena de conexión de una rama de Neon (consola → *Branches* → *New branch*
 desde `main`). Va a `marca-personal/.env.test.local` como `DEMO_DATABASE_URL_TEST` (fuera de git).
@@ -17,8 +17,12 @@ desde `main`). Va a `marca-personal/.env.test.local` como `DEMO_DATABASE_URL_TES
 apunta a la **Neon de PRODUCCIÓN** que sirve `for3s.vercel.app` — 4 instancias vivas, 1
 verificación en curso (medido 2026-08-05). Un test que escribe ahí borra filas reales.
 
-**Qué desbloquea, exactamente:** los **8 tests de integración** de `marca-personal/tests/` que hoy
-se **saltan** (`entrar.test.ts` 7 · `hablar.test.ts` 1). El central es la **regresión de V2**:
+**Qué desbloquea, exactamente:** los **13 tests de integración** de `marca-personal/tests/` que hoy
+se **saltan** (`entrar.test.ts` 7 · `autorizar.test.ts` 5 · `hablar.test.ts` 1).
+✅ **2026-08-06: el cableado ya está hecho.** `vitest.config.ts` carga `.env.test.local` — 🔴 Vitest
+**no** lee ningún `.env` por su cuenta, así que sin eso pegar la cadena no habría servido de nada y
+los tests habrían seguido saltándose sin decir por qué. Probado en ambas direcciones.
+**Solo falta pegar la cadena.** Los 3 pasos, en `blocks/active/demo/docs/rama-neon-de-test.md`. El central es la **regresión de V2**:
 gastar los 5 intentos, pulsar reenviar y comprobar que el contador **no** vuelve a cero. Ese bug
 abría la fuerza bruta y hoy no hay nada que lo vigile.
 
