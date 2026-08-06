@@ -8,7 +8,7 @@
 > Estos tres no son ideas: hay código escrito y verificado esperando el dato. Cada uno dice
 > **exactamente** qué desbloquea, para que no haya que reconstruir el contexto.
 
-### 🔴 B1 · UNA RAMA DE NEON PARA TESTS — desbloquea 13 tests · 📋 GUÍA: `blocks/active/demo/docs/rama-neon-de-test.md`
+### ✅ B1 · RAMA DE NEON — **CERRADO 2026-08-06.** Brian la creó; 23/23 tests en verde
 
 **Qué falta:** la cadena de conexión de una rama de Neon (consola → *Branches* → *New branch*
 desde `main`). Va a `marca-personal/.env.test.local` como `DEMO_DATABASE_URL_TEST` (fuera de git).

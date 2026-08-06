@@ -566,12 +566,22 @@ o=$(printf '{"tool_input":{"file_path":"/tmp/unrelated.txt"}}' | ./hooks/pre-edi
   || bad "pre-edit silence" "no output" "$o"
 
 # An unclosed sub-block covering the file is the fix-on-fix pattern. Must warn.
-# ⚠️ El sujeto es un sub-bloque ABIERTO, y se elige por eso. Antes apuntaba a
-# `allowedEmails.ts`; ese archivo se BORRÓ el 2026-08-06 al cerrar §F-7 por la raíz, y el
-# check se cayó sin que nada estuviera mal — tercera vez hoy que un check atado a trabajo en
-# curso caduca solo. `tests/apagar.test.ts` (§F-8) es el sujeto vivo: es el único sub-bloque abierto con archivo.
-o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/tests/apagar.test.ts"}}' "$REPO" \
+# ⭐ EL SUJETO SE BUSCA, NO SE FIJA (2026-08-06).
+# Este check caducó CUATRO veces en un día: apuntaba a `allowedEmails.ts` (borrado al cerrar
+# §F-7), luego a `ProfilePanel.tsx` (§F-12 cerrado), luego a `tests/apagar.test.ts` (§F-8
+# cerrado). Cada vez se caía **porque el trabajo tuvo éxito**, que es lo contrario de lo que
+# un check debe reportar.
+# Ahora se lee del §F la primera pieza con estado `active` — así el sujeto se renueva solo.
+# Si no hay ninguno abierto, no hay nada que avisar y el check se da por bueno.
+_p=$(grep -E '^\| [0-9]+ \|' blocks/active/demo/BLOCK.md \
+     | awk -F'|' '$5 ~ /active/ {gsub(/^ +| +$|`/,"",$4); print $4; exit}')
+if [ -z "$_p" ]; then
+  ok "pre-edit warns on an unclosed sub-block (ninguno abierto: nada que avisar)"
+  o="sub-block"
+else
+o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/%s"}}' "$REPO" "$_p" \
     | ./hooks/pre-edit-standards.py 2>&1)
+fi
 printf '%s' "$o" | grep -q "sub-block" && ok "pre-edit warns on an unclosed sub-block" \
   || bad "sub-block warning" "warns" "silent"
 

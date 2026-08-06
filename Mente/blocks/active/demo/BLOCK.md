@@ -59,8 +59,8 @@ created: 2026-07-24 · updated: 2026-07-29
 ## State
 phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead code 1→0, tests 0→4
 next: todo lo abierto espera un dato de Brian — ver blockers
-blockers: §F-9 hosting · §F-11 rutas OAuth dormidas · rama de Neon para 13 tests (§B1) → BRIAN
-progress: 9/12 cerrados · §F-8 4/4 escritos · 🟢 **0 tests en rojo** (§F-7 cerrado por la raíz)
+blockers: §F-9 hosting · §F-11 rutas OAuth dormidas → BRIAN
+progress: 10/12 cerrados · 🟢 **23/23 tests en verde**, los 4 caminos vivos contra BD real
 note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR y el bloque NO cierra —
       §F-7 sigue abierto con un agujero de autorización real.
 updated: 2026-08-05
@@ -78,7 +78,7 @@ note: the red test is the deliverable, not a defect — how to run them and what
 | 5 | per-instance telemetry | lib/demo/eventos.ts | 6 | closed |
 | 6 | real agent on/off, owner only (model C) | lib/demo/container.ts | 2 | closed |
 | 7 | ⭐ CERRADO por la raíz: jazz/mashe BORRADAS y `allowedEmails.ts` eliminado | (archivo borrado) | 0 | ✅ closed |
-| 8 | tests 4 caminos: ② ✅ · ③ ✅ · ④ ✅ · ① + integración esperan rama Neon → **`blocks/active/demo/docs/como-correr-los-tests.md`** | tests/apagar.test.ts | 0 | active |
+| 8 | ⭐ CERRADO: los 4 caminos con **23/23 en verde** contra la rama de Neon | tests/apagar.test.ts | 0 | ✅ closed |
 | 9 | decide the hosting | (infrastructure) | 0 | blocked |
 | 10 | delete the orphan (0 importers since 2026-06-16) | components/demo/ConnectClaude.tsx | 0 | ✅ closed |
 | 11 | decidir si las 3 rutas OAuth + el guard se borran o siguen dormidas | lib/demo/oauthGuard.ts | 2 | BRIAN |
@@ -86,6 +86,17 @@ note: the red test is the deliverable, not a defect — how to run them and what
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
+- ⭐⭐ 2026-08-06 · **§F-8 CERRADO: 23/23 en verde contra una rama de Neon.** Brian creó la rama
+  `test` (`ep-polished-paper`, forkeada en 0.59s, auto-delete **Never**). Los 13 tests que se
+  saltaban ahora corren contra Postgres real: **0 saltados, 0 rojos**.
+  🔬 **No se dio por bueno el verde:** se saboteó el freno de reenvío de `verificacion.ts`
+  (`if (false && previo…)`) para reproducir el bug de V2, y el test **⭐ REGRESIÓN V2 se puso
+  ROJO**. Restaurado byte a byte, `git status` limpio. Un test que pasa a la primera y nunca se
+  vio fallar no ha demostrado nada (`val-functional.md` §2.2).
+  🔴 **Verificado que producción NO se tocó:** `demo_verificaciones` de la Neon viva tiene **0
+  filas `@for3s.invalid`**. La separación por `DEMO_DATABASE_URL_TEST` funciona.
+  ⚠️ **El archivo llegó sin el prefijo `DEMO_DATABASE_URL_TEST=`** (solo la cadena). Corregido;
+  vale como aviso de que el paso manual es donde se pierde el dato, no la conexión.
 - ⭐⭐ 2026-08-06 · **§F-7 CERRADO POR LA RAÍZ, no parcheando el assert.** Brian: *"elimina las
   instancias de jazz y mashe, son ruido y no se han ocupado"*. Medido antes de borrar: `jazz` 4
   episodios / 3 personas · `mashe` 8 / 4 — restos de las pruebas E2E de julio, **cero dueños
@@ -96,16 +107,6 @@ note: the red test is the deliverable, not a defect — how to run them and what
   por ENV"* de `resolverAcceso()`. Quedan 2 fuentes de verdad, ambas en BD: `demo_duenos` y
   `demo_llaves` — **ninguna se satisface con un correo inventado**.
   📊 **tests: 1 rojo → 0.** `bun run build` exit 0 · `tsc` exit 0.
-- 🔬 2026-08-06 · **El test de ② pasó de puro a INTEGRACIÓN, y eso ES la mejora.** Antes se probaba
-  sin BD porque la autorización vivía en una constante; ahora exige Postgres porque la verdad vive
-  ahí. Sus 5 tests se suman a los saltados hasta la rama de Neon (§B1). ⚠️ **Menos verdes no siempre
-  es peor**: el que se perdió medía un `DEV_FALLBACK` que no debería existir.
-- ⚠️ 2026-08-06 · **jazz/mashe retiradas de 5 listas del código, cada una por su razón.**
-  `INSTANCIAS_SEMILLA` es el fallback si Neon cae (degradar a una instancia borrada sería peor que
-  no degradar) · `INSTANCIAS` valida el panel admin · `OAUTH_KINDS` sigue FIJA a propósito, ahora
-  con solo `brian` · `accounts.ts` llevaba **tokens de dev en claro** para instancias que ya no
-  existen: una credencial suelta, no compatibilidad. En la BD quedaron **inactivas, no borradas**
-  (UPDATE reversible).
 - ⭐ 2026-08-05 · **Sub-bloque 10 CERRADO: `ConnectClaude.tsx` borrado (145 líneas, 0 importadores).**
   Verificado antes de borrar: la única mención en todo el repo era su propia declaración. Borrado con
   `git rm` (la historia sobrevive) + copia fuera del repo. Comprobado después: **`tsc --noEmit` exit 0**

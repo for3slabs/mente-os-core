@@ -40,6 +40,17 @@ el BLOCK.md pasó su techo de 200 líneas. ⛔ Nada se resumió ni se borró.
   de un effect → renders en cascada). Verificado contra HEAD: viene del commit `9c756e2` y este trabajo
   no lo tocó. **No se arregla aquí** — está fuera del sub-bloque 10; queda como §F-12.
 
+- 🔬 2026-08-06 · **El test de ② pasó de puro a INTEGRACIÓN, y eso ES la mejora.** Antes se probaba
+  sin BD porque la autorización vivía en una constante; ahora exige Postgres porque la verdad vive
+  ahí. Sus 5 tests se suman a los saltados hasta la rama de Neon (§B1). ⚠️ **Menos verdes no siempre
+  es peor**: el que se perdió medía un `DEV_FALLBACK` que no debería existir.
+- ⚠️ 2026-08-06 · **jazz/mashe retiradas de 5 listas del código, cada una por su razón.**
+  `INSTANCIAS_SEMILLA` es el fallback si Neon cae (degradar a una instancia borrada sería peor que
+  no degradar) · `INSTANCIAS` valida el panel admin · `OAUTH_KINDS` sigue FIJA a propósito, ahora
+  con solo `brian` · `accounts.ts` llevaba **tokens de dev en claro** para instancias que ya no
+  existen: una credencial suelta, no compatibilidad. En la BD quedaron **inactivas, no borradas**
+  (UPDATE reversible).
+
 ---
 
 Related: `blocks/active/demo/BLOCK.md` §F-8 · `blocks/active/demo/docs/como-correr-los-tests.md`
