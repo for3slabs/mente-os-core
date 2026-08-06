@@ -26,11 +26,26 @@ which command answers which question.
 
 | Path | What it is | Rule that governs it |
 |---|---|---|
-| `~/for3s/` | **this repo.** Mente OS lives in `Mente/` | `CLAUDE.md` (the router) |
-| `~/for3s/Mente/` | 🧠 the engine + this instance. ⚠️ **in `.gitignore` of this repo** | `PROJECT-RULES.md` |
+| `~/for3s/` | ⭐ **THE repo — el `.git` vive aquí desde 2026-08-05.** Publica `.claude/` + `CLAUDE.md` + `PROJECT-RULES.md` + `Mente/` | `CLAUDE.md` (the router) |
+| `~/for3s/Mente/` | 🧠 the engine + this instance. **Se publica ENTERA**, ya no está en `.gitignore` | `PROJECT-RULES.md` |
+| `~/for3s/.git-for3s-absorbido/` | 📦 **historia, no basura.** Los 12 commits del repo `for3s` que existía antes de subir el `.git` un nivel. Ignorado; **976 KB** | ver el aviso de abajo |
 | `~/for3s/marca-personal/` | 🖥️ **the site + the demo.** Declared `sibling` in `mente.config.yml` | block `demo` §B |
 | `~/for3s/for3s-inter/` | separate scope — ask before modifying | `feedback_for3s_inter_scope` |
 | `~/for3s/For3s-OS/` | the product, not the engine | `mente.config.yml` `outside:` |
+
+> 📦 **`.git-for3s-absorbido/` — por qué se conserva y no se borra (2026-08-05).**
+> Al subir el `.git` de `Mente/` a la raíz, el repositorio `for3s` que vivía aquí quedó absorbido.
+> Sus **12 commits NO existen en el repo actual** (verificado con `git cat-file -e`): son historia
+> única. El **contenido** sí sobrevivió — `CLAUDE.md` y `PROJECT-RULES.md` son idénticos byte a
+> byte a los de hoy — así que lo que se perdería al borrarlo **no son archivos, es el PORQUÉ**:
+> los mensajes explican por qué nació la categoría `ask`, qué bypass del `deny` se cerró
+> (`python3`/`perl`/`xargs` leían lo prohibido) y qué almacenes de credenciales no estaban
+> protegidos. Ese razonamiento no está en ningún otro sitio.
+>
+> **Cómo leerlo:** `git --git-dir=.git-for3s-absorbido log --oneline`
+>
+> ⛔ **No se borra** — `doc-structure.md`: nunca borrar historia para que algo quede limpio.
+> Si algún día estorba, primero se vuelcan los 12 mensajes a un documento de `Mente/`.
 
 **Published engine:** `github.com/fruterito101/mente-os` (MIT, engine only — no `memory/`,
 `work/`, `vision/`, `Cerebro/`).
