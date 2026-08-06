@@ -121,8 +121,8 @@ def check_documents():
         # las demás comprobaciones de forma (abajo), solo que el tamaño se medía ANTES.
         # Medido 2026-08-06: `blocks/archive/expertise-programacion_2026-08` en 201/200 generaba
         # un warning permanente e inarreglable sin tocar historia.
-        if (dtype in LIMITS and LIMITS[dtype] and lines > LIMITS[dtype]
-                and "/archive/" not in f):
+        cap_doc = LIMITS.get(dtype)
+        if (cap_doc and lines > cap_doc and "/archive/" not in f):
             yel(f, f"{lines} lines — over the {dtype} limit of {LIMITS[dtype]}")
 
         # superseded must name its replacement
@@ -146,7 +146,21 @@ def check_documents():
         grown = [m.group(0) for m in
                  re.finditer(r"^##+ \d+-(?:bis|TER|QUATER|QUINQUIES|SEXIES|SEPTIES)[^\n]*",
                              text, re.M | re.I)]
-        if grown:
+        # 🔴 SOLO SI EL DOCUMENTO ADEMÁS APRIETA SU TECHO (≥80%). Corregido 2026-08-06.
+        #
+        # El check asumía que `-BIS` significa "el documento creció de más". **Medido: significa
+        # otra cosa.** En este árbol marca material de NATURALEZA distinta, deliberadamente
+        # separado: `§4-BIS` = patrones IMPORTADOS de una fuente externa, ajenos al criterio del
+        # dueño (`principles/owner-2-dev.md`); `§1-bis` = las disciplinas de un dueño, la rama
+        # del árbol; `§1-BIS` = un hallazgo crítico insertado en su lugar cronológico.
+        #
+        # Avisar sobre ellos en documentos al 26-66% de su techo pedía RENUMERAR, y renumerar
+        # habría **roto 8 citas externas** (`§4-BIS` se cita en 6 archivos) y borrado información
+        # real: ⭐ **un número aquí es una dirección y un significado, no relleno.**
+        # Con el techo como condición, la señal solo suena donde de verdad importa: cuando el
+        # documento está a punto de desbordarse y hay que decidir por dónde cortar.
+        cerca_del_techo = bool(cap_doc) and lines >= cap_doc * 0.8
+        if grown and cerca_del_techo:
             yel(f, f"{len(grown)} grown section(s) → split signal (contract-document §3): "
                    f"{', '.join(g.split('·')[0].strip('# ').strip() for g in grown[:6])}")
 

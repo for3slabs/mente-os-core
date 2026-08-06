@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 275 | 202 |
+| `permissions.local` (`settings.local.json`) | 276 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).
