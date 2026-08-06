@@ -1,6 +1,12 @@
 # 🏗️ ARQUITECTURA — Mente OS v2: el sistema de BLOQUES
 
-**Status:** current · **Type:** architecture · **Updated:** 2026-07-29 · **Owner:** brian
+**Status:** current · **Type:** architecture · **Updated:** 2026-08-05 · **Owner:** brian
+⛔ **FUENTE DE VERDAD — EXENTA DEL TECHO DE TAMAÑO, POR DECISIÓN DE BRIAN (2026-08-05).**
+*"Déjalo intacto como en v1. Es fuente de verdad, y las fuentes de verdad no importa el tamaño."*
+**No se parte, no se resume, no se poda.** 46 documentos la citan para RESOLVER, no para consultar;
+partirla inventaría una segunda autoridad y *"¿cuál de las dos manda?"* es justo la ambigüedad que
+una fuente de verdad existe para eliminar. Criterio y prueba: `principles/expertise/doc-structure.md`
+§2.1 (⛔ la única excepción). ⚠️ `bin/check-health` seguirá marcándola 🟡: **es esperado.**
 
 > **Diseño de:** Brian López · **Redacción:** sesión 2026-07-27 · **Capa:** Cuerpo (el CÓMO)
 > **Estatus:** 📐 **ESPECIFICACIÓN CERRADA EN DISEÑO — NO CONSTRUIDA.**

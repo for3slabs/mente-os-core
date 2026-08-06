@@ -1507,3 +1507,73 @@ usuario (Brian)**, sin operación/alertas, y el `DEV_FALLBACK` de `allowedEmails
 (**riesgo aceptado explícitamente por él**).
 
 **Commits:** sitio `main` → `793e858` · server `~/for3s-os` → `732c434` · Mente OS → `0ed6c82`.
+
+---
+
+## 📦 Movido de RETOMAR.md el 2026-08-05 (regla de higiene: RETOMAR ≤250 líneas)
+
+⚠️ **Se mueve, no se borra** — `doc-structure.md`: ⛔ nunca borrar historia para que un check pase.
+El punto ② de "3 TAPONES" **ya cambió**: la demo pasó de 0 a 1 test el 2026-08-05.
+
+### 2026-07-31 (S7) — el v2 se construyó y F8-4 lo verificó
+
+**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas (`42dbfab`, `d667b14`). Prueba:
+`Mente/bin/test-f0-f6` — lo único que importa es `failed: 0`; el conteo vive en `docs/METRICS.md`.
+**Migración v1→v2 COMPLETA** (M0-M5, ADR-029): `Alma/` `Cuerpo/` `Doc/` `Tickets/` eliminadas, 186
+docs movidos — si un documento cita esas rutas es **cita fósil**. M6 (renombrar `Maestro/`) es
+decisión de Brian; recomendación medida: **no hacerlo**.
+
+**🖥️⭐ LA DEMO ES UN BLOQUE GRANDE CON ÍNDICE PROPIO.** Antes de tocarla, leer la memoria
+**`project_bloque_demo_pendientes`** — punto de entrada único. Repo: `ElBrAyAn1967/For3s` · BD Neon.
+(24-26 jul: ~15 bugs cerrados, −434 líneas muertas, heartbeat −68%, `container.ts` ACTIVADO.)
+
+**👉 3 TAPONES (por orden):** ① dueños de jazz/mashe → borrar `allowedEmails.ts` con su
+`DEV_FALLBACK` que autoriza un correo falso · ② tests de los 5 caminos críticos (hoy CERO) ·
+③ decidir el hosting (cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
+**⚠️ 2 caídas de producción, mismo error:** verificar desde mi entorno y asumir que probaba el de
+Vercel → `feedback_tailscale_serve_apaga_funnel`.
+
+---
+
+## 🧪 2026-08-04 → 08-05 · LA JORNADA DEL CRITERIO Y LOS TESTS (~45h, sesión S11)
+
+**Heredado de S10:** la voz tenía contrato de entrega pero **nunca se había usado en trabajo real**;
+`distribucion` seguía abierto y los 66 huecos de criterio, intactos.
+
+### Lo que cerró
+
+| Frente | Antes | Después | Evidencia |
+|---|---|---|---|
+| Huecos de criterio de los 3 dueños | 66 | **0** | `bin/check-criteria` |
+| `check-links` | 47.20s | **0.550s** (86x) | salida idéntica byte a byte |
+| Batería completa | 1m10 | **15.6s** | `bin/test-f0-f6` |
+| Archivos de test en la demo | 🔴 **0** | 🟢 **4** | `bin/grade-block demo` |
+| Checks de la batería | 160 | **178**, `failed: 0` | `docs/METRICS.md` |
+
+### Los 4 caminos críticos de la demo, escritos
+
+② autorizar · ① entrar · ③ hablar · ④ apagar. **15 pasan · 8 saltados · 1 falla a propósito.**
+
+⭐ **El rojo es la entrega, no un defecto:** `DEV_FALLBACK` autoriza `jazz@example.com`, un dominio
+que nadie controla. Su verde ES la definición de cerrar el sub-bloque 7 de `blk-demo-2026-07`.
+
+⏸️ Los 8 saltados esperan una **rama de Neon de test**: `DEMO_DATABASE_URL` apunta a la base de
+**PRODUCCIÓN** (medido: 4 instancias vivas). El diseño se salta en vez de caer ahí.
+
+### La regla que gobernó la jornada
+
+> **Un check debe verse fallar antes de que su verde signifique algo** (`val-functional.md` §2.2).
+
+Se aplicó a todo: cada test escrito se saboteó y se restauró byte a byte. Eso destapó **5 defectos**
+— cuatro del motor (dos preexistentes) y uno mío: un caso de prueba que no distinguía el fallo.
+
+### Decisiones que quedan
+
+- ⛔ **Una fuente de verdad NO se parte por tamaño** (Brian) — endurece `doc-structure.md`.
+- ⭐ **`gate-critical.py` exime a un test de integración SOLO si nombra su propia base.** Un test
+  que alcanza la URL de producción sigue bloqueado.
+- 🔬 **Un puntero que una máquina no sigue no es un puntero** — `check-applied` ahora los sigue.
+
+**Commits:** ninguno en `marca-personal` (Vercel despliega desde `main`; lo decide Brian).
+Detalle: `Cerebro/Registro_Conversaciones.md` §S11 · bloqueos en `memory/PENDIENTES.md` §B1-B3.
+

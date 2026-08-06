@@ -42,7 +42,7 @@ The rule has existed since 2026-07-14. Measured 2026-07-27:
 | # | Where | What |
 |---|---|---|
 | 1 | `Cerebro/Registro_Conversaciones.md` | 🔴 **mandatory** — the session autopsy (§4) |
-| 2 | `memory/RETOMAR.md` | where we left off + next step. Fresh and small (≤200 lines) |
+| 2 | `memory/RETOMAR.md` | where we left off + next step. Fresh and small (≤250 lines) |
 | 3 | `memory/Bitacora_Progreso.md` | the period's milestones |
 | 4 | memories + `MEMORY.md` | one memory per fact, with its index line |
 | 5 | `memory/PENDIENTES.md` | non-urgent findings |

@@ -113,8 +113,21 @@ def wire_hooks():
         return "would rewire 4 hooks with a portable path"
     d.setdefault("permissions", d.get("permissions", {}))
     d["hooks"] = blocks
+    # 🔴 BACK UP BEFORE OVERWRITING (2026-08-05, imported from graphify's install.py #2167).
+    # This file belongs to the USER and they have hand-edited it: permissions, env, statusline.
+    # Refusing on unparseable JSON (above) covers the corrupt case; it does NOT cover a correct
+    # merge that turns out to be wrong. graphify grew this after a real user lost their whole
+    # config. One rolling backup, so a bad rewire is always one `mv` away from undone.
+    #
+    # ⚠️ This runs on someone ELSE's machine, which is the scenario the field test still owes:
+    # the failure would land where nobody can debug it. Cheapest possible insurance.
+    if os.path.exists(p):
+        try:
+            shutil.copy2(p, p + ".mente-bak")
+        except OSError as e:
+            return f"🔴 could not back up {p} ({e}) — refusing to overwrite it"
     json.dump(d, open(p, "w"), indent=2, ensure_ascii=False)
-    return "4 hooks wired with ${CLAUDE_PROJECT_DIR}"
+    return "4 hooks wired with ${CLAUDE_PROJECT_DIR} (previous settings.json → .mente-bak)"
 
 
 def main():

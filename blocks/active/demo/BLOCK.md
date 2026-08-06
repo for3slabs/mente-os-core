@@ -43,19 +43,28 @@ created: 2026-07-24 · updated: 2026-07-29
 - rules/rule-fix-not-patch.md
 - rules/rule-lanes.md
 - rules/case-dangerous-default.md
+- rules/rule-shipping-flow.md
 - principles/expertise/dev-database.md
-<!-- expertise/dev-frontend.md removed 2026-07-30 (bin/check-applied): 6 closed sub-blocks, zero
-     frontend decisions. Re-add when sub-block 10 touches a component. -->
+- principles/expertise/dev-backend.md
+- principles/expertise/val-functional.md
+- principles/expertise/val-integration.md
+- principles/expertise/dev-frontend.md
+<!-- dev-frontend was removed 2026-07-30 ("re-add when sub-block 10 touches a component") and
+     re-added 2026-08-05: sub-block 10 IS that case — deleting components/demo/ConnectClaude.tsx,
+     145 lines with 0 importers. The condition it set for its own return was met. -->
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 6 files raised to product; 3 blockers remain before it can be handed over
-next: sub-block 7 — jazz/mashe owners into the DB, delete allowedEmails.ts DEV_FALLBACK
-blockers: sub-block 9 waits on the hosting decision → BRIAN
-progress: 6/9 sub-blocks closed
-updated: 2026-08-02
-note: untouched through 2026-08-03 (S7 built the v2, S8 hardened it, S9 made it installable).
-      A stale date here is not forgotten work: the blockers are where 2026-07-26 left them.
+phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead code 1→0, tests 0→4
+next: todo lo abierto espera un dato de Brian — ver blockers
+blockers: §F-7 dueños jazz/mashe · §F-9 hosting · §F-11 rutas OAuth dormidas · rama de Neon
+          para 8 tests de integración (memory/PENDIENTES.md §B1) — los cuatro → BRIAN
+progress: 8/12 cerrados · §F-8 4/4 escritos, 1 rojo A PROPÓSITO · eslint 1 error → 0
+note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR y el bloque NO cierra —
+      §F-7 sigue abierto con un agujero de autorización real.
+updated: 2026-08-05
+note: the red test is the deliverable, not a defect — how to run them and what NOT to touch is
+      `blocks/active/demo/docs/como-correr-los-tests.md`.
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
@@ -63,61 +72,101 @@ note: untouched through 2026-08-03 (S7 built the v2, S8 hardened it, S9 made it 
 |---|---|---|---|---|
 | 1 | DB-only bridge, no env (I1-I5) | lib/demo/instancias.ts | 9 | closed |
 | 2 | single guard, 12 copies to 0 (S1-S3) | lib/demo/session.ts | 12 | closed |
-| 3 | brute-force protection (V1-V4) | lib/demo/verificacion.ts | 2 | closed |
+| 3 | brute-force protection (V1-V4) | lib/demo/verificacion.ts | 3 | closed |
 | 4 | safety net + identity without `kind` (U1-U6) | lib/demo/userStore.ts | 12 | closed |
 | 5 | per-instance telemetry | lib/demo/eventos.ts | 6 | closed |
-| 6 | real agent on/off, owner only (model C) | lib/demo/container.ts | 1 | closed |
-| 7 | jazz/mashe owners to DB, drop DEV_FALLBACK | lib/demo/allowedEmails.ts | 1 | active |
-| 8 | tests for the 5 critical paths | (no file — **0 test files exist**) | 0 | open |
+| 6 | real agent on/off, owner only (model C) | lib/demo/container.ts | 2 | closed |
+| 7 | jazz/mashe owners to DB, drop DEV_FALLBACK 🔴 **held by a red test** | lib/demo/allowedEmails.ts | 2 | active |
+| 8 | tests 4 caminos: ② ✅ · ③ ✅ · ④ ✅ · ① + integración esperan rama Neon → **`blocks/active/demo/docs/como-correr-los-tests.md`** | tests/apagar.test.ts | 0 | active |
 | 9 | decide the hosting | (infrastructure) | 0 | blocked |
-| 10 | delete the orphan (0 importers since 2026-06-16) | components/demo/ConnectClaude.tsx | 0 | open |
+| 10 | delete the orphan (0 importers since 2026-06-16) | components/demo/ConnectClaude.tsx | 0 | ✅ closed |
+| 11 | decidir si las 3 rutas OAuth + el guard se borran o siguen dormidas | lib/demo/oauthGuard.ts | 2 | BRIAN |
+| 12 | error de eslint PREEXISTENTE (setState síncrono en un effect) | components/demo/ProfilePanel.tsx | 1 | ✅ closed |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
-- 2026-07-26 · default `hoteles` to `sin-tema`, NOT `general`. (commit 1c54a49)
-  Rationale: `general` is a RESERVED name — the owner's private thread. As a default it
-  would have routed guests into the owner's own space. See rules/case-dangerous-default.md
-- 2026-07-26 · rollout order: senders send the field first, receiver gets strict second.
-  Rationale: the reverse breaks everything that does not send it yet. Side effect: the fix
-  landed with no agent rebuild needed.
-- 2026-07-26 · agent on/off via the DB as mailbox (model C), `/ctl` never exposed. (df6e93c)
-  Rationale: exposing a control endpoint to the internet to flip a boolean is not worth it.
-- 2026-07-26 · **only the OWNER** can turn the agent off. (df6e93c)
-  Rationale: a guest holding a key could switch off the owner's agent.
-- 2026-07-26 · drop the `kind` column and the `demo_accounts` table. (5f86bed, closes C6p2)
-  Rationale: `kind` (a cookie value) was used as if it were the real instance — the same bug
-  surfaced in 6 files. Applied `rules/rule-fix-not-patch.md` (all 6 evaluated before writing,
-  not one patched) and `principles/expertise/dev-database.md` (a column dropped, not shadowed).
-- 2026-07-29 · lane `full-block` computed from the measured graph, not from judgement.
-  Rationale: `rules/rule-lanes.md` — session.ts and userStore.ts propagate to 12 files each.
-- 2026-07-29 · **a dependent is a file that IMPORTS the piece, not one that mentions it.**
-  Rationale: `instancias.ts` had 26 mentions and 9 real imports. A comment naming a file is
-  not a dependency; counting it inflates the lane. Build artifacts are copies, not dependents.
-
-<!-- ══ G-BIS · QUALITY VERDICT ══ measured, never asserted ══ -->
-## Quality verdict · 2026-07-30 · `bin/grade-block demo` · type `code`
-
-| Metric | Value | |
-|---|---|---|
-| secret values written down | 0 | 🟢 |
-| files nobody imports (dead code) | **1** | 🔴 |
-| exports never imported | 0 | 🟢 |
-| duplicated blocks (>=8 lines) | 0 | 🟢 |
-| **test files** | **0** | 🔴 |
-| import cycles | 0 | 🟢 |
-| dependent counts gone stale | 0 | 🟢 |
-
-**LAYER 1 VERDICT: 🔴 MVP** — not a product yet.
-
-**The two reds:**
-- `components/demo/ConnectClaude.tsx` — **145 lines, 0 importers, untouched since 2026-06-16.**
-  Verified: the only occurrence of its name is its own `export default`.
-- **0 test files** in the entire site. Sub-block 8 exists for this.
-
-**Reproducible:** `bin/grade-block demo --root ../marca-personal`. Same numbers before and after a
-`/clear` — that is the point (architecture §12-Q.4).
-
-**Layer 2** (senior criterion, 6 dimensions) pending: `rules/qa-dimensions.md` needs Brian's input.
+- ⭐ 2026-08-05 · **§F-12 CERRADO: `agentOn` deja de ser estado local y pasa a ser la prop.**
+  El error (*setState síncrono en un effect → renders en cascada*) no era estilo: el componente
+  **copiaba** `agentOn` a un `useState` y un `useEffect` la resincronizaba en cada latido —
+  contradice `dev-frontend.md` §2 (**el servidor es dueño del estado**) y creaba un segundo valor
+  que podía divergir. Verificado en la raíz antes de tocar: la verdad llega del heartbeat
+  (`GeneralExperience.tsx:53` → `DemoShell` → la prop). El tránsito ("Encendiendo…") se **deriva
+  del render**, así que el interruptor sigue sin mentir (el fix del 26-jul se conserva).
+  📊 **eslint 5 problemas/1 error → 3/0** · `tsc` exit 0 · tests idénticos. 🔬 Los 6 puntos de
+  `setBusyAgent` se conservan uno a uno: el botón no cambió, solo desapareció la copia.
+- ⚠️ 2026-08-05 · **`kind` sigue en el contrato de `ProfilePanel`, sin desestructurar.** Sin uso
+  desde que S4a la sustituyó por `esPago`. ⛔ No se retira del tipo (`DemoShell` la pasa: sería un
+  cambio de API), ni se usa `_kind` (esta config de eslint no ignora el guion bajo y **no se toca
+  `eslint.config.mjs` por un aviso**). No desestructurarla resuelve ambas sin tocar nada más.
+- ⭐ 2026-08-05 · **Sub-bloque 10 CERRADO: `ConnectClaude.tsx` borrado (145 líneas, 0 importadores).**
+  Verificado antes de borrar: la única mención en todo el repo era su propia declaración. Borrado con
+  `git rm` (la historia sobrevive) + copia fuera del repo. Comprobado después: **`tsc --noEmit` exit 0**
+  y los tests igual que antes. **Veredicto del bloque: 🔴 MVP → 🟢 PRODUCT** (dead code 1 → 0,
+  test files 0 → 4).
+- 🔬 2026-08-05 · **El huérfano era la PUNTA de un árbol, no una hoja — y medirlo cambió el alcance.**
+  Al borrarlo, las **3 rutas OAuth + `lib/demo/oauthGuard.ts`** (135 líneas más) quedan sin ningún
+  consumidor de web. ⛔ **No se borraron**: `oauthGuard.ts` no es basura olvidada, es un **candado de
+  seguridad** con el riesgo asumido por escrito y `OAUTH_KINDS` fija A PROPÓSITO (borrarlo eliminaría
+  una capacidad que Brian decidió conservar para pruebas internas). Quedan **dormidas y seguras**: sin
+  `DEMO_OAUTH_INTERNAL=1` devuelven 403. **Brian eligió el alcance del bloque, no el del árbol** →
+  nuevo §F-11.
+- ⚠️ 2026-08-05 · **1 error de eslint PREEXISTENTE en `ProfilePanel.tsx`** (setState síncrono dentro
+  de un effect → renders en cascada). Verificado contra HEAD: viene del commit `9c756e2` y este trabajo
+  no lo tocó. **No se arregla aquí** — está fuera del sub-bloque 10; queda como §F-12.
+- ⭐ 2026-08-05 · **③ TALK se partió en dos mitades, y la línea es una MEDICIÓN.** Medido antes de
+  escribir: `for3sChat.ts` cruza **dos** fronteras (Postgres vía `instancias`/`userStore`, y HTTP al
+  agente por `fetch`). La mitad pura (`clientIdDeCorreo`) corre siempre; la de integración se salta
+  igual que ①. ⛔ **No se simuló el `fetch`**: `val-functional.md` §2.3 — un mock de lo que cruza un
+  proceso prueba el mock. Llamar al agente de verdad mandaría un mensaje a una instancia viva y
+  gastaría cupo de Claude, así que queda **declarado como pendiente, no fingido**.
+- 🔬 2026-08-05 · **El test de ③ se VIO FALLAR antes de creerle.** Se saboteó `clientIdDeCorreo` para
+  reproducir el bug original (borrar `@ . +` en vez de hashear) y los 3 correos volvieron a
+  colisionar: **2 tests en rojo**. Restaurado byte a byte (`git status` limpio). `val-functional.md`
+  §2.2: *un check debe verse fallar antes de que su verde signifique algo* — un test que pasa a la
+  primera y nunca se vio en rojo no ha demostrado nada.
+- ⭐ 2026-08-05 · **`gate-critical.py` ahora exime a un test de integración — con condición.**
+  La puerta bloqueó `tests/entrar.test.ts` por hacer `DELETE`/`UPDATE` desde un `.ts`. Era correcto:
+  la regla se escribió cuando no existía ningún test. Pero un test de integración **debe** limpiar
+  lo que escribe, y prohibirlo forzaría un `db()` simulado — que prueba el simulacro, no el freno
+  (`val-functional.md` §2.3). **La exención NO es "es un test":** solo aplica si el archivo nombra
+  una conexión dedicada (`DATABASE_URL_TEST`). Un test que alcanza la URL de producción **sigue
+  bloqueado**, y ese es justo el caso que vale la pena cazar. Probado en los 3 casos: exento ✅ ·
+  test sin variable dedicada → exit 2 ✅ · código de aplicación → exit 2 ✅.
+- 🔴 2026-08-05 · **`DEMO_DATABASE_URL` apunta a Neon de PRODUCCIÓN** (medido: 4 instancias vivas,
+  1 verificación en curso). Por eso ① lee `DEMO_DATABASE_URL_TEST` y **se salta** si falta, en vez
+  de caer de vuelta. Un default que apunta a algo con dueño es el error ya registrado en
+  `feedback_default_nunca_apunta_a_algo_con_dueno`.
+- 2026-08-05 · **`principles/expertise/dev-frontend.md` RE-ADDED to §D.** It was removed on
+  2026-07-30 with a measured reason (6 closed sub-blocks, zero frontend decisions) and a written
+  condition: *"re-add when sub-block 10 touches a component"*. **Sub-block 10 is exactly that** —
+  deleting `components/demo/ConnectClaude.tsx`, 145 lines with 0 importers, one of the two reds in
+  this block's layer-1 verdict. Its §2.6 governs that deletion: *nobody imports it → it is deleted*,
+  measured with importers and never with mentions.
+  🔬 **Found by a check that had a hole:** *every filled expertise reaches an active block* was
+  passing because it read the §D range verbatim and matched the **comment saying the standard had
+  been REMOVED**. Fixed to count only real `- ` entries — a comment about a standard is not a
+  declaration of it.
+- 2026-08-05 · **`dev-backend.md` added to §D** — this block declares `app/api/demo/**` in its
+  Scope IN, so it **is** backend. Caught by the check written the same day (*every filled expertise
+  file must reach an active block*): the criterion was written and nothing declared it, so the hook
+  would never have delivered it. **The validator caught the AI, not the other way round.**
+- 2026-08-05 · **owner-3's two disciplines added to §D** (`val-functional` · `val-integration`).
+  Rationale: both were filled the same day and **no active block declared them**, so the hook never
+  delivered them — filled criterion that reaches nobody governs nothing. They are not generic
+  additions: **sub-block 8 is literally "tests for the 5 critical paths" with 0 test files today**,
+  which is what `val-functional` judges (*what counts as proof*, and *a check that cannot fail is
+  deleted*). And **sub-block 7 removes a `DEV_FALLBACK` that authorizes a fake email** — an
+  authorization seam, which is `val-integration` §2.2: *identity is verified, never assumed*.
+- 2026-08-05 · **`rules/rule-shipping-flow.md` added to §D.** Rationale: the rule was created the
+  same day and **no active block declared it**, so `hooks/pre-edit-standards.py` — which injects
+  only what §D lists — never delivered it. A shipping flow nobody is handed is not a flow.
+  It matters most here: this block ships to `marca-personal`, where **Vercel deploys from `main`,
+  so any push to main is a production deploy** (§B). The flow's rule 1 is exactly that anti-pattern.
+- 📦 **Las 7 decisiones de JULIO (sub-bloques 1-6, cerrados) viven en
+  `blocks/active/demo/docs/decisions-julio.md`** — movidas íntegras el 2026-08-05 al pasar este
+  archivo su techo de 200 líneas. ⛔ Ninguna se resumió ni se borró (`doc-structure.md`).
+- 📦 **Hallazgos del MOTOR → `blocks/active/demo/docs/hallazgos-del-motor.md`** (íntegros, 08-05).
+- 📦 **Decisiones de los tests (§F-8) → `blocks/active/demo/docs/decisiones-tests.md`** (íntegras).
 
 <!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
 ## Friction log

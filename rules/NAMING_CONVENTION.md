@@ -69,7 +69,7 @@ reads as an instruction. Spanish stays for Brian's own thinking.
 blocks/
 ├── active/                  ← one file per block, several may exist
 │   └── demo/
-│       ├── BLOCK.md         ← the single file, sections A-K (≤150 lines)
+│       ├── BLOCK.md         ← the single file, sections A-K (≤200 lines)
 │       ├── docs/            ← long detail lives here
 │       └── cache/
 ├── blocked/

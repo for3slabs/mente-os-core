@@ -87,11 +87,17 @@ From architecture §3.2-QUATER (ADR-027). **The type determines the limit.**
 
 | Type | Limit | Overflow action |
 |---|---|---|
-| `entry-point` (`RETOMAR` · `INDEX` · `PENDING-BRIAN`) | **≤200 lines** | move content to pointers |
-| `contract` · `rule` (`rules/*`) | **≤250** | split by topic |
+| `entry-point` (`RETOMAR` · `INDEX` · `PENDING-BRIAN`) | **≤250 lines** | move content to pointers |
+| `contract` (`qa-dimensions` · `expertise/*` · `contract-*`) | **≤400** | split by topic |
+<!-- 350 → 400 on 2026-08-05, by Brian. Measured: after moving the imported material out, the seven
+     expertise files landed at 257-290 and only dev-database stayed over — at 364, because its §2
+     carries MORE of Brian's criterion (217 lines of the six dimensions), not more filler. A ceiling
+     that would force splitting the criterion itself is a ceiling set wrong: the six dimensions are
+     one unit, and cutting them would make a reviewer jump files mid-review. -->
+| `rule` (`rules/rule-*`) | **≤250** | split by topic |
 | `architecture` | **≤800** | 🔴 split into per-area documents |
 | `plan` | **≤400** | move closed phases to the logbook |
-| `block` (`BLOCK.md`) | **≤150** | see `contract-block.md` |
+| `block` (`BLOCK.md`) | **≤200** | see `contract-block.md` |
 | `memory-index` (`MEMORY.md`) | **≤80** | archive old memories |
 | `append-only` (logbook · decisions · friction) | none | **yearly rotation** |
 | `pending` (`memory/PENDIENTES.md`) | none | **rotation by CLOSURE**, not by date |

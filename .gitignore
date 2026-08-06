@@ -33,3 +33,8 @@ __pycache__/
 
 # gate beats — proof each gate still fires. Per-machine, like .heartbeat.
 .beats/
+
+# 🔑 El permiso de secrets NUNCA se commitea (2026-08-05).
+# Está atado a ESTE caché y a ESTA máquina: commitearlo lo haría viajar a otro clon,
+# que es justo lo contrario de atarlo al contexto que lo emitió.
+.secrets-lease.json

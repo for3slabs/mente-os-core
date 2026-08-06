@@ -80,6 +80,23 @@ def main():
     if not os.path.isfile(src):
         print(f"🔴 {src} is not a file")
         return 1
+
+    # 🔴 BOTH ENDS MUST RESOLVE INSIDE MENTE (graphify #3, 2026-08-05).
+    # Measured that day: `bin/migrate-doc VERSION ../../../tmp/x --dry-run` was ACCEPTED and
+    # printed the move as valid. --dry-run saved it; without the flag it would have moved a file
+    # out of the tree, and check-links would then report a citation nobody could resolve.
+    #
+    # The pattern is graphify's `validate_graph_path()`: RESOLVE the path and assert it stays
+    # under the root, instead of pattern-matching for "..". A blacklist of shapes misses the
+    # next shape; resolution answers the actual question — *where does this really land?*
+    for label, p in (("source", src), ("destination", destdir)):
+        real = os.path.realpath(os.path.join(MENTE, p) if not os.path.isabs(p) else p)
+        if not (real == MENTE or real.startswith(MENTE + os.sep)):
+            print(f"🔴 the {label} resolves OUTSIDE Mente: {real}\n"
+                  f"   This validator only moves documents inside the tree it governs.\n"
+                  f"   Moving one out would leave every citation to it unresolvable.")
+            return 1
+
     if dtype and dtype not in VALID_TYPES:
         print(f"🔴 type {dtype!r} not in: {', '.join(VALID_TYPES)}")
         return 1

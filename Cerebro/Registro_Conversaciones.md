@@ -43,6 +43,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S8 | `523998b8` | 2026-07-31 19:51 | 2026-08-02 22:09 (**~50h**) 🔴 | 5.6 MB 🟢 | 670 turnos | **722K** 🔴 | **LA JORNADA DE ENDURECER EL v2** — F8-4 pasó (el brief bastó) y luego 12 commits cerrando huecos que la propia auditoría destapó: el token de GitHub expuesto · el guardia que vigilaba 9 de 21 · el cableado de los hooks · el latido F1+F2. Mente OS v2 **publicado en GitHub**. Batería 105 → 138 |
 | S10 | `1b9338a4` | 2026-08-03 18:51 | 2026-08-04 01:32 (**~7h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
 | S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
+| S11 | `8b4bddcb` | 2026-08-04 02:31 | 2026-08-05 23:07 (**~45h**) 🔴 | 11.8 MB 🟢 | 65 mensajes | **999,757** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -407,6 +408,112 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 
 Ninguna. Sesión sana en todos los ejes.
 
+
+## S11 · `8b4bddcb` — LA JORNADA DEL CRITERIO Y LOS TESTS (2026-08-04 02:31 → 08-05 23:07, ~45h)
+
+**Medido del `.jsonl`:** 11.8 MB 🟢 · 5,982 turnos · 65 mensajes de Brian ·
+🔴 **contexto pico 999,757 tokens**. Batería **160 → 178**, `failed: 0` al cierre.
+**Cero commits en `marca-personal` — todo en disco, por decisión explícita.**
+
+### 🔴 LA SEÑAL QUE HAY QUE MIRAR PRIMERO
+
+**999,757 tokens es el contexto más alto de la historia del proyecto.** Supera a S7 (998K) y a
+S1, la sesión monstruo (985K). El disco está sano (11.8 MB 🟢) — el problema **nunca fue el
+disco**: cada pausa larga con este contexto reescribe casi 1M de tokens a precio premium.
+
+⭐ **Por qué no degradó como el 21-jul:** la sesión se compactó sola varias veces y el trabajo
+sobrevivió **porque estaba en disco, no en la conversación**. Eso es exactamente lo que Mente OS
+existe para hacer. Aun así, el umbral rojo se cruzó y se quedó ahí muchas horas.
+
+### En qué acabó
+
+Tres frentes, en este orden:
+
+| Frente | Antes | Después | El puente |
+|---|---|---|---|
+| **Huecos de criterio** | 66 esperando a Brian | **0** | los 3 dueños + 7 disciplinas con criterio propio |
+| **Rendimiento** | `check-links` 47.2s | **0.55s** (86x) | un `glob` recursivo recorría 43,986 archivos **por cada cita** |
+| **Tests de la demo** | 🔴 **0 archivos** | 🟢 **4** | los 4 caminos críticos, 15 verdes · 8 saltados · 1 rojo a propósito |
+| **Batería** | 160 checks | **178** | y cada check nuevo se vio fallar antes de creerle |
+
+### ⭐ EL MÉTODO QUE FUNCIONÓ — y que Brian impuso
+
+> *"la IA pregunta, Brian responde con casos reales, la IA estructura"* — **nunca al revés.**
+
+Los 66 huecos no se llenaron con lo que yo creía correcto: se llenaron preguntando en ventana
+emergente y estructurando **sus** respuestas. De ahí salieron reglas que yo no habría escrito:
+*FK siempre, sin excepciones* · *los DATOS deciden detener-vs-degradar* · *ausencia de evidencia
+no es evidencia* · *un control nunca miente* · ⛔ *una fuente de verdad no se parte por tamaño*.
+
+### 🔬 LOS DEFECTOS QUE EL PROPIO SISTEMA ME CAZÓ
+
+Ninguno lo encontré leyendo. **Todos salieron de romper algo a propósito y ver si el check se
+ponía rojo.**
+
+| Defecto | Cómo salió | Por qué importaba |
+|---|---|---|
+| `check-applied` daba ✅ por palabras **sueltas** | declaré `rule-session-close.md` en un bloque que jamás lo usó → **pasó** | **preexistente** (verificado contra HEAD): daba por aplicados estándares que nadie usó, en cualquier bloque |
+| `check-applied` no seguía punteros | partí el BLOCK.md y 3 estándares pasaron a "nunca aplicados" | ⭐ **un puntero que una máquina no sigue no es un puntero** |
+| `pre-edit-standards` enmudeció | decoré la celda de estado del §F con `active · 🔴 …` | un validador lee la **celda**, no la intención |
+| `gate-critical` bloqueaba todo test con SQL | intentó escribir `entrar.test.ts` | la regla se escribió cuando no había tests; ahora exime **solo si el test nombra su propia base** |
+| **mi propia sonda no discriminaba** | saboteé `containerName` y el test de colisión **no** se puso rojo | los 4 nombres ya empezaban por letras distintas — **un caso que no distingue el fallo es decoración** |
+
+### 🔴 EL HALLAZGO QUE MÁS VALÍA
+
+**`DEMO_DATABASE_URL` apunta a la Neon de PRODUCCIÓN** (4 instancias vivas, medido). Salió al
+preparar los tests de integración. Sin medirlo, el primer test habría escrito en la base que
+sirve `for3s.vercel.app`.
+
+⭐ Y una corrección al plan que solo apareció midiendo: ④ POWER iba a probar `container.ts`,
+**donde la autorización no vive** — está en el endpoint. Un test ahí habría dado verde sin
+proteger nada: **cobertura que tranquiliza**.
+
+### 🔴 EL ÚLTIMO HALLAZGO — una métrica que se creía a sí misma
+
+Salió al documentar la sesión, no al construir. `check-clear-ready` decide su veredicto leyendo el
+`battery.failed` de `docs/METRICS.md`… y la batería **contiene un check que lo ejecuta**. El lazo
+se cierra:
+
+```
+METRICS failed=1 → check-clear-ready 🔴 → la batería lo cuenta
+                 → generate-metrics reescribe failed=1 → …
+```
+
+**Medido tres corridas seguidas: `METRICS=2 → exit 1`, inmóvil, con todo lo demás en verde.** Un
+fallo transitorio quedaba **congelado para siempre** y ningún arreglo del código real lo limpiaba.
+
+⭐ Se descuenta en `bin/generate-metrics`, no en `check-clear-ready`: **allí no funcionaba**, porque
+`METRICS.md` solo publica dos totales y no los nombres de los checks. Lo intenté primero en el sitio
+equivocado y lo comprobé antes de darlo por bueno. Reprobado con una sonda: con 3 fallos reales
+sigue saliendo exit 1.
+
+### 🔴 Y UN SEGUNDO CICLO, de la misma familia
+
+Al arreglar el primero apareció otro: el check *pre-commit passes on a healthy block* **fallaba por
+efecto secundario de la propia batería.** La batería crea bloques sonda `zz-*` en el árbol real,
+`generate-index` los recoge, y `pre-commit` rechaza un índice desfasado.
+
+**Evidencia:** el md5 de `docs/INDEX.md` **cambia solo por correr la batería**. El síntoma
+desconcertaba porque `./hooks/pre-commit.sh` a mano daba exit 0 — y el conteo **empeoraba solo**:
+176/1 en una corrida, 175/2 en la siguiente.
+
+⭐ **Los dos ciclos son la misma ley:** *un check no puede ser evidencia de sí mismo.* Arreglados,
+la batería da **177/0 estable en corridas consecutivas** — antes oscilaba sin converger.
+
+### La lección de método, repetida tres veces
+
+`$?` después de una tubería mide el **último** comando, no el que importa. Me dio falsas alarmas
+otra vez (`pre-commit`, la puerta de tests). Y `grep -rl` cuenta **archivos** mientras
+`grade-block` cuenta **referencias** — gobierna el número del validador, porque es el que el
+check compara.
+
+### 🙋 Lo que quedó esperando a Brian
+
+**3 bloqueos, todos con trabajo YA ESCRITO detrás** → `memory/PENDIENTES.md` §B1-B3:
+la rama de Neon (8 tests saltados) · los dueños de jazz/mashe (el test rojo) · el push
+(despliega a producción).
+
+---
 
 ## S10 · `1b9338a4` — LA JORNADA DE LA VOZ (2026-08-03 18:51 → 08-04 01:32, ~7h)
 

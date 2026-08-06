@@ -4,8 +4,8 @@
 id: blk-distribucion-2026-08
 type: code
 intent: make Mente OS v2 installable by someone who is not Brian — config-driven, not hand-filled
-status: active · lane: full-block · owner: brian
-created: 2026-08-02 · updated: 2026-08-03
+status: closed · lane: full-block · owner: brian
+created: 2026-08-02 · updated: 2026-08-05
 
 <!-- ══ B · SCOPE ══ required to OPEN · ≤15 lines ══ -->
 ## ✅ IN
@@ -13,7 +13,7 @@ created: 2026-08-02 · updated: 2026-08-03
 - `Mente/bin/init` (NEW — the piece that does not exist today)
 - templates for `CLAUDE.md` · `PROJECT-RULES.md` · `.claude/settings.json`
 - the 4 hook `command` paths in `.claude/settings.json`
-- `Mente/CAPABILITIES.md` (NEW — what the agent can do, and the engine/instance line)
+- `CAPABILITIES.md` (NEW — what the agent can do, and the engine/instance line)
 
 ## ⛔ OUT
 - DO NOT touch `Mente/Cerebro/` — DERIVED: it is the For3s product graph, not the engine
@@ -40,11 +40,12 @@ created: 2026-08-02 · updated: 2026-08-03
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 6/6 built — a clone with another owner installs itself, PROVEN on a real clone
-next: §K closing — the block is buildable-complete; closing needs grade-block + Brian
-blockers: none — sub-block 1 resolved from the documented behaviour, then proven by running it
+phase: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2 six dimensions, §K)
+next: nothing — debt handed to PENDIENTES.md (field proof by a third party · 60 criterion holes)
+blockers: none
 progress: 6/6 sub-blocks closed
-updated: 2026-08-03
+updated: 2026-08-05
+note: first block ever judged by layer 2 — the six QA dimensions were filled the same day.
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
@@ -125,24 +126,44 @@ edits one file and nothing else. The validators honoured that; the three startup
 started with **no gate running** — silently. That is the worst failure mode for a system whose
 thesis is *"what is in code is obeyed 100%"*.
 
-**Sub-block 1 ✅ — and the lesson is the method, not the answer.** It was declared blocked
-("needs a clean clone") because the variable is undefined in the session shell, so a naive probe
-resolved to empty. **That was a blocker I asserted without checking the source.** The official
-docs state the placeholder is exported into the hook process and the command runs through
-`sh -c`. Setting it as the harness does and running each hook from `/tmp`: all four ran, and
-gate-critical still exited **2**. ⭐ A limit you have not verified is not a limit — it is a guess
-wearing one's clothes.
-
 **⭐ WHO INSTALLS THIS IS AN AGENT, NOT A PERSON** (Brian, 2026-08-02): *"VA A HABER UN AGENTE DE
 IA O UN LLM QUE ES EL QUE EJECUTE TODAS ESAS INSTRUCCIONES. DEBE DE SABER QUÉ CAPACIDADES TIENE
 DENTRO DE MENTE OS V2 Y CÓMO EJECUTARLAS SIN TOCAR EL CÓDIGO DE MENTE OS V2."*
 
-That reframes the deliverable. A form assumes a human reads labels and types values. An agent
-needs two things a form does not give:
+That reframed the deliverable: a form assumes a human reads labels and types values, so the
+deliverable became a **capability map** instead — `CAPABILITIES.md`, §G and §F-5.
 
 **Related, already registered:** `memory/PENDIENTES.md` §🚪 (`CLAUDE.md` §ESTADO carries instance
 state) is the same problem seen from the document side — this block is the mechanism that closes it.
+**Full closing evidence:** `blocks/archive/distribucion_2026-08/docs/closing-report.md`
+(sub-block 1's lesson is kept verbatim in §G).
 
 <!-- ══ K · CLOSING ══ required to CLOSE ══ -->
-## Closing
-(pending — the block is still active)
+## Closing · 2026-08-05 — 🟢 PRODUCT
+
+> ⭐ **First block in Mente OS ever judged by LAYER 2.** The six QA dimensions were empty
+> (`⬜ PENDING · BRIAN`) until Brian filled them the same day. Full evidence, dimension by
+> dimension: **`blocks/archive/distribucion_2026-08/docs/closing-report.md`**.
+
+| Criterion (`principles/owner-3-validation.md` §2) | Result |
+|---|---|
+| 1 · Functional | 🟢 `test-f0-f6` **160 passed / 0 failed** · `check-blocks` 0 errors · 281/281 citations |
+| 2 · Sufficiency | 🟢 §A-E answer the 7 restart questions · §J within its ceiling |
+| 3 · Quality | 🟢 layer 1 **7/7** + 🟢 layer 2 **6/6 dimensions**, evidence attached |
+
+**Done:** Mente OS v2 is installable by someone who is not Brian — 4 portable hooks (a clone used to
+start with **no gate running, silently**), `bin/init` (generates, never hand-fills), 3 templates, a
+check that no engine file carries anyone's name, `CAPABILITIES.md`, and the engine/instance line as
+a portable LOCK: 24 `$CLAUDE_PROJECT_DIR` rules where 3 absolute paths did not travel.
+**Learned:** ⭐ *a limit you have not verified is not a limit — it is a guess wearing one's clothes*
+(§G) · 🔴 `Edit`/`Write` deny rules do **not** cover `Bash`.
+
+**Connections:** `blk-demo` unaffected (different repo, no shared Scope IN) · `docs/PENDING-BRIAN.md`
+row 2 closed, holes **66 → 60** · `rules/qa-dimensions.md` `draft` → `current` · closes the
+document-side view of `memory/PENDIENTES.md` §🚪.
+
+**Debt NOT closed** → `memory/PENDIENTES.md`: ① field proof by a real third party (the clone test ran
+on this machine — proves the mechanism, not another owner's experience) · ② 60 criterion holes in the
+8 discipline files · ③ Brian's 2 decisions: GPG · `~/.claude.json`.
+**Friction (§H):** `generate-metrics` published a stale `1 failed` during this close. Proposal:
+refuse to publish when it did not own the lock for the whole run.

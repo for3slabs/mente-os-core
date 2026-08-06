@@ -104,11 +104,35 @@ def main():
     # Destructive SQL embedded in application code is the SAME damage without the filename:
     # measured 2026-07-30, the demo runs SQL from duenos.ts, eventos.ts and userStore.ts.
     # A gate that only reads filenames guards the paperwork, not the database.
+    #
+    # ⭐ EXCEPTION · an INTEGRATION TEST, and only if it proves where it points.
+    # Added 2026-08-05, when the demo got its first tests. A test that writes to a real
+    # database MUST clean up after itself — forbidding its DELETE would force either a
+    # mocked db() (which tests the mock, not the brake — `val-functional.md` §2.3) or a
+    # suite that leaves rows behind forever.
+    #
+    # ⚠️ The exemption is NOT "it is a test file". A test pointing at production is worse
+    # than application code, because nobody reviews it before it runs. It is exempt only
+    # when it reads a DEDICATED test connection variable — the same shape as the rule
+    # `a default never points at something with an owner`. A test that reaches for the
+    # production URL still gets blocked, which is the case worth catching.
+    is_test = re.search(r"(^|/)(tests?|__tests__)/|\.(test|spec)\.[jt]sx?$", target)
+    proves_target = re.search(r"DATABASE_URL_TEST|TEST_DATABASE_URL", body)
+    test_exempt = bool(is_test and proves_target)
+
     embedded = (not DB_HINT.search(target)
+                and not test_exempt
                 and target.endswith((".ts", ".tsx", ".js", ".py"))
                 and DESTRUCTIVE.search(body)
                 and re.search(r"sql\s*[`(]|execute\s*\(|query\s*\(", body, re.I))
     if embedded:
+        if is_test:
+            print("🔴 BLOCKED · a test that runs destructive SQL must name its OWN database.\n"
+                  "   Use DEMO_DATABASE_URL_TEST (or TEST_DATABASE_URL) and skip when it is "
+                  "absent.\n"
+                  "   Falling back to the production URL is how a test suite deletes real rows.\n",
+                  file=sys.stderr)
+            return 2
         print(f"🔴 BLOCKED · {os.path.basename(target)} runs destructive SQL from application "
               "code.\n"
               "   Same damage as a migration, without the filename that would have flagged it.\n"

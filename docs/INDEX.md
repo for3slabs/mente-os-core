@@ -5,31 +5,36 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-08-03 · **Type:** generated
+**Generated:** 2026-08-06 · **Type:** generated
 
 
-**279 documents** · **3 blocks** · 20 directories
+**302 documents** · **5 blocks** · 25 directories
 
 
 | Directory | Docs |
 |---|---|
-| `./` | 3 |
+| `./` | 4 |
 | `Cerebro/` | 6 |
 | `Maestro/` | 7 |
 | `blocks/` | 1 |
 | `blocks/active/demo/` | 1 |
-| `blocks/active/demo/docs/` | 3 |
-| `blocks/active/distribucion/` | 1 |
+| `blocks/active/demo/docs/` | 7 |
+| `blocks/archive/distribucion_2026-08/` | 3 |
+| `blocks/archive/distribucion_2026-08/docs/` | 1 |
+| `blocks/archive/expertise-programacion_2026-08/` | 3 |
+| `blocks/archive/expertise-programacion_2026-08/docs/` | 1 |
+| `blocks/archive/plan-tests-demo_2026-08/` | 3 |
+| `blocks/archive/plan-tests-demo_2026-08/docs/` | 1 |
 | `blocks/archive/split-architecture_2026-07/` | 3 |
 | `bridges/` | 6 |
-| `docs/` | 16 |
-| `docs/analysis/` | 27 |
+| `docs/` | 19 |
+| `docs/analysis/` | 28 |
 | `docs/architecture/` | 6 |
 | `memory/` | 4 |
 | `memory/archive/` | 38 |
-| `principles/` | 5 |
+| `principles/` | 7 |
 | `principles/expertise/` | 7 |
-| `rules/` | 19 |
+| `rules/` | 20 |
 | `rules/decisions/` | 30 |
 | `vision/` | 8 |
 | `work/` | 88 |
@@ -41,7 +46,8 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `CAPABILITIES.md` | entry-point | current | 2026-08-03 | 135 |
+| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 173 |
+| `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
 | `README.md` | entry-point | current | 2026-07-31 | 189 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
 
@@ -54,7 +60,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 625 |
+| `Registro_Conversaciones.md` | — | — |  | 732 |
 
 ## `Maestro/`
 
@@ -78,21 +84,61 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 150 |
+| `BLOCK.md` | — | — |  | 199 |
 
 ## `blocks/active/demo/docs/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
+| `como-correr-los-tests.md` | analysis | current | 2026-08-05 | 104 |
+| `decisiones-tests.md` | analysis | current | 2026-08-05 | 29 |
+| `decisions-julio.md` | block | current | 2026-08-05 | 64 |
 | `demo-progress.md` | analysis | fossil | 2026-06-16 | 215 |
 | `guide-github-oauth-app.md` | analysis | current | 2026-07-20 | 63 |
+| `hallazgos-del-motor.md` | analysis | current | 2026-08-05 | 55 |
 | `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 166 |
 
-## `blocks/active/distribucion/`
+## `blocks/archive/distribucion_2026-08/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 148 |
+| `BLOCK.md` | — | — |  | 169 |
+| `SUMMARY.md` | analysis | current | 2026-08-05 | 52 |
+| `connections.md` | analysis | current | 2026-08-05 | 35 |
+
+## `blocks/archive/distribucion_2026-08/docs/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `closing-report.md` | analysis | current | 2026-08-05 | 123 |
+
+## `blocks/archive/expertise-programacion_2026-08/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `BLOCK.md` | — | — |  | 200 |
+| `SUMMARY.md` | analysis | current | 2026-08-05 | 50 |
+| `connections.md` | analysis | current | 2026-08-05 | 38 |
+
+## `blocks/archive/expertise-programacion_2026-08/docs/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `closing-report.md` | analysis | current | 2026-08-05 | 77 |
+
+## `blocks/archive/plan-tests-demo_2026-08/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `BLOCK.md` | — | — |  | 144 |
+| `SUMMARY.md` | block | current | 2026-08-05 | 73 |
+| `connections.md` | block | current | 2026-08-05 | 46 |
+
+## `blocks/archive/plan-tests-demo_2026-08/docs/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `plan-critical-paths.md` | plan | current | 2026-08-05 | 139 |
 
 ## `blocks/archive/split-architecture_2026-07/`
 
@@ -117,12 +163,13 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-07-29 | 2453 |
+| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-05 | 2459 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 423 |
-| `METRICS.md` | generated | current | 2026-08-03 | 104 |
-| `PENDING-BRIAN.md` | entry-point | current | 2026-07-29 | 110 |
-| `STATES.md` | generated | — |  | 25 |
+| `INDEX.md` | generated | — |  | 476 |
+| `METRICS.md` | generated | current | 2026-08-06 | 104 |
+| `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
+| `STATES.md` | generated | — |  | 29 |
+| `WORKSPACE.md` | entry-point | current | 2026-08-05 | 128 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 200 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 283 |
 | `audit-adversarial.md` | analysis | current | 2026-07-30 | 105 |
@@ -131,8 +178,10 @@
 | `f5-execution-log.md` | analysis | current | 2026-07-30 | 114 |
 | `f6-execution-log.md` | analysis | current | 2026-07-30 | 124 |
 | `f7-f8-execution-log.md` | analysis | current | 2026-07-30 | 85 |
+| `plan-check-links-performance.md` | plan | current | 2026-08-05 | 351 |
 | `plan-v1-to-v2-migration.md` | plan | current | 2026-07-30 | 335 |
-| `plan-v2-rollout.md` | plan | current | 2026-08-02 | 422 |
+| `plan-v2-rollout.md` | fossil | fossil | 2026-08-05 | 428 |
+| `resultado-check-links-performance.md` | analysis | current | 2026-08-05 | 128 |
 
 ## `docs/analysis/`
 
@@ -142,6 +191,7 @@
 | `Analisis_Free_Threading_GIL.md` | analysis | current | 2026-07-30 | 94 |
 | `Analisis_GitHub_Descubribilidad_2026-07-04.md` | analysis | current | 2026-07-30 | 141 |
 | `Analisis_LearningLoop_Hermes_para_For3s.md` | analysis | current | 2026-07-30 | 118 |
+| `Analisis_graphify_para_Mente_OS.md` | analysis | current | 2026-08-05 | 228 |
 | `Analisis_intern-os_para_For3s.md` | analysis | current | 2026-07-30 | 115 |
 | `Analisis_internOS_vs_For3s_OS.md` | analysis | current | 2026-07-30 | 174 |
 | `Auditoria_Salud_MVP_2026-06-19.md` | analysis | current | 2026-07-30 | 147 |
@@ -181,10 +231,10 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1509 |
+| `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1579 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-02 | 3924 |
-| `RETOMAR.md` | entry-point | current | 2026-08-04 | 198 |
+| `PENDIENTES.md` | pending | current | 2026-08-05 | 4635 |
+| `RETOMAR.md` | entry-point | current | 2026-08-05 | 249 |
 
 ## `memory/archive/`
 
@@ -233,23 +283,25 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `owner-0-voice.md` | contract | current | 2026-08-03 | 581 |
-| `owner-1-docs.md` | contract | current | 2026-07-29 | 96 |
-| `owner-2-dev.md` | contract | current | 2026-07-29 | 108 |
-| `owner-3-validation.md` | contract | current | 2026-07-29 | 163 |
+| `contract-delivery.md` | contract | current | 2026-08-05 | 343 |
+| `imported-patterns.md` | contract | current | 2026-08-05 | 128 |
+| `owner-0-voice.md` | contract | current | 2026-08-03 | 285 |
+| `owner-1-docs.md` | contract | current | 2026-07-29 | 104 |
+| `owner-2-dev.md` | contract | current | 2026-07-29 | 124 |
+| `owner-3-validation.md` | contract | current | 2026-07-29 | 181 |
 | `vision-mente-os-v2.md` | architecture | current | 2026-07-29 | 285 |
 
 ## `principles/expertise/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `dev-backend.md` | contract | draft | 2026-07-29 | 127 |
-| `dev-database.md` | contract | draft | 2026-07-29 | 130 |
-| `dev-frontend.md` | contract | draft | 2026-07-29 | 126 |
-| `doc-planning.md` | contract | draft | 2026-07-31 | 136 |
-| `doc-structure.md` | contract | draft | 2026-07-31 | 135 |
-| `val-functional.md` | contract | draft | 2026-07-31 | 145 |
-| `val-integration.md` | contract | draft | 2026-07-31 | 145 |
+| `dev-backend.md` | contract | current | 2026-08-05 | 262 |
+| `dev-database.md` | contract | current | 2026-08-05 | 364 |
+| `dev-frontend.md` | contract | current | 2026-08-05 | 257 |
+| `doc-planning.md` | contract | current | 2026-08-05 | 274 |
+| `doc-structure.md` | contract | current | 2026-08-05 | 289 |
+| `val-functional.md` | contract | current | 2026-08-05 | 280 |
+| `val-integration.md` | contract | current | 2026-08-05 | 290 |
 
 ## `rules/`
 
@@ -261,10 +313,10 @@
 | `case-dangerous-default.md` | case | current | 2026-07-29 | 128 |
 | `contract-adr.md` | contract | current | 2026-07-29 | 141 |
 | `contract-archive.md` | contract | current | 2026-07-30 | 131 |
-| `contract-block.md` | contract | current | 2026-07-29 | 335 |
-| `contract-document.md` | rule | current | 2026-07-29 | 200 |
+| `contract-block.md` | contract | current | 2026-07-29 | 338 |
+| `contract-document.md` | rule | current | 2026-07-29 | 206 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
-| `qa-dimensions.md` | contract | draft | 2026-07-29 | 190 |
+| `qa-dimensions.md` | contract | current | 2026-08-05 | 312 |
 | `rule-checks-must-measure.md` | rule | current | 2026-08-02 | 135 |
 | `rule-config-hygiene.md` | rule | current | 2026-07-31 | 240 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 109 |
@@ -274,6 +326,7 @@
 | `rule-lanes.md` | rule | current | 2026-07-29 | 76 |
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-05 | 203 |
 
 ## `rules/decisions/`
 
@@ -287,7 +340,7 @@
 | `ADR-006-blocks-live-in-git.md` | — | — |  | 29 |
 | `ADR-007-closed-blocks-are-archived.md` | — | — |  | 29 |
 | `ADR-008-migration-on-demand.md` | — | — |  | 37 |
-| `ADR-009-single-file-per-block.md` | — | — |  | 29 |
+| `ADR-009-single-file-per-block.md` | — | — |  | 36 |
 | `ADR-010-progressive-with-hard-minimum.md` | — | — |  | 29 |
 | `ADR-011-four-layers-guarantee-reading.md` | — | — |  | 29 |
 | `ADR-012-only-three-closed-gates.md` | — | — |  | 29 |

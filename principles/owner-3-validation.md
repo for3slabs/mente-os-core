@@ -31,8 +31,26 @@ the only one that can refuse to close a block.
 
 | Discipline | File | Status |
 |---|---|---|
-| Functional — does this piece actually work? | `expertise/val-functional.md` | ⬜ **pending · Brian** |
-| Integration — does the chain still work? | `expertise/val-integration.md` | ⬜ **pending · Brian** |
+| Functional — does this piece actually work? | `expertise/val-functional.md` | ✅ **FILLED 2026-08-05** |
+| Integration — does the chain still work? | `expertise/val-integration.md` | ✅ **FILLED 2026-08-05** |
+
+> ## ⭐ 2026-08-05 — OWNER-3 IS NO LONGER JUDGING WITHOUT A BODY
+>
+> Both disciplines carry Brian's criterion. **The owner that can REFUSE to close a block now has
+> its own.** What that changes, concretely, at every close:
+>
+> | Now enforceable | Where |
+> |---|---|
+> | 4 conditions for a datum to count as **proof** (concrete datum · before→after · seen to fail · reproducible after `/clear`) | `val-functional.md` §2.2 |
+> | **Absence of evidence is not evidence** — a green over zero cases is not a pass | §2.5 |
+> | A check that **cannot fail is deleted**, not kept | §2.6 |
+> | ⛔ Never close something **whose failure you would not notice** | §3 |
+> | Seams: **fail loudly, never silently**; DATA decides stop-vs-degrade | `val-integration.md` §2.5 |
+> | Nothing is assumed across a seam — **identity is verified, never assumed** | §2.2 |
+>
+> ⚠️ **Criterion 1 (functional) is no longer just the §5-BIS battery.** The battery says the checks
+> ran; `val-functional.md` says whether their result counts as proof. Both apply — the stricter
+> wins (`rules/rule-inheritance.md`).
 
 ```
 SEED (the three owners)              ROOTS (their disciplines)

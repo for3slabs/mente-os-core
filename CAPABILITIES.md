@@ -1,8 +1,8 @@
 # CAPABILITIES — what the agent can do inside Mente OS, and where the line is
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-08-03 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-05 · **Owner:** brian
 **Level:** 🔧 ENGINE — ships with the engine · describes it · carries no instance data
-**Verified by:** `bin/test-f0-f6` (§CAPABILITIES) · **Block:** `blocks/active/distribucion` §F-5
+**Verified by:** `bin/test-f0-f6` (§CAPABILITIES) · **Block:** `blocks/archive/distribucion_2026-08` §F-5
 
 ## Purpose
 
@@ -45,7 +45,11 @@ edits a validator to make its own output pass has removed the only thing that wa
 
 ---
 
-## 2 · WHAT YOU CAN RUN — 15 validators
+## 2 · WHAT YOU CAN RUN — the validators
+<!-- No count in this heading on purpose: it read "15 validators" while bin/ held 16 executables
+     (2026-08-05). A number copied into prose is correct exactly once — docs/METRICS.md
+     (`validators`) is the measured one. Same defect this file warns about three sections below. -->
+
 
 Every one exits with a code you can act on. **Never re-implement by hand what one of these
 measures** — that is how a measured verdict becomes an opinion.
@@ -63,7 +67,30 @@ measures** — that is how a measured verdict becomes an opinion.
 | `bin/check-clear-ready` | *is it safe to `/clear` right now?* | 0 safe · 1 something would be lost |
 | `bin/flag-stale` | *which blocks stopped moving?* | 0 · 1 warn · 2 error |
 | `bin/verify-handoff <file>` | *is this delegation actually bounded?* | 0 bounded · 2 malformed |
-| ⭐ `bin/grade-block <block>` | **product or MVP — MEASURED, never an opinion** | 0 product · 1 close · 2 MVP |
+| ⭐ `bin/grade-block <block>` | **product or MVP — MEASURED, never an opinion** (this is LAYER 1) | 0 product · 1 close · 2 MVP |
+
+> ## ⭐ THE VERDICT HAS TWO LAYERS — and layer 2 is NOT a script
+>
+> `grade-block` measures what a machine can (dead code, links, duplication, tests). **Layer 2 is
+> `rules/qa-dimensions.md`: six dimensions carrying Brian's criterion, LIVE since 2026-08-05.**
+> It is applied by reading, at block close, and **each dimension demands EVIDENCE SHOWN, never
+> asserted**. Per discipline it is refined by `principles/expertise/*`.
+>
+> | Owner | Disciplines | State |
+> |---|---|---|
+> | owner-2 · development | `dev-database` · `dev-backend` · `dev-frontend` | ✅ **fully covered** |
+> | owner-3 · functional-flow | `val-functional` · `val-integration` | ✅ **fully covered** |
+> | owner-1 · documentation | `doc-planning` · `doc-structure` | ⬜ still Brian's to write |
+>
+> ⚠️ **A discipline file adds demands on top of the six dimensions, never relaxes them**
+> (`rules/rule-inheritance.md`). Where both speak, **the stricter one wins.**
+>
+> ⛔ **Do not hand-write a criterion verdict.** Run layer 1, then walk the six dimensions with their
+> evidence. A dimension answered without evidence does not count — that is the rule that stops the
+> AI from approving its own work (ADR-003).
+>
+> **Combined:** 🟢 product (both green) · 🟡 close · 🔴 MVP. A 🔴 does not forbid closing the block;
+> it forbids closing it **as a product**.
 
 ### The ones that WRITE
 
@@ -73,6 +100,7 @@ measures** — that is how a measured verdict becomes an opinion.
 | `bin/generate-index` | 🤖 `docs/INDEX.md` + `docs/STATES.md` from what is on disk |
 | `bin/generate-metrics` | 🤖 `docs/METRICS.md` — **every live number, measured once** |
 | `bin/migrate-doc <src> <dst>` | moves ONE document safely (`--dry-run` first) |
+| `bin/init` | a NEW instance: reads `mente.config.yml` → generates `CLAUDE.md`, `PROJECT-RULES.md` and the 4 portable hook paths. **Run once, by whoever clones the engine** |
 | `bin/test-f0-f6` | the whole system end to end — **what matters is `failed: 0`** |
 
 > 🔴 **Never type a live number into prose.** Run `generate-metrics` and cite the metric name:
@@ -91,6 +119,8 @@ You do not call these. They fire on their own, and two of them **refuse**.
 | before an edit | `hooks/pre-edit-standards.py` — injects the owning block's §D | ⛔ never |
 | before an edit | `hooks/gate-critical.py` — DB with no rollback · closing an insufficient block | 🔴 **exit 2** |
 | before an edit | `hooks/gate-handoff.py` — a writing sub-agent with no declared scope | 🔴 **exit 2** |
+| before touching `secrets/` | `hooks/gate-secrets.py` — 🔑 reading with a live lease · ⛔ writing ALWAYS asks | **ask/allow** |
+| when the context loads | `bin/secrets-lease open` — issues the secrets lease (SessionStart + PostCompact) | grants |
 | before a commit | `hooks/pre-commit.sh` — a block violating its contract | 🔴 **BLOCKS** |
 
 **When a gate blocks, its message IS the receipt** (`ADR-030`): the piece, why it is
@@ -107,8 +137,16 @@ irreversible, what to assess, and the documented way out. Read it — do not ret
 | `rules/rule-lanes.md` | the lane comes from the dependency **graph**, never from your estimate |
 | `rules/rule-checks-must-measure.md` | a check you have only seen GREEN has not been tested |
 | `rules/rule-session-close.md` | no `/clear` without registering the session first |
+| 🚢 `rules/rule-shipping-flow.md` | branch → verify → PR → **⛔ do not merge.** Transversal: backend, frontend, database and docs alike. Declare it in the block's §D so the hook hands it to you |
 
 Full map of which rule applies at which level: `CLAUDE.md` → `PROJECT-RULES.md` → `BLOCK.md` §B.
+
+### Where the machine you are on is described
+
+**`docs/WORKSPACE.md`** — which repo is which · what is gated and why · **where** each credential
+lives · which command answers which question · what runs by itself.
+⛔ It carries **no values**: it says WHERE a secret lives, never WHAT it is. Read it instead of
+re-deriving the layout every session — re-derivation is where a wrong assumption enters.
 
 ---
 

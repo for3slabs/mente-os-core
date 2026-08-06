@@ -1,5 +1,5 @@
 # QA DIMENSIONS · the senior review
-**Status:** draft · **Type:** contract · **Updated:** 2026-07-29 · **Owner:** brian
+**Status:** current · **Type:** contract · **Updated:** 2026-08-05 · **Owner:** brian
 **Language:** US English · **Used by:** owner-3 (validation) at block close
 **Layer 1 (measurable) lives in:** `bin/grade-block` — this file is **layer 2**.
 ---
@@ -52,12 +52,35 @@ That is why every dimension demands evidence.
 **Typical failure (measured):** `lib/demo/userStore.ts` concentrated 5 responsibilities and had
 5 dependents → 21 edits and 42% of commits were fixes.
 
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05
 >
-> What goes here: what *you* demand before accepting an architecture. What makes you reject a
-> structure. The failure you see most often.
+> **How a dependent is counted:** the **total** of what points at the piece — **weighted by how
+> relevant that file is**, and read in order of importance. Not a flat count: ten dependents on
+> throwaway files are not ten dependents on the pieces that carry the flow.
 >
-> Why the AI does not write it: this is criterion, not observation (architecture §9.1).
+> **What makes a piece badly cut — BOTH at once, not either:**
+> 1. **the number** of dependents (weighted, as above), **and**
+> 2. **it does more than one thing.**
+>
+> One without the other is not a fail. A piece with many dependents that does exactly one thing is
+> correctly cut and deserves them. A piece that does three things and nobody imports is a 🟡, not
+> a 🔴 — it will become one the moment it gets dependents.
+>
+> **⛔ SCOPE — this dimension judges existing code, never a proposal.** Brian, asked what makes him
+> reject a structure before it has dependents: *the graph is not there yet, so there is nothing to
+> measure.* The three measured failures of this file (`userStore.ts`, `kind`, `accountStore.ts`)
+> were **all** caught after the fact, with the graph in hand. Judging a design with no graph would
+> be criterion invented on the spot — the thing this file exists to prevent.
+>
+> **Consequence:** a block whose code is not written yet **cannot fail 2.1**. It is not a 🟢 either —
+> it is **`not measurable yet`**, the same way `grade-block` marks a metric that does not apply
+> (ADR-028: *not measured is NOT a pass*).
+>
+> <!-- The "not measurable yet" marker is written in words, never with the white-square glyph:
+>      generate-metrics counts that glyph as a criterion hole, so using it as an example here
+>      would inflate criterion.holes by one. Measured 2026-08-05 (it did: 61 instead of 60). -->
+
+
 
 ---
 
@@ -71,12 +94,33 @@ impossible?
 **Typical failure (measured):** `kind` (a cookie value) was used as if it were the real instance →
 the same bug appeared in 6 files.
 
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05
 >
-> Anchors already stated by Brian, to expand here:
-> - *"vamos a desarrollar una base de datos, no un MVP pedorro"*
-> - *"si no tenemos control estamos mal"*
-> - the values that must live in the DB and never in code (`demo_config` precedent)
+> ## 🔴 A VALUE THAT HAS AN OWNER NEVER LIVES IN CODE.
+>
+> If the datum identifies **a person or an instance**, it belongs in the database. No exceptions for
+> convenience, none for "it is only for dev".
+>
+> **The case that fixed it — still open today.** `lib/demo/allowedEmails.ts` carries a
+> `DEV_FALLBACK` that authorizes a **fake email address**: an identity, with an owner, written into
+> code. It is sub-block 7 of `blk-demo` and it is the reason that block cannot be handed to a
+> client. The same shape was already resolved once — jazz's and mashe's owners were moved to the DB
+> in S4a — which is what makes this a criterion and not an incident.
+>
+> **Why the owner is the test, and not "does it change often":** `demo_config` is editable without a
+> push, and that is good, but frequency is a symptom. Ownership is the cause. A value with an owner
+> that never changes is still wrong in code, because the code is not where its owner can be checked.
+>
+> **How to apply it:** for each constant in the block, ask *who does this belong to?* If the answer
+> names a person, an instance, or a tenant → 🔴 until it lives in the DB.
+>
+> **Anchors this expands:** *"vamos a desarrollar una base de datos, no un MVP pedorro"* ·
+> *"si no tenemos control estamos mal"* · `rules/case-dangerous-default.md`
+> (*"a default never points at something that has an owner"* — same root, seen from the default side).
+>
+> ⚠️ **What this criterion does NOT cover:** the single-source-of-truth failure (`kind`, a cookie
+> value used as if it were the real instance, same bug in 6 files). That is a different criterion in
+> this same dimension, **not yet written** — Brian chose the ownership rule first, deliberately.
 
 ---
 
@@ -89,7 +133,24 @@ the same bug appeared in 6 files.
 **Typical failure (measured):** "resolve the instance" copied in 6 places; the fix required a
 *"barrido completo del patrón"* four commits later.
 
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05
+>
+> **BOTH sides get evaluated, not one.** Copied too many times *and* generalized too early are the
+> same failure seen from opposite ends. A review that only hunts duplication passes an abstraction
+> built for a single caller — and that one is harder to remove later, because it looks deliberate.
+>
+> **There is no fixed number of repetitions that forces an abstraction — it depends on the case.**
+> Three copies of two trivial lines may be fine; two copies of the instance-resolution logic were
+> not. What decides is not the count, it is whether the copies **have to change together**.
+>
+> **How to apply it — one question per side:**
+> - *copied:* if this rule changes, how many places must change with it? If they must all change and
+>   they are separate, that is the failure of the 6 copies.
+> - *generalized:* how many real callers does this abstraction have **today**? One caller is a 🟡
+>   with its rationale, zero is 🔴 — and zero is also a 2.6 finding.
+>
+> **Consequence when it fails:** `rules/rule-fix-not-patch.md` applies — all the copies get evaluated
+> **before** anything is written, never one patched and the rest left.
 
 ---
 
@@ -102,7 +163,23 @@ the same bug appeared in 6 files.
 **Typical failure (measured):** `kind` does not say what it distinguishes — reading the body was
 required, and that ambiguity produced the 6-file bug of §2.2.
 
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05
+>
+> **Short names are allowed when they are necessary. There is no length ceiling and no length floor
+> — what governs is the structure and the decision already taken** in that block.
+>
+> So the test is **not** *"is this name long enough?"*. It is **coherence**: does the name match the
+> structure it lives in and the decision this block recorded in §G? A short name inside a structure
+> where that short form is the established convention is correct. The same short name dropped into a
+> structure that spells things out is a 🟡, because now the reader has to hold two conventions.
+>
+> **Why `kind` still fails this test:** it was not rejected for being four letters. It was rejected
+> because **it does not say what it distinguishes** — no structure and no recorded decision made
+> `kind` mean "instance", so the body had to be read. That ambiguity is what produced the 6-file bug
+> of §2.2. Length was never the defect; the missing decision was.
+>
+> **How to apply it:** when a name is short, name the structure or the §G decision that makes it
+> readable. If neither exists, the name is not short — it is undecided.
 
 ---
 
@@ -115,7 +192,34 @@ required, and that ambiguity produced the 6-file bug of §2.2.
 **Typical failure (measured):** 4 functions in `userStore.ts` with no declared failure mode — and
 44 DB accesses with **0 try/catch** (fixed in U1).
 
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05 — 🔴 the hardest rule in this file
+>
+> **It is an error whenever it is not connected and has not been identified** — between the piece
+> and whatever it sets off downstream. Both halves count: unconnected **or** unidentified.
+>
+> > ## ⛔ NO PUEDE DEJAR CÓDIGO HUÉRFANO, MUERTO, SIN CONECTAR
+> >
+> > *"Y ESO LO LOGRAMOS ANALIZANDO TODO Y PROBANDO EL FLUJO A PROFUNDIDAD CON DATOS REALES."*
+> > — Brian, 2026-08-05
+>
+> **This is stated without exceptions on purpose.** It does not soften for pieces that look
+> peripheral, and there is no "critical path only" carve-out: the failure is orphaned code, and
+> orphaned code is never on the path you were watching.
+>
+> **The evidence this demands is the strictest in the file**, and it is not a signature review:
+> - **analyze everything** — the piece *and* what it triggers downstream, not the function alone
+> - **exercise the flow in depth with REAL data** — a unit test on the piece does not answer this
+>   dimension, because *"los bugs trágicos viven ENTRE las piezas"*
+>   (`feedback_probar_flujo_completo_encadenado`, Brian 2026-07-20)
+>
+> **How it connects to the rest of the system:**
+> - the §5-BIS battery (`owner-3-validation.md` §4) is how this gets exercised — checks B-G
+> - **affirmative verification** is mandatory: *"recovered X"*, never *"seems connected"*
+> - deployment order, already recorded in `blk-demo` §G: **senders send the field first, the
+>   receiver goes strict second.** The reverse breaks everything not yet sending it.
+>
+> **The overlap with 2.6 is deliberate, not redundant.** 2.6 asks *does this file have to exist?*
+> 2.5 asks *is what exists wired and accounted for?* A file can be necessary and still dangle.
 
 ---
 
@@ -128,10 +232,24 @@ required, and that ambiguity produced the 6-file bug of §2.2.
 **Typical failure (measured):** `accountStore.ts` had **0 consumers** after the migration and stayed
 in the tree.
 
-> **This dimension is the direct answer to Brian:** *"que lo que está es necesario, y no se lo
-> inventó, o lo quiso mover, o dijo 'ah, lo dejo aquí por si lo necesitamos'."*
-
-> ⬜ **PENDING · BRIAN — your criterion**
+> ### ✅ BRIAN'S CRITERION · 2026-08-05 — already stated, kept verbatim
+>
+> > *"Que lo que está es necesario, y no se lo inventó, o lo quiso mover, o dijo 'ah, lo dejo aquí
+> > por si lo necesitamos'."* — Brian
+>
+> **Confirmed as-is on 2026-08-05.** Asked whether the three sins it names — *inventing it* ·
+> *wanting to move it* · *leaving it just in case* — carry different weight, Brian's answer was to
+> **leave it exactly as written**. So they are not ranked: all three are the same failure, which is
+> a file in the tree that no one can justify.
+>
+> **How to apply it:** for every file in the block, name **who consumes it** and **why it could not
+> live somewhere else**. No consumer → 🔴. A consumer that is only a build artifact or a mention in
+> a comment does not count (`blk-demo` §G, 2026-07-29: *a dependent is a file that IMPORTS the
+> piece, not one that mentions it*).
+>
+> **Layer 1 already measures the blunt half of this** (`grade-block`: *files nobody imports*), which
+> is why the criterion here is the other half: **a file with importers can still fail 2.6** if the
+> reason it exists is one of the three sins.
 
 ---
 
@@ -167,12 +285,16 @@ The six dimensions are **the frame**. What each one demands **changes by discipl
 
 | Discipline | File | Status |
 |---|---|---|
-| Database | `principles/expertise/dev-database.md` | ⬜ **pending · Brian** — F1-2 |
-| Backend | `principles/expertise/dev-backend.md` | ⬜ pending · Brian — F1-bis |
-| Frontend | `principles/expertise/dev-frontend.md` | ⬜ pending · Brian — F1-bis |
+| Database | `principles/expertise/dev-database.md` | ✅ **FILLED 2026-08-05** — F1 closed |
+| Backend | `principles/expertise/dev-backend.md` | ✅ **FILLED 2026-08-05** |
+| Frontend | `principles/expertise/dev-frontend.md` | ✅ **FILLED 2026-08-05** |
 
-> ⚠️ **Until at least one is filled, layer 2 is an empty form.** Layer 1 (`grade-block`) works
-> without it — that is why F4 can run before F1-bis closes.
+> ✅ **Layer 2 is no longer an empty form** (2026-08-05): the six dimensions of §2 all carry Brian's
+> criterion, so a criterion review can now be run on any block. What is still pending is the
+> **per-discipline** refinement in the table above — the frame is filled, the specializations are not.
+>
+> ⚠️ **A dimension answered from §2 alone is valid.** When the block's discipline file is filled it
+> **adds** demands, never relaxes them (`rule-inheritance.md`: rules add up, the stricter one wins).
 
 ---
 

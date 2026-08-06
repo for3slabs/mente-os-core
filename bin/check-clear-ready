@@ -22,6 +22,7 @@ import os
 import re
 import sys
 import glob
+import time
 import subprocess
 from datetime import date
 
@@ -105,6 +106,37 @@ def main():
         if out:
             WARN.append(f"{os.path.basename(repo)}: {len(out.splitlines())} uncommitted files — "
                         "the files survive, the reason for the change does not")
+
+    # ── P1 · IS THE BATTERY GREEN, AND WAS IT RUN RECENTLY? (2026-08-05) ────────────
+    # Measured the same day: NOTHING executed bin/test-f0-f6. The 173 checks ran only when
+    # somebody remembered — so this project's own law (code 100%, discipline 40-60%) put its
+    # CENTRAL verification on the 40-60% side.
+    #
+    # ⚠️ It is NOT run from here: the battery takes ~2m31s and this check must stay at ~0.1s
+    # (measured). A close gate that costs 2.5 minutes is a gate people skip, and a skipped gate
+    # protects nothing (rule-friction.md). Instead we read the result the battery already
+    # published in docs/METRICS.md, and check HOW OLD it is — a green from last week says
+    # nothing about the code being closed today.
+    metrics = f"{MENTE}/docs/METRICS.md"
+    if os.path.isfile(metrics):
+        try:
+            mt = open(metrics, encoding="utf-8", errors="replace").read()
+        except OSError:
+            mt = ""
+        # ⚠️ El número que se lee aquí YA viene descontado del fallo circular por
+        # `bin/generate-metrics`. Ver el comentario de `battery_checks()` allí: la batería
+        # contiene un check que corre ESTE validador, así que un rojo suyo se autoperpetuaba.
+        m = re.search(r"`battery\.failed`\s*\|\s*\*\*(\d+)\*\*", mt)
+        if m and int(m.group(1)) > 0:
+            LOST.append(f"the battery is RED ({m.group(1)} failed) — closing now freezes a "
+                        "broken state as if it were good. Run: bin/test-f0-f6")
+        age_days = (time.time() - os.path.getmtime(metrics)) / 86400
+        if age_days > 1:
+            WARN.append(f"the battery result is {age_days:.0f} day(s) old — a green from before "
+                        "today's work is not evidence about today's work "
+                        "(val-functional.md §2.2). Run: bin/generate-metrics")
+    else:
+        WARN.append("docs/METRICS.md is missing — no battery result to read at all")
 
     if quiet:
         return 1 if LOST else 0

@@ -5,19 +5,23 @@
 
 # STATES — every block and its measured health
 
-**Generated:** 2026-08-03 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
+**Generated:** 2026-08-06 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
 
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-08-02 | `blocks/active/demo/BLOCK.md` |
-| 🟢 | **distribucion** | code | active | full-block | — |  | 2026-08-03 | `blocks/active/distribucion/BLOCK.md` |
+| 🟢 | **demo** | code | active | full-block | 6/10 | brian | 2026-08-05 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **distribucion_2026-08** | code | closed | full-block | — |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
+| 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | — |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |
+| 🟢 | **plan-tests-demo_2026-08** | docs | closed | direct | — |  | 2026-08-05 | `blocks/archive/plan-tests-demo_2026-08/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
 
 ## Phase
 
-- **demo**: 6 files raised to product; 3 blockers remain before 
-- **distribucion**: 6/6 built — a clone with another owner installs itse
+- **demo**: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos ce
+- **distribucion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2
+- **expertise-programacion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 3/3 applicabl
+- **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running
 - **split-architecture_2026-07**: CLOSED — 2496 → 632 lines, 5 pieces, verdict 🟢 PRODU
 
 ---

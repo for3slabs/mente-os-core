@@ -34,12 +34,28 @@ backtracking**: a plan that fails its criteria goes back to owner-1.
 
 | Discipline | File | Status |
 |---|---|---|
-| Database | `expertise/dev-database.md` | ⬜ **pending · Brian** |
-| Backend | `expertise/dev-backend.md` | ⬜ pending · Brian |
-| Frontend | `expertise/dev-frontend.md` | ⬜ pending · Brian |
+| Database | `expertise/dev-database.md` | ✅ **FILLED 2026-08-05** — phase F1 closed |
+| Backend | `expertise/dev-backend.md` | ✅ **FILLED 2026-08-05** (§4-BIS is imported material, separate from his criterion) |
+| Frontend | `expertise/dev-frontend.md` | ✅ **FILLED 2026-08-05** |
 
-> ⛔ **It never invents criterion** (ADR-003). While those files are empty, owner-2 applies only the
-> hard rules of §4 below — which do not depend on Brian's input.
+> ⭐ **`dev-database.md` is live since 2026-08-05.** What owner-2 can now demand before code is
+> written: **five categories that never live in code** (anything with an owner · anything that
+> changes without deploying · fixed lists · thresholds · sensitive user data — env vars are for
+> wiring, never content) · **four impossible states** the schema must forbid *by constraint, not by
+> an `if`* · **a foreign key on every real relation, no exceptions** · **four conditions before a
+> migration touches production**.
+>
+> ⚠️ **And its root reverses the review order:** a table is judged **against its implementation
+> plan**, not against best practices. No plan backing it → 🔴 even if every mechanical check passes.
+
+> ## ⭐ 2026-08-05 — OWNER-2 IS FULLY COVERED. All three disciplines carry Brian's criterion.
+>
+> ⛔ It still never invents criterion (ADR-003) — it now **loads** it instead of falling back to §4
+> alone. What each discipline adds on top of the hard rules below: **database** — five categories
+> out of code, four impossible states enforced by constraint, FK always · **backend** — one guard
+> per rule, expected failures ARE the contract, security/money unified always · **frontend** — the
+> server owns the state and React reflects it, a control must never lie, nothing unreconstructable
+> lives only in memory.
 
 ### ⭐ These three are BRANCHES of owner-2, not owners themselves
 

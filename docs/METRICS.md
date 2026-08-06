@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-03 · **Owner:** brian
-**Generated:** 2026-08-03 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-06 · **Owner:** brian
+**Generated:** 2026-08-06 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **159** |
+| `battery.checks` | **177** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -58,7 +58,7 @@ precisely because nothing measured it. Fix a batch, regenerate, and the ceiling 
 
 | Metric | Value |
 |---|---|
-| `criterion.holes` | **66** |
+| `criterion.holes` | **0** |
 | `criterion.files` | 9 |
 
 Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-voice.md` ·
@@ -68,8 +68,8 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 
 | Metric | Value |
 |---|---|
-| `sessions.registered` | **10** |
-| `sessions.on_disk` | 18 |
+| `sessions.registered` | **11** |
+| `sessions.on_disk` | 17 |
 | `sessions.heavy_unregistered` | **0** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
@@ -79,11 +79,11 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 17 |
-| `system.hook_files` | 6 |
-| `system.hooks_registered` | **4** |
-| `system.blocks_active` | 2 |
-| `system.blocks_archived` | 1 |
+| `system.validators` | 18 |
+| `system.hook_files` | 7 |
+| `system.hooks_registered` | **7** |
+| `system.blocks_active` | 1 |
+| `system.blocks_archived` | 4 |
 
 ⚠️ `hook_files` and `hooks_registered` differ on purpose: `pre-commit.sh` is invoked by git, not
 by the harness, so it is a file without a settings entry.
@@ -92,8 +92,8 @@ by the harness, so it is a file without a settings entry.
 
 | Metric | allow | deny |
 |---|---|---|
-| `permissions.shared` (`settings.json`) | 16 | 212 |
-| `permissions.local` (`settings.local.json`) | 208 | 212 |
+| `permissions.shared` (`settings.json`) | 45 | 202 |
+| `permissions.local` (`settings.local.json`) | 262 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

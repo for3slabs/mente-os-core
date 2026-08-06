@@ -58,17 +58,49 @@ def block_pieces(text):
 
 
 def scope_dirs(text):
-    """Paths declared in §B IN — the block's own territory."""
-    m = re.search(r"##\s*✅?\s*IN\s*\n((?:\s*-.*\n)+)", text)
+    """Paths declared in §B IN — the block's own territory.
+
+    ⚠️ An HTML comment between the heading and the first `- ` used to break the match SILENTLY:
+    scope came back empty, `measured` landed on 0, and the block scored a false
+    ⬜ NOTHING MEASURED with every real metric green (found 2026-08-05 on blk-expertise-programacion).
+    Comment lines are now skipped instead of ending the list.
+    """
+    m = re.search(r"##\s*✅?\s*IN\s*\n(.*?)(?=\n##|\n<!-- ══)", text, re.S)
     if not m:
         return []
+    body = re.sub(r"<!--.*?-->", "", m.group(1), flags=re.S)  # drop comments, keep the list
     dirs = []
-    for line in m.group(1).split("\n"):
+    for line in body.split("\n"):
+        if not line.lstrip().startswith("-"):
+            continue
+        # ⭐ Two validators, two roots: check-links resolves from Mente/, grade-block from the repo
+        # root. A path written for one broke the other (2026-08-05). Engine paths are accepted
+        # BOTH ways — bare and `Mente/`-prefixed — so the block can satisfy check-links and still
+        # be graded. Whichever exists on disk wins; see the resolution below.
         for tok in re.findall(r"[\w./\[\]*-]+/[\w./\[\]*-]*", line):
             d = tok.split("*")[0].rstrip("/")
             if d and "/" in d:
                 dirs.append(d)
     return sorted(set(dirs))
+
+
+def resolve_scope(dirs, root):
+    """Make a §B path resolvable from `root`, whichever convention it was written in.
+
+    check-links resolves engine paths from Mente/; grade-block resolves from the repo root. A
+    block written to satisfy one used to score a false ⬜ under the other (2026-08-05). A bare
+    `rules/x.md` that does not exist under root is retried as `Mente/rules/x.md`, and vice versa.
+    Paths that resolve either way are returned unchanged; unresolvable ones are kept as-is so the
+    scope line still shows what the block declared.
+    """
+    out = []
+    for d in dirs:
+        if os.path.exists(os.path.join(root, d)):
+            out.append(d)
+            continue
+        alt = d[len("Mente/"):] if d.startswith("Mente/") else os.path.join("Mente", d)
+        out.append(alt if os.path.exists(os.path.join(root, alt)) else d)
+    return sorted(set(out))
 
 
 def importers(stem, root):
@@ -266,17 +298,33 @@ def main():
         print(__doc__)
         return 1
     # A block name is a folder name. A glob would silently grade a DIFFERENT block.
-    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args[0]):
-        print(f"🔴 {args[0]!r} is not a block name — lowercase, digits and hyphens only")
+    # ⭐ The trailing `_YYYY-MM` is the ARCHIVE suffix (contract-archive.md): a closed block lives
+    # in blocks/archive/<name>_<YYYY-MM>/. Rejecting the underscore made a closed block
+    # ungradeable, so its §K verdict could never be reproduced — which contradicts the
+    # reproducibility architecture §12-Q.4 requires. Globs are still refused: no `*` or `?`.
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*(_\d{4}-\d{2})?", args[0]):
+        print(f"🔴 {args[0]!r} is not a block name — lowercase, digits and hyphens,"
+              " optionally + the archive suffix `_YYYY-MM`")
         return 1
     hits = glob.glob(f"blocks/**/{args[0]}/BLOCK.md", recursive=True)
+    if not hits:
+        # An archived block is usually asked for by its bare name. Resolve it instead of
+        # reporting "no block named X" when the block exists one suffix away.
+        alt = glob.glob(f"blocks/archive/{args[0]}_*/BLOCK.md")
+        if len(alt) == 1:
+            hits = alt
+            print(f"   (archived: grading {os.path.basename(os.path.dirname(alt[0]))})")
+        elif len(alt) > 1:
+            names = ", ".join(sorted(os.path.basename(os.path.dirname(a)) for a in alt))
+            print(f"🔴 {args[0]!r} is ambiguous — archived more than once: {names}")
+            return 1
     if not hits:
         print(f"🔴 no block named {args[0]!r}")
         return 1
 
     path = hits[0]
     text = open(path, encoding="utf-8", errors="replace").read()
-    dirs = scope_dirs(text)
+    dirs = resolve_scope(scope_dirs(text), root)
     pieces = block_pieces(text)
 
     # ── the TYPE decides the ruler (ADR-028) ─────────────────────────────────
@@ -406,7 +454,21 @@ def main():
                 print(f"     {it}")
 
     print("\n  ⬜ = not measured for this type. It is NOT a pass (ADR-028).")
-    print("  Layer 2 (senior criterion) is rules/qa-dimensions.md — still pending Brian.")
+    # The line below used to read "still pending Brian" unconditionally. Brian filled all six
+    # dimensions on 2026-08-05, so it became a lie the moment he did — a hardcoded status about a
+    # file that changes. It is now READ from the file (rule-checks-must-measure.md).
+    qa = os.path.join(MENTE, "rules", "qa-dimensions.md")
+    try:
+        pending = open(qa, encoding="utf-8", errors="replace").read().count("⬜ **PENDING")
+    except OSError:
+        pending = -1
+    if pending == 0:
+        print("  Layer 2 (senior criterion) is rules/qa-dimensions.md — FILLED: run it at close.")
+    elif pending > 0:
+        print(f"  Layer 2 (senior criterion) is rules/qa-dimensions.md — {pending} dimension(s)"
+              " still pending Brian.")
+    else:
+        print("  Layer 2 (senior criterion) is rules/qa-dimensions.md — could not read it.")
     print("  A 🔴 does not forbid closing the block. It forbids closing it AS A PRODUCT.")
     return code
 

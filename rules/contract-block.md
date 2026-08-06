@@ -6,7 +6,10 @@
 
 ## 0 · THE SHAPE
 
-**One block = ONE file.** Sections A-K in this order. Max **150 lines** total.
+**One block = ONE file.** Sections A-K in this order. Max **200 lines** total.
+*(Raised from 150 on 2026-08-05, by Brian. A closed block carries §K — the verdict, what was
+learned, what debt it did not close — on top of everything the open block already held; the first
+real close landed at 169. The ceiling was sized for open blocks only.)*
 
 > Tiers are the **order of sections inside this file**, not separate files (ADR-009).
 > Splitting 70 lines across files saves nothing and adds places that desynchronize.
@@ -300,7 +303,7 @@ sufficiency: pass | fail
    · an open sub-block in a block being closed
 
 🟡 LIMITS
-   · BLOCK.md over 150 lines
+   · BLOCK.md over 200 lines
    · State over 10 lines
    · Context over 80 lines
    · nesting deeper than 3 levels (ADR-015)

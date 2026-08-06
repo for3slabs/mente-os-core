@@ -350,8 +350,11 @@ def _check_one(p, name):
 
 
 # ── SIZE LIMITS ──────────────────────────────────────────────────────────────
-LIMITS = {"entry-point": 200, "contract": 250, "rule": 250, "architecture": 800,
-          "plan": 400, "block": 150, "memory-index": 80, "analysis": 300, "case": 300}
+# ⚠️ This table is DUPLICATED in bin/check-blocks and declared in rules/contract-document.md §2.
+# Three copies, so a ceiling change must touch all three or they contradict each other
+# (2026-08-05: block 150→200, entry-point 200→250, done in all three).
+LIMITS = {"entry-point": 250, "contract": 400, "rule": 250, "architecture": 800,
+          "plan": 400, "block": 200, "memory-index": 80, "analysis": 300, "case": 300}
 
 
 def check_sizes():
@@ -370,13 +373,19 @@ def check_sizes():
         if t in LIMITS and n > LIMITS[t]:
             yel(f"{f}: {n} lines — over the {t} limit of {LIMITS[t]}")
 
-    # Computed from the working directory — hardcoding it made this silent on other machines.
-    _sd, _ = cfg.session_dir()
-    mem = os.path.join(_sd, "memory", "MEMORY.md")
-    if os.path.exists(mem):
-        n = sum(1 for _ in open(mem, encoding="utf-8", errors="replace"))
-        if n > 80:
-            yel(f"MEMORY.md: {n} lines — over 80. It is the heaviest piece of startup.")
+    # ⛔ MEMORY.md IS NOT AUDITED HERE — removed 2026-08-05, by Brian.
+    #
+    # It is the HARNESS's memory index: it lives outside Mente/, it is written by Claude Code's
+    # memory system, and nothing in this engine can shrink it. A warning nobody can act on is
+    # noise, and 67 unactioned warnings is how a validator became noise once already (M1).
+    #
+    # ⚠️ The cost it flagged is REAL and does not go away by not measuring it: MEMORY.md loads on
+    # every session start, so each line is context spent before the first token. It was 109 lines
+    # against the 80 this check used to demand. If startup ever feels heavy, that file is the first
+    # place to look — but the pruning is the harness owner's call, not this validator's finding.
+    #
+    # ⭐ The rule this follows: a validator audits what its system CONTROLS. Auditing a neighbour's
+    # file produces a red nobody owns.
 
 
 # ── TRUTH ────────────────────────────────────────────────────────────────────
@@ -579,6 +588,10 @@ def main():
         check_truth()
         check_isolation()
         check_heartbeat()
+        # 🔴 A published engine that cannot name its version cannot be debugged elsewhere.
+        if not os.path.exists(os.path.join(MENTE, "VERSION")):
+            red("VERSION is missing — this engine cannot say which version it is.\n"
+                "   A bug reported from another machine could not be reproduced.")
         check_session()
 
     if quiet:
@@ -592,6 +605,21 @@ def main():
         print(f"\n🟡 {len(YEL)}")
         for m in YEL:
             print(f"   {m}")
+    # ── WHICH VERSION IS RUNNING (intern-os #5, 2026-08-05) ─────────────────────
+    # 🔴 The gap: the engine is PUBLISHED, and until today nothing could say WHICH version was
+    # running. A bug report from someone else's machine that cannot name a version is a bug report
+    # nobody can reproduce — and that is precisely the field test still owed.
+    #
+    # It prints even when healthy, unlike everything else here: this line is not a warning, it is
+    # the thing you paste into a report. intern-os validates the number in three places; the
+    # source here is ONE file (`VERSION`), so there is nothing to keep in sync — a copy cannot
+    # drift if it does not exist.
+    try:
+        _v = open(os.path.join(MENTE, "VERSION"), encoding="utf-8").read().strip()
+    except OSError:
+        _v = None
+    if _v:
+        print(f"\nMente OS {_v}   ({os.path.basename(MENTE)} · {date.today().isoformat()})")
     # Silence when everything is fine: a validator that always talks is always ignored.
     if not RED and not YEL:
         print("✅ system healthy")

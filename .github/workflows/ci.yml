@@ -1,0 +1,151 @@
+name: CI
+
+# ⭐ P3 · WHY THIS EXISTS (2026-08-05)
+#
+# Measured that day: nothing executed bin/test-f0-f6. The 173 checks ran only when somebody
+# remembered — so this project's own measured law (a rule in code is obeyed 100%, a rule in a
+# document 40-60%) had put its CENTRAL verification on the 40-60% side.
+#
+# rules/rule-shipping-flow.md declares branch → verify → PR → do not merge. Until this file
+# existed, nothing enforced the "verify" step on a PR from someone who is not Brian — and an
+# outside contributor is exactly the field test still pending.
+#
+# 🔴 WHAT WAS MEASURED BEFORE WRITING THIS, so the first run would not be a false red:
+#   · the validators import only the stdlib — no install step is needed
+#   · running with a clean HOME (no ~/.claude) fails 3 checks that are NOT defects:
+#       - "the 9 global GSD hooks are untouched" reads ~/.claude/settings.json (harness state)
+#       - 8 citations resolve into the harness memory dir, absent on a runner
+#       - pre-commit depends on a freshly generated index
+#     Those are properties of the DEVELOPER MACHINE, not of the engine. CI runs what it can
+#     actually judge and says so, instead of failing on someone else's absence.
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: contracts and citations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # No dependency step on purpose: every validator uses the stdlib only. Verified
+      # 2026-08-05 — the day an install step is needed, this comment is the signal that
+      # something grew a dependency nobody declared.
+      - name: Validators are executable
+        # A validator present but not executable is the failure mode that once made
+        # pre-commit take the fail-OPEN path and let every commit through (2026-07-30).
+        run: |
+          missing=0
+          for f in bin/check-blocks bin/check-links bin/check-structure bin/test-f0-f6; do
+            [ -x "$f" ] || { echo "::error::$f is not executable"; missing=1; }
+          done
+          exit $missing
+
+      - name: Blocks satisfy their contracts
+        # exit 2 = a block violates its contract. exit 1 = warnings only, which do not block:
+        # the same threshold hooks/pre-commit.sh uses, so CI and the gate agree.
+        run: |
+          bin/check-blocks; code=$?
+          [ "$code" -eq 2 ] && exit 1
+          exit 0
+
+      - name: The archive is complete
+        # A closed block with no SUMMARY.md cannot be consulted — it was lost, not archived
+        # (rules/contract-archive.md §0). Found 2026-08-05: two blocks closed that same day
+        # were missing it, and nothing in the battery was watching.
+        run: |
+          bin/check-structure; code=$?
+          [ "$code" -eq 2 ] && exit 1
+          exit 0
+
+      - name: Generated indexes are not stale
+        # graphify's `skillgen --check` adapted: a generated file that drifts from its source
+        # publishes a value nobody measured. Same check hooks/pre-commit.sh runs locally.
+        run: bin/generate-index --check
+
+      - name: VERSION and CHANGELOG agree
+        # An engine that cannot say which version it is cannot be debugged in someone else's
+        # house — which is the field-test scenario this repo is being prepared for.
+        run: |
+          ver=$(head -1 VERSION | tr -d '[:space:]')
+          echo "$ver" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' \
+            || { echo "::error::VERSION is not semantic: $ver"; exit 1; }
+          grep -qE "^## +${ver//./\\.}( |$|—)" CHANGELOG.md \
+            || { echo "::error::CHANGELOG.md has no entry for $ver"; exit 1; }
+          echo "version $ver, with a CHANGELOG entry"
+
+  battery:
+    name: full battery
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate the indexes
+        # The battery asserts the index is current. On a fresh checkout it is, but a PR that
+        # adds a file without regenerating would fail for a reason CI can fix itself — and a
+        # red that the author cannot act on teaches people to ignore red.
+        run: bin/generate-index
+
+      - name: Run bin/test-f0-f6
+        # ⚠️ THE HONEST PART. Three checks read the developer's machine, not the engine:
+        # the global GSD hooks, the citations into the harness memory dir, and the live
+        # session. On a runner they cannot pass, and forcing them would be measuring the
+        # absence of a laptop. The step reports the real numbers and fails only on checks
+        # the engine actually owns — see the summary it writes below.
+        run: |
+          set +e
+          bin/test-f0-f6 | tee /tmp/battery.txt
+          set -e
+          passed=$(grep -oE 'passed: [0-9]+' /tmp/battery.txt | grep -oE '[0-9]+')
+          failed=$(grep -oE 'failed: [0-9]+' /tmp/battery.txt | grep -oE '[0-9]+')
+          echo "### Battery: $passed passed, $failed failed" >> "$GITHUB_STEP_SUMMARY"
+          # Checks that depend on the developer machine, named one by one so the exemption
+          # can never quietly grow: whoever adds one has to write it here.
+          env_only=0
+          grep -q '🔴 the 9 global GSD hooks are untouched' /tmp/battery.txt && env_only=$((env_only+1))
+          grep -q '🔴 broken citations stay at or below' /tmp/battery.txt && env_only=$((env_only+1))
+          real=$((failed - env_only))
+          if [ "$real" -gt 0 ]; then
+            echo "::error::$real check(s) failed that are NOT environment-dependent"
+            echo "**$real real failure(s)** — see the log." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if [ "$env_only" -gt 0 ]; then
+            echo "$env_only check(s) skipped: they read the developer machine, not the engine." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  no-secrets:
+    name: no secret values committed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: secrets/ carries no value
+        # rules/rule-config-hygiene.md §1.1: a leaked secret is ROTATED, not deleted — so the
+        # cheapest moment to catch one is before it is ever pushed. Mente/secrets/ is expected
+        # to be gitignored; this asserts it, rather than trusting it.
+        run: |
+          if git ls-files --error-unmatch secrets/ >/dev/null 2>&1; then
+            echo "::error::secrets/ is tracked by git — it must be ignored"
+            exit 1
+          fi
+          echo "secrets/ is not tracked"

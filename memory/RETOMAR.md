@@ -1,9 +1,9 @@
 # RETOMAR — Cold-Start Brief (LEER ESTO PRIMERO) ⚡
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-08-04 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-05 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
-> **El ÚNICO archivo que necesitas leer al retomar.** Pequeño a propósito: **máximo 200 líneas**,
+> **El ÚNICO archivo que necesitas leer al retomar.** Pequeño a propósito: **máximo 250 líneas**,
 > lo aplica `bin/check-health`. Al cerrar, la historia va a la Bitácora, no aquí.
 > ⚠️ **UNA sola fecha, la de la cabecera** (dos fue un hueco real de F8-4).
 
@@ -11,13 +11,13 @@
 
 ## 1 · Quién + qué (10 segundos)
 
-- **Brian López** (founder, NO "Aguilar"). Email ema@frutero.club / brayan002150@gmail.com.
+- **Brian López** (founder, NO "Aguilar"). ema@frutero.club / brayan002150@gmail.com.
 - **Proyecto = SOLO For3s OS.** Cerebro documental: `/home/brianweb3/for3s/Mente/` = **"Mente OS"**.
   ⛔ NO tocar `marca-personal/Mente/` (otro proyecto) sin permiso.
   ⛔ **NO leer `~/5M-incubathon/` (Mente OS de NavigoX) sin gate** — ver §7 (protege consumo).
 - **Fuente de verdad arquitectónica:** `Cerebro/For3s_OS_Grafo_Maestro.md`.
-- For3s OS = **agente "segundo cerebro" autónomo, self-hosted** en el servidor `for3s`
-  (Telegram + consola, Python 3.12 + Postgres+AGE+pgvector, contenerizado). EN PRODUCCIÓN.
+- For3s OS = **agente "segundo cerebro" autónomo, self-hosted** en el servidor `for3s` (Telegram +
+  consola, Python 3.12 + Postgres+AGE+pgvector, contenerizado). EN PRODUCCIÓN.
 
 ## 2 · Servidor `for3s` — 5 FOR3S OS al mismo tiempo
 
@@ -57,28 +57,96 @@ redactada). 👉 `project_entrenamiento_foresito` · `work/Entrenamiento_Ejecuci
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-### 🆕 ⭐ LO ÚLTIMO (2026-08-04, S10 ~7h) — **LA VOZ AHORA TIENE CONTRATO DE ENTREGA**
+### 🆕 🔴 LA DEMO PASÓ DE 0 A 4 TESTS — y uno **falla a propósito** (2026-08-05)
+
+`plan-tests-demo` **CERRADO 🟢 PRODUCTO** y archivado. Los **4 caminos críticos escritos**:
+② autorizar · ① entrar · ③ hablar · ④ apagar. **Suite: 15 pasan · 8 saltados · 1 FALLA.**
+⏸️ Los 8 saltados esperan una **rama de Neon de test** — `DEMO_DATABASE_URL` es PRODUCCIÓN
+(medido: 4 instancias vivas), así que los tests de integración **se saltan** en vez de caer ahí.
+🔬 **Cada test se VIO FALLAR antes de creerle** (sabotaje + restaurar byte a byte); en ④ eso destapó que **mi propio caso no discriminaba**. ⚠️ **④ iba a probar el archivo equivocado** (`container.ts`): la regla *"solo el dueño"* vive en `app/api/demo/general/agent/route.ts`.
+🔬 **2 defectos del MOTOR de paso:** `check-applied` no seguía punteros de un bloque partido, y daba por aplicado un estándar por palabras **sueltas** (preexistente, verificado contra HEAD). Corregidos y reprobados. Detalle: `blocks/active/demo/BLOCK.md` §G.
+🔴 **El rojo ES la entrega:** `DEV_FALLBACK` autoriza `jazz@example.com`, una dirección que nadie
+controla (`expected false, received true`). ⛔ **No lo "arregles" debilitando el assert** — su verde
+es la definición de cerrar `blocks/active/demo` §F-7, y eso necesita un dato que solo tiene Brian:
+**quién es dueño de jazz y de mashe.**
+📊 demo: `test files` **0 → 1** — cae uno de sus 2 rojos (queda el muerto `ConnectClaude.tsx`). Corredor: **Vitest 4.1.10**.
+⛔ **Nada commiteado ni empujado** — Vercel despliega `marca-personal` desde `main`: lo decide Brian.
+🔬 **Un validador lee la CELDA, no la intención:** decorar la celda de estado del §F apagó en silencio un aviso de `pre-edit-standards.py`. El matiz va en la descripción; la celda es UNA palabra.
+
+### ⚡ RENDIMIENTO: el sistema es **86x más rápido** (2026-08-05)
+
+`check-links` **47.2s → 0.55s** · batería **1m10 → 15.6s** · métricas **2m31 → 13.5s**. Causa: un `glob` recursivo recorría los 43,986 archivos de `marca-personal` **por cada cita**. 🔬 F0 destapó 2 defectos silenciosos (mi sonda no medía; `glob` no ve ocultos, `os.walk` sí). → `docs/plan-check-links-performance.md`.
+
+### 🆕 ⭐ LO ANTERIOR (2026-08-05, S11) — **LA CAPA 2 EXISTE Y `distribucion` CERRÓ 🟢 PRODUCTO**
+
+**Sin commit — `Mente/` está en `.gitignore` de este repo (el motor se publica en `mente-os`).**
+
+- 📜 **Las 6 dimensiones de QA, LLENAS** (`rules/qa-dimensions.md`, `draft` → `current`). La más
+  dura, literal suya: *"NO PUEDE DEJAR CÓDIGO HUÉRFANO, MUERTO, SIN CONECTAR — Y ESO LO LOGRAMOS
+  PROBANDO EL FLUJO A PROFUNDIDAD CON DATOS REALES"* (§2.5). **Él responde con casos, yo estructuro.**
+- 🏁 **`distribucion` CERRADO 🟢 PRODUCTO** — primer bloque juzgado por **capa 2**. Archivado en
+  `blocks/archive/distribucion_2026-08/` (su `SUMMARY.md` lleva qué se hizo y qué se aprendió).
+
+- 🔌 **3ª ronda de cableado**: el criterio LLENO tampoco llegaba (2 `val-*` sin declarar, 2 dueños
+  diciendo `pending` de lo lleno) → corregido + **2 checks** que lo impiden.
+- 🏁⭐ **LOS 3 DUEÑOS CON CRITERIO PROPIO — huecos 66 → 3.** `doc-structure.md` cerró el último:
+  ⭐ **si un documento excede su techo DEBE partirse**, y las mitades se apuntan (endurece ADR-027) ·
+  puntero siempre que el dato tenga dueño en otro sitio · `Status: current` es un contrato de 4
+  términos (**quién lo verificó y con qué**) · ⛔ nunca borrar historia para que un check pase.
+  **Los 3 restantes NO son criterio:** 2 punteros de índice + 1 falso positivo del contador.
+- 🎓 **`doc-planning.md` LLENO** — **todo límite que un plan declare se MIDE** · una fase entrega
+  UNA cosa · ⛔ nada de fases "pulir" · **si tocar algo obliga a BD+frontend+backend, es UN BLOQUE**
+  · un hueco real **se marca como pendiente asignado a Brian** · ⛔ *no omitas algo porque crees
+  que ya lo sé*, ni te excuses con *"no sabía"*.
+- 🔴 **Brian cazó un SESGO DE DISEÑO:** mi check exigía que todo criterio aterrizara en un bloque
+  de código — *"los usuarios pueden hacer código o no, no es ley"*. Corregido + nace el bloque
+  `plan-tests-demo` (`type: docs`), el primero que ejercita owner-1.
+- 🎓⭐ **OWNER-2 COMPLETO** — `dev-frontend.md`: **el servidor es dueño del estado, React lo
+  refleja** · lo que el usuario decidió sobrevive al refresh · 🔴 **un control nunca miente** · el
+  nombre dice qué MUESTRA · ⛔ secreto en el cliente, botón oculto como única autorización.
+- 🎓 **`dev-backend.md` LLENO** — **guardián único por regla** (`session.ts` 12→0) · el fallo
+  esperable **es** el contrato · seguridad o dinero **se unifican siempre** · ⛔ endpoint genérico,
+  exponer control, confiar en un id del cliente. 🔬 **El check de cableado me cazó a mí.**
+- 🎓⭐ **OWNER-3 COMPLETO** — *fallar ruidosamente* · **los DATOS deciden** detener vs degradar ·
+  *no se asume nada* · **ausencia de evidencia NO es evidencia** · *nunca cierres algo cuyo fallo
+  no sabrías detectar*.
+- 🎓 **`dev-database.md` LLENO → fase F1 CERRADA.** 5 categorías que nunca viven en código · 4
+  estados imposibles · **FK siempre** · 4 condiciones antes de una migración. ⭐ Su raíz: *"debe
+  existir un PLAN DE IMPLEMENTACIÓN que valide por qué la tabla existe"*.
+- 🧩 **2 skills externas desmanteladas** → bloque `expertise-programacion` **CERRADO 🟢 PRODUCTO**
+  + nace `rules/rule-shipping-flow.md` (rama → verificar → PR → ⛔ no mergear), **transversal**.
+- 🔧 **`grade-block`: 3 defectos** → arreglados + **5 self-tests** · nace **`docs/WORKSPACE.md`**.
+- 🔌 **2ª ronda de cableado**: piezas escritas y no conectadas — **las 20 reglas ya tienen script**
+  (eran 17) + `WORKSPACE.md` con check propio. 🔬 Verificados **por reversión**.
+
+✅ **P1·P2·P4·P5 HECHOS** (batería **173 → 175**): el commit **bloquea un índice desfasado** (cazó
+3 derivas reales, la primera a mí) · `/clear` **lee la batería** y se niega si está roja · nace
+**`VERSION` 0.1.0 + `CHANGELOG`** con 2 checks · `allow` declarado **por mecanismo**.
+✅ **P3 HECHO: `.github/workflows/ci.yml`** (3 jobs) en `Mente/`, que **es su propio repo**.
+Escribirlo destapó **4 defectos reales**: los 2 bloques archivados hoy **sin `SUMMARY.md` ni
+`connections.md`** (nada de la batería lo vigilaba) y sus encabezados en español que el validador
+no reconocía. 🔬 Medido antes: con `HOME` limpio fallan 3 checks que **leen la máquina, no el
+motor** — el job los nombra uno a uno para que la exención no crezca sola.
+
+**👉 PRÓXIMO PASO:** queda **1 bloque activo: `demo`** (6/10, 🔴 MVP). Sus 3 tapones siguen donde
+los dejó el 26-jul (§5 "LO ANTERIOR"). Deuda abierta: **prueba de campo real** de `mente-os`
+(alguien que no sea Brian clonando) · los **35 huecos** restantes (**solo queda owner-1**: `doc-planning` + `doc-structure`) · las 2 decisiones 🔑🔐 de abajo.
+
+### LO ANTERIOR (2026-08-04, S10 ~7h) — **LA VOZ AHORA TIENE CONTRATO DE ENTREGA**
 
 **Sin commit — todo en disco.** Detalle: `Cerebro/Registro_Conversaciones.md` §S10.
 
-Brian abrió pidiendo ① `distribucion` y ② huecos de criterio. **Ninguno se tocó**: a los 3 turnos
-reportó un defecto real — *"no entiendo qué leer ni cómo leerlo, ni sé qué sigue"*.
-
-- 🔍 **La causa era la voz misma** — 8 reglas, **todas de qué NO hacer**, cero de estructura. Y
-  **2 CAUSABAN el problema**: la 2.5 me *ordenaba* cortar el cierre, la 2.8 dejaba omitir el porqué.
-- 📜 **§6 de `owner-0-voice` LLENO** — era un hueco `⬜ PENDING · BRIAN` y lo que dictó **era ese
-  hueco**; estructurado con sus citas (método `qa-dimensions` §5).
-- 🎚️ **3 modos 🟢🟡🔵** — *"¿cómo cierro?"* (2 líneas) recibió índice + salud + 6 campos: **el
-  contrato no medía el peso de la pregunta.** Default = 🟢, el de Claude Code.
-- 💸 **Vehículo −48%** — el output style (fuera del repo) creció 1,100 → 5,167 tokens y **se paga
-  en cada turno**. Adelgazado a **2,644**, verificadas 16/16 reglas.
+Brian reportó *"no entiendo qué leer ni cómo leerlo, ni sé qué sigue"*. 🔍 **La causa era la voz
+misma** — 8 reglas, todas de qué NO hacer, y **2 CAUSABAN el defecto**. §6 de `owner-0-voice`
+LLENO con sus citas · **3 modos 🟢🟡🔵** (el contrato no medía el peso de la pregunta) · vehículo
+**−48%** (5,167 → 2,644 tokens, se paga en cada turno), 16/16 reglas verificadas.
 
 > ⭐ **LA LECCIÓN:** *no faltaban reglas, sobraban dos mal escritas.* Y la que me toca: **dejé
 > `owner-0-voice.md` en 582 líneas con límite de 250, el mismo día que escribí la regla del techo.**
 
-**👉 PRÓXIMO PASO — el contrato NUNCA ha gobernado una respuesta real** (las de S10 se maquetaron
-a mano; entra en vigor en sesión nueva). **Úsalo un día antes de tocarlo** — 6 rondas y Brian
-sigue en *"me gusta más, pero no me fascina"*. Luego ① y ②, intactos.
+**✅ RESUELTO EN S11 — el contrato YA gobernó una sesión real** (el cierre de `distribucion` + las
+6 dimensiones), sin tocarlo durante el uso. Brian seguía en *"me gusta más, pero no me fascina"*
+tras 6 rondas: **eso sigue abierto.**
 ⛔ **Superficie = terminal SIEMPRE** — nada de web/navegador salvo que Brian lo pida para esa
 entrega. Prohibición escrita en ambos archivos.
 
@@ -86,11 +154,10 @@ entrega. Prohibición escrita en ambos archivos.
 
 37 commits, sin push. Detalle: `Cerebro/Registro_Conversaciones.md` §S9.
 
-- 🧩 **Bloque `distribucion` 6/6 construido, ABIERTO a propósito** — `bin/init` + `templates/` +
+- 🧩 **Bloque `distribucion` 6/6 construido** (cerrado en S11) — `bin/init` + `templates/` +
   `CAPABILITIES.md` + frontera motor/instancia como candado portable. **Probado en clon real**.
-- 🔗 **Citas rotas 144 → 0** — 69 eran CORRECTAS y el validador las contaba mal. Techo en 0.
-- 🔒 **Seguridad** — `python3 -c "open(...)"` leía lo prohibido · `~/.claude.json` sin regla.
-  `deny` 67 → 212 · `ask` creado (48).
+- 🔗 **Citas rotas 144 → 0** (69 eran correctas y el validador las contaba mal) · 🔒 **Seguridad**:
+  `python3 -c "open(...)"` leía lo prohibido · `deny` 67 → 212 · `ask` creado (48).
 - 🧪 **Plan de raíz F1-F4** — 8 hallazgos de UNA familia: checks que corren, dicen verde y no miden
   lo que dicen → `rules/rule-checks-must-measure.md` + sección `SELF-TEST`.
 
@@ -102,11 +169,6 @@ entrega. Prohibición escrita en ambos archivos.
 del harness y **`deny` no es sandbox**: el matcher lee el TEXTO — `"$(ls …)"` lo esquiva.
 Opciones en `PENDIENTES.md` §🔑 §🔐.
 
-**Los 2 pendientes de S9, intactos:** ① **cerrar `distribucion`** necesita prueba de campo real
-(alguien que no sea Brian clonando) + **capa 2** (`rules/qa-dimensions.md`) — capa 1 ya es 🟢.
-② **los huecos de criterio** (`docs/METRICS.md` · `criterion.holes`), empezando por
-`principles/expertise/val-integration.md`.
-
 **S8 (31-jul→02-ago):** el v2 se endureció y se **publicó** en `github.com/fruterito101/mente-os`
 (MIT, solo motor). Hallazgo: *nadie vigilaba la costura* → `rules/rule-config-hygiene.md`.
 
@@ -115,29 +177,18 @@ commits de S8+S9 son el sistema arreglándose a sí mismo. Esa es la prueba que 
 
 ### LO ANTERIOR (2026-07-31, S7) — el v2 se construyó y F8-4 lo verificó
 
-**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas (`42dbfab`, `d667b14`). Prueba:
-`Mente/bin/test-f0-f6` — lo único que importa es `failed: 0`; el conteo vive en `docs/METRICS.md`.
-**Migración v1→v2 COMPLETA** (M0-M5, ADR-029): `Alma/` `Cuerpo/` `Doc/` `Tickets/` eliminadas,
-186 docs movidos — si un documento cita esas rutas es **cita fósil**, no archivo que falta.
-M6 (renombrar `Maestro/`) es decisión de Brian; recomendación medida: **no hacerlo**.
-
-**🖥️⭐ LA DEMO ES UN BLOQUE GRANDE CON ÍNDICE PROPIO.** Antes de tocarla, leer la memoria
-**`project_bloque_demo_pendientes`** — punto de entrada único. Repo: `ElBrAyAn1967/For3s` · BD Neon.
-(24-26 jul: ~15 bugs cerrados, −434 líneas muertas, heartbeat −68%, `container.ts` ACTIVADO.)
-
-**👉 3 TAPONES (por orden):** ① dueños de jazz/mashe → borrar `allowedEmails.ts` con su
-`DEV_FALLBACK` que autoriza un correo falso · ② tests de los 5 caminos críticos (hoy CERO) ·
-③ decidir el hosting (cuelga de la laptop de Brian; se cayó 2 veces el 26-jul).
-**⚠️ 2 caídas de producción, mismo error:** verificar desde mi entorno y asumir que probaba el de
-Vercel → `feedback_tailscale_serve_apaga_funnel`.
+**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas · migración v1→v2 completa (M0-M5,
+ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fósil**.
+🖥️⭐ **La demo es un bloque grande con índice propio** — entrar por `project_bloque_demo_pendientes`.
+👉 **Sus tapones vivos están en `blocks/active/demo` §F**, que es donde se miden.
+📦 Detalle completo → `memory/Bitacora_Progreso.md` (movido el 2026-08-05).
 
 ## 5-ter · 🏗️ el PORQUÉ del v2 (diagnóstico 27-jul) · ✅ construido, ver §5
 
 **Causa raíz:** documentaba bien, no GOBERNABA la ejecución. **La ley:** *código = 100%, documento
-= 40-60%* → **la doctrina es documento, la VERIFICACIÓN es script.** Lo esencial: BLOQUE (archivo
-único A-K) · 3 encargados + Encargado 0 la VOZ · 3 carriles · fix ≠ parche · ⭐ **veredicto en 2
-capas** · solo 3 acciones bloquean. Validado contra 4 frameworks: **ninguno responde *"¿producto o
-MVP?"*** — ese veredicto es el diferenciador.
+= 40-60%* → **la doctrina es documento, la VERIFICACIÓN es script.** BLOQUE (archivo único A-K) ·
+3 encargados + Encargado 0 la VOZ · ⭐ **veredicto en 2 capas** — validado contra 4 frameworks:
+**ninguno responde *"¿producto o MVP?"***, y ese veredicto es el diferenciador.
 
 👉 `principles/vision-mente-os-v2.md` · `docs/Arquitectura_Mente_OS_v2_Bloques.md` ·
 `docs/plan-v2-rollout.md`. Memorias: `project_mente_os_v2_bloques` ·

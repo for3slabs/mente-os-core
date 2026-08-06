@@ -364,7 +364,7 @@ rm -rf "$_tmp"
 eq "an orphan block directory is DETECTED (no BLOCK.md inside)" "$((_base + 1))" "$_o"
 
 # Per-section limits are declared in the block's own banners (≤5, ≤15…) and nothing measured them:
-# a §E State grown to 40 lines fits the 150-line file limit while defeating what §E is for.
+# a §E State grown to 40 lines fits the whole-file limit while defeating what §E is for.
 _s=$(./bin/check-blocks --blocks 2>&1 | grep -c "over the ≤")
 [ "$_s" -ge 0 ] && ok "per-section limits are measured against what the block declares ($_s over)"
 
@@ -373,9 +373,12 @@ grep -q "System-wide rules" blocks/active/demo/BLOCK.md \
   && ok "demo separates its own OUT from inherited rules" \
   || bad "OUT separation" "present" "MISSING"
 
+# ⭐ The ceiling is READ from the contract, never hardcoded here — it was hardcoded until
+# 2026-08-05, so raising it in check-blocks left this check measuring the old number.
+cap=$(grep -oE "Max \*\*[0-9]+ lines\*\* total" rules/contract-block.md | grep -oE "[0-9]+")
 n=$(wc -l < blocks/active/demo/BLOCK.md)
-[ "$n" -le 150 ] && ok "BLOCK.md within its 150-line limit ($n)" \
-  || bad "BLOCK.md limit" "<=150" "$n"
+[ -n "$cap" ] && [ "$n" -le "$cap" ] && ok "BLOCK.md within its ${cap}-line limit ($n)" \
+  || bad "BLOCK.md limit" "<=${cap:-?}" "$n"
 
 # ═══════════════════════════════════════════════════════════════════ F4 · MEASURE
 head2 "F4 · MEASURE — the verdict must be reproducible, not a mood"
@@ -388,8 +391,21 @@ import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].it
 [ -n "$a" ] && [ "$a" = "$b" ] && ok "grade-block is deterministic across runs" \
   || bad "determinism" "identical output twice" "drifted or empty"
 
+# ⭐ El código de salida DISTINGUE veredictos — 0 = 🟢 PRODUCT, 2 = 🔴 MVP.
+# ⚠️ No se fija el veredicto de `demo`: era `2` mientras el bloque estaba rojo, y el check se
+# cayó el día que alcanzó 🟢 PRODUCT de verdad (2026-08-05). **Un check no debe codificar el
+# estado en curso de un bloque real** — se vuelve falso justo cuando el trabajo tiene éxito.
+# Lo que sí es invariante y vale la pena sujetar: el veredicto medido y el código de salida
+# NUNCA se contradicen.
+gout="$(./bin/grade-block demo --root "$REPO/marca-personal" 2>/dev/null || true)"
 ./bin/grade-block demo --root "$REPO/marca-personal" --quiet >/dev/null 2>&1
-eq "demo verdict exit code (2 = 🔴 MVP)" "2" "$?"
+gexit=$?
+case "$gout" in
+  *"🟢 PRODUCT"*) want_exit=0 ;;   # grade-block: 0 product · 1 close · 2 MVP
+  *"🟡 CLOSE"*)   want_exit=1 ;;
+  *)              want_exit=2 ;;
+esac
+eq "el exit code concuerda con el veredicto medido" "$want_exit" "$gexit"
 
 # ADR-028: the type decides the ruler. A block with no type must be REFUSED, not guessed.
 tmp="blocks/active/zz-probe"; mkdir -p "$tmp"
@@ -437,11 +453,13 @@ done
 n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/settings.json'))
 print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
-# 4 = session-start + pre-edit-standards + gate-critical (F6-3) + gate-handoff (2026-07-31).
+# 7 = session-start + pre-edit-standards + gate-critical (F6-3) + gate-handoff (2026-07-31)
+#   + gate-secrets + 2 emisores del permiso de secrets, SessionStart y PostCompact (2026-08-05).
 # A hardcoded count is on purpose: a hook silently disappearing from settings.json is exactly
-# the failure this catches. It fired correctly when gate-handoff was added — the count is meant
-# to be updated deliberately, never widened to "N or more".
-eq "project hooks registered (session-start + standards + 2 gates)" "4" "$n"
+# the failure this catches. It fired correctly when gate-handoff was added, y otra vez al
+# cablear la puerta de secrets — the count is meant to be updated deliberately, never widened
+# to "N or more".
+eq "project hooks registered (session-start + standards + 3 gates + 2 leases)" "7" "$n"
 
 # ⭐ THE SEAM: counting 4 says nothing about whether they point at anything real.
 # Found 2026-07-31 by breaking settings.json and measuring who noticed: a hook rewritten to
@@ -554,6 +572,17 @@ printf '%s' "$o" | grep -q "sub-block" && ok "pre-edit warns on an unclosed sub-
   || bad "sub-block warning" "warns" "silent"
 
 # ⭐ pre-commit is the only one that blocks. Both directions must be proven.
+#
+# 🔴 EL ÍNDICE SE REGENERA ANTES, A PROPÓSITO (2026-08-05, sesión S11).
+# Esta batería CREA bloques sonda `zz-*` en el árbol real, y `bin/generate-index` los recoge —
+# medido: el md5 de `docs/INDEX.md` CAMBIA solo por correr la batería. `pre-commit` rechaza un
+# índice desfasado, así que este check fallaba por el efecto secundario de la propia batería,
+# no por el estado del repo. Salía 176/1 y a la segunda corrida 175/2: **empeoraba solo**.
+# El síntoma era desconcertante porque `./hooks/pre-commit.sh` a mano daba exit 0.
+#
+# ⭐ Misma familia que el ciclo de `bin/generate-metrics`: un check no puede ser evidencia de
+# sí mismo. Aquí se le da el estado que MIDE (el índice al día) en vez de medir su propia basura.
+./bin/generate-index >/dev/null 2>&1
 ./hooks/pre-commit.sh >/dev/null 2>&1
 eq "pre-commit passes on a healthy block" "0" "$?"
 
@@ -647,6 +676,20 @@ if [ -f "$_cap" ]; then
     [ -x "bin/$_b" ] || { _miss=$((_miss+1)); printf '     ⤷ names bin/%s which is not executable\n' "$_b"; }
   done
   eq "CAPABILITIES names only validators that exist" "0" "$_miss"
+  # 🔴 THE OTHER DIRECTION — added 2026-08-05, and it was the hole. The check above catches the
+  # map LYING (naming something absent) but never catches it FORGETTING (a real validator it does
+  # not name). Asymmetric, so `bin/init` sat unlisted and nothing said a word: an agent reading the
+  # map would not know the installer exists. A capability map that omits is as useless as one that
+  # lies — the agent acts on what it reads, and it cannot act on what is not there.
+  _unlisted=0
+  for _f in bin/*; do
+    _n=$(basename "$_f")
+    case "$_n" in *.py|__pycache__) continue ;; esac   # modules are imported, not run
+    [ -x "$_f" ] || continue
+    grep -q "bin/$_n" "$_cap" || { _unlisted=$((_unlisted+1))
+      printf '     ⤷ bin/%s exists but the capability map never names it\n' "$_n"; }
+  done
+  eq "CAPABILITIES names EVERY validator that exists" "0" "$_unlisted"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"
@@ -1142,13 +1185,39 @@ eq "a malformed id is REFUSED (the graph resolves by its shape)" "2" "$?"
 rm -rf "$tmp"
 
 # ⭐ The verdict cannot be forged: it is measured, never read from the file.
-sed -i 's/LAYER 1 VERDICT: 🔴 MVP/LAYER 1 VERDICT: 🟢 PRODUCT/' blocks/active/demo/BLOCK.md
+#
+# 🔴 SE ESCRIBE EL VEREDICTO CONTRARIO AL MEDIDO, SEA CUAL SEA (2026-08-05, sesión S11).
+#
+# Antes se escribía un 🟢 PRODUCT falso en `demo` y se exigía que la medición contestara 🔴 MVP.
+# Eso ataba el check a que un bloque REAL estuviera rojo — y el día que `demo` dejó de estarlo
+# (dead code 1→0, tests 0→4) el check se cayó **sin que nada estuviera mal**.
+# ⚠️ **Un check cuyo sujeto es trabajo en curso caduca solo.**
+#
+# Se intentó primero con un bloque sonda y un archivo huérfano fabricado: NO funcionaba
+# (`⬜ NOTHING MEASURED` — el escáner no cuenta un `.ts` suelto fuera del árbol que conoce).
+# Comprobado antes de darlo por bueno. Lo invariante, y lo único que hay que sujetar, es que
+# **la medición NO se cree lo escrito** — da igual cuál sea el veredicto real.
+real="$(./bin/grade-block demo --root "$REPO/marca-personal" 2>/dev/null | grep -o '🟢 PRODUCT\|🟡 CLOSE\|🔴 MVP' | head -1)"
+case "$real" in
+  "🔴 MVP") falso="🟢 PRODUCT" ;;
+  *)        falso="🔴 MVP" ;;
+esac
+# ⚠️ Se AÑADE la línea falsa: `demo/BLOCK.md` no la lleva, así que un `sed` de sustitución no
+# habría escrito nada y el check habría pasado sin probar nada — un verde falso. Comprobado
+# (`grep -c` = 0) antes de confiar en él.
+printf '\nLAYER 1 VERDICT: %s\n' "$falso" >> blocks/active/demo/BLOCK.md
 gout="$("$M/bin/grade-block" demo --root "$REPO/marca-personal" 2>/dev/null || true)"
 case "$gout" in
-  *"🔴 MVP"*) ok "a hand-written 🟢 PRODUCT is contradicted by measurement" ;;
-  *) bad "verdict forgery" "measured 🔴" "believed the file" ;;
+  *"$real"*) ok "a hand-written verdict is contradicted by measurement" ;;
+  *) bad "verdict forgery" "measured $real" "believed the file ($falso)" ;;
 esac
-sed -i 's/LAYER 1 VERDICT: 🟢 PRODUCT/LAYER 1 VERDICT: 🔴 MVP/' blocks/active/demo/BLOCK.md
+# La línea inyectada se retira SIEMPRE, incluso si el case de arriba falló.
+python3 - "$falso" <<'EOF'
+import sys
+p = "blocks/active/demo/BLOCK.md"
+t = open(p, encoding="utf-8").read()
+open(p, "w", encoding="utf-8").write(t.replace(f"\nLAYER 1 VERDICT: {sys.argv[1]}\n", "", 1))
+EOF
 
 # ═══════════════════════════════════════════════════════════════════ CROSS-PHASE
 head2 "CROSS-PHASE — the bugs live BETWEEN the pieces"
@@ -1341,6 +1410,249 @@ if [ -f "$_probe" ]; then
     || note "credential guard printed nothing about the deny surface"
   rm -f /tmp/ch.$$
 fi
+
+# ── 4 · grade-block must not report a verdict it did not measure ──
+# 🔴 THE HOLE THIS CLOSES (2026-08-05): three defects survived in the tool that issues EVERY
+# layer-1 verdict, and all three were found by accident. The battery covered check-blocks,
+# check-links and check-health — nothing ever fed grade-block a malformed §B and asserted it
+# refuses instead of returning a false ⬜. A validator nobody validates reports what it never
+# measured, which is the exact failure rules/rule-checks-must-measure.md forbids.
+_gbdir="blocks/active/probe-grade"
+mkdir -p "$_gbdir"
+# 4a · a comment between `## ✅ IN` and the first `- ` must NOT kill the scope silently.
+#      Before the fix this returned ⬜ NOTHING MEASURED with every real metric green.
+cat > "$_gbdir/BLOCK.md" <<'PROBE'
+# BLOCK · probe-grade
+id: blk-probe-grade-2026-08
+type: docs
+intent: probe — asserts grade-block parses a scope that carries a comment
+status: active · lane: direct · owner: brian
+## ✅ IN
+<!-- a comment here used to end the list and empty the scope -->
+- `rules/qa-dimensions.md`
+## ⛔ OUT
+- nothing
+PROBE
+_out=$(./bin/grade-block probe-grade 2>&1)
+# PROBE SELF-CHECK: the bait must really be a comment sitting inside the IN list
+_bait=$(grep -A1 '## ✅ IN' "$_gbdir/BLOCK.md" | grep -c '<!--')
+if [ "$_bait" -eq 1 ]; then
+  printf '%s' "$_out" | grep -q "scope: .*qa-dimensions" \
+    && ok "grade-block: a comment inside §B IN does not empty the scope" \
+    || bad "grade-block comment-in-scope" "scope parsed" "scope empty (false ⬜)"
+else
+  bad "grade-block probe 4a" "comment inside the IN list" "bait=$_bait"
+fi
+# 4b · an EMPTY scope must never score PRODUCT — absence of evidence is not evidence.
+cat > "$_gbdir/BLOCK.md" <<'PROBE'
+# BLOCK · probe-grade
+id: blk-probe-grade-2026-08
+type: docs
+intent: probe — asserts an empty scope cannot pass
+status: active · lane: direct · owner: brian
+## ✅ IN
+- (nothing declared)
+## ⛔ OUT
+- nothing
+PROBE
+./bin/grade-block probe-grade 2>&1 | grep -q "PRODUCT" \
+  && bad "grade-block empty scope" "NOT a pass" "scored PRODUCT with nothing measured" \
+  || ok "grade-block: an empty scope does NOT score PRODUCT (ADR-028)"
+# 4c · a block with no `type:` must be REFUSED, never guessed (ADR-028).
+cat > "$_gbdir/BLOCK.md" <<'PROBE'
+# BLOCK · probe-grade
+id: blk-probe-grade-2026-08
+intent: probe — asserts a missing type is refused, not guessed
+status: active · lane: direct · owner: brian
+## ✅ IN
+- `rules/qa-dimensions.md`
+## ⛔ OUT
+- nothing
+PROBE
+./bin/grade-block probe-grade >/dev/null 2>&1 \
+  && bad "grade-block missing type" "refused (exit != 0)" "accepted and graded anyway" \
+  || ok "grade-block: a block with no type: is REFUSED, not guessed"
+rm -rf "$_gbdir"
+# 4d · a glob must stay refused: it would silently grade a DIFFERENT block.
+./bin/grade-block 'demo*' >/dev/null 2>&1 \
+  && bad "grade-block glob" "refused" "a glob was accepted as a block name" \
+  || ok "grade-block: a glob is refused (it would grade another block)"
+# 4e · an ARCHIVED block must still be gradeable — its §K verdict has to be reproducible
+#      (architecture §12-Q.4). The `_YYYY-MM` suffix used to be rejected outright.
+_arch=$(ls -d blocks/archive/*/ 2>/dev/null | head -1)
+if [ -n "$_arch" ]; then
+  _an=$(basename "${_arch%/}")
+  ./bin/grade-block "$_an" 2>&1 | grep -q "LAYER 1 VERDICT" \
+    && ok "grade-block: an archived block can be re-graded ($_an)" \
+    || bad "grade-block archived" "gradeable" "refused — §K verdict not reproducible"
+fi
+
+# ── 5 · the three rules that NO script was enforcing (2026-08-05) ──
+# 🔴 Measured this session: rule-inheritance, rule-moving-files and rule-shipping-flow were named
+# by no validator. By this project's own law — code 100%, document 40-60% — they were the weakest
+# rules in the tree, and one of them had been written the same day. What follows does not check
+# that the FILES exist (that is check-links' job): it checks the CLAIM each one makes.
+
+# 5a · rule-inheritance: a block may ADD or TIGHTEN, never LOOSEN. The measurable face of that is
+#      that no block grants itself access to a path the config gates. A block that did would be
+#      "lying on paper" while the harness still refuses — §2 of the rule.
+_loosen=0
+for _b in blocks/active/*/BLOCK.md blocks/archive/*/BLOCK.md; do
+  [ -f "$_b" ] || continue
+  # a gated path appearing in Scope IN (not in OUT, where naming it is correct)
+  _in=$(sed -n '/## ✅ IN/,/## ⛔ OUT/p' "$_b")
+  printf '%s' "$_in" | grep -qE "5M-incubathon|marca-personal/Mente" && {
+    _loosen=$((_loosen+1)); printf '     ⤷ %s claims a gated path in its Scope IN\n' "$_b"; }
+done
+eq "no block LOOSENS an inherited gate (rule-inheritance §2)" "0" "$_loosen"
+
+# 5b · rule-moving-files: step 1 is "check if it is tracked". Its measurable consequence is that a
+#      moved document leaves no citation pointing at where it used to be. Archived blocks are the
+#      case that proves it — every close moves a directory.
+_ghost=$(grep -rlE "blocks/active/(distribucion|expertise-programacion|split-architecture)\b" \
+         --include="*.md" . 2>/dev/null | wc -l)
+eq "no citation points at a block that was archived (rule-moving-files)" "0" "$_ghost"
+
+# 5c · rule-shipping-flow: transversal by construction — it is useless unless a block DECLARES it
+#      in §D, because pre-edit-standards.py injects only what §D lists. Written 2026-08-05 and
+#      declared by nobody active: the flow existed and reached no one.
+_ship=0
+for _b in blocks/active/*/BLOCK.md; do
+  [ -f "$_b" ] || continue
+  # ⚠️ Only §D counts. Grepping the WHOLE file passed while the rule was merely MENTIONED in §G —
+  # caught 2026-08-05 by deleting the §D line and watching this check stay green. A mention is not
+  # a declaration: the hook reads §D and nothing else.
+  sed -n '/## Required standards/,/══ E/p' "$_b" | grep -q "rule-shipping-flow" || {
+    _ship=$((_ship+1))
+    printf '     ⤷ %s does not declare the shipping flow in its §D\n' "$_b"; }
+done
+eq "every ACTIVE block is handed the shipping flow (§D)" "0" "$_ship"
+
+# 5d · WORKSPACE.md is an INSTANCE document: it ages in silence. Two things must hold — it must
+#      never carry a secret VALUE (it says WHERE, never WHAT), and the repos it names must exist.
+_ws="$M/docs/WORKSPACE.md"
+if [ -f "$_ws" ]; then
+  # a credential value would look like an assignment or a long opaque token
+  _leak=$(grep -cEi "(password|passwd|token|secret|api[_-]?key)\s*[:=]\s*[^ ]{6,}" "$_ws")
+  eq "WORKSPACE.md carries no credential VALUE (only pointers)" "0" "$_leak"
+  _gone=0
+  for _r in $(grep -oE '`~/for3s/[a-zA-Z0-9._-]+/' "$_ws" | tr -d '`' | sed "s|~/for3s/||;s|/$||" | sort -u); do
+    [ -e "$REPO/$_r" ] || { _gone=$((_gone+1))
+      printf '     ⤷ WORKSPACE names %s which is not on disk\n' "$_r"; }
+  done
+  eq "every repo WORKSPACE.md names is really on disk" "0" "$_gone"
+else
+  bad "docs/WORKSPACE.md" "exists" "MISSING — the agent re-derives the layout every session"
+fi
+
+# ── 6 · FILLED criterion must REACH somebody (2026-08-05) ──
+# 🔴 The failure this closes, and it happened three times in one day: a piece is written, it is
+# correct, and nothing declares it — so hooks/pre-edit-standards.py never injects it and the
+# criterion governs nothing. Writing is not wiring. An expertise file that carries Brian's
+# criterion and appears in no active block's §D is filled criterion nobody will ever be handed.
+# ⚠️ SCOPE, corrected 2026-08-05 (Brian): this check demanded that EVERY filled expertise reach an
+# active block — but a discipline only applies to blocks whose subject matter it governs. With one
+# `code` block open, it was demanding that `doc-planning` be declared there, which would inflate §D
+# and trip check-applied. Worse, the assumption underneath was wrong: **Mente OS users may never
+# write code at all** (*"no es ley que siempre será así"*). So a discipline is only required to
+# reach a block when a block of a type it governs is open.
+_orphan=0
+_types=$(grep -h "^type:" blocks/active/*/BLOCK.md 2>/dev/null | awk '{print $2}' | sort -u)
+for _e in principles/expertise/*.md; do
+  _n=$(basename "$_e")
+  # only FILLED files are held to this — an empty one has nothing to deliver yet
+  grep -q "BRIAN'S CRITERION" "$_e" || continue
+  # which block types does this discipline govern?
+  case "$_n" in
+    dev-*|val-*)  _governs="code data infra" ;;
+    doc-*)        _governs="docs" ;;
+    *)            _governs="code docs infra data" ;;
+  esac
+  _relevant=0
+  for _t in $_types; do
+    case " $_governs " in *" $_t "*) _relevant=1 ;; esac
+  done
+  [ "$_relevant" -eq 1 ] || continue        # no open block of a type it governs → not applicable
+  _decl=0
+  for _b in blocks/active/*/BLOCK.md; do
+    [ -f "$_b" ] || continue
+    # ⚠️ Only real `- ` list entries count. Grepping the §D range verbatim passed on a COMMENT
+    # saying the standard had been REMOVED ("<!-- expertise/dev-frontend.md removed … -->") —
+    # caught 2026-08-05. A comment about a standard is not a declaration of it; the hook reads
+    # the list. Same defect as check 5c, one layer down.
+    sed -n '/## Required standards/,/══ E/p' "$_b" \
+      | grep -E "^\s*-\s" | grep -q "expertise/$_n" && _decl=1
+  done
+  [ "$_decl" -eq 1 ] || { _orphan=$((_orphan+1))
+    printf '     ⤷ %s carries criterion but no ACTIVE block declares it in §D\n' "$_n"; }
+done
+eq "every FILLED expertise file reaches an active block (§D)" "0" "$_orphan"
+
+# 6b · the owner must not advertise its disciplines as pending once they are filled.
+# owner-3-validation.md governs EVERY block close; saying "pending" about a filled file makes the
+# reader apply the weaker path (the §5-BIS battery alone) when stricter criterion already exists.
+_stale=0
+for _o in principles/owner-*.md; do
+  for _d in $(grep -oE 'expertise/[a-z-]+\.md' "$_o" 2>/dev/null | sort -u); do
+    [ -f "principles/$_d" ] || continue
+    grep -q "BRIAN'S CRITERION" "principles/$_d" || continue
+    # the discipline is filled: the owner must not still call it pending on that same line
+    grep -E "$(basename "$_d")" "$_o" | grep -qi "pending" && { _stale=$((_stale+1))
+      printf '     ⤷ %s still calls %s pending, but it is filled\n' \
+             "$(basename "$_o")" "$(basename "$_d")"; }
+  done
+done
+eq "no owner advertises a FILLED discipline as pending" "0" "$_stale"
+
+# ── 7 · THE ENGINE MUST KNOW WHICH VERSION IT IS (P4, 2026-08-05) ──
+# 🔴 Measured 2026-08-05: the engine is PUBLISHED (mente-os, MIT) with no VERSION and no CHANGELOG.
+# An engine that cannot say which version it is cannot be debugged in someone else's house — which
+# is exactly the field-test scenario still pending. Both intern-os and graphify solve this; the
+# difference is WHERE the number lives. graphify keeps ONE source and propagates; intern-os
+# validates three copies agree. One source is stricter: a copy cannot drift if it does not exist.
+if [ -f "$M/VERSION" ]; then
+  _ver=$(head -1 "$M/VERSION" | tr -d '[:space:]')
+  printf '%s' "$_ver" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' \
+    && ok "VERSION declares a semantic version ($_ver)" \
+    || bad "VERSION format" "N.N.N" "$_ver"
+  # The CHANGELOG must carry an entry for exactly this version — a version nobody wrote down is a
+  # number, not a release.
+  if [ -f "$M/CHANGELOG.md" ]; then
+    grep -qE "^## +$(printf '%s' "$_ver" | sed 's/\./\\./g')( |$|—)" "$M/CHANGELOG.md" \
+      && ok "CHANGELOG has an entry for the current VERSION" \
+      || bad "CHANGELOG entry" "a '## $_ver' heading" "absent"
+  else
+    bad "CHANGELOG.md" "exists" "MISSING — a version with no record of what changed"
+  fi
+else
+  bad "VERSION" "exists" "MISSING — the engine cannot say which version it is"
+fi
+
+# ⭐ intern-os #5 · VERSION-SELF-AWARENESS — having the number is not the same as SAYING it.
+# P4 created VERSION and CHANGELOG; nothing REPORTED them. A bug report from another machine
+# that cannot name a version is a bug report nobody can reproduce — the field-test scenario.
+# intern-os validates the number across three places; here the source is ONE file, so the check
+# is that the number REACHES the operator, not that three copies agree.
+_vs=$(head -1 "$M/VERSION" 2>/dev/null | tr -d '[:space:]')
+_vout=$("$M/bin/check-health" 2>&1 | grep -c "Mente OS $_vs")
+[ "${_vout:-0}" -ge 1 ] \
+  && ok "check-health states which version is running ($_vs)" \
+  || bad "version reporting" "check-health prints 'Mente OS $_vs'" "silent"
+
+# ── 8 · A VALIDATOR THAT WRITES MUST NOT LEAVE THE TREE (graphify #3, 2026-08-05) ──
+# 🔴 Measured that day: `bin/migrate-doc VERSION ../../../tmp/x --dry-run` was ACCEPTED and printed
+# the move as valid. Only --dry-run stopped it; without the flag it would have moved a document out
+# of Mente, and every citation to it would have become unresolvable.
+# The fix is graphify's `validate_graph_path()` shape: RESOLVE the path and assert it stays under
+# the root — a blacklist of "../" shapes misses the next shape; resolution answers the real
+# question, *where does this actually land?*
+"$M/bin/migrate-doc" VERSION ../../../tmp/zz-escape --dry-run >/dev/null 2>&1 \
+  && bad "migrate-doc escape" "REFUSED" "accepted a destination outside Mente" \
+  || ok "migrate-doc refuses a destination outside the tree"
+# …and it must still allow the legitimate move it exists for.
+"$M/bin/migrate-doc" VERSION docs --dry-run >/dev/null 2>&1 \
+  && ok "migrate-doc still allows a move INSIDE the tree" \
+  || bad "migrate-doc inside" "allowed" "refused a legitimate move"
 
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'

@@ -62,14 +62,37 @@ def main():
     evidence = (section(text, "Decisions", "Quality") + section(text, "Friction log", "Checkpoints")
                 + section(text, "Checkpoints", "Context") + section(text, "Quality verdict", "Friction"))
 
+    # ⭐ …AND in the files those sections POINT AT (added 2026-08-05).
+    # `doc-structure.md` says a document over its ceiling MUST be split and the halves pointed at.
+    # The demo block hit 206 lines and its 7 July decisions moved to docs/decisions-julio.md — and
+    # 3 standards instantly read as "never applied", because this check only looked at the §G text.
+    #
+    # 🔬 The lesson, measured that day: **a pointer a machine does not follow is not a pointer.**
+    # A rule that splits documents and a check that only reads one of the halves cannot both be
+    # right. Following the pointer is what makes the split honest instead of a way to hide history.
+    for rel in re.findall(r"`(blocks/[\w./-]+\.md)`", evidence):
+        p = os.path.join(MENTE, rel)
+        if os.path.isfile(p):
+            evidence += open(p, encoding="utf-8", errors="replace").read()
+
     applied, missing = [], []
     for s in std:
         stem = os.path.basename(s).rsplit(".", 1)[0]
-        # cited by name, or its subject present (a rule named rule-fix-not-patch is about patches)
-        subject = [w for w in re.split(r"[-_]", stem) if len(w) > 4 and w not in
-                   ("rule", "case", "contract")]
-        if s in evidence or stem in evidence or (subject and
-                                                 all(w in evidence.lower() for w in subject[:2])):
+        # ⭐ Evidence = the standard NAMED (path or stem). Nothing looser.
+        #
+        # 🔴 It used to also accept "its subject words appear somewhere", checking each word
+        # SEPARATELY: `rule-session-close` → ["session", "close"], and the demo block mentions
+        # `session.ts` and `closed` for unrelated reasons → ✅ for a standard nobody applied.
+        # Measured 2026-08-05 by declaring `rule-session-close.md` in a block that never used it:
+        # the check passed it. **A test whose sabotage does not turn it red is not measuring.**
+        #
+        # A whole-word check on the joined subject stays as the loose form, so a decision that
+        # discusses `fix not patch` in prose still counts — but two common words in different
+        # paragraphs no longer do.
+        joined = " ".join(w for w in re.split(r"[-_]", stem)
+                          if w not in ("rule", "case", "contract"))
+        if (s in evidence or stem in evidence
+                or (len(joined) > 8 and joined in evidence.lower())):
             applied.append(s)
         else:
             missing.append(s)

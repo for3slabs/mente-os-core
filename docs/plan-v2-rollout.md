@@ -1,5 +1,11 @@
 # 🗺️ PLAN DE IMPLEMENTACIÓN — Mente OS v2
-**Status:** current · **Type:** plan · **Updated:** 2026-08-02 · **Owner:** brian
+**Status:** fossil · **Type:** fossil · **Updated:** 2026-08-05 · **Owner:** brian
+🗿 **FÓSIL desde 2026-08-05 — su trabajo TERMINÓ.** Las fases **F0-F8 están todas cerradas**
+(medido: 24 ✅ contra 5 ⬜, y esos 5 son pendientes que ya viven en `memory/PENDIENTES.md`).
+**Esto ya no es un plan: es el registro de cómo se construyó el v2 y POR QUÉ en ese orden.**
+⛔ No se edita, no crece, no se poda — `rules/contract-document.md` §5: *un fósil no se borra, se
+marca; borrar historia es perder la capacidad de diagnosticar.* Por eso queda íntegro y sin techo.
+👉 El estado vivo: `memory/RETOMAR.md` · lo que falta: `memory/PENDIENTES.md`.
 > **Petición de Brian (2026-07-27):** *"necesitamos un plan de implementación con fases y tickets de
 > desarrollo, de forma detallada, de tal manera que **sepa por qué se hizo esto primero antes que
 > otro punto**."*

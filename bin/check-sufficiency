@@ -54,7 +54,18 @@ QUESTIONS = [
     ("what the next step is",     r"^next:\s*(.+)$",              "§E next"),
     ("what blocks it",            r"^blockers:\s*(.+)$",          "§E blockers"),
 ]
-UNANSWERED = re.compile(r"⬜|PENDING|TBD|TODO|\?\?\?|^\s*-?\s*$", re.I)
+# 🔴 LOS MARCADORES SE COMPARAN EN MAYÚSCULAS, SIN re.I (2026-08-05, sesión S11).
+#
+# `TODO` con re.I casaba dentro de la palabra ESPAÑOLA **"todo"** — y los bloques se escriben en
+# español. Medido: un §E perfectamente respondido (*"next: todo lo abierto espera un dato de
+# Brian"*) se reportaba como *placeholder*. El mensaje decía lo contrario de lo que pasaba, que
+# es lo caro: mandaba a rellenar un hueco que no existía.
+#
+# ⚠️ `\b` NO lo arregla — "todo" y "TODO" son las mismas cuatro letras, y el límite de palabra
+# casa igual. Lo intenté primero y lo comprobé antes de darlo por bueno: seguía en rojo.
+# **La mayúscula ES la señal**: `TODO` es un marcador, `todo` es una palabra corriente.
+# `\s*$` conserva re.I porque no contiene letras.
+UNANSWERED = re.compile(r"⬜|\bPENDING\b|\bTBD\b|\bTODO\b|\?\?\?|^\s*-?\s*$")
 
 failed_any = False
 for path in targets:

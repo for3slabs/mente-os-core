@@ -1,7 +1,718 @@
 # PENDIENTES — For3s OS
 
-**Status:** current · **Type:** pending · **Updated:** 2026-08-02 · **Owner:** brian
+**Status:** current · **Type:** pending · **Updated:** 2026-08-05 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
+
+## 🙋 ESPERANDO A BRIAN — lo que bloquea trabajo YA ESCRITO (2026-08-05)
+
+> Estos tres no son ideas: hay código escrito y verificado esperando el dato. Cada uno dice
+> **exactamente** qué desbloquea, para que no haya que reconstruir el contexto.
+
+### 🔴 B1 · UNA RAMA DE NEON PARA TESTS — desbloquea 8 tests ya escritos
+
+**Qué falta:** la cadena de conexión de una rama de Neon (consola → *Branches* → *New branch*
+desde `main`). Va a `marca-personal/.env.test.local` como `DEMO_DATABASE_URL_TEST` (fuera de git).
+
+**Por qué no lo hago yo:** es tu cuenta. Y el motivo de fondo está **medido**: `DEMO_DATABASE_URL`
+apunta a la **Neon de PRODUCCIÓN** que sirve `for3s.vercel.app` — 4 instancias vivas, 1
+verificación en curso (medido 2026-08-05). Un test que escribe ahí borra filas reales.
+
+**Qué desbloquea, exactamente:** los **8 tests de integración** de `marca-personal/tests/` que hoy
+se **saltan** (`entrar.test.ts` 7 · `hablar.test.ts` 1). El central es la **regresión de V2**:
+gastar los 5 intentos, pulsar reenviar y comprobar que el contador **no** vuelve a cero. Ese bug
+abría la fuerza bruta y hoy no hay nada que lo vigile.
+
+⭐ **El diseño ya protege contra el error:** si la variable falta, la suite se **salta** con el
+motivo visible — nunca cae de vuelta a producción. Y `Mente/hooks/gate-critical.py` **bloquea al
+escribirlo** cualquier test con SQL destructivo que no nombre su propia base.
+
+### 🔴 B2 · QUIÉN ES DUEÑO DE JAZZ Y DE MASHE — desbloquea el sub-bloque 7 y un test ROJO
+
+**Qué falta:** los dos correos reales, para meterlos en la BD y borrar el `DEV_FALLBACK` de
+`lib/demo/allowedEmails.ts` — que hoy autoriza `jazz@example.com`, un dominio que **nadie
+controla**.
+
+**Qué desbloquea:** `blocks/active/demo` §F-7, y con él el único test que hoy **falla a propósito**
+(`tests/autorizar.test.ts`: `expected false, received true`). ⛔ **No se arregla debilitando el
+assert** — su verde ES la definición de que ese sub-bloque cerró.
+
+### ⛔ B3 · COMMIT Y PUSH DE `marca-personal` — decisión tuya, no técnica
+
+**Qué hay sin commitear:** `tests/` (4 archivos) · `vitest.config.ts` · `package.json` ·
+`package-lock.json`. **Vercel despliega desde `main`, así que un push ahí ES un despliegue a
+producción** (`base-rules.md` #7 · `PROJECT-RULES.md`).
+
+---
+
+## ✅ LOS 5 IMPLEMENTADOS 2026-08-05 — batería 173 → 175
+
+### ✅ P3 · CI — `.github/workflows/ci.yml` en el repo del motor
+
+⚠️ **Corrección medida al empezar:** el CI **no va en `~/for3s`** — ahí `Mente/` está en
+`.gitignore` y el repo no tiene remoto. **`Mente/` es su propio repositorio** (79 commits,
+`for3slabs/mente-os-for3s`), y ahí es donde vive.
+
+**3 jobs:** `contracts` (validadores ejecutables · contratos de bloque · **archivo completo** ·
+índices sin deriva · VERSION↔CHANGELOG) · `battery` (los 175 checks) · `no-secrets`.
+
+🔬 **Medido ANTES de escribirlo, para que el primer PR no fuera un rojo falso:** con un `HOME`
+limpio (sin `~/.claude`) **fallan 3 checks que NO son defectos** — leen la máquina del
+desarrollador: los 9 hooks GSD globales, 8 citas que resuelven en la carpeta de memorias del
+harness, y la sesión viva. **El job los nombra uno por uno** para que la exención no crezca en
+silencio: quien añada otra tiene que escribirla ahí.
+✅ Sin dependencias: los validadores usan **solo stdlib** (verificado).
+
+### 🐛 4 DEFECTOS REALES que P3 destapó, todos corregidos
+
+1. 🔴 **Los 2 bloques archivados hoy no tenían `SUMMARY.md` ni `connections.md`** — que
+   `contract-archive.md` §0 exige. `check-structure` daba **exit 2** y **nada de la batería lo
+   vigilaba**. *"Un bloque cerrado que no se puede consultar es un bloque que se perdió."* Escritos.
+2. 🔴 **Sus encabezados estaban en español** (*"Qué se aprendió"*) y el validador busca `learn` —
+   así que la ÚNICA sección que no es copia se marcaba como vacía. Corregidos a `## What was learned`.
+3. 🐛 Dos citas relativas al bloque (el validador resuelve desde la raíz de Mente). Tercera vez hoy.
+4. 🐛 El índice se desfasó **tres veces** al crear archivos — **y las tres las cazó la puerta de P2**.
+
+> ⭐ **Lo que esto demuestra:** P3 no solo añadió CI. **Escribir el CI obligó a preguntar qué pasa
+> en una máquina que no es la de Brian** — y esa pregunta destapó dos bloques archivados
+> incompletos que llevaban horas ahí sin que nada avisara.
+
+## ✅ P1·P2·P4·P5 — el detalle
+
+**P2 ✅ · el `--check` cableado a la puerta.** `hooks/pre-commit.sh` ahora **bloquea un índice
+generado desfasado**. 🔬 Verificado en ambas direcciones — y **me cazó a mí en la primera
+ejecución**: `INDEX.md` estaba desfasado de verdad. Volvió a cazarme **dos veces más** al crear
+`VERSION` y `CHANGELOG`. Es el `skillgen --check` de `graphify` adaptado a la puerta del commit.
+⚠️ **Solo `generate-index`**: `generate-metrics --check` corre la batería entera — **medido: 2m31s**
+contra **0.118s** del índice. Una puerta que cuesta 2½ min por commit se esquiva, y una puerta
+esquivada no protege nada (`rule-friction.md`).
+
+**P1 ✅ · `check-clear-ready` lee el resultado de la batería** antes de permitir un `/clear`:
+🔴 **bloquea** si `battery.failed > 0` · 🟡 **avisa** si el resultado es de otro día (*"un verde de
+antes del trabajo de hoy no es evidencia sobre el trabajo de hoy"* — `val-functional.md` §2.2).
+⚠️ **No la ejecuta desde ahí**, por la misma razón que P2: el cierre debe seguir costando 0.13s.
+🔬 Verificado rompiéndolo: con `failed: 3` bloquea; con el archivo de hace 3 días, avisa.
+
+**P4 ✅ · `VERSION` (0.1.0) + `CHANGELOG.md`** + **2 checks nuevos**: el formato semántico y que el
+CHANGELOG tenga entrada para la versión actual. **Una sola fuente** del número (como `graphify`),
+no tres copias que validar (como `intern-os`) — *una copia no puede divergir si no existe*.
+⭐ **Brian eligió arrancar en 0.1.0, no en 2.0.0:** *"v2"* describe la arquitectura, no la madurez.
+`0.x` dice la verdad medida: **cero instalaciones externas**.
+
+**P5 ✅ · granularidad por MECANISMO.** Medido: los 221 `allow` **no estaban en `settings.json`**
+(ese tenía 16) sino en `settings.local.json` — el que el harness reescribe en cada aprobación.
+Y **201 de 221 eran Bash**, casi todos el MISMO validador reaprobado con otro argumento
+(`migrate-doc` ×16, `cp` ×15, `check-sufficiency` ×9…). Declaradas **21 reglas por mecanismo** en el
+`settings.json` versionado (solo validadores de lectura; nada que escriba o borre), que es lo que
+`rule-config-hygiene` §1.3 pide. **No se podó lo local** — el harness lo regenera; lo que se quitó
+es la *razón* por la que se regeneraba.
+
+**✅ P3 · CI — HECHO** (ver arriba). Cierra a P1 del todo: la batería
+corriendo en cada PR, no solo cuando alguien la lanza. 🙋 Decide Brian cuándo.
+
+---
+
+## 🔬 AUDITORÍA PROFUNDA 2026-08-05 — 1 bug real de 6 sospechas
+
+Recorrido completo a petición de Brian: **16 validadores + 6 hooks + el ciclo de vida entero**,
+desde 4 enfoques (uno a uno · entradas hostiles · flujo E2E con un bloque real · carga repetida).
+
+### 🔴 EL BUG REAL — un bloque podía cerrarse con el §K VACÍO
+
+Creé un bloque sonda, lo marqué `status: closed` **sin escribir el §K** — y `check-blocks` **lo
+aprobó**. Causa: comprobaba que el encabezado `## Closing` EXISTIERA, nunca que dijera algo. Y el
+andamio de `bin/new-block` ya trae ese encabezado con el texto *"(pending — the block is still
+active)"*, así que **cualquier bloque nuevo podía declararse cerrado sin cerrar nada**.
+
+✅ **Corregido** reusando el patrón que `check-structure` ya aplicaba a `SUMMARY.md`: se mide el
+CUERPO, y un placeholder o menos de 40 caracteres es 🔴 (exit 2).
+✅ **Verificado en ambas direcciones**: caza el §K vacío · **los 3 bloques archivados siguen
+limpios**, así que el bug nunca causó daño.
+
+### ✅ Lo que la auditoría verificó SANO
+
+| Prueba | Resultado |
+|---|---|
+| Los 16 validadores, uno a uno | todos responden · el más lento **0.54s** |
+| **Entradas hostiles** (`../../../etc/passwd`, `; rm -rf /`, `$(whoami)`, vacío) | **rechazadas por los 3** validadores que reciben nombres |
+| Ciclo de vida E2E | crear → detectar huecos → llenar → suficiente → cerrar: **funciona** |
+| Las 2 puertas contra un bloque insuficiente | ambas **bloquean con exit 2** |
+| Estabilidad en 3 corridas seguidas | **idénticas** · 13.3-15.9s |
+| Cobertura | **los 16 validadores** los ejercita la batería · `_beat.py` es un módulo, no un hook |
+| Los latidos de las 3 puertas | **al día** — las puertas dispararon hoy y lo registraron |
+
+### ⚠️ LA LECCIÓN DE MÉTODO — 3 falsas alarmas mías, misma causa
+
+Reporté como bugs tres cosas que no lo eran: `check-sufficiency` "devolviendo 0", `gate-critical`
+"devolviendo 0", y los latidos "de ayer". **Las tres veces leí mal la medición**, no el sistema:
+el `$?` venía de la tubería (`| head`), no del validador; y la fecha del `ls` era la de creación,
+no el contenido.
+
+> ⭐ **Un `$?` después de una tubería mide el ÚLTIMO comando, no el primero.** Es el mismo defecto
+> que `rule-checks-must-measure` persigue — una medición que parece decir algo y mide otra cosa —
+> cometido tres veces en una hora **por quien escribió esa regla**. — el sistema es 86x más rápido
+
+**El problema que Brian reportó:** *"el tiempo que está tomando Mente OS v2 es demasiado."*
+**Medido:** un solo validador consumía el **88%** del tiempo. Plan y evidencia:
+`docs/plan-check-links-performance.md`.
+
+| | ANTES | DESPUÉS |
+|---|---|---|
+| `bin/check-links` | 47.20s | **0.550s** |
+| `bin/test-f0-f6` | 1m 10s | **15.6s** |
+| `bin/generate-metrics` | 2m 31s | **13.5s** |
+
+**La causa, perfilada:** `glob.glob("**/nombre", recursive=True)` recorría los **43,986 archivos**
+de `../marca-personal` **una vez por cita** → 14.7M llamadas a `_rlistdir` = 114s. Sustituido por
+un índice `{nombre: [rutas]}` construido una vez por proceso (0.16s).
+
+### 🔴 Los 2 defectos que la fase F0 destapó — y que habrían repetido el fallo del v1
+
+**① Mi primera sonda NO MEDÍA.** Saboteé el criterio (`==1` → `>=1`, o sea *perdonar citas
+ambiguas*) y **siguió dando 0 diferencias**: de 419 citas desnudas solo una es ambigua y un repo
+anterior ya la resolvía. **Un verde que no distingue los dos criterios es un verde vacío.**
+Añadidos 3 nombres que sí discriminan; ahora la sonda **falla** ante el sabotaje.
+
+**② `glob` y `os.walk` NO ven lo mismo** — `glob` no desciende a directorios ocultos. **Medido:
+6,036 archivos de diferencia.** Sin podarlos, un nombre pasaría a contarse **dos** veces, el índice
+lo llamaría ambiguo y **una cita que hoy resuelve empezaría a reportarse rota**. Corregido.
+
+> ⭐ **Esto es exactamente lo que Brian temía**, y por qué F0 existía: *"si no lo hacemos bien vamos
+> a tener los mismos fallos que antes de v1"*. **El camino ingenuo habría roto el validador en
+> silencio.** Los 86x solo son legítimos porque la poda de ocultos está dentro.
+
+### ✅ Verificado rompiéndolo, no viéndolo verde
+
+Salida **idéntica byte a byte** · exit code igual · detecta una cita rota real · **rechaza los
+ambiguos** (112 y 21 coincidencias) · **F4 7/7**: hooks a 0.04s · commit bloquea y pasa cuando debe
+· batería **175/0 idéntica** · métricas iguales · **el lock sigue negando una segunda corrida y se
+libera solo** · **cero restos de sonda**.
+
+⛔ **F2 y F3 DESCARTADAS con el dato en la mano** — ahorrarían ~2s tocando 5 sitios del validador
+que protege 294 citas. *Una fase que no cambia el resultado es relleno* (`doc-planning.md` §2.6).
+
+---
+
+## 🎯 LOS 5 QUE BRIAN QUIERE DENTRO DE MENTE OS V2 — asignados 2026-08-05
+
+**Origen:** auditar el motor **como producto publicado**, no como sistema en uso · + el análisis de
+`graphify` (`docs/analysis/Analisis_graphify_para_Mente_OS.md`). Brian: *"todos estos me interesan
+para que estén dentro de Mente OS v2"*.
+
+> ⭐ **Los cinco comparten causa: el motor se probó COMO SISTEMA, nunca COMO PRODUCTO.** Funciona
+> impecable cuando Brian lo usa; nada garantiza que funcione cuando lo usa otro. Misma conclusión
+> que dejó `graphify`: **las cicatrices que faltan son las de usuarios reales.**
+
+### ⬜ P1 · 🔴 QUE ALGO EJECUTE LA BATERÍA — el hueco más grande
+
+Ningún hook llama a `bin/test-f0-f6`: los **173 checks corren solo si alguien se acuerda**.
+⭐ **La ironía medible:** la ley del propio sistema dice *código 100%, disciplina 40-60%* — y su
+verificación central está del lado del 40-60%.
+**Lo que falta decidir (🙋 Brian):** *cuándo* corre. La batería tarda ~2 min y toma su lock, así que
+en cada commit molesta. Candidatos: al cerrar sesión · antes de un push · en CI (→ P3).
+
+### ⬜ P2 · 🔴 `--check` DE DERIVA CABLEADO A LA PUERTA
+
+⚠️ **CORRECCIÓN a lo reportado antes:** el `--check` **ya existe** en `bin/generate-index` y
+`bin/generate-metrics`, y `test-f0-f6` lo ejecuta. Lo que falta es que lo ejecute **la puerta**:
+`hooks/pre-commit.sh` no lo llama, así que un índice desfasado **sí puede commitearse**.
+🐛 **Medido al auditar: `generate-index --check` daba exit 1** — `INDEX.md` estaba desfasado por los
+archivos creados hoy. Regenerado; ambos generadores en exit 0.
+**Esto es el `skillgen --check` de `graphify` adaptado:** ellos hacen imposible la deriva porque el
+CI la caza; aquí la puerta del commit es el equivalente.
+
+### ⬜ P3 · 🔴 CI EN EL REPO PUBLICADO
+
+`.github/workflows/` **no existe** en `mente-os`. `graphify` tiene 3 (`ci` · `publish` ·
+`release-graph`). **Nadie verifica un PR externo antes de mezclarlo** — y `rules/rule-shipping-flow.md`
+(escrita hoy) declara un flujo de PR que ningún automatismo respalda.
+Mínimo: correr la batería + `check-links` + `check-blocks` en cada PR. Cierra P1 de paso.
+
+### ⬜ P4 · 🔴 VERSION + CHANGELOG — el motor debe saber qué es
+
+No hay `VERSION` ni `CHANGELOG.md`. **Un motor que no sabe su versión no se puede depurar en casa
+ajena**, que es exactamente el escenario de la prueba de campo pendiente.
+Ya estaba registrado por dos vías: pendiente `intern-os` #5 y el viejo P4/G4 de For3s.
+`intern-os` valida en CI que la versión coincida en **3 sitios**; `graphify` la tiene en **uno**
+(`pyproject.toml`) y la propaga. **Recomendación medida: una sola fuente**, como graphify.
+
+### ⬜ P5 · 🟡 `allow` EN 220 ENTRADAS (umbral 120)
+
+Crece en cada aprobación. `rules/rule-config-hygiene.md` §1.3 ya lo dice: **la granularidad debe
+estar en el mecanismo, no en la invocación**. Y hay una trampa registrada — el harness reescribe
+`settings.local.json` en cada aprobación, así que **podar sin cambiar el hábito es trabajo que se
+deshace solo**. Por eso va el último: sin P3 (CI) que lo vigile, se vuelve a inflar.
+
+> 🙋 **Decide Brian:** el orden. **Recomendación medida: P2 → P1 → P3 → P4 → P5.**
+> P2 es el más barato (el código existe, solo hay que llamarlo desde la puerta) y cierra el defecto
+> que esta sesión cazó **cinco veces**. P1 y P3 se resuelven juntos si el CI corre la batería.
+
+🐛 **Defecto real corregido al medir esto:** `plan-tests-demo` citaba `blk-demo` en su §C, pero el
+id real es `blk-demo-2026-07` — `check-health` lo cazó como *"conexión a un bloque que no existe en
+disco"*. Corregido: un puntero mal escrito es lo que `doc-structure.md` §3 regla 2 prohíbe.
+
+---
+
+## 🟡 graphify #4 · TESTS DEL PRODUCTO — el plan está escrito, faltan 2 decisiones tuyas
+
+**El plan:** `blocks/active/plan-tests-demo/docs/plan-critical-paths.md`.
+
+🔴 **Los "5 caminos críticos" nunca se habían declarado.** `blk-demo` §F-8 lo decía así desde el
+26-jul y **nadie los había nombrado**. Medí los dependientes reales (`session` 12 · `userStore` 10 ·
+`instancias` 6 · `verificacion` 3 · `container` 1) y **Brian eligió cuatro** — el conteo informa, no
+decide:
+
+| # | Camino | Por qué |
+|---|---|---|
+| ① | **ENTRAR** — correo → sesión → mi instancia | la puerta, y **se rompió dos veces** |
+| ② | **AUTORIZAR** — un invitado no llega a lo ajeno | ⭐ **el agujero abierto HOY**: `DEV_FALLBACK` autoriza un correo falso |
+| ③ | **HABLAR** — mensaje → agente → mi hilo | donde vivió el bug de `kind`, en 6 archivos |
+| ④ | **APAGAR** — solo el DUEÑO | arreglado en `container.ts`, **sin test que lo sostenga** |
+
+⭐ **El plan declara que el test ② VA A FALLAR, y que es correcto:** documenta el agujero en vez de
+esperar al arreglo. **Su verde ES la definición de "sub-bloque 7 cerrado"** — un pendiente pasa de
+descripción a criterio verificable.
+
+⚠️ **Medido antes de planificar: la demo NO TIENE corredor de tests** (`package.json`: `dev · build
+· start · lint`, cero dependencias de test). Eso no se resuelve solo, y por eso es una decisión
+declarada y no una nota al pie.
+
+🙋 **DECIDE BRIAN, y el bloque no avanza sin esto:**
+1. **Qué corredor** — recomendación medida: **Vitest** (los 4 caminos son lógica sobre `lib/demo/*.ts`,
+   sin navegador, y corre TypeScript sin build extra). Coste: una dependencia en un repo que hoy no
+   tiene ninguna.
+2. **Qué camino se escribe primero** — ② documenta el agujero abierto · ① protege la puerta que los
+   otros tres necesitan.
+
+📌 **§B del bloque AMPLIADO con su razón** (Brian, 2026-08-05): entrega el plan **y UN test**. Un
+plan cuya ejecutabilidad nadie probó descubre sus huecos durante la ejecución, cuando más cuestan.
+
+---
+
+## ✅ graphify #3 · UN VALIDADOR QUE ESCRIBE NO SALE DEL ÁRBOL (2026-08-05)
+
+**El pendiente decía *"módulo único de validación de entrada externa, no urge: Mente OS es local"*.
+Medirlo cambió el diagnóstico.**
+
+✅ **Ningún validador toca la RED** — las dos coincidencias de `http` eran para IGNORAR enlaces
+externos, lo contrario de descargarlos. Esa mitad del pendiente no existía.
+
+🔴 **Pero sí había un riesgo REAL, y no era el declarado.** De los 6 validadores que reciben una
+ruta o un nombre por argumento, **2 no la validaban** — y uno de ellos, `migrate-doc`, **MUEVE
+archivos**:
+
+```
+bin/migrate-doc VERSION ../../../tmp/robado.md --dry-run
+  → ACEPTADO · "VERSION → ../../../tmp/robado.md/VERSION"
+```
+
+**Solo `--dry-run` lo salvó.** Sin la bandera habría movido un documento FUERA de Mente, y
+`check-links` reportaría después una cita que nadie puede resolver.
+
+✅ **Corregido con el patrón de `validate_graph_path()` de graphify:** se **RESUELVE** la ruta y se
+exige que caiga bajo la raíz — en vez de buscar `"../"`. ⭐ **Una lista negra de formas se salta la
+siguiente forma; resolver responde la pregunta real: *¿dónde aterriza esto de verdad?***
+
+✅ **`verify-handoff`, el otro sin validar, NO es un riesgo:** medido, **solo lee** (0 escrituras)
+y rechaza un manifiesto inválido. Se deja como está.
+
+🔬 **2 checks nuevos** (batería 176 → **178**): rechaza el destino fuera **y sigue permitiendo el
+movimiento legítimo** — un candado que bloquea el uso normal se acaba quitando.
+**Verificado reintroduciendo el defecto:** el check se puso 🔴.
+
+---
+
+## ✅ graphify #1 · `holes-total` DEJÓ DE SER UN NÚMERO A MANO (2026-08-05)
+
+**El defecto:** `docs/PENDING-BRIAN.md` declaraba `holes-total: N` **escrito a mano**, y la batería
+lo contrastaba. Eso caza la deriva **DESPUÉS de que ocurre** — y **se desfasó TRES veces solo en
+esta sesión**, una por cada tanda de huecos llenados.
+
+✅ **Ahora lo escribe `bin/generate-metrics`** desde el conteo que ya medía unas líneas más arriba.
+🔬 **Verificado:** lo desfasé a mano a `99`, regeneré, y volvió a **0** solo.
+
+⭐ **La lección de `graphify` aplicada, no copiada:** su `tools/skillgen --check` no vigila que un
+valor generado siga siendo correcto — **lo RENDERIZA desde su fuente**. `contract-document.md`
+§0-bis lo dice igual: *el fix no es más disciplina, es quitar la copia.*
+La verificación cruzada de la batería se queda como cinturón, **pero ya no debería dispararse nunca**.
+
+⚠️ **El resto de la tabla sigue a mano, y es correcto:** describe **QUÉ** falta, no **cuánto**.
+Solo el número era una copia.
+
+---
+
+## ✅ graphify #2 · `bin/init` YA NO PUEDE DESTRUIR LA CONFIG DE NADIE (2026-08-05)
+
+**El riesgo era activo, no teórico:** `bin/init` escribe `.claude/settings.json` en la máquina de
+**otra persona** — un archivo que esa persona ya editó a mano.
+
+| Protección | Estado |
+|---|---|
+| **Se niega** si el JSON no parsea, en vez de reescribirlo | ✅ **ya la tenía** |
+| **Backup antes de escribir** (`.mente-bak`) | 🆕 **añadida** — de `graphify` #2167, que la creó tras destruir la config de un usuario real |
+| **Idempotente** — no escribe si el resultado es idéntico | ✅ ya la tenía |
+
+🔬 **Verificado en un CLON AISLADO, no leyendo el código.** Con una config que llevaba una regla a
+mano y un `env` propio: **ambas sobrevivieron**, los 4 hooks se cablearon, y el original quedó en
+`.mente-bak`. Con JSON corrupto: **se negó y lo dejó intacto, byte a byte.**
+
+⭐ **Por qué importa más que las otras 5 de graphify:** es la única que se ejecuta **en casa ajena**,
+donde un fallo aterriza donde nadie puede depurarlo — el escenario exacto de la prueba de campo
+pendiente.
+
+---
+
+## 🕸️ 6 HUECOS QUE `graphify` DESTAPÓ (registrados 2026-08-05)
+
+**Análisis completo:** `docs/analysis/Analisis_graphify_para_Mente_OS.md`.
+Clon en `~/for3s/Varios/graphify` (v0.9.33, YC S26, PyPI). Medido: 776 archivos · ~35,000 líneas
+de Python · **62,159 líneas de tests (1.8:1)** · 18 plataformas · 3 workflows de CI.
+
+| # | Hueco | Coste | Estado |
+|---|---|---|---|
+| **1** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
+| **2** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
+| **3** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
+| **4** | 🟡 **PLAN ESCRITO 2026-08-05** — falta 1 test · 🙋 2 decisiones tuyas | alto | 🟡 |
+| **5** | 🟡 benchmark con método y juez publicados | medio | ⬜ |
+| **6** | ⬜ memoria de trabajo puntuada y automática | medio | ⬜ evaluar |
+
+### ⭐ Los dos primeros son los que importan, y en ese orden
+
+**#1 ataca el defecto que esta sesión cazó CINCO veces:** una pieza escrita y no cableada · dueños
+declarando `pending` lo ya lleno · `CAPABILITIES` sin las piezas nuevas · un techo en 9 sitios · el
+conteo copiado a mano. Mente OS lo detecta **después**; `graphify` lo hace **imposible** —
+`generate-index` y `generate-metrics` ya generan, **falta el `--check` que falle ante la deriva**.
+
+**#2 es un riesgo ACTIVO, no teórico:** `bin/init` genera `CLAUDE.md`, `PROJECT-RULES.md` y toca
+`.claude/settings.json` — archivos que el usuario ya editó a mano — **sin ninguna de las tres
+protecciones**. Las de `graphify` llevan número de issue en el código (#2167, #1688): nacieron
+porque destruyeron la config de usuarios reales.
+
+> ⭐ **EL HALLAZGO HONESTO, y no es código:** esas protecciones no existen por listos, existen
+> porque **tres usuarios reales rompieron el producto**. Mente OS no tiene esas cicatrices porque
+> **nadie externo lo ha usado**. Traer el código sin la prueba de campo copia la forma sin la causa.
+>
+> | | graphify | Mente OS v2 |
+> |---|---|---|
+> | Instalaciones externas verificadas | miles | 🔴 **cero** |
+> | Tests sobre el producto gobernado | 1.8:1 | 🔴 **0** |
+
+🙋 **Decide Brian:** si se hacen #1 y #2 ahora, o después de la prueba de campo.
+
+---
+
+## ✅ P5 · `allow` — atacado en su CAUSA, no en su síntoma (2026-08-05)
+
+**Lo que se creía:** *"232 entradas y creciendo"*. **Lo medido:** el archivo **no ha crecido desde
+las 00:47** — las reglas por mecanismo declaradas esa madrugada ya funcionaban, y las 232 son
+**histórico muerto**, no crecimiento.
+
+| | antes | ahora |
+|---|---|---|
+| entradas locales **cubiertas** por una regla por mecanismo | 47 | **79** |
+| reglas permanentes en `settings.json` | 37 | **45** |
+
+**Lo añadido (Brian, 2026-08-05):** los validadores que **escriben pero solo dentro de Mente** —
+`new-block` (crea un bloque, reversible borrándolo) · `migrate-doc` (mueve UN documento, trae
+`--dry-run`) · `generate-index` · `generate-metrics`.
+
+⛔ **Lo que queda FUERA a propósito:** `cp` · `mv` · `rm` · `python3` · `bash`. Sus rutas son
+arbitrarias, y **el matcher lee TEXTO**: una variable o un `$(...)` los esquiva
+(`memory/PENDIENTES.md` §🔐). Declararlos por mecanismo abriría una puerta que el `deny` no cierra.
+
+⚠️ **No se podó lo local, y es deliberado:** el harness lo reescribe en cada aprobación. Lo que se
+quitó es **la razón** por la que se regeneraba. Verificado en vivo: tras el cambio solo se añadieron
+entradas de `cp` y `python3` — exactamente los genéricos que decidimos no declarar.
+
+---
+
+## 🧬 2 PENDIENTES DE `intern-os` — nunca adoptados (registrados 2026-08-05)
+
+**Origen:** la auditoría archivo-por-archivo de `intern-os v0.4.1` (junio 2026,
+`docs/analysis/Analisis_internOS_vs_For3s_OS.md`) dejó **8 recomendaciones**. Medido hoy:
+**5 están construidas** (aislamiento como doctrina · handoff file-backed + verifier ·
+auto-inyección al arranque · disciplina de tamaño · registry/health). Estas 2 nunca se hicieron.
+
+### ⬜ #2 · SHARED-THREAD INBOX — un chat, varios temas
+En Telegram/WhatsApp **no hay hilos nativos**: un DM es la superficie de varios trabajos.
+`intern-os` v0.4.0 lo resolvió con `shared_thread_ids: true` — el thread resuelve al PROYECTO
+(contenedor) y el trabajo activo se decide por estado + intención explícita del humano.
+**Por qué importa aquí:** For3s **vive en Telegram**, así que es literalmente su caso.
+🙋 **Decide Brian:** si aplica a For3s OS (el producto) o también a Mente OS (el motor).
+
+### ✅ #5 · VERSION-SELF-AWARENESS — CERRADO 2026-08-05
+
+**P4 creó `VERSION` y `CHANGELOG`. Faltaba lo que los hace útiles: que el sistema lo DIGA.**
+Medido: solo la batería leía `VERSION`; **nada lo reportaba**. Tener el número no es poder decirlo.
+
+✅ `bin/check-health` **termina imprimiendo `Mente OS 0.1.0`**, incluso cuando todo está sano —
+es la línea que se pega en un reporte de fallo, no una advertencia.
+✅ **Un check nuevo lo exige** (batería 175 → **176**): si `check-health` deja de decirlo, se pone 🔴.
+🔬 **Verificado rompiéndolo:** silencié la línea y el check la cazó; restaurada, verde.
+✅ Y si `VERSION` desapareciera, `check-health` da 🔴 con su razón.
+
+⭐ **Dónde diverge de `intern-os`, a propósito:** ellos validan que el número coincida en **3
+sitios**; aquí la fuente es **UNA** (`VERSION`) y el check verifica que **llegue al operador**.
+*Una copia no puede divergir si no existe* — el mismo criterio de `doc-structure.md` §2.3.
+
+🐛 **Y un defecto de mi propio check, hallado al ejecutarlo:** lo escribí con rutas relativas
+(`./bin/check-health`, `head -1 VERSION`) y fallaba dentro de la batería, que corre desde otro
+directorio. Corregido con rutas absolutas. **La misma familia de errores de medición de hoy.**
+
+### ⬜ (histórico) #5 · el enunciado original
+`intern-os` valida en CI que `VERSION` == la del SKILL == el git tag (**3 sitios**), y el skill
+instalado lleva su `repo:` y su CHANGELOG. **Mente OS v2 no tiene ninguna de las tres.**
+⭐ **Por qué es el más urgente de los dos:** el motor **ya está publicado** (MIT, `mente-os`).
+Un motor que no sabe qué versión corre **no se puede depurar en casa ajena** — que es exactamente
+el escenario de la prueba de campo pendiente. Cierra además el viejo P4/G4.
+
+⚠️ **Ambos siguen sin verificar contra el `intern-os` de HOY:** el análisis es de junio y el repo
+no está en disco. Lo que se adopte se contrasta primero con su estado actual.
+
+---
+
+## ✅ 3 DE 6 PARTICIONES HECHAS 2026-08-05 — sin borrar una palabra
+
+**Orden de Brian:** *"si ya llegó al tope créale un archivo apuntando al principal… o ve la forma
+de tenerlo sin eliminar nada de texto pero sin perder funcionalidad por partición."*
+
+| Antes | Ahora | Cómo |
+|---|---|---|
+| ⭐ `owner-0-voice.md` **582/350** | **285** | su §7 (el contrato de entrega, 315 líneas) → 🆕 `principles/contract-delivery.md` (343) |
+| `dev-database.md` **381/350** | **364** | su §4-BIS → 🆕 `principles/imported-patterns.md`, junto con los de backend y frontend |
+| `RETOMAR.md` **251/250** | **249** | condensado, sin perder contenido |
+
+🔬 **Verificado línea a línea: las 232 líneas con contenido del §7 están íntegras en el archivo
+nuevo — 0 perdidas.** Solo cambió el número de sección (§7 → §1), porque **un número es una
+dirección, no contenido**. Las dos mitades se apuntan mutuamente y el puntero declara qué vive allí
+y que **sigue siendo obligatorio**.
+
+### 📐 Y el techo `contract` 350 → 400 (decide Brian)
+
+Tras sacar lo importado, los 7 expertise quedaron en **257-290** y solo `dev-database` seguía
+arriba, en **364 — por llevar MÁS criterio de Brian** (217 líneas de las 6 dimensiones), no más
+relleno. **Un techo que obligaría a partir el criterio está mal puesto:** las 6 dimensiones son una
+unidad, y trocearlas haría saltar de archivo a media revisión.
+
+### 🐛 Un defecto que la partición destapó
+
+Puse `imported-patterns.md` **dentro de `principles/expertise/`** y **dos checks se pusieron rojos
+al instante**: *"expertise disciplines: esperaba 7, obtuvo 8"* y *"cada disciplina nombra a su
+dueño por prefijo"*. Tenían razón — **no es una disciplina**, es material importado. Movido a
+`principles/`. **El sistema cazó el error de ubicación en la primera ejecución.**
+
+⬜ **Quedan 3**, ninguna bloquea: `Arquitectura_Mente_OS_v2_Bloques.md` (2454/800, el único que
+triplica) · `docs/plan-v2-rollout.md` (423/400) · `MEMORY.md` (109/80, del harness).
+
+---
+
+## ✅ LAS 6 PARTICIONES CERRADAS 2026-08-05 — 3 partidas, 3 exentas con razón
+
+Las 3 restantes **no se partieron, y no por pereza**: medirlas mostró que el techo estaba mal
+aplicado en las tres, cada una por un motivo distinto.
+
+### ⛔ `Arquitectura_Mente_OS_v2_Bloques.md` (2460/800) — FUENTE DE VERDAD, exenta
+
+> **Brian, 2026-08-05:** *"deja el archivo como está, intacto como en v1. Es fuente de verdad, y
+> las fuentes de verdad no importa el tamaño del archivo."*
+
+**Es criterio nuevo, y contradecía lo que `doc-structure.md` §2.1 decía esa misma mañana** — así que
+se escribió ahí como **la única excepción**, no se dejó tácito. Su razón, medida:
+**se partió una vez en julio** (`blk-split-architecture`, 6 archivos en `docs/architecture/`) y el
+resultado hoy es **74% duplicado + 330 líneas que solo viven en el original**. **La partición creó
+la divergencia que pretendía evitar** — misma forma que la tabla 75-vs-37.
+✅ La exención está **declarada en su cabecera**, y avisa de que el 🟡 de `check-health` es esperado.
+
+### 🗿 `docs/plan-v2-rollout.md` (423/400) → **FÓSIL**
+
+Medido: **las fases F0-F8 están todas cerradas** (24 ✅ contra 5 ⬜, y esos 5 viven ya aquí).
+**No era un plan sobre su techo: era historia clasificada como plan.** Un fósil no tiene techo
+(`contract-document.md` §5) y **no se poda** — *borrar historia es perder la capacidad de
+diagnosticar*. Queda íntegro, con punteros al estado vivo.
+
+### 🧹 `MEMORY.md` (109/80) → **fuera del check**
+
+Es el índice de memorias **del harness**, vive fuera de `Mente/` y **ningún validador de este motor
+puede encogerlo**. Un aviso que nadie puede accionar es ruido — y 67 avisos sin accionar es cómo un
+validador se volvió ruido una vez (M1).
+⚠️ **El coste que señalaba es REAL y no desaparece por no medirlo:** se carga en cada arranque, así
+que cada línea es contexto gastado antes del primer token. Queda escrito en el código: si el
+arranque pesa, ese archivo es el primer sitio donde mirar — **pero podarlo es decisión de su dueño,
+no hallazgo de este validador.**
+
+> ⭐ **La regla que sale de las tres:** un validador audita **lo que su sistema CONTROLA**. Auditar
+> el archivo de un vecino produce un rojo que nadie posee.
+
+---
+
+## ✂️ (histórico) las 3 que quedaban — asignadas 2026-08-05
+
+**Origen:** tu propio criterio nuevo en `principles/expertise/doc-structure.md` §2.1 endurece
+ADR-027: *"si el tamaño excede el límite **debe partirse en dos y estar relacionados o
+apuntando**"*. Con eso, estos 6 dejan de ser advertencias 🟡 y pasan a ser **trabajo declarado**.
+
+| Archivo | Mide / techo | Por dónde se parte |
+|---|---|---|
+| `docs/Arquitectura_Mente_OS_v2_Bloques.md` | **2454 / 800** — el único que triplica | el más urgente por tamaño |
+| ⭐ `principles/owner-0-voice.md` | **582 / 350** | ya tiene propuesta: la VOZ por un lado, el CONTRATO DE ENTREGA (§7) por otro — son dos temas |
+| `docs/plan-v2-rollout.md` | 423 / 400 | apenas sobre el techo |
+| `principles/expertise/dev-database.md` | 381 / 350 | se pasó al llenarlo hoy |
+| `memory/RETOMAR.md` | 250 / 250 | ⚠️ **en el límite exacto**: la próxima línea lo rompe |
+| `MEMORY.md` (memorias del harness) | 109 / 80 | **la pieza más pesada del arranque** |
+
+> ⭐ **La ironía, y queda escrita:** `owner-0-voice.md` es donde se escribió la regla del techo, y
+> es el que peor la incumple. **Ninguno bloquea nada** — son 🟡 — pero por la regla nueva ya no son
+> deuda tácita: son particiones con dueño.
+>
+> 🙋 **Decide Brian:** el orden. Recomendación medida: `owner-0-voice` primero (es el único con la
+> partición ya diseñada), la arquitectura después (es la que más pesa).
+
+---
+
+## 🔴 2026-08-05 · UN SESGO DE DISEÑO QUE BRIAN CAZÓ — "Mente OS no es solo para programadores"
+
+**El síntoma:** el check *todo expertise lleno llega a un bloque activo* exigía que
+`doc-planning.md` lo declarara `blk-demo`, que es de tipo `code` y cuyo único plan es un **fósil**
+de trabajo ya entregado. Añadirlo habría inflado el §D — justo lo que `check-applied` castiga.
+
+**La causa de fondo, y no la vi yo** (Brian, 2026-08-05):
+
+> *"Analiza por qué solo pide de code. Algo por ahí está mal: los usuarios que van a ocupar
+> Mente OS v2 pueden hacer código o no — **no es ley que siempre será así**."*
+
+**Medido:** los 4 tipos de bloque (`code · docs · infra · data`) están cubiertos por `grade-block`,
+así que **el motor estaba bien**. El sesgo estaba en **mi check**: daba por hecho que todo criterio
+debe aterrizar en un bloque de código. ✅ Corregido — una disciplina solo se exige cuando hay
+abierto un bloque **del tipo que ella gobierna** (`dev-*`/`val-*` → code·data·infra ·
+`doc-*` → docs).
+
+**Y se abrió el bloque que faltaba: `plan-tests-demo` (`type: docs`).** No es relleno: `blk-demo`
+tiene **0 archivos de test** y su sub-bloque 8 lleva abierto desde el 26-jul sin nada escrito.
+Entrega **el plan**, no los tests — ⛔ su §B lo prohíbe explícitamente (*explicar antes de
+construir*). Es el primer bloque que ejercita `doc-planning.md`.
+
+> 🔬 **Lo que el sistema me exigió al abrirlo, y estuvo bien en las tres:** declarar el flujo de PR
+> en §D · no dejar el §F vacío · **no citar un documento que aún no existe** (*"un puntero a la nada
+> se lee como una promesa"*). Los tres los cazó la batería, no yo.
+
+---
+
+## 🔬 AUDITORÍA PROFUNDA 2026-08-05 (4ª ronda) — 5 huecos, 1 en mi propio check
+
+**① 🔴 El check de cableado tenía un agujero.** *Todo expertise lleno llega a un bloque activo*
+salía **verde** con `dev-frontend` sin declarar: leía el rango del §D en bruto y **el comentario
+que decía que el estándar se había QUITADO contaba como declaración**. Corregido para contar solo
+entradas `- ` reales. Un comentario sobre un estándar no es una declaración de él.
+
+**② `dev-frontend` re-añadido al §D de `demo`** — el propio comentario del 30-jul fijaba la
+condición: *"re-add when sub-block 10 touches a component"*. El sub-bloque 10 **es** ese caso
+(borrar `ConnectClaude.tsx`, 145 líneas, 0 importadores). 🔬 Verificado con el hook: entrega los 9.
+
+**③ `check-applied` me exigió evidencia** — declaré el estándar y no dejé rastro; se puso 🟡 y pidió
+citarlo en §G o quitarlo. **El sistema funcionando como debe.** Ahora 9/9 con evidencia.
+
+**④ `CAPABILITIES.md` no mencionaba `dev-backend` ni `dev-frontend`.** Añadida la tabla de los 3
+dueños con su estado real: owner-2 ✅ · owner-3 ✅ · owner-1 ⬜.
+
+**⑤ Los 6 expertise decían *"mientras §2-§4 estén vacías, el criterio está vacío"*** — 5 ya están
+llenas. Corregido en los 5.
+
+> ⭐ **Tensión REAL resuelta, no silenciada:** Método F §2.3 dice *"cero hardcodeo (todo de ENV)"* y
+> tu `dev-database.md` §2.2 dice que las env vars son solo para **cableado**. No se contradicen:
+> Método F responde *dónde NO va*, y el tuyo responde *dónde va en su lugar*. **Mover una lista fija
+> de código a una env var cumple Método F y sigue fallando aquí.** Escrito en §2.2 con la
+> jerarquía: gana el más estricto (`rule-inheritance.md`).
+
+**Lo que la auditoría verificó SANO:** ADR-027 declara el principio, no los números → los techos
+que subimos hoy no lo contradicen · los 3 umbrales de duplicación son coherentes (el general no
+fija número, las disciplinas **endurecen**: 2 en seguridad/dinero, 3 en visual) · **ningún
+validador queda fuera de la batería** · owner-1 declara correctamente sus 2 disciplinas vacías.
+
+---
+
+## ✅ 3ª RONDA 2026-08-05 — el criterio LLENO tampoco llegaba a nadie
+
+Batería **171 → 173**. Mismo patrón por tercera vez: **escribir no es cablear.**
+
+**① `val-functional` y `val-integration` llenos, y NINGÚN bloque activo los declaraba** — el hook
+nunca los entregaba. Añadidos al §D de `demo` con su razón: su sub-bloque 8 es *"tests de los 5
+caminos críticos"* con **0 archivos de test hoy** (eso es `val-functional`), y el 7 quita un
+`DEV_FALLBACK` que autoriza un correo falso (eso es `val-integration` §2.2: *la identidad se
+verifica, nunca se asume*). 🔬 **Verificado ejecutando el hook**: entrega los 7 estándares.
+
+**② Los DUEÑOS declaraban vacío lo que ya estaba lleno.** `owner-3-validation.md` decía
+`⬜ pending` de sus dos disciplinas — y ese archivo gobierna **todo cierre de bloque**, así que
+quien lo leyera aplicaría el camino débil (solo la batería §5-BIS) teniendo criterio más estricto
+disponible. Corregido, con la tabla de qué se puede exigir ahora en cada cierre.
+
+**③ 🔴 Y el check nuevo cazó uno que yo no había visto:** `owner-2-dev.md` también declaraba
+`dev-database` como pendiente — lleno esa misma mañana. Nadie lo vio hasta que un script lo midió.
+
+**④ `CAPABILITIES.md` no mencionaba la capa 2 ni una vez.** Un agente que lee el mapa no sabía que
+existe → escribiría un veredicto a mano, que es justo lo que ADR-003 prohíbe. Añadida.
+
+> 🔬 **2 checks nuevos, verificados por reversión:** *todo expertise LLENO llega a un bloque activo*
+> · *ningún dueño anuncia como pendiente una disciplina llena*. El segundo **encontró el hallazgo
+> ③ solo**, sin que yo lo buscara — que es la prueba de que mide.
+> ⭐ **La lección, tercera vez hoy:** una pieza correcta que nadie declara no gobierna nada.
+
+---
+
+## ✅ 4 MÁS CERRADOS 2026-08-05 (2ª ronda) — el cableado que faltaba
+
+Batería **165 → 171**. Los 4 eran de la MISMA familia: piezas escritas y no conectadas.
+
+**① La regla nueva no llegaba a nadie ✅.** `rule-shipping-flow.md` solo la declaraba un bloque
+**archivado**; `demo`, el único activo, no la tenía en su §D — y `pre-edit-standards.py` inyecta
+solo lo que §D lista. Añadida al §D de `demo` con su razón en §G. 🔬 **Verificado ejecutando el
+hook**: al tocar `lib/demo/session.ts` ahora entrega la regla. No es que esté escrita — **llega**.
+
+**② `CAPABILITIES.md` no conocía las piezas nuevas ✅.** Cero menciones de `rule-shipping-flow` y
+`WORKSPACE.md`; además **le faltaba `bin/init`** y su cabecera decía *"15 validators"* con 16 en
+disco. Todo corregido; el conteo se quitó (un número en prosa es correcto exactamente una vez).
+⭐ **Y la causa de fondo:** su check era **asimétrico** — verificaba que no nombrara validadores
+inexistentes, nunca que nombrara los existentes. Cazaba la mentira, no el olvido. **Añadida la
+otra dirección**, verificada quitando `bin/init` del mapa → 🔴 con la pieza exacta.
+
+**③ 3 reglas sin ningún script ✅** (`rule-inheritance` · `rule-moving-files` ·
+`rule-shipping-flow`). Ahora **las 20 reglas tienen verificación**. No comprueban que el archivo
+exista —eso ya lo hace `check-links`— sino **la afirmación de cada una**: ningún bloque relaja una
+puerta heredada · ninguna cita apunta a un bloque archivado · todo bloque activo recibe el flujo.
+
+**④ `WORKSPACE.md` sin check propio ✅.** Dos comprobaciones: **no lleva ni un valor de
+credencial** (dice DÓNDE, nunca CUÁL) y **todo repo que nombra existe en disco**.
+
+> 🔬 **Los 5 checks se verificaron POR REVERSIÓN**, no viéndolos verdes. Y ahí saltaron 2 defectos:
+> **el 5c no medía** — `grep` sobre el archivo entero pasaba porque la regla se MENCIONABA en §G;
+> ahora lee solo el §D · **el 5b cazó un puntero muerto real**: `CAPABILITIES.md` apuntaba a
+> el bloque `distribucion` bajo `blocks/active/`, archivado esa misma mañana.
+> ⭐ *Un check que solo has visto en verde no está probado* — `rule-checks-must-measure.md`, aplicada
+> a mis propios checks.
+
+---
+
+## ✅ 3 CERRADOS 2026-08-05 — los que la auditoría del propio sistema destapó
+
+**① `bin/grade-block` no lo validaba nadie ✅.** Sus 3 defectos sobrevivieron porque la batería
+cubría `check-blocks`, `check-links` y `check-health`, pero nada le pasaba un §B malformado.
+**5 casos nuevos en `bin/test-f0-f6` §SELF-TEST** (160 → 165 checks): un comentario dentro de
+`## ✅ IN` no vacía el scope · un scope vacío NO puntúa PRODUCT · un bloque sin `type:` es
+RECHAZADO · un glob es rechazado · un bloque archivado se puede recalificar.
+🔬 **Verificados por reversión:** reintroducido el defecto del parser a propósito → la batería lo
+cazó (`failed: 1`); restaurado → verde. Una prueba que no falla cuando debe no es una prueba.
+
+**② Un bloque archivado no se podía recalificar ✅.** `grade-block` rechazaba el guion bajo de
+`<nombre>_YYYY-MM`, así que el veredicto §K de un bloque cerrado **no era reproducible** — contra
+lo que exige arquitectura §12-Q.4. Ahora acepta el sufijo de archivo **y resuelve el nombre
+desnudo** (`grade-block distribucion` → encuentra `distribucion_2026-08`). Los globs siguen
+rechazados. Verificado: `distribucion_2026-08` vuelve a dar 🟢 PRODUCT.
+
+**③ No existía la hoja de referencia del workspace ✅** → **`docs/WORKSPACE.md`**. Era la capa 2
+de las 6 de `rules/rule-shipping-flow.md` §7 y el único hueco que esa regla destapó en Mente OS.
+**Apunta, nunca duplica**: `mente.config.yml` sigue siendo la fuente legible por máquina de gates y
+siblings. ⛔ **No lleva ni un valor** — dice DÓNDE vive cada credencial, nunca CUÁL es; un secreto
+escrito ahí acabaría en cada transcripción que lo lea, y un secreto filtrado se ROTA, no se borra.
+Enrutada desde `CLAUDE.md` (un documento al que nadie enruta es un documento que nadie lee).
 
 ## 📏 ARCHIVOS SOBRE SU LÍMITE — la deuda que el techo destapó (2026-08-04)
 

@@ -63,4 +63,26 @@ if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then
   printf '   Failing closed on purpose: an unexplained exit is not a pass.\n'
   exit 1
 fi
+
+# ── P2 · GENERATED ARTEFACTS MUST NOT DRIFT (2026-08-05) ─────────────────────
+# The pattern comes from graphify's `tools/skillgen --check`: generated files are committed
+# artefacts, and CI byte-diffs the render against what is committed so drift is impossible
+# rather than merely detectable. `--check` already existed in both generators; nothing at the
+# GATE called it, so a stale docs/INDEX.md could be committed. Measured the same day: it WAS
+# stale. This is the defect this session caught five times — a piece written and not wired.
+#
+# ⚠️ Only generate-index runs here. `generate-metrics --check` runs the whole battery and takes
+# 2m31s (measured); generate-index takes 0.118s. A gate that costs 2.5 minutes per commit is a
+# gate that gets bypassed, and a bypassed gate protects nothing (rule-friction.md). METRICS drift
+# is covered by bin/test-f0-f6 instead — see P1.
+IDX="$(dirname "$CHECK")/generate-index"
+if [ -x "$IDX" ]; then
+  if ! timeout 60 "$IDX" --check >/dev/null 2>&1; then
+    printf '🔴 COMMIT BLOCKED — a generated index is out of date.\n\n'
+    printf '   Committing it would publish a value nobody measured.\n'
+    printf '   Fix: %s\n' "$IDX"
+    printf '\n   Or: git commit --no-verify   (and log why in the block §H)\n'
+    exit 1
+  fi
+fi
 exit 0

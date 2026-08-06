@@ -32,8 +32,8 @@ RED, YEL, OK = [], [], []
 
 # ── contract-document.md §2 · type → line limit (None = no limit) ─────────────
 LIMITS = {
-    "entry-point": 200, "contract": 250, "rule": 250, "architecture": 800,
-    "plan": 400, "block": 150, "memory-index": 80, "analysis": 300, "case": 300,
+    "entry-point": 250, "contract": 400, "rule": 250, "architecture": 800,
+    "plan": 400, "block": 200, "memory-index": 80, "analysis": 300, "case": 300,
     "append-only": None, "pending": None, "generated": None, "fossil": None,
 }
 STATUSES = {"draft", "current", "superseded", "fossil", "standard", "canonical"}
@@ -188,7 +188,7 @@ def check_blocks():
         lines = text.count("\n") + 1
 
         # 🔴 PER-SECTION LIMITS — the block declares them in its own banners (`≤5 lines`, `≤15`…)
-        # and NOTHING measured them; only the 150-line total was enforced. A §E State that grows
+        # and NOTHING measured them; only the file total was enforced. A §E State that grows
         # to 40 lines still fits the file limit while defeating what §E is FOR: the two lines a
         # cold start reads. ⭐ The threshold is READ FROM THE FILE, never hardcoded here — a
         # number copied into a validator is a number that drifts from the contract it enforces.
@@ -273,14 +273,30 @@ def check_blocks():
         if status == "closed":
             if "## Closing" not in text:
                 red(f, "status closed without §K Closing")
+            else:
+                # 🔴 Found 2026-08-05 by walking the whole lifecycle on a probe block: marking a
+                # block `closed` while §K still reads the scaffold's own placeholder — literally
+                # "(pending — the block is still active)" — PASSED. The check asked whether the
+                # HEADING existed, never whether it said anything. A heading is not a close.
+                # Same defect check-structure already fixed for SUMMARY.md's "what was learned":
+                # the only section that is not a copy is the one worth measuring.
+                m = re.search(r"^##\s*Closing[^\n]*\n(.*?)(?=\n<!--|\n##\s|\Z)", text,
+                              re.M | re.S)
+                body = (m.group(1) if m else "").strip()
+                if body.lower().startswith("(pending") or len(body) < 40:
+                    red(f, "status closed but §K Closing is empty or still the placeholder\n"
+                           "   A close with no verdict is a block that was abandoned, not closed\n"
+                           "   (rules/contract-block.md §K · principles/owner-3-validation.md §5).")
             if re.search(r"\|\s*\d+\s*\|.*\|\s*(open|active|blocked)\s*\|", text):
                 red(f, "status closed with an open sub-block")
             if re.search(r"sufficiency:\s*fail", text):
                 red(f, "sufficiency: fail — the block does not close")
 
-        # limits
-        if lines > 150:
-            yel(f, f"{lines} lines — over the 150-line block limit")
+        # limits — the ceiling is READ from the LIMITS table above, never repeated here.
+        # It was hardcoded twice until 2026-08-05: raising it in one place left the other lying.
+        block_cap = LIMITS["block"]
+        if lines > block_cap:
+            yel(f, f"{lines} lines — over the {block_cap}-line block limit")
 
         # nesting depth (ADR-015: max 3)
         depth = f.count("/") - 1

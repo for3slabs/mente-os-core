@@ -28,8 +28,16 @@ over the other two (Brian: *"los 3 tienen el mismo nivel"*).
 
 | Discipline | File | Status |
 |---|---|---|
-| Planning — can someone else execute this plan? | `expertise/doc-planning.md` | ⬜ **pending · Brian** |
-| Structure — can this be found and trusted later? | `expertise/doc-structure.md` | ⬜ **pending · Brian** |
+| Planning — can someone else execute this plan? | `expertise/doc-planning.md` | ✅ **FILLED 2026-08-05** |
+| Structure — can this be found and trusted later? | `expertise/doc-structure.md` | ✅ **FILLED 2026-08-05** |
+
+> ## ⭐ 2026-08-05 — OWNER-1 IS COVERED. With it, **all three owners carry Brian's criterion.**
+>
+> What owner-1 can now demand: **a plan measures every limit it declares** · one phase, one
+> verifiable delivery · a success criterion carries four things (datum · command · what failure
+> looks like · who signs it) · ⛔ no phase called *"polish"* · a real hole becomes a **pending
+> assigned to Brian**, it never stops the plan · a document over its ceiling **must be split**, and
+> the halves point at each other · `Status: current` is a contract with four terms.
 
 ```
 SEED (the three owners)              ROOTS (their disciplines)

@@ -172,10 +172,53 @@ def in_sibling_repo(c):
         # A BARE name (`CHANGELOG.md`, `pentest-plan.md`) is excused only when the sibling repo
         # holds EXACTLY ONE file by that name. Two matches means the citation is ambiguous, and
         # an ambiguous pointer is a defect worth reporting — not something to silence by luck.
-        hits = glob.glob(f"{root}/**/{c}", recursive=True)
-        if len(hits) == 1:
+        if len(_sibling_index(repo).get(c, [])) == 1:
             return True
     return False
+
+
+# ── the index behind in_sibling_repo (F1, 2026-08-05) ────────────────────────
+_SIBLING_INDEX = {}
+
+
+def _sibling_index(repo):
+    """`{filename: [paths]}` for one sibling repo, built once per process.
+
+    🔴 WHY THIS EXISTS — measured 2026-08-05, profiled, not guessed:
+        in_sibling_repo()  →      1,980 calls
+          glob recursive   →      4,184 globs
+            _rlistdir      → 14,730,455 calls
+              time         →        114 s   (99.8% of this validator)
+    The cost is not this tree: `glob.glob("**/name", recursive=True)` walked ../marca-personal
+    (43,986 files) once per bare citation. Building the index for all siblings costs 0.16s.
+    Measured end to end: 47.20s → 0.16s, **292x**, with `same=626 diff=0`.
+
+    ⚠️ HIDDEN DIRECTORIES ARE PRUNED, AND THAT IS THE WHOLE POINT.
+    `glob` does not descend into dot-directories; `os.walk` does. Measured: 6,036 files of
+    difference across the siblings. Without the prune, `layout.md` would be seen TWICE (the
+    second copy inside a `.claude/`), the index would call it AMBIGUOUS, and a citation that
+    resolves today would start reporting broken. **A performance change that alters the verdict
+    is the v1 failure**, so the index reproduces glob's visibility exactly.
+
+    Proven by `docs/f0-probe-check-links.py`, which loads the real functions and compares both
+    strategies citation by citation — and FAILS when the `== 1` criterion is relaxed to `>= 1`
+    (rules/rule-checks-must-measure.md: a check only ever seen green is untested).
+
+    The cache lives in memory and dies with the process — never on disk. A stale on-disk index
+    would forgive a genuinely broken citation, which is exactly what this validator exists to catch.
+    """
+    if repo in _SIBLING_INDEX:
+        return _SIBLING_INDEX[repo]
+    root = os.path.join("..", repo.rstrip("/"))
+    idx = {}
+    if os.path.isdir(root):
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+            for name in filenames:
+                if not name.startswith("."):
+                    idx.setdefault(name, []).append(os.path.join(dirpath, name))
+    _SIBLING_INDEX[repo] = idx
+    return idx
 
 
 # Folders whose internal citations MUST resolve — the v1 legacy plus every v2 destination.
