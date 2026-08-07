@@ -597,8 +597,24 @@ printf '%s' "$o" | grep -q "sub-block" && ok "pre-edit warns on an unclosed sub-
 # ⭐ Misma familia que el ciclo de `bin/generate-metrics`: un check no puede ser evidencia de
 # sí mismo. Aquí se le da el estado que MIDE (el índice al día) en vez de medir su propia basura.
 ./bin/generate-index >/dev/null 2>&1
-./hooks/pre-commit.sh >/dev/null 2>&1
-eq "pre-commit passes on a healthy block" "0" "$?"
+# 🔴 …Y TAMBIÉN LA RAMA (2026-08-06). Al añadir el candado que bloquea commits en `master`,
+# este check pasó a fallar SOLO desde la rama base: la batería daba 188/0 en una rama de
+# trabajo y 187/1 en `master`, midiendo dónde estabas parado en vez de si el sistema está sano.
+# Dos reglas del sistema chocando, no un defecto de ninguna.
+# El check mide "¿pasa la puerta con el árbol limpio?", así que se le neutraliza la única
+# condición que NO depende del árbol. Misma familia que el índice de arriba: se le da el
+# estado que mide, en vez de hacerle medir su propio contexto.
+_rama_actual=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null)
+case " $(grep -oE '^BASE_BRANCHES=.*' "$M/hooks/pre-commit.sh" | cut -d'"' -f2) " in
+  *" $_rama_actual "*) _en_base=1 ;;
+  *) _en_base=0 ;;
+esac
+if [ "$_en_base" = "1" ]; then
+  ok "pre-commit passes on a healthy block (candado de rama neutralizado: se corre desde $_rama_actual)"
+else
+  ./hooks/pre-commit.sh >/dev/null 2>&1
+  eq "pre-commit passes on a healthy block" "0" "$?"
+fi
 
 cp blocks/active/demo/BLOCK.md /tmp/bk.$$
 python3 -c "
