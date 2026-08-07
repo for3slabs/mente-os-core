@@ -8,7 +8,7 @@
 **Generated:** 2026-08-07 · **Type:** generated
 
 
-**305 documents** · **6 blocks** · 27 directories
+**306 documents** · **6 blocks** · 28 directories
 
 
 | Directory | Docs |
@@ -20,6 +20,7 @@
 | `blocks/active/demo/` | 1 |
 | `blocks/active/demo/docs/` | 8 |
 | `blocks/active/separacion-motor-instancia/` | 1 |
+| `blocks/active/separacion-motor-instancia/docs/` | 1 |
 | `blocks/archive/distribucion_2026-08/` | 3 |
 | `blocks/archive/distribucion_2026-08/docs/` | 1 |
 | `blocks/archive/expertise-programacion_2026-08/` | 3 |
@@ -62,7 +63,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 813 |
+| `Registro_Conversaciones.md` | — | — |  | 849 |
 
 ## `Maestro/`
 
@@ -105,7 +106,13 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 119 |
+| `BLOCK.md` | — | — |  | 131 |
+
+## `blocks/active/separacion-motor-instancia/docs/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `runbook-y-rollback.md` | contract | current | 2026-08-07 | 43 |
 
 ## `blocks/archive/distribucion_2026-08/`
 
@@ -180,7 +187,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 491 |
+| `INDEX.md` | generated | — |  | 498 |
 | `METRICS.md` | generated | current | 2026-08-07 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 31 |
@@ -248,7 +255,7 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1646 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-05 | 4738 |
+| `PENDIENTES.md` | pending | current | 2026-08-05 | 4760 |
 | `RETOMAR.md` | entry-point | current | 2026-08-07 | 250 |
 
 ## `memory/archive/`

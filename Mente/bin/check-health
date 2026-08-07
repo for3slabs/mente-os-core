@@ -586,6 +586,69 @@ def check_session():
                 f"Registro_Conversaciones.md: {', '.join(missing[:4])}")
 
 
+# ── RAMAS HUÉRFANAS ──────────────────────────────────────────────────────────
+def check_ramas_sin_mergear():
+    """¿Hay trabajo empujado que NINGÚN merge se llevó?
+
+    🔴 TRES VECES EL MISMO DÍA (2026-08-07). Un merge por squash aplasta la rama tal como
+    GitHub la leyó: lo que se empuja DESPUÉS no entra, y git no puede avisar — no hay
+    conflicto ni divergencia, el diff simplemente no lo incluye.
+      ① el PR #14 nació con conflictos (el #13 se mergeó con trabajo encima)
+      ② el #14 se llevó por delante el candado del anti-patrón #8 — el que vigila esto
+      ③ el #15 dejó fuera 8 archivos y 137 líneas: la autopsia de la sesión entera
+    Las tres se recuperaron con `git cherry-pick`, porque el commit sigue vivo en la rama.
+
+    ⭐ El candado de `hooks/pre-commit.sh` mira ANTES de commitear. Este mira DESPUÉS de
+    mergear, que es donde estaba el agujero: nadie comprobaba que lo empujado llegara.
+    Compara contra las referencias que ya están en disco — no toca la red.
+    """
+    repo = os.path.dirname(MENTE)
+    base = ""
+    for b in ("master", "main"):
+        if sh("git", "-C", repo, "rev-parse", "--verify", "-q", f"origin/{b}").strip():
+            base = f"origin/{b}"
+            break
+    if not base:
+        return
+    ramas = [r.strip() for r in sh("git", "-C", repo, "for-each-ref",
+                                   "--format=%(refname:short)", "refs/remotes/origin").split("\n")
+             if r.strip() and r.strip() != base and not r.strip().endswith("/HEAD")]
+    huerfanas = []
+    for r in ramas:
+        # `git cherry` marca `+` lo que no está en la base como commit equivalente. ⚠️ Tras un
+        # SQUASH eso marca TODAS las ramas ya integradas, porque el commit original nunca existe
+        # allí — medido 2026-08-07: 3 ramas señaladas y solo 1 tenía trabajo real fuera.
+        # ⭐ Un aviso que grita en cada rama vieja se aprende a ignorar, y entonces deja de
+        # avisar el día que importa. Por eso lo que decide NO es el commit, es el CONTENIDO:
+        # si el diff contra la base está vacío, el trabajo llegó aunque el commit no.
+        pend = [l for l in sh("git", "-C", repo, "cherry", base, r).split("\n") if l.startswith("+")]
+        if not pend:
+            continue
+        # ⭐ Y la pregunta es qué le FALTA a la base, no en qué difieren. Una rama vieja siempre
+        # difiere —master avanzó— así que `diff` marcaba las tres. Lo que importa es el diff
+        # ACOTADO a lo que esos commits tocaron: si master ya tiene ese contenido, el squash
+        # funcionó; si no, hay trabajo empujado que ningún merge se llevó.
+        tocados = set()
+        for sha in (l[2:].strip() for l in pend):
+            for f in sh("git", "-C", repo, "show", "--name-only", "--format=", sha).split("\n"):
+                if f.strip():
+                    tocados.add(f.strip())
+        if not tocados:
+            continue
+        falta = sh("git", "-C", repo, "diff", "--name-only", base, r, "--", *sorted(tocados)).strip()
+        if falta:
+            huerfanas.append((r.replace("origin/", ""), len(falta.split("\n"))))
+    # ⚠️ LÍMITE MEDIDO Y DICHO: esto no distingue "trabajo que falta" de "rama vieja que master
+    # ya superó" — ambas difieren. Medido 2026-08-07: 2 ramas marcadas, 1 acierto real
+    # (`fix/candado-antipatron-8`, 8 archivos de verdad ausentes) y 1 residuo antiguo.
+    # ⭐ Se acepta ese falso positivo a conciencia: la alternativa —callar hasta estar seguro—
+    # es lo que dejó pasar el mismo defecto TRES veces en un día. Un aviso que pide 10 segundos
+    # de `git diff` cuesta menos que una autopsia perdida. Por eso es 🟡 y nombra el comando.
+    for nombre, n in huerfanas[:4]:
+        yel(f"rama `{nombre}`: {n} archivo(s) que sus commits tocaron NO coinciden con {base} — "
+            f"¿un squash los dejó fuera, o es una rama vieja? git diff {base} origin/{nombre}")
+
+
 # ── MAIN ─────────────────────────────────────────────────────────────────────
 def main():
     args = sys.argv[1:]
@@ -605,6 +668,7 @@ def main():
             red("VERSION is missing — this engine cannot say which version it is.\n"
                 "   A bug reported from another machine could not be reproduced.")
         check_session()
+        check_ramas_sin_mergear()
 
     if quiet:
         return 2 if RED else (1 if YEL else 0)

@@ -81,6 +81,10 @@ for path in targets:
         elif UNANSWERED.search(m.group(1).strip()):
             misses.append(f"{where} still a placeholder — cannot answer: {question}")
 
+    # ⚠️ Aquí el `+1` SÍ es correcto y no debe "corregirse": `tier1` es un FRAGMENTO extraído
+    # con regex, no un archivo, así que no termina en salto de línea. En `check-blocks` y
+    # `check-health` el mismo patrón sobre un ARCHIVO contaba una línea fantasma (2026-08-07) —
+    # la diferencia es qué se está midiendo, no la expresión.
     lines = tier1.count("\n") + 1
     if not quiet:
         print(f"\nBLOCK {name} — Tier 1 is {lines} lines")

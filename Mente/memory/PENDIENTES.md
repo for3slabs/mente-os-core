@@ -5,6 +5,28 @@
 
 
 
+
+## 🔧 `bin/grade-block` no puede medir un bloque cuyo scope son ARCHIVOS (2026-08-07)
+
+`infra_evidence()` (y el mismo patrón en las métricas de código) recorre los **directorios** que
+el §B declara. Un bloque cuyo scope son archivos sueltos —`bin/init`, `bin/test-f0-f6`— produce
+un `text` vacío, y entonces **`runbook documented` y `rollback documented` salen 🔴 NO aunque los
+documentos existan**. Medido con `separacion-motor-instancia`: el documento está escrito en
+`blocks/active/separacion-motor-instancia/docs/runbook-y-rollback.md` y el veredicto no cambia.
+
+⚠️ **Consecuencia:** un bloque de infraestructura que toca piezas concretas **no puede salir de
+🔴 MVP**, por bien documentado que esté. El veredicto deja de discriminar justo donde debería.
+
+⛔ **La salida NO es ensanchar el §B a directorios** para que el medidor encuentre texto: eso
+falsea el scope, que es el documento que dice qué toca el bloque. La corrección es que
+`infra_evidence` mire también `blocks/active/<bloque>/docs/`, que es donde el contrato dice que
+vive la documentación del bloque.
+
+🙋 Decisión de Brian: es un cambio en el medidor, y cambiar cómo se puntúa afecta a todos los
+bloques ya calificados.
+
+---
+
 ## ✅ RESUELTO (2026-08-07) — `hooks/pre-edit-standards.py` confundía MENCIONAR con RECLAMAR
 
 Su matcher hace `d in target` — **subcadena, no ruta**. El bloque `separacion-motor-instancia`

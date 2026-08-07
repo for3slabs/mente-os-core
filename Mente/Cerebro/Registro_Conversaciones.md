@@ -44,7 +44,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S10 | `1b9338a4` | 2026-08-03 18:51 | 2026-08-04 01:32 (**~7h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
 | S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
 | S11 | `8b4bddcb` | 2026-08-04 02:31 | ⚠️ **NO cerró aquí** — el mismo `.jsonl` siguió vivo hasta 08-07 21:26 (ver S12) | 11.8 MB → 25 MB | 65 → 2,381 | **999,757 → 1,000,030** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
-| S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 21:26 (**~46h**) 🔴 | **25 MB** 🟡 | 2,381 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
+| S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 22:41 (**~47h**) 🔴 | **27 MB** 🟡 | 2,499 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -482,11 +482,47 @@ la batería fuera de este árbol.
 errata inventada, **no se cazó**. Se aceptó a conciencia y está escrito en el código, porque la
 alternativa (20 citas correctas en rojo en cada clon) es cómo un validador se vuelve ruido.
 
+### 🔴 La cola: 4 PRs más DESPUÉS del primer wrap
+
+El wrap se corrió a las 21:26 y la sesión siguió **75 minutos y 118 turnos más**, porque Brian
+pidió cerrar pendientes antes del corte. Lo que salió de esa cola:
+
+- **PR #13** — el matcher de `hooks/pre-edit-standards.py` (mencionar ≠ reclamar) + 2 avisos que
+  solo se podían callar **falseando el dato**: un `Type: fossil` al que se le exigía fecha de hoy,
+  y `check-health` contando una **línea fantasma** (`count("\n") + 1`), con lo que un documento de
+  250 líneas se reportaba como 251 y se recortaba algo que ya cumplía.
+- **PR #14** — 3 registros que afirmaban cosas **ya falsas**: `graphify #4` pedía 2 decisiones
+  tomadas hacía 2 días, y el §E de `demo` decía que §F-7 seguía abierto cuando su propia tabla §F
+  lo daba por cerrado. ⭐ *Un pendiente ya hecho cuesta lo mismo que uno olvidado.*
+- **PR #15** — bloque `separacion-motor-instancia` **5/5**, verificado en un clon de master
+  mergeado: **6 fallos en frío → 1 tras `bin/init`**.
+
+### 🔴 Y el defecto que se repitió DOS VECES el mismo día
+
+**Un merge por squash desde una versión previa borró trabajo ya empujado.** Pasó dos veces:
+① el PR #14 nació con conflictos porque el #13 se mergeó mientras había trabajo encima;
+② al mergear el #14, el candado del anti-patrón #8 **desapareció de master** — el propio candado
+que vigila ese defecto. Recuperado por cherry-pick.
+
+⭐ `rules/rule-shipping-flow.md` lista *"un PR que depende de otro sin mergear"* como anti-patrón
+**#8 desde el 05-ago**. Medido el 07-ago: **0 validadores, 0 checks, 1 sola mención**. Otra vez la
+ley del sistema sobre sí mismo. Ahora `hooks/pre-commit.sh` avisa si la rama va por detrás —
+**avisa, no bloquea**: ir detrás es normal mientras se trabaja, lo caro es enterarse en GitHub.
+
+### ⏸️ Una decisión de NO hacer
+
+graphify **#5 (benchmark) y #6 (memoria puntuada)** quedan diferidos. Razón medida, ya escrita en
+el propio documento: miden un producto que **nadie externo ha instalado** — graphify tiene miles
+de instalaciones verificadas y 1.8:1 de tests; Mente OS **cero y cero**. Lo que los desbloquea es
+una **prueba de campo**, no más código.
+
 ### Por qué se cierra
 
-Contexto en **1,000,030** — récord del proyecto y por encima del umbral del incidente del
-21-jul. `check-health` reporta **5 API connection errors**, la señal de saturación. El trabajo
-llegó a frontera natural: PR #12 abierto, batería 196/0, nada a medias.
+Contexto clavado en **1,000,030** — récord del proyecto, por encima del umbral del incidente del
+21-jul y **sin moverse en 75 minutos**: es el techo del harness, no una casualidad.
+`check-health` reporta **6 API connection errors** (5 al primer wrap), la señal de saturación
+creciendo. Frontera natural: **PRs #12·#13·#14 mergeados**, #15 abierto, batería 198/0, el bloque
+5/5, nada a medias.
 
 ---
 

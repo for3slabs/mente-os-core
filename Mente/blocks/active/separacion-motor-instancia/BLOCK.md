@@ -114,6 +114,18 @@ una vez*. Este bloque la lleva del documento al árbol.
 ⚠️ Ese último no se arregla: en un clon nuevo la sesión **no** está registrada, y decirlo es el
 comportamiento bueno. Un check que se pusiera verde ahí estaría mintiendo.
 
+### Runbook y rollback
+→ `blocks/active/separacion-motor-instancia/docs/runbook-y-rollback.md` — cómo se verifica esto
+en un clon (3 pasos) y cómo se revierte cada uno de los 4 cambios por separado.
+
+⚠️ **`bin/grade-block` los sigue marcando 🔴 NO, y el documento SÍ existe.** Medido 2026-08-07:
+`infra_evidence()` busca esos textos recorriendo los DIRECTORIOS que el §B declara como scope —
+y el §B de este bloque declara **archivos sueltos** (`bin/init`, `bin/test-f0-f6`), no carpetas,
+así que el texto que analiza llega VACÍO y ambas métricas salen NO pase lo que pase.
+⭐ **No se toca el §B para complacer al medidor**: el scope describe lo que el bloque toca, y
+falsearlo para sacar un 🟢 convertiría el veredicto en un número decorativo. El 🔴 se deja como
+lo que es —un límite del validador, no una carencia del bloque— y queda en `memory/PENDIENTES.md`.
+
 <!-- ══ K · CLOSING ══ required to CLOSE ══ -->
 ## Closing
 (pending — the block is still active)

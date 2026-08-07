@@ -94,8 +94,8 @@ fósiles en `bin/check-clear-ready`, línea fantasma en `bin/check-health`). Bat
 tras `bin/init`, y ese 1 (`registered=no`) es la respuesta correcta. graphify **4/6**: #5 y #6
 ⏸️ diferidos, miden un producto que nadie externo ha instalado. 🔑 GPG sigue siendo tuya.
 
-**👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. Desbloquea
-graphify #5-#6 y es lo que más vale: **cero instalaciones externas verificadas**.
+**👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. **Cero
+instalaciones externas verificadas**; sin eso, graphify #5-#6 solo se medirían a sí mismos.
 
 ---
 

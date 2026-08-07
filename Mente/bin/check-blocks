@@ -107,7 +107,7 @@ def check_documents():
         text = open(f, encoding="utf-8").read()
         if is_exempt(f, text):
             continue
-        lines = text.count("\n") + 1
+        lines = len(text.splitlines())   # ⚠️ NO `count("\n")+1`: contaba una línea fantasma
 
         status = field(text, "Status")
         dtype = field(text, "Type")
@@ -249,7 +249,7 @@ def check_blocks():
     ids, scopes = {}, {}
     for f in files:
         text = open(f, encoding="utf-8").read()
-        lines = text.count("\n") + 1
+        lines = len(text.splitlines())   # ⚠️ NO `count("\n")+1`: contaba una línea fantasma
 
         # 🔴 PER-SECTION LIMITS — the block declares them in its own banners (`≤5 lines`, `≤15`…)
         # and NOTHING measured them; only the file total was enforced. A §E State that grows
