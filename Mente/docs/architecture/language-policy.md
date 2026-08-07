@@ -32,7 +32,7 @@ the suffix WAS the split signal (ADR-027). **Moved, not rewritten.**
 | Archivo | Tipo |
 |---|---|
 | `CLAUDE.md` + el enrutador (capa A) | instrucción · se inyecta |
-| `.claude/output-styles/for3s.md` | instrucción · **el mayor peso del sistema** |
+| `~/.claude/output-styles/for3s.md` | instrucción · **el mayor peso del sistema** |
 | `base-rules.md` | instrucción |
 | `principles/owner-0-voice.md` · `owner-1-docs` · `owner-2-dev` · `owner-3-validation` | instrucción |
 | `principles/expertise/{database,backend,frontend}.md` | instrucción |

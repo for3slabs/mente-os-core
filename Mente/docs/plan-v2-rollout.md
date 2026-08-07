@@ -82,7 +82,7 @@ validar el plan completo. **Construir con preguntas abiertas es lo que nos trajo
 | **F0-1** | ¿Cuándo un error **merece** ser caso? | Brian aprobó la recomendación | ✅ **CERRADO** → §10.5 |
 | **F0-2** | ¿Cómo se detecta que una regla estorbó **3 veces**? | Brian aprobó la recomendación | ✅ **CERRADO** → §10.6 |
 | **F0-3** | Revisar el plan y aprobar el orden | Brian | ⏳ pendiente |
-| **F0-4** | ⭐ **THE VOICE** — `principles/owner-0-voice.md` + `.claude/output-styles/for3s.md` 🇺🇸 | IA redacta · Brian valida | ⏳ **listo para arrancar** |
+| **F0-4** | ⭐ **THE VOICE** — `principles/owner-0-voice.md` + `~/.claude/output-styles/for3s.md` 🇺🇸 | IA redacta · Brian valida | ⏳ **listo para arrancar** |
 
 **Lo decidido en F0-1 (§10.5):** prueba de **3 preguntas** (¿pasaría en otro sitio? ¿fue criterio
 equivocado? ¿se puede escribir como regla accionable?) + **umbral automático a las 2 repeticiones**

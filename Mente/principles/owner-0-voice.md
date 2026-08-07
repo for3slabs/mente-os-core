@@ -1,7 +1,7 @@
 # OWNER-0 · THE VOICE
 **Status:** current · **Type:** contract · **Updated:** 2026-08-03 · **Owner:** brian
 **Scope:** how the AI communicates. Not what it builds — that is owner-1/2/3.
-**Portable:** any AI reads this file. The Claude Code vehicle is `.claude/output-styles/for3s.md`.
+**Portable:** any AI reads this file. The Claude Code vehicle is `~/.claude/output-styles/for3s.md`.
 ---
 
 ## 0 · WHY THIS FILE EXISTS
@@ -280,6 +280,6 @@ the rest are noise. Questions 4-13 govern 🟡 and 🔵.
 
 ---
 
-Related: `.claude/output-styles/for3s.md` (the vehicle) ·
+Related: `~/.claude/output-styles/for3s.md` (the vehicle) ·
 `docs/Arquitectura_Mente_OS_v2_Bloques.md` §12-SEXIES (the design) · §12-Q.3 (the same rule for
 code) · `rules/NAMING_CONVENTION.md` (language policy) · `rules/case-dangerous-default.md` (source of §2.7) · Implements ADR-018 (owner-0 is the VOICE, not a fourth owner).

@@ -322,8 +322,15 @@ def _check_one(p, name):
                 red(f"CONTRADICTION · additionalDirectories grants {entry}\n"
                     f"   but a deny rule locks {locked}")
 
+    # 🔴 EXPANDE LAS VARIABLES ANTES DE COMPROBAR (2026-08-06). El mismo defecto que ya se
+    # corrigió en `bin/test-f0-f6` vivía TAMBIÉN aquí: `os.path.exists()` sobre el texto
+    # literal marca como muerta una ruta portable —`${CLAUDE_PROJECT_DIR}/…`, que es la forma
+    # CORRECTA— por no existir un directorio con ese nombre.
+    # ⚠️ La lección: arreglar un defecto en un validador no lo arregla en sus hermanos. Se buscó
+    # el patrón en los demás y este era el que faltaba.
+    os.environ.setdefault("CLAUDE_PROJECT_DIR", os.path.dirname(MENTE))
     for entry in dirs:
-        if not os.path.exists(entry):
+        if not os.path.exists(os.path.expandvars(os.path.expanduser(entry))):
             yel(f"dead path in additionalDirectories: {entry}")
     for i, a in enumerate(dirs):
         for b in dirs[i + 1:]:

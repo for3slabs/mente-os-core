@@ -75,7 +75,7 @@ una fuente de verdad existe para eliminar. Criterio y prueba: `principles/expert
 | Archivo | Tipo |
 |---|---|
 | `CLAUDE.md` + el enrutador (capa A) | instrucción · se inyecta |
-| `.claude/output-styles/for3s.md` | instrucción · **el mayor peso del sistema** |
+| `~/.claude/output-styles/for3s.md` | instrucción · **el mayor peso del sistema** |
 | `base-rules.md` | instrucción |
 | `principles/owner-0-voice.md` · `owner-1-docs` · `owner-2-dev` · `owner-3-validation` | instrucción |
 | `principles/expertise/{database,backend,frontend}.md` | instrucción |
@@ -1441,7 +1441,7 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 | Archivo | Origen | Qué contiene | Quién lo escribe |
 |---|---|---|---|
 | `principles/owner-0-voice.md` 🇺🇸 | 🆕 **nuevo ⭐** | **THE VOICE** (§12-SEXIES): 8 reglas negativas · portátil | Brian valida · IA redacta |
-| `.claude/output-styles/for3s.md` 🇺🇸 | 🆕 **nuevo** | ⭐ el vehículo · **mayor peso del sistema** | IA construye |
+| `~/.claude/output-styles/for3s.md` 🇺🇸 | 🆕 **nuevo** | ⭐ el vehículo · **mayor peso del sistema** | IA construye |
 | `principles/owner-1-docs.md` 🇺🇸 | 🆕 nuevo | formato de docs y planes · apartados base | Brian define · IA redacta |
 | `principles/owner-2-dev.md` 🇺🇸 | 🆕 nuevo | criterios de aceptación · veto y retroceso | Brian define · IA redacta |
 | `principles/owner-3-validation.md` 🇺🇸 | 🆕 nuevo | qué revisar para que "nada quede suelto" | Brian define · IA redacta |

@@ -145,6 +145,49 @@ def _ignorados():
 
 
 IGNORADOS_A_PROPOSITO = _ignorados()
+
+
+# ⭐ REPOS HERMANOS: viven AL LADO de Mente/, nunca dentro, y NUNCA viajan al repositorio.
+# Un puntero hacia ellos (`../for3s-inter/…`, `marca-personal/…`) es correcto y útil en la
+# máquina del dueño, y en un clon no puede resolver por diseño — no porque esté mal escrito.
+#
+# 🔴 Medido en un clon limpio el 2026-08-06: ~50 de las citas "rotas" eran esto. Un clon que
+# arranca reportando 50 fallos **parece roto sin estarlo**, y un validador que grita sobre lo
+# correcto enseña a ignorarlo.
+#
+# ⛔ Y NO es dejar de verificar: en la máquina que SÍ tiene el hermano, la ruta se comprueba
+# como cualquier otra. Lo que se acepta es "el destino está fuera del repo por diseño".
+# Se LEE de `mente.config.yml` (`siblings` + `outside`): una lista a mano aquí se desincroniza
+# del archivo que declara la verdad.
+def _hermanos():
+    fuera = set()
+    try:
+        import mente_config as _mc
+        for k in ("siblings", "outside"):
+            for x in (_mc.get(k) or []) if hasattr(_mc, "get") else []:
+                fuera.add(str(x).strip("/").split("/")[0])
+    except Exception:                                          # noqa: BLE001
+        pass
+    if not fuera:                       # respaldo: leer el YAML a mano, sin dependencias
+        try:
+            sec = None
+            for line in open("mente.config.yml", encoding="utf-8"):
+                s = line.rstrip()
+                if re.match(r"^(siblings|outside):", s):
+                    sec = True
+                    continue
+                if sec and re.match(r"^\s*-\s", s):
+                    v = s.split("-", 1)[1].strip().strip('"\'').split("#")[0].strip()
+                    if v:
+                        fuera.add(v.strip("/").split("/")[0])
+                elif sec and s and not s.startswith((" ", "\t", "#")):
+                    sec = None
+        except OSError:
+            pass
+    return fuera
+
+
+HERMANOS = _hermanos()
 # Outside Mente: other repos, the harness, the agent. Not ours to resolve.
 # ⚠️ `memory/<fecha>.md` es de OpenClaw (diarios del agente ajeno), NO de nuestra memory/.
 # Colisión de nombre creada al elegir `memory/` como destino v2 en M1 (2026-07-30).
@@ -313,6 +356,13 @@ def main():
             # fallando EN LA MÁQUINA QUE SÍ TIENE `Maestro/`, que es donde se puede verificar.
             # Lo que se acepta es "el destino es local por diseño", no "no lo comprobamos".
             _limpia = re.sub(r"^Mente/", "", c)
+            # un hermano: se acepta si NO está presente (clon); si está, se verifica de verdad
+            # ⚠️ Se quitan TODOS los `../` iniciales, no solo uno: las citas reales usan
+            # `../for3s-inter/…` y también `../../for3s-inter/…` según desde dónde se escriban.
+            _rel = re.sub(r"^(\.\./)+", "", _limpia.lstrip("./"))
+            _raiz = _rel.split("/")[0]
+            if _raiz in HERMANOS and not os.path.isdir(os.path.join("..", _raiz)):
+                continue
             if _limpia.split("/")[0] in IGNORADOS_A_PROPOSITO:
                 if os.path.exists(_limpia) or not os.path.isdir(_limpia.split("/")[0]):
                     continue
