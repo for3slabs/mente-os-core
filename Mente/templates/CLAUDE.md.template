@@ -1,9 +1,17 @@
+<!-- ⚠️ PLANTILLA — la genera `bin/init`, no se edita a mano en una instancia.
+     🔴 REGENERADA 2026-08-07 desde los archivos VIVOS. Estaba desfasada y `bin/init --force`
+     DEGRADABA un clon: los fallos subían de 10 a 14 porque perdía `Server-first`, `KEK`, el
+     aviso de licencia y los matchers de los hooks — reglas que los checks exigen hoy.
+     ⭐ Una plantilla que va por detrás del sistema convierte al instalador en un destructor. -->
 # {{project}} — arranque
 
 **Status:** current · **Type:** entry-point · **Updated:** 2026-08-02 · **Owner:** brian
 **Level:** 🚪 el ARRANQUE — lo carga Claude Code solo; no hereda ni es heredado (no lleva reglas)
 **Verified by:** `Mente/bin/check-links` · `Mente/bin/test-f0-f6` (§F6 · router + métricas)
 **Scope:** ⚠️ documento de INSTANCIA, no del motor — el motor publicado es `mente-os` (MIT)
+**Licencia:** este repositorio es **AGPL-3.0** (ver `LICENSE`). ⚠️ Distinta a la del motor
+publicado a propósito: aquí vive también la INSTANCIA (`Cerebro/`, `memory/`), y AGPL obliga
+a que quien lo use —incluso como servicio— publique sus cambios.
 
 ## Purpose
 
@@ -37,7 +45,7 @@ guarda todo en disco, así que `/clear` es seguro **cuando la sesión está regi
 🌐 UNIVERSAL   Mente/base-rules.md        cualquier proyecto · desde la primera respuesta
       │ hereda (puede AÑADIR o ENDURECER — nunca RELAJAR)
       ▼
-🏢 PROYECTO    PROJECT-RULES.md           esto es For3s OS: el gate, server-first, el scope
+🏢 PROYECTO    PROJECT-RULES.md           esto es {{project}}: el gate, server-first, el scope
       │ hereda
       ▼
 📦 BLOQUE      Mente/blocks/active/<n>/BLOCK.md §B    solo mientras ese bloque esté abierto
@@ -53,6 +61,8 @@ guarda todo en disco, así que `/clear` es seguro **cuando la sesión está regi
 | **Qué estándar aplica al código que voy a tocar** | 🤖 el hook `Mente/hooks/pre-edit-standards.py` lo inyecta solo |
 | **Arquitectura del sistema** | `Mente/Cerebro/For3s_OS_Grafo_Maestro.md` |
 | 🤖 **QUÉ PUEDO EJECUTAR y qué NO puedo tocar** — los 15 validadores, las 3 puertas, la línea motor/instancia | ⭐ `Mente/CAPABILITIES.md` |
+| 🗺️ **Dónde está cada cosa de ESTA máquina** — repos, qué está cerrado, dónde viven los secretos (nunca su valor) | `Mente/docs/WORKSPACE.md` |
+| 🚢 **Cómo se sube un PR** — rama → verificar → PR → ⛔ no mergear (cualquier disciplina) | `Mente/rules/rule-shipping-flow.md` |
 
 > ⭐ **Las reglas se SUMAN, nunca se relajan.** Dos bloques comparten reglas solo si uno declara al
 > otro en su `§C`. En conflicto, **gana la más estricta.**
@@ -103,7 +113,7 @@ Regla completa: `Mente/rules/rule-session-close.md`. Origen: la sesión de 278 M
 | `Mente/docs/` | planes, análisis, bitácoras de fase · 🤖 `Mente/docs/INDEX.md` y `Mente/docs/STATES.md` generados |
 | `Mente/piezas.tsv` | ⭐ **dónde vive cada pieza clave** — mover algo cuesta 1 línea |
 | `Mente/vision/` `work/` `memory/` `bridges/` | 🆕 visión · trabajo cerrado · memoria viva · el gate |
-| `Mente/Cerebro/` | el grafo de For3s OS (el producto — NO se migra) |
+| `Mente/Cerebro/` | el grafo de {{project}} (el producto — NO se migra) |
 
 ---
 
@@ -114,12 +124,12 @@ Regla completa: `Mente/rules/rule-session-close.md`. Origen: la sesión de 278 M
 > los tres ya eran falsos. Un número copiado es correcto **exactamente una vez**. Aquí solo van
 > punteros: el valor se lee del archivo que lo mide, así que no puede quedar desfasado.
 
-**{{project}}** — ⬜ una línea sobre qué es este proyecto. Lo rellena su dueño o su agente
-la primera vez; no lo inventa `bin/init`, porque el propósito de un proyecto es criterio.
+**Diseño 100% LOCKED** (R1-R10, 11 nodos, 3 pilares). **{{project}} EN PRODUCCIÓN** — bot Telegram
+contenerizado, multi-instancia. (Describe aquí el estado de {{project}}.)
+**MOLDE "For3s Inside"** y **For3s TRACE** en `molde/`.
 
 **Mente OS v2** = el sistema de bloques que gobierna este repo: validadores + hooks + 3 niveles de
 reglas. **La prueba viva es `Mente/bin/test-f0-f6`; lo único que importa es `failed: 0`.**
-👉 Qué puede ejecutar el agente y qué no debe tocar: `Mente/CAPABILITIES.md`.
 
 | Necesitas… | Léelo de… |
 |---|---|

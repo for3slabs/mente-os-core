@@ -1,18 +1,26 @@
+<!-- ⚠️ PLANTILLA — la genera `bin/init`, no se edita a mano en una instancia.
+     🔴 REGENERADA 2026-08-07 desde los archivos VIVOS. Estaba desfasada y `bin/init --force`
+     DEGRADABA un clon: los fallos subían de 10 a 14 porque perdía `Server-first`, `KEK`, el
+     aviso de licencia y los matchers de los hooks — reglas que los checks exigen hoy.
+     ⭐ Una plantilla que va por detrás del sistema convierte al instalador en un destructor. -->
 # PROJECT RULES · {{project}}
 
-**Status:** draft · **Type:** entry-point · **Updated:** — · **Owner:** {{owner}}
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-02 · **Owner:** brian
 **Level:** 🏢 PROJECT — inherits from `Mente/base-rules.md` (🌐 universal)
 **Verified by:** `Mente/bin/check-blocks` · **Model:** `Mente/rules/rule-inheritance.md`
 ---
 
 ## Purpose
 
-The rules that apply **while working on {{project}}** — and nowhere else. They live in their own
-file so that a block, or a different project cloned from the same engine, does not inherit them.
+The rules that apply **while working on {{project}}** — and nowhere else. They exist as a separate file
+because of a measured problem: they used to live in `CLAUDE.md`, which meant every block and every
+future project inherited them.
 
-> ⛔ **`bin/init` does not fill this file's rules in.** It generates the shape; the rules are
-> **criterion**, and the AI does not invent criterion (`ADR-003`). Every ⬜ below is a question
-> for {{owner}}, and an unanswered one is an honest gap — not a blank to guess at.
+> **{{owner}}, 2026-07-29:** *"el sistema NO SOLO LO VOY A OCUPAR PARA DEMO, y entonces el resto de lo
+> que haga va a estar contagiado con esas reglas."*
+
+**Quien clone Mente OS para otro trabajo NO debe heredar los vecinos de esta instancia —**
+a rule about a project that is not hers. That is the contamination this file prevents.
 
 ---
 
@@ -28,22 +36,33 @@ file so that a block, or a different project cloned from the same engine, does n
 📦 BLOCK       Mente/blocks/active/<name>/BLOCK.md §B
 ```
 
-⛔ **A lower level can never grant itself what a higher level forbids.** Exceptions are
-{{owner}}'s only, and become a **new rule at the parent's level** with its own ADR.
+⛔ **A lower level can never grant itself what a higher level forbids.** Exceptions are {{owner}}'s
+only, and become a **new rule at the parent's level** with its own ADR.
 
 ---
 
 ## 1 · 🔒 WHICH RULES ARE LOCKS, AND WHICH ARE DISCIPLINE
 
+> **Measured 2026-08-02.** §3 claims *"the gate is a technical lock, not a promise"* — true of §2
+> and §3. It is **not** true of every rule here, and presenting them all the same way makes
+> doctrine read as enforcement.
+>
 > ## A declared limit is engineering. A hidden one is debt.
-
-A rule backed by a `deny`/`ask` in `.claude/settings.json` is obeyed 100%. A rule that only lives
-in this document is obeyed 40-60% — **measured in this project, not assumed.** Say which is which,
-so nobody trusts a paragraph as if it were a lock.
 
 | Rule | Enforced by | Level |
 |---|---|---|
-| ⬜ fill in as rules are added below | `deny` / `ask` / a validator / nothing | 🔒 lock · 🟡 prompt · 📖 discipline |
+| §2 `marca-personal/Mente` out of scope | 4 `deny` rules, both settings files | 🔒 **lock** |
+| §3 the NavigoX gate | 6 `deny` rules, both settings files | 🔒 **lock** |
+| §5 `secrets/` 700 · files 600 | `bin/test-f0-f6` §F0 measures the real modes | 🔒 **lock** |
+| §4 server-first (`git push`) | `ask` on all three push forms — {{owner}} confirms each one | 🟡 **prompt** |
+| §5 Master KEK offline | ⛔ **nothing can verify it** — it lives off this machine | 📖 **discipline** |
+| §5 server password rotation | deliberately deferred by {{owner}}, with its three trigger conditions | 📖 **discipline** |
+| §6 reading · §7 F-method | conduct — not mechanically verifiable by design | 📖 **discipline** |
+
+⭐ **Why the distinction matters:** this project's own measured law is that a rule in code is
+obeyed 100% and a rule in a document 40-60%. **The 📖 rows are the 40-60%.** They are not weaker
+rules — they are rules whose compliance nobody can prove, and that is worth knowing before
+trusting them.
 
 ---
 
@@ -51,40 +70,49 @@ so nobody trusts a paragraph as if it were a lock.
 
 | | |
 |---|---|
-| **This project IS** | ⬜ {{owner}} |
-| **Architectural source of truth** | ⬜ which document decides, when two disagree |
-| ⛔ **NOT this project** | ⬜ what lives nearby and must never be mixed in |
-| ⚠️ **Ask first** | ⬜ where a change needs confirmation before it happens |
+| **This project IS** | {{project}}. Its documentary brain is `Mente/` = **"Mente OS"** |
+| **Architectural source of truth** | `Mente/Cerebro/For3s_OS_Grafo_Maestro.md` |
+| ⛔ **NOT this project** | `marca-personal/Mente/` — public site, separate project. **Technically locked** by a `deny` rule |
+| ⛔ **NOT this project** | For3s QA — separate working branch, never mixed in |
+| ⚠️ **Ask first** | any modification outside `for3s-inter/` |
+
+> `marca-personal/` (the site) **is** in scope — the demo lives there. `marca-personal/Mente/` is
+> not. The distinction is the `/Mente/` suffix, and it is enforced by the harness, not by trust.
 
 ---
 
 ## 3 · 🌉 THE GATE — other Mente OS instances
 
-If another project has its own Mente OS, this one **points at it but does not integrate it** —
-integrating burns tokens with no request behind it. Declare each gate in `mente.config.yml`
-(`gates:`), which is what the harness reads.
+Otros proyectos tienen su propio Mente OS (declara los tuyos abajo). Éste **apunta a
+them but does not integrate them** — integrating burns tokens with no request behind it.
 
 | | |
 |---|---|
-| ⛔ **Never read** | ⬜ path — see `mente.config.yml` `gates:` |
-| **Open** | `acceder mente <project>` → confirm the WHY → **read-only + report** |
-| **Close** | `cerrar mente <project>`, or auto-close when the task ends |
-| **Enforcement** | 🔒 `deny` on Read/Edit/Write in **both** settings files |
+| ⛔ **Nunca leer** el Mente OS de otro proyecto sin que {{owner}} use la frase de acceso | ni "por contexto", ni "por si acaso" |
+| **Open** | {{owner}} writes `acceder mente <project>` → confirm the WHY → **read-only + report** |
+| **Close** | `cerrar mente <project>` **or** auto-close when the task ends, whichever comes first |
+| **Enforcement** | 🔒 `deny` on Read/Edit/Write in **both** `.claude/settings.json` and `settings.local.json` |
 
-⭐ **A gate is a technical lock, not a promise.** In this project's own history it was doctrine
-for one session and got violated 6 times. **Never propose lifting a `deny` for convenience.**
+⭐ **The gate is a technical lock, not a promise.** It was doctrine on 2026-07-21 and got violated
+6 times in one session. Now the harness refuses. **Never propose lifting a deny for convenience.**
+
+Registry and full rules: `Mente/bridges/Puentes_Mente_OS.md`.
 
 ---
 
-## 4 · 📏 DEPLOY — where work is built and when it ships
+## 4 · 📏 SERVER-FIRST — the deploy rule
 
-> ⬜ **{{owner}}:** does this repo auto-deploy? If a push to a branch publishes, say so **here**
-> and gate `git push` in `.claude/settings.json`. This is the only project rule with a
-> production consequence, and it is the one worth making a lock rather than a paragraph.
+> **Develop and test on the SERVER. Push to GitHub only on an explicit order.**
+> Flow: `server → local → GitHub`.
+
+⚠️ **Why this is project-level and not universal:** it only matters in repos with auto-deploy.
+**Vercel deploys from `main`, so any push to `main` is a production deploy.**
 
 | Repo | Role |
 |---|---|
-| ⬜ | ⬜ |
+| `github.com/fruterito101/for3s` | the repo of truth (AGPL, GPG-signed by {{owner}}) |
+| server `~/for3s-os` | the workshop |
+| `marca-personal` | the site — **pushing to `main` publishes** |
 
 ---
 
@@ -92,10 +120,12 @@ for one session and got violated 6 times. **Never propose lifting a `deny` for c
 
 | | |
 |---|---|
-| Owner | **{{owner}}** |
-| Secrets | `Mente/secrets/` — 700, files 600, gitignored, no exceptions |
-| ⬜ Key material | where the master key lives, and what must never reach disk |
-| ⬜ Audit trail | what must stay immutable |
+| Founder | **{{owner}}** — never "Aguilar". `ema@frutero.club` |
+| Master KEK | **always offline.** Never on the server |
+| Plaintext secrets | **{{owner}} never sees them** |
+| Audit trail | immutable — no `UPDATE`, no `DELETE` |
+| `Mente/secrets/` | 700, files 600, gitignored, **no `!README.md` exception** |
+| Server password | ⚠️ **rotation deliberately deferred by {{owner}}.** Mitigant: the server is Tailscale-only. **Must rotate before**: opening the Tailscale Funnel · granting tailnet access to anyone · publishing any repo carrying a `.jsonl` or `settings.local.json` |
 
 ---
 
@@ -103,18 +133,20 @@ for one session and got violated 6 times. **Never propose lifting a `deny` for c
 
 | | |
 |---|---|
-| **First, always** | `Mente/memory/RETOMAR.md` — the cold-start brief. **~90% of the time it is enough** |
-| **What the agent may run** | `Mente/CAPABILITIES.md` — the 15 validators, the 3 gates, the engine/instance line |
+| **First, always** | `Mente/memory/RETOMAR.md` (~5 KB) — the cold-start brief. **~90% of the time it is enough** |
+| ⛔ **Do NOT read** | `Mente/memory/Estado_Sesion_Continuidad.md` (200 KB) unless a pointer in RETOMAR sends you there explicitly |
+| **Why** | reading it "just in case" burns tokens for nothing — measured by {{owner}}, 2026-06-09 |
 | **Open block** | load Tier 1 (§A-E) of `Mente/blocks/active/*/BLOCK.md`. If §A-E do not suffice → **say so, do not infer** |
-| ⬜ **Do NOT read** | any file that is expensive and rarely needed — name it, with the reason |
 
 ---
 
 ## 7 · 🏗️ HOW WORK IS BUILT
 
+Every **large milestone** uses the F-phase method: `Mente/rules/ESTANDAR_Metodo_Fases_F.md`.
+
 ```
 explain → approve → build          (never skip the middle step)
-investigate the ground → build defensively → verify → commit
+investigate the ground → build defensively → §5-BIS battery → signed commit → server first
 ```
 
 ⭐ **Curiosity that hunts bugs:** actively look for your own latent bug. Never call something good
@@ -124,11 +156,10 @@ without testing it, nor bad without investigating it.
 
 ## 8 · WHAT THIS FILE IS NOT
 
-⛔ **Universal conduct does not live here.** "Report the measurement, do not state", "the AI does
-not invent criterion", "no `/clear` without registering" hold in **any** project →
-`Mente/base-rules.md`.
+⛔ **Universal conduct does not live here.** "Do not state — report the measurement", "the AI does
+not invent criterion", "no `/clear` without registering" hold in **any** project → `Mente/base-rules.md`.
 
-⛔ **Block limits do not live here.** A limit that applies to one piece of work belongs to its
+⛔ **Block limits do not live here.** "Do not touch the agent's repo" belongs to one block → its
 `BLOCK.md` §B.
 
 **The test:** *would this rule still hold in a different project?*
@@ -137,5 +168,4 @@ not invent criterion", "no `/clear` without registering" hold in **any** project
 ---
 
 Related: `Mente/base-rules.md` (🌐 universal) · `Mente/rules/rule-inheritance.md` (the model) ·
-`CLAUDE.md` (the router that loads this) · `Mente/CAPABILITIES.md` (what the agent may run) ·
-`Mente/mente.config.yml` (the one file an instance edits).
+`CLAUDE.md` (the router that loads this) · `Mente/bridges/Puentes_Mente_OS.md` (the gate).

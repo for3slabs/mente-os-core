@@ -176,7 +176,19 @@ def outside():
 
 
 def owner_name():
-    return _get("owner.name", "the owner")
+    """Quién decide en esta instancia. ⛔ SIN DEFAULT, y es deliberado (2026-08-07).
+
+    🔴 Devolvía `"the owner"` cuando no había nada declarado, así que `bin/init` —que sí tiene
+    el flujo para preguntarlo— **nunca preguntaba**: recibía ese texto y lo daba por un nombre.
+    Medido en un clon corriendo `bin/init` como haría un desconocido: quedaba con un dueño
+    llamado "the owner" y ningún aviso.
+
+    ⭐ `ADR-003`: el criterio se PREGUNTA, nunca se adivina. Un default aquí no rellena un
+    hueco — lo TAPA, y un hueco tapado deja de pedirse. El placeholder sin resolver
+    (`{{OWNER}}`) también cuenta como ausencia: es la plantilla sin llenar, no un nombre.
+    """
+    v = (_get("owner.name", "") or "").strip()
+    return "" if "{{" in v else v
 
 
 def thresholds():

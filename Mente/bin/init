@@ -45,11 +45,31 @@ force = "--force" in sys.argv
 
 # The hook wiring is the one thing that MUST be portable: measured 2026-08-03, a clone whose
 # hooks carried an absolute path started with no gate running — and it failed silently.
+# 🔴 CADA GRUPO LLEVA SU `matcher`, y no es cosmético (2026-08-07).
+# Sin él un hook corre en TODAS las herramientas: el 2026-08-06 `gate-handoff` —que solo debe
+# vigilar `Agent|Task`— pasó a bloquear Bash, Read, Grep y hasta Edit, y **el sistema se cerró
+# sobre sí mismo**: no se podía editar la configuración para arreglarlo. Brian lo desbloqueó a
+# mano. El JSON seguía siendo válido, así que nada lo detectó.
+#
+# ⚠️ Y estaban los 3 de secrets sin cablear: `bin/init` dejaba una instancia con 4 hooks donde
+# el sistema declara 7, así que un clon recién instalado fallaba su propio check de cableado.
+# Medido: `init --force` subía los fallos de un clon de 10 a 14.
+#
+# Formato: evento → lista de (matcher | None, [(intérprete, archivo|comando)]).
 HOOKS = {
-    "SessionStart": [("bash", "session-start.sh")],
-    "PreToolUse": [("python3", "pre-edit-standards.py"),
-                   ("python3", "gate-critical.py"),
-                   ("python3", "gate-handoff.py")],
+    "SessionStart": [
+        (None, [("bash", "hooks/session-start.sh"),
+                ("python3", "bin/secrets-lease|open --source startup")]),
+    ],
+    "PreToolUse": [
+        ("Write|Edit", [("python3", "hooks/pre-edit-standards.py"),
+                        ("python3", "hooks/gate-critical.py")]),
+        ("Agent|Task", [("python3", "hooks/gate-handoff.py")]),
+        ("Read|Write|Edit|Bash", [("python3", "hooks/gate-secrets.py")]),
+    ],
+    "PostCompact": [
+        (None, [("python3", "bin/secrets-lease|open --source compact")]),
+    ],
 }
 
 
@@ -103,10 +123,22 @@ def wire_hooks():
         return f"🔴 {p} is not valid JSON ({e}) — fix it by hand, this will not overwrite it"
     var = chr(36) + "{CLAUDE_PROJECT_DIR}"
     blocks = {}
-    for event, entries in HOOKS.items():
-        blocks[event] = [{"hooks": [
-            {"type": "command", "command": f'{run} "{var}/Mente/hooks/{f}"'}
-            for run, f in entries]}]
+    for event, grupos in HOOKS.items():
+        salida = []
+        for matcher, entries in grupos:
+            hs = []
+            for run, f in entries:
+                # `archivo|args` permite cablear un binario con argumentos (secrets-lease)
+                ruta, _, args = f.partition("|")
+                cmd = f'{run} "{var}/Mente/{ruta}"'
+                if args:
+                    cmd += f" {args} >/dev/null 2>&1 || true"
+                hs.append({"type": "command", "command": cmd})
+            g = {"hooks": hs}
+            if matcher:
+                g = {"matcher": matcher, "hooks": hs}
+            salida.append(g)
+        blocks[event] = salida
     if d.get("hooks") == blocks:
         return "hooks already wired, portably"
     if check_only:
