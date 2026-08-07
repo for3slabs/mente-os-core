@@ -410,9 +410,18 @@ de Python · **62,159 líneas de tests (1.8:1)** · 18 plataformas · 3 workflow
 | **1** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
 | **2** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
 | **3** | ✅ **HECHO 2026-08-05** — ver abajo | bajo | ✅ |
-| **4** | 🟡 **PLAN ESCRITO 2026-08-05** — falta 1 test · 🙋 2 decisiones tuyas | alto | 🟡 |
-| **5** | 🟡 benchmark con método y juez publicados | medio | ⬜ |
-| **6** | ⬜ memoria de trabajo puntuada y automática | medio | ⬜ evaluar |
+| **4** | ✅ **CERRADO 2026-08-06** — Vitest + 4 caminos + **23/23 en verde** (verificado 08-07) | alto | ✅ |
+| **5** | ⏸️ benchmark con método y juez publicados | medio | ⏸️ **NO ahora** |
+| **6** | ⏸️ memoria de trabajo puntuada y automática | medio | ⏸️ **NO ahora** |
+
+> 🙋 **DECIDIDO (Brian, 2026-08-07): los dos últimos NO se traen todavía.**
+> Razón medida, y está en este mismo documento: #5 y #6 son **benchmark y métricas** — miden un
+> producto que **nadie externo ha instalado**. `graphify` tiene miles de instalaciones
+> verificadas y 1.8:1 de tests; Mente OS tiene **cero y cero**. Traer la forma sin la causa es
+> copiar la cicatriz sin la herida.
+> ⭐ **Lo que desbloquea traerlos es una PRUEBA DE CAMPO**, no más código. Hasta que alguien
+> ajeno instale el sistema, un benchmark solo se mediría a sí mismo.
+> **4 de 6 cerrados** — los cuatro que sí eran código y sí tenían causa aquí.
 
 ### ⭐ Los dos primeros son los que importan, y en ese orden
 
@@ -979,7 +988,11 @@ trabajo que se deshace solo.
 
 ## 🔑 FIRMA GPG DE LOS COMMITS — PENDIENTE, decisión de Brian (2026-08-02)
 
-**Estado medido hoy:** este WSL2 **no tiene ninguna clave GPG** (llavero vacío: ni secreta ni
+> 🔄 **Re-medido 2026-08-07: SIN CAMBIOS.** Llavero sigue vacío · `commit.gpgsign` sin
+> configurar · identidad correcta (`Brian Lopez <brayan002150@gmail.com>`). Sigue siendo una
+> decisión de Brian: generar la clave define identidad, passphrase y respaldo.
+
+**Estado medido 2026-08-02:** este WSL2 **no tiene ninguna clave GPG** (llavero vacío: ni secreta ni
 pública). `gpg` sí está instalado. `commit.gpgsign` y `user.signingkey` sin configurar en el repo.
 El Método F pide "commit firmado" — hoy **no se cumple**.
 

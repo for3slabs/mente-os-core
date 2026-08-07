@@ -137,4 +137,29 @@ for _b in $BASE_BRANCHES; do
     exit 1
   fi
 done
+
+# ── ⚠️ ¿ESTA RAMA SE QUEDÓ ATRÁS DE SU BASE? (2026-08-07) ────────────────────
+# 🔴 El anti-patrón #8 de `rules/rule-shipping-flow.md` —"un PR que depende de otro sin
+# mergear"— estaba ESCRITO desde el 05-ago y **nada lo medía**. Se cobró su primer caso el
+# 07-ago: el PR #13 se mergeó (squash) mientras había trabajo encima, y el #14 nació con
+# conflictos en 2 archivos generados. Se resolvió con `git rebase origin/master`, que saltó
+# solo el commit duplicado — **cero conflictos manuales**. El coste no fue arreglarlo: fue
+# descubrirlo en GitHub en vez de aquí.
+#
+# ⛔ AVISA, NO BLOQUEA. Ir por detrás de la base es normal mientras se trabaja; lo que cuesta
+# es ENTERARSE tarde. Un bloqueo aquí obligaría a rebasar en mitad de un commit, que es peor.
+# Y no toca la red: `git fetch` en cada commit sería lento y fallaría sin conexión — se compara
+# contra la referencia remota que ya está en disco.
+_base=""
+for _b in $BASE_BRANCHES; do
+  git -C "$REPO" rev-parse --verify -q "origin/$_b" >/dev/null 2>&1 && { _base="origin/$_b"; break; }
+done
+if [ -n "$_base" ]; then
+  _detras=$(git -C "$REPO" rev-list --count "HEAD..$_base" 2>/dev/null || echo 0)
+  if [ "${_detras:-0}" -gt 0 ]; then
+    printf '⚠️  Tu rama va %s commit(s) por detrás de `%s`.\n' "$_detras" "$_base"
+    printf '   No bloquea — pero el PR puede nacer con conflictos (anti-patrón #8).\n'
+    printf '   Antes de abrirlo:  git fetch origin && git rebase %s\n\n' "$_base"
+  fi
+fi
 exit 0

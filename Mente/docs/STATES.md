@@ -20,7 +20,7 @@
 ## Phase
 
 - **demo**: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos ce
-- **separacion-motor-instancia**: 4/5 sub-bloques cerrados · clon limpio 10 → 1 fallo
+- **separacion-motor-instancia**: **5/5 cerrados.** Verificado end-to-end en un clon d
 - **distribucion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2
 - **expertise-programacion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 3/3 applicabl
 - **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running

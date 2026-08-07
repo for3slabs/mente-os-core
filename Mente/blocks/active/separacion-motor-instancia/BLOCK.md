@@ -40,10 +40,10 @@ created: 2026-08-07 · updated: 2026-08-07
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: 4/5 sub-bloques cerrados · clon limpio 10 → 1 fallo
-next: el único rojo que queda es la respuesta CORRECTA (sesión sin registrar) — se documenta
+phase: **5/5 cerrados.** Verificado end-to-end en un clon de master ya mergeado (PRs #12-#14)
+next: cerrar el bloque — o dejarlo abierto si Brian quiere la separación real (motor publicable)
 blockers: none
-progress: 4/5 sub-blocks closed
+progress: 5/5 sub-blocks closed
 updated: 2026-08-07
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
@@ -54,7 +54,7 @@ updated: 2026-08-07
 | 2 | `WORKSPACE.md` se GENERA de plantilla, no se hereda | bin/init | 0 | ✅ |
 | 3 | los checks de instancia se SALTAN lo ausente en 🟡, no fallan | bin/test-f0-f6 | 0 | ✅ |
 | 4 | un hermano ausente no es una cita rota (12 → 0 en el clon) | bin/check-links | 0 | ✅ |
-| 5 | clon limpio verificado end-to-end | — | — | ⬜ |
+| 5 | clon limpio verificado end-to-end **desde master mergeado** | — | — | ✅ |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
@@ -81,6 +81,11 @@ updated: 2026-08-07
 ## Checkpoints
 - 2026-08-07 · clon limpio: 10 → 7 (familia D 5-6) → 6 (`additionalDirectories`) → 2
   (`WORKSPACE.md` generado) → **1** (hermano ausente ≠ cita rota). Tras `bin/init`.
+- 2026-08-07 · ✅ **CIERRE MEDIDO desde master mergeado**: clon en frío **6 fallos**, tras
+  `bin/init` **1** — y ese 1 es `check-clear-ready registered=no`, la respuesta correcta en un
+  árbol recién nacido. `check-links` 300 limpio · `check-blocks` 0 errores. `bin/init` reporta
+  `WORKSPACE.md: written` y `1 additionalDirectories muertos podados`: las dos piezas de este
+  bloque funcionando en una máquina que no es la de su autor.
 - 2026-08-07 · ⭐ **no hizo falta crear `instance/`.** La hipótesis de partida era mover 221
   archivos; medido, **ninguno estorbaba**. Lo que fallaba eran los CHECKS que los interrogaban
   mal. Mover archivos habría escondido el defecto en vez de corregirlo.

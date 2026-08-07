@@ -74,14 +74,11 @@ a una carpeta aparte. **Medido: ninguno estorbaba.** Lo que fallaba eran los CHE
 interrogaban mal — mover archivos habría escondido el defecto en vez de corregirlo. Por eso
 `instance/` NO se creó y el §B del bloque se corrigió.
 
-**4 defectos reales del motor**, todos familia D (casos 5-8 de `rules/rule-checks-must-measure.md`),
-que la etiqueta *"son fallos de la instancia de Brian"* llevaba meses tapando:
-- `additionalDirectories` **reventaba con un traceback** (abría `settings.local.json`, gitignorado)
-- `nested repo detection` exigía la cadena literal `Maestro/`
-- `pre-edit block match` probaba con una ruta de `marca-personal/`
-- 🔴 `grade-block archived`: bajo `pipefail` el pipe tomaba el exit `2` del veredicto 🔴 MVP
-  **aunque el `grep` acertara**. Decía medir *"¿sigue siendo calificable?"* y exigía **la nota que
-  saca en la máquina de su autor** — un check atado a la instancia **sin nombrarla una sola vez**.
+**4 defectos reales del motor** (familia D casos 5-8, `rules/rule-checks-must-measure.md`) que la
+etiqueta *"son fallos de la instancia de Brian"* llevaba meses tapando. 🔴 El peor:
+`grade-block archived` — bajo `pipefail` el pipe tomaba el exit `2` del veredicto 🔴 MVP **aunque
+el `grep` acertara**: exigía **la nota que saca en la máquina de su autor**, un check atado a la
+instancia **sin nombrarla una sola vez**.
 
 También: `docs/WORKSPACE.md` sale del repo y `bin/init` lo GENERA (su línea 3 lo declaraba desde el
 05-ago y nadie lo hacía cumplir) · `check-links` deja de llamar rotas a 12 citas que resuelven en
@@ -93,8 +90,12 @@ registered=no` — la sesión de un árbol recién nacido no está registrada. V
 **🆕 Cierre (08-07):** PR #12 mergeado + 3 arreglos (matcher de `hooks/pre-edit-standards.py`,
 fósiles en `bin/check-clear-ready`, línea fantasma en `bin/check-health`). Batería **198/0**.
 
-**👉 PRÓXIMO PASO:** sub-bloque 5 (clon limpio end-to-end) y, cuando Brian lo marque, publicar
-el motor sin los 221 archivos de instancia — el bloque pospuesto a propósito.
+**✅ CIERRE (08-07):** PRs #12·#13·#14 mergeados. Bloque **5/5** — clon de master: 6 fallos → **1**
+tras `bin/init`, y ese 1 (`registered=no`) es la respuesta correcta. graphify **4/6**: #5 y #6
+⏸️ diferidos, miden un producto que nadie externo ha instalado. 🔑 GPG sigue siendo tuya.
+
+**👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. Desbloquea
+graphify #5-#6 y es lo que más vale: **cero instalaciones externas verificadas**.
 
 ---
 
