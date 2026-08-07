@@ -1,0 +1,47 @@
+# 🔴 MOVIDO 2026-08-07: vivía en `Maestro/piezas.tsv`, y `Maestro/` está en el .gitignore
+# porque es OTRO repositorio con su propio .git (anidarlo sería un repo dentro de otro).
+# Daño colateral medido: esta tabla quedó atrapada ahí y NO VIAJABA — un clon la recibía
+# ausente y **3 validadores del motor cojeaban** (check-links · check-structure · test-f0-f6).
+#
+# ⭐ La confusión venía de su propia cabecera: es "hermano de punteros.tsv", pero hermanos por
+# FORMATO, no por dueño. `punteros.tsv` declara las RAMAS del Maestro y se queda allí; esta
+# declara las PIEZAS DE MENTE, así que es del motor y viaja con él.
+# piezas.tsv — FUENTE ÚNICA de dónde vive cada pieza clave del sistema (v2, 2026-07-30)
+# Hermano de punteros.tsv: aquel declara las RAMAS, este declara las PIEZAS dentro de una rama.
+#
+# Por qué existe (medido 2026-07-30): 11 documentos declaraban dónde viven 2 archivos, con 29
+# menciones. Mover uno obligaba a corregir 29 lugares a mano — y así fue como el diagrama de la
+# arquitectura acabó describiendo rutas que no existen. Mismo criterio que punteros.tsv:
+# los documentos REFERENCIAN esta tabla, no la duplican.
+#
+# Formato (separado por TAB): pieza  ruta  dueno  clase  que_es
+#   ruta   = desde la raíz de Mente/ · "repo:<x>" si vive en otro repo
+#   clase  = canonical (la verdad) · generated (lo produce un script) · fossil (histórico)
+#
+# ⚠️ Maestro/ es un repo APARTE con raíz propia: sus rutas se escriben desde Mente/ aquí,
+#    pero DENTRO de Maestro/ se escriben sin ese prefijo.
+#
+# Lo lee: bin/check-structure. Lo verifica: bin/test-f0-f6.
+gate	bridges/Puentes_Mente_OS.md	maestro	canonical	el gate a otros Mente OS — permiso antes de leer
+ramas	Maestro/punteros.tsv	maestro	canonical	fuente única de ramas del Maestro
+piezas	piezas.tsv	mente	canonical	esta tabla — dónde vive cada pieza de Mente
+registro	Maestro/registro.md	maestro	canonical	las ramas que el Maestro conoce
+indice	docs/INDEX.md	generado	generated	todos los documentos — bin/generate-index
+estados	docs/STATES.md	generado	generated	bloques + salud — bin/generate-index
+reglas-universal	base-rules.md	brian	canonical	nivel 1 — conducta en cualquier proyecto
+reglas-proyecto	repo:../PROJECT-RULES.md	brian	canonical	nivel 2 — esto es For3s OS
+enrutador	repo:../CLAUDE.md	brian	canonical	arranque + apunta a los 3 niveles
+voz	principles/owner-0-voice.md	brian	canonical	cómo se comunica Mente OS
+contrato-bloque	rules/contract-block.md	brian	canonical	qué campos lleva un bloque
+contrato-doc	rules/contract-document.md	brian	canonical	la forma de todo documento
+contrato-adr	rules/contract-adr.md	brian	canonical	la forma de una decisión
+herencia	rules/rule-inheritance.md	brian	canonical	los 3 niveles y cómo se suman
+cold-start	memory/RETOMAR.md	brian	canonical	dónde quedamos — se lee primero
+pendientes	memory/PENDIENTES.md	brian	canonical	lo que falta
+indice-viejo	memory/archive/README.md	brian	fossil	superseded por docs/INDEX.md (F7)
+contrato-archivo	rules/contract-archive.md	brian	canonical	qué deja un bloque al cerrarse (F8-3)
+anatomia-bloque	docs/architecture/block-anatomy.md	brian	canonical	qué es un bloque, sus secciones A-K (§3 extraída)
+validadores-higiene	docs/architecture/validators-and-hygiene.md	brian	canonical	validadores · calidad · voz · higiene (§12-TER..SEPTIES)
+ciclo-aprendizaje	docs/architecture/lifecycle-and-learning.md	brian	canonical	ciclo de vida del bloque + aprendizaje de errores (§6,7,10)
+estructura-carpetas	docs/architecture/folder-structure.md	brian	canonical	árbol de carpetas + inventario (§12, 12-BIS)
+politica-idioma	docs/architecture/language-policy.md	brian	canonical	qué se escribe en inglés y qué en español (§0-BIS, ADR-023)

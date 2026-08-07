@@ -128,7 +128,7 @@ Full map: **`CAPABILITIES.md`**. The ones used most:
 | any live number (battery, holes, citations) | 🤖 `docs/METRICS.md` — regenerate with `bin/generate-metrics` |
 | do the blocks hold their contract? | `bin/check-blocks` |
 | does every citation resolve? | `bin/check-links` |
-| is the tree the declared one? | `bin/check-structure` (reads `Maestro/piezas.tsv`) |
+| is the tree the declared one? | `bin/check-structure` (reads `piezas.tsv`) |
 | safe to `/clear`? | `bin/check-clear-ready` — refuses if something would be lost |
 | set up a new instance | `bin/init` |
 

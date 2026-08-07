@@ -954,17 +954,30 @@ eq "a hand edit to a generated index is DETECTED" "1" "$?"
 # ⭐ THE POINTER SYSTEM — the test that makes it real (P4).
 # Move a file, update ONE line in piezas.tsv, and everything follows. If this fails, the pointer
 # system is decoration and the diagram will drift again.
-[ -f Maestro/piezas.tsv ] && ok "Maestro/piezas.tsv exists (single source of piece locations)" \
+# 🔴 2026-08-07: se busca en `piezas.tsv` (la nueva) Y en `Maestro/piezas.tsv` (la vieja).
+# Vivía SOLO en Maestro/, que está en el .gitignore por ser otro repo — así que la tabla no
+# viajaba y **un clon dejaba a tres validadores sin su fuente única**. Medido: 22 fallos en un
+# clon limpio contra 0 aquí. ⭐ Un check que solo pasa en la máquina del autor no mide el
+# sistema: mide al autor.
+_PIEZAS=$([ -f piezas.tsv ] && echo piezas.tsv || echo Maestro/piezas.tsv)
+[ -f piezas.tsv ] || [ -f Maestro/piezas.tsv ] \
+  && ok "piezas.tsv exists (single source of piece locations)" \
   || bad "piezas.tsv" "exists" "MISSING"
 
 # Every declared piece must resolve. A pointer to nothing is worse than no pointer.
-miss=$(python3 - <<'PY'
-import os
+miss=$(python3 - "$_PIEZAS" <<'PY'
+import os, sys
 bad = 0
-for line in open("Maestro/piezas.tsv", encoding="utf-8", errors="replace"):
+for line in open(sys.argv[1], encoding="utf-8", errors="replace"):
     if line.startswith("#") or not line.strip():
         continue
     f = line.rstrip("\n").split("\t")
+    # ⭐ La columna 3 declara el DUEÑO, y se usa (2026-08-07): una pieza cuya RUTA empieza por
+    # `Maestro/` está en OTRO repositorio y nunca viaja. Exigirla presente
+    # en un clon es pedir un archivo que por diseño no está — el mismo error que mantuvo
+    # `piezas.tsv` atrapado allí. Si el Maestro SÍ está montado, se verifica como cualquier otra.
+    if len(f) >= 5 and f[1].startswith("Maestro/") and not os.path.isdir("Maestro"):
+        continue
     if len(f) >= 5 and not os.path.exists(f[1].replace("repo:", "")):
         print(f"     {f[0]} -> {f[1]}")
         bad += 1
@@ -982,13 +995,13 @@ case "$sout" in
   *) bad "moved piece detection" "PIECE MOVED OR LOST" "silent" ;;
 esac
 mkdir -p /tmp/newhome && mv /tmp/gate.bak /tmp/newhome/Puentes_Mente_OS.md
-sed -i 's|^gate\tbridges/Puentes_Mente_OS.md|gate\t/tmp/newhome/Puentes_Mente_OS.md|' Maestro/piezas.tsv
+sed -i 's|^gate\tbridges/Puentes_Mente_OS.md|gate\t/tmp/newhome/Puentes_Mente_OS.md|' "$_PIEZAS"
 sout="$(./bin/check-structure 2>/dev/null || true)"
 case "$sout" in
   *"PIECE MOVED OR LOST"*) bad "pointer follows a move" "clean after updating 1 line" "still red" ;;
   *) ok "updating ONE line in piezas.tsv makes the validator follow the move" ;;
 esac
-sed -i 's|^gate\t/tmp/newhome/Puentes_Mente_OS.md|gate\tbridges/Puentes_Mente_OS.md|' Maestro/piezas.tsv
+sed -i 's|^gate\t/tmp/newhome/Puentes_Mente_OS.md|gate\tbridges/Puentes_Mente_OS.md|' "$_PIEZAS"
 mv /tmp/newhome/Puentes_Mente_OS.md bridges/Puentes_Mente_OS.md && rmdir /tmp/newhome
 
 # F8-3 · an archived block must satisfy rules/contract-archive.md. Nothing has ever been closed,

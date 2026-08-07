@@ -9,7 +9,7 @@
 The declared folder tree, how the migration coexists with the old structure, and the inventory of
 what is used, created or reused.
 
-⚠️ **This document ILLUSTRATES. `Maestro/piezas.tsv` DEFINES.** The canonical location of every key
+⚠️ **This document ILLUSTRATES. `piezas.tsv` DEFINES.** The canonical location of every key
 piece lives in that table, read by `bin/check-structure`. A diagram nobody can run is a diagram
 that drifts — which is exactly what happened here (§12.0-BIS).
 
@@ -287,6 +287,6 @@ Se mitiga con el `INDICE.md` generado, que dice qué es cada cosa.
 
 ---
 
-Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (entry point) · `Maestro/piezas.tsv`
+Related: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (entry point) · `piezas.tsv`
 (⭐ the canonical locations) · `bin/check-structure` (verifies the tree) ·
 `rules/NAMING_CONVENTION.md`.

@@ -262,7 +262,7 @@ del propio For3s.
 | **F8-1..3** | Primer bloque CERRADO y archivado: `split-architecture` 🟢 PRODUCT |
 | **M0-M5** | 186 documentos migrados uno por uno. **4 carpetas v1 ELIMINADAS** |
 | **3 niveles de reglas** | 🌐 `base-rules.md` → 🏢 `PROJECT-RULES.md` → 📦 `BLOCK.md §B` |
-| **Sistema de apuntado** | `Maestro/piezas.tsv` — mover una pieza cuesta 1 línea |
+| **Sistema de apuntado** | `piezas.tsv` — mover una pieza cuesta 1 línea |
 
 `bin/test-f0-f6` = **105/105**. 11 validadores, 4 hooks.
 

@@ -872,7 +872,7 @@ Antes: 8 de 22 piezas citaban su decisión.
 ## 🚪 `CLAUDE.md` §ESTADO — lo que impide publicarlo tal cual (2026-08-02)
 
 **✅ Ya resuelto** (`3223a5c` + `5f8a671`): cabecera §1 completa · Purpose + Related · 2 punteros
-rotos (`Maestro/piezas.tsv` → `Mente/Maestro/`, y la fila de `Mente/Doc/`, carpeta que ADR-029
+rotos (`piezas.tsv` → `Mente/Maestro/`, y la fila de `Mente/Doc/`, carpeta que ADR-029
 eliminó) · números → punteros · y **los validadores ya lo alcanzan** (barrían desde `Mente/`, y
 este archivo vive un nivel arriba).
 

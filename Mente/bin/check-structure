@@ -77,7 +77,12 @@ GENERATED = [
 #
 # Same criterion Brian already applied in punteros.tsv: documents REFERENCE the table, never
 # duplicate it. One line changes when a piece moves.
-PIECES_TSV = "Maestro/piezas.tsv"
+# 🔴 MOVIDO 2026-08-07 de `Maestro/piezas.tsv` a `piezas.tsv`. `Maestro/` está en el
+# .gitignore (es otro repo con su propio .git), así que esta tabla NO VIAJABA: un clon la
+# recibía ausente y este validador —más check-links y test-f0-f6— se quedaba sin su fuente.
+# Se conserva el respaldo a la ruta vieja mientras el Maestro no se actualice: leer de donde
+# esté es más honesto que fallar por una mudanza a medias.
+PIECES_TSV = "piezas.tsv" if os.path.exists("piezas.tsv") else "Maestro/piezas.tsv"
 
 
 def read_pieces():
@@ -121,6 +126,14 @@ def main():
                    "   Without it nothing can tell a moved file from a lost one.")
     for name, path, owner, kind, what in pieces:
         real = path.replace("repo:", "")
+        # ⭐ Una pieza que VIVE en `Maestro/` está en otro repositorio, que es OTRO repositorio y
+        # no viaja. Exigirla presente en un clon es reportar como "movida o perdida" algo que
+        # por diseño no está — medido 2026-08-07: 2 falsos rojos en cada clon, y arrastraban un
+        # tercero (`pointer follows a move`). Si el Maestro SÍ está montado, se verifica normal.
+        # ⚠️ Este mismo arreglo hubo que hacerlo en `bin/test-f0-f6`: corregir un validador no
+        # corrige a sus hermanos.
+        if real.startswith("Maestro/") and not os.path.isdir("Maestro"):
+            continue
         if not os.path.exists(real):
             RED.append(f"PIECE MOVED OR LOST · `{name}` is declared at {path}\n"
                        f"   ({what}) but nothing is there.\n"

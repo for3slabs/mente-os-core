@@ -5,7 +5,7 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-08-06 · **Type:** generated
+**Generated:** 2026-08-07 · **Type:** generated
 
 
 **303 documents** · **5 blocks** · 25 directories
@@ -167,7 +167,7 @@
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
 | `INDEX.md` | generated | — |  | 475 |
-| `METRICS.md` | generated | current | 2026-08-06 | 104 |
+| `METRICS.md` | generated | current | 2026-08-07 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 29 |
 | `WORKSPACE.md` | entry-point | current | 2026-08-05 | 151 |

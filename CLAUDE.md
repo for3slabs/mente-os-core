@@ -73,7 +73,7 @@ guarda todo en disco, así que `/clear` es seguro **cuando la sesión está regi
 | antes de editar | `Mente/hooks/gate-critical.py` → 🔴 BD sin rollback · 🔴 cerrar bloque insuficiente · ⚠️ pieza con dependientes |
 | antes de un commit | `Mente/hooks/pre-commit.sh` → 🔴 **BLOQUEA** un bloque que viola su contrato |
 | ¿esto es producto o MVP? | `Mente/bin/grade-block <bloque>` → veredicto **medido**, nunca opinión |
-| ¿el árbol es el declarado? | `Mente/bin/check-structure` → lee `Mente/Maestro/piezas.tsv` |
+| ¿el árbol es el declarado? | `Mente/bin/check-structure` → lee `Mente/piezas.tsv` |
 | regenerar los índices | `Mente/bin/generate-index` → 🤖 `docs/INDEX.md` + `docs/STATES.md` |
 | antes de `/clear` | `Mente/bin/check-clear-ready` → 🔴 se niega si algo se perdería |
 | **el sistema completo** | `Mente/bin/test-f0-f6` → lo único que importa es `failed: 0` · el conteo vive en `Mente/docs/METRICS.md` (`battery.checks`) |
@@ -106,7 +106,7 @@ Regla completa: `Mente/rules/rule-session-close.md`. Origen: la sesión de 278 M
 | `Mente/principles/` | los dueños (owner-0..3) + `expertise/` |
 | `Mente/bin/` · `Mente/hooks/` | 🤖 los validadores y las puertas |
 | `Mente/docs/` | planes, análisis, bitácoras de fase · 🤖 `Mente/docs/INDEX.md` y `Mente/docs/STATES.md` generados |
-| `Mente/Maestro/piezas.tsv` | ⭐ **dónde vive cada pieza clave** — mover algo cuesta 1 línea |
+| `Mente/piezas.tsv` | ⭐ **dónde vive cada pieza clave** — mover algo cuesta 1 línea |
 | `Mente/vision/` `work/` `memory/` `bridges/` | 🆕 visión · trabajo cerrado · memoria viva · el gate |
 | `Mente/Cerebro/` | el grafo de For3s OS (el producto — NO se migra) |
 

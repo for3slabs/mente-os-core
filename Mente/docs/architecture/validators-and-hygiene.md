@@ -220,11 +220,11 @@ nombre · estado · fase · dueño · **salud** · ruta · última actualizació
 
 ---
 
-### 12.0-BIS · ⭐ EL DIAGRAMA ILUSTRA — `Maestro/piezas.tsv` DEFINE *(corregido 2026-07-30)*
+### 12.0-BIS · ⭐ EL DIAGRAMA ILUSTRA — `piezas.tsv` DEFINE *(corregido 2026-07-30)*
 
 > **Brian:** *"¿podemos hacer un sistema de apuntado para no duplicación?"* — sí, y ya existía:
 > `Maestro/punteros.tsv` declara en su cabecera *"registro.md la REFERENCIA (no la duplica)"*.
-> `Maestro/piezas.tsv` extiende ese mismo criterio a las piezas del sistema.
+> `piezas.tsv` extiende ese mismo criterio a las piezas del sistema.
 
 **El diagrama de arriba describía dos archivos en `Tickets/` que nunca se mudaron ahí.** No fue
 descuido: **medido 2026-07-30, 11 documentos declaraban dónde viven esos 2 archivos, con 29
@@ -232,7 +232,7 @@ menciones.** Mover uno obligaba a corregir 29 lugares a mano. Nadie lo hace, y e
 
 | | |
 |---|---|
-| ⭐ **La verdad** | `Maestro/piezas.tsv` — 17 piezas: ruta · dueño · clase · qué es |
+| ⭐ **La verdad** | `piezas.tsv` — 17 piezas: ruta · dueño · clase · qué es |
 | **Este diagrama** | ilustra la forma. **No define rutas** |
 | **Quién lo verifica** | 🤖 `bin/check-structure` la lee; `bin/test-f0-f6` prueba que mover un archivo + actualizar UNA línea basta |
 

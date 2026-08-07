@@ -208,7 +208,7 @@ M1 y M2 ya se habían llevado 57. M3 movió **13 de los 18 restantes**, leídos 
 
 | # | Hallazgo |
 |---|---|
-| 1 | ⭐ **`Maestro/piezas.tsv` hizo su trabajo:** al mover el gate, `check-structure` lo reclamó de inmediato. **Una línea cambiada y todo siguió** — que era exactamente la promesa del sistema de apuntado |
+| 1 | ⭐ **`piezas.tsv` hizo su trabajo:** al mover el gate, `check-structure` lo reclamó de inmediato. **Una línea cambiada y todo siguió** — que era exactamente la promesa del sistema de apuntado |
 | 2 | 🔴 **El revert restauraba a HEAD archivos migrados en un lote ANTERIOR**, deshaciendo ese trabajo en silencio. Costó 16 cabeceras. `migrate-doc` ahora **respeta lo ya migrado**: no revierte un archivo cuyo estado actual lleva rastro de migración y HEAD no |
 | 3 | **`memory/archive/README.md` es de riesgo M5, no M3:** medido, **85 citas en 23 documentos**. Revirtió correctamente y se dejó para su fase |
 

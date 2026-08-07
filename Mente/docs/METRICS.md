@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-06 · **Owner:** brian
-**Generated:** 2026-08-06 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-07 · **Owner:** brian
+**Generated:** 2026-08-07 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
