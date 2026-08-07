@@ -157,10 +157,15 @@ def check_documents():
         # Avisar sobre ellos en documentos al 26-66% de su techo pedía RENUMERAR, y renumerar
         # habría **roto 8 citas externas** (`§4-BIS` se cita en 6 archivos) y borrado información
         # real: ⭐ **un número aquí es una dirección y un significado, no relleno.**
-        # Con el techo como condición, la señal solo suena donde de verdad importa: cuando el
-        # documento está a punto de desbordarse y hay que decidir por dónde cortar.
-        cerca_del_techo = bool(cap_doc) and lines >= cap_doc * 0.8
-        if grown and cerca_del_techo:
+        # ⭐ Y SOLO CUANDO YA PASÓ EL TECHO, no al acercarse (Brian, 2026-08-06):
+        # *"los documentos que aprietan el techo no pasa nada; cuando realmente pasen el techo,
+        # ahora sí es warning"*. El umbral estuvo unas horas en ≥80% y era el error de siempre en
+        # miniatura: **avisar de algo que todavía no ha ocurrido es pedir trabajo preventivo**, y
+        # un documento al 91% puede quedarse ahí para siempre sin que nada esté mal.
+        # El desbordamiento ya lo reporta su propio check de tamaño; esta señal solo añade
+        # ENTONCES el dato útil: por dónde estaba pensado el corte.
+        paso_el_techo = bool(cap_doc) and lines > cap_doc
+        if grown and paso_el_techo:
             yel(f, f"{len(grown)} grown section(s) → split signal (contract-document §3): "
                    f"{', '.join(g.split('·')[0].strip('# ').strip() for g in grown[:6])}")
 

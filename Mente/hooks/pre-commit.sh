@@ -97,9 +97,9 @@ fi
 # defecto, y forzarla a cero empujaría a partir documentos por obediencia. Lo que se prohíbe
 # es la ACUMULACIÓN silenciosa: por encima del techo hay que bajar la deuda o subirlo a
 # conciencia, que es una decisión visible en el diff.
-# 📉 15 → 10 el mismo día: al corregir el falso positivo de `grown section` los warnings
-# bajaron a 8, y un techo que no aprieta no frena nada. **El techo se baja con la deuda.**
-WARN_CAP=10
+# 📉 15 → 10 → 8 el mismo día, según bajaba la deuda real (76 → 5 warnings).
+# **El techo se baja con la deuda**: uno que no aprieta no frena nada.
+WARN_CAP=8
 w=$("$CHECK" 2>/dev/null | grep -oE '[0-9]+ warnings' | grep -oE '^[0-9]+' | head -1)
 if [ -n "$w" ] && [ "$w" -gt "$WARN_CAP" ]; then
   printf '🔴 COMMIT BLOCKED — %s warnings, por encima del techo de %s.\n\n' "$w" "$WARN_CAP"
