@@ -38,3 +38,11 @@ __pycache__/
 # Está atado a ESTE caché y a ESTA máquina: commitearlo lo haría viajar a otro clon,
 # que es justo lo contrario de atarlo al contexto que lo emitió.
 .secrets-lease.json
+
+# ⚠️ LA CONFIGURACIÓN VIVA NO VIAJA (2026-08-06).
+# Lleva el nombre del dueño y las rutas de SU máquina: es de la INSTANCIA, no del motor.
+# La plantilla sí se publica → `templates/mente.config.yml.template`, y `bin/init` la copia
+# aquí preguntando lo que falta.
+# 🔴 Por qué: viajando con "Brian López" dentro, `bin/init` en un clon ajeno nunca preguntaba
+# el owner — lo encontraba ya escrito. Un dato personal disfrazado de valor por defecto.
+mente.config.yml

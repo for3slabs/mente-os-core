@@ -93,7 +93,7 @@ Closing step 6. Its job is to answer, for whoever opens the NEXT block:
 
 ## 3 · WHAT NEVER GOES IN AN ARCHIVE
 
-⛔ **Secrets** — not even expired ones. `Mente/secrets/` is the only place.
+⛔ **Secrets** — not even expired ones. `secrets/` is the only place.
 ⛔ **The full conversation** — the autopsy lives in `Cerebro/Registro_Conversaciones.md`.
 ⛔ **Code or diffs** — the repo already has them. The archive describes; it does not duplicate.
 ⛔ **A rewritten history** — the block is moved as it closed. Correcting it afterwards turns a

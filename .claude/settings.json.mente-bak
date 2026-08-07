@@ -308,7 +308,11 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PROJECT_DIR}/Mente/hooks/session-start.sh\""
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "python3 \"${CLAUDE_PROJECT_DIR}/Mente/bin/secrets-lease\" open --source startup >/dev/null 2>&1 || true"

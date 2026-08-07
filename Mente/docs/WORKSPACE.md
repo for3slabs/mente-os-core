@@ -12,7 +12,7 @@ which command answers which question.
 
 > **Why this file exists** (`rules/rule-shipping-flow.md` §7, layer 2 of six): the setup layer that
 > Mente OS did **not** have. Measured 2026-08-05 — this information existed, scattered across
-> `mente.config.yml`, `Mente/secrets/` and a memory. Scattered facts are re-derived every session,
+> `mente.config.yml`, `secrets/` and a memory. Scattered facts are re-derived every session,
 > and re-derivation is where a wrong assumption enters.
 
 > ## ⛔ THIS FILE NEVER CARRIES A VALUE
@@ -74,8 +74,8 @@ Rules: `bridges/Puentes_Mente_OS.md`. The reason is **consumption**, not secrecy
 
 | What | Where it lives | ⛔ |
 |---|---|---|
-| Server access (host, user, password) | `Mente/secrets/Conectar_Servidor_For3s.md` | 🔴 **11 `deny` rules** block reading it — Read, `cat`, `head`, `tail`, `less`, `more`, `strings`, `xxd`, `od`, `base64`, `cp` |
-| Demo secrets (`DEMO_ENC_KEY`) | `Mente/secrets/Secretos_Demo_Sitio.md` | same |
+| Server access (host, user, password) | `secrets/Conectar_Servidor_For3s.md` | 🔴 **11 `deny` rules** block reading it — Read, `cat`, `head`, `tail`, `less`, `more`, `strings`, `xxd`, `od`, `base64`, `cp` |
+| Demo secrets (`DEMO_ENC_KEY`) | `secrets/Secretos_Demo_Sitio.md` | same |
 | Harness OAuth | `~/.claude.json` | `deny` on 13 channels. ⚠️ **`deny` is not a sandbox** — it matches the command TEXT, so `"$(…)"` slips past. Known and written: `memory/PENDIENTES.md` §🔐 |
 | Site env vars | Vercel dashboard | §5 below — an env var holding content is a finding |
 

@@ -672,11 +672,11 @@ Razón del diferimiento: decisiones de Bloques 2-3 informarán docs públicos. P
 **R4 v1 100% CERRADO** — los 3 bloques operativos LOCKED, 11/11 sub-temas, 3 decisiones (D-016, D-017, D-018). B4 Multi-Domain Expansion diferido v2.
 
 **FASE 2 cierre formal EJECUTADA:**
-- ✅ `09-technical-architecture/tools-mcp-layer.md` (sub-doc consolidado público)
+- ✅ `../for3s-inter/09-technical-architecture/tools-mcp-layer.md` (sub-doc consolidado público)
 - ✅ 3 sub-docs públicos R4 por bloque
-- ✅ `09-technical-architecture/README.md` (R4 → ✅ v1 CERRADO 100%)
-- ✅ `02-product/mvp-scope.md` (Tools stack annotation FINAL)
-- ✅ `05-finance/unit-economics.md` (costo total FINAL)
+- ✅ `../for3s-inter/09-technical-architecture/README.md` (R4 → ✅ v1 CERRADO 100%)
+- ✅ `../for3s-inter/02-product/mvp-scope.md` (Tools stack annotation FINAL)
+- ✅ `../for3s-inter/05-finance/unit-economics.md` (costo total FINAL)
 
 **Después de cierre R4 v1:**
 - Iniciar **R5 — Orchestration / Multi-Agent** (siguiente ronda)

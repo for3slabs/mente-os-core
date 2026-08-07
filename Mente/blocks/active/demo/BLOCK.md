@@ -172,7 +172,7 @@ Site repo `ElBrAyAn1967/For3s` — **not** the agent's. Branch `main` at `793e85
 Neon DB `for3s_demo`: `demo_instancias` is the single source of truth, 7 FKs, `demo_config`
 editable without a push.
 `DEMO_ENC_KEY` rotated and unified local=Vercel on 2026-07-26 — they had diverged since June
-and a fallback was hiding it. Key lives in `Mente/secrets/`.
+and a fallback was hiding it. Key lives in `secrets/`.
 Reachable through the Tailscale Funnel — which means **it depends on Brian's laptop being on**.
 Full chronology of the 2026-07-24/26 session: `memory/PENDIENTES.md` and the demo memories.
 

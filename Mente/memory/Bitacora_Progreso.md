@@ -1485,7 +1485,7 @@ pasa a ser un **BLOQUE GRANDE con índice propio** (memoria `project_bloque_demo
   🔒 **Solo el DUEÑO** (un invitado con llave podía apagarle el agente al dueño).
 - **`DEMO_ENC_KEY` rotada y unificada** local=Vercel. Eran **distintas desde junio** y el
   fallback a env vars lo tapaba; al retirarlo, quedó al descubierto. Clave en
-  `Mente/secrets/` (fuera de git).
+  `secrets/` (fuera de git).
 - **Rebuild de la imagen del agente** (reversa `for3s-agent:pre-cupo429`): el cupo agotado ya
   sale como **429 + minutos que faltan**, no como "error interno". Server commit `732c434`.
 

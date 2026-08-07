@@ -1,3 +1,11 @@
+# ⚠️ ESTA ES LA PLANTILLA — no la configuración viva.
+# `bin/init` la copia a `mente.config.yml` y PREGUNTA lo que falta. Ese archivo NO se publica:
+# lleva el nombre del dueño y su máquina, que son de la INSTANCIA, no del motor.
+#
+# 🔴 Por qué existe (2026-08-06): `mente.config.yml` viajaba en el repo con "Brian López"
+# dentro, así que `bin/init` en un clon ajeno **nunca preguntaba el owner** — lo encontraba ya
+# escrito y lo daba por bueno. Un dato personal viajando como si fuera del motor.
+
 # ══ MENTE OS · INSTANCE CONFIG ══════════════════════════════════════════════
 #
 # ⭐ THE LINE THIS FILE DRAWS (Brian, 2026-07-31):
@@ -36,9 +44,10 @@ schema: v1
 # ── WHO ─────────────────────────────────────────────────────────────────────
 owner:
   # Used in generated docs and in the checks that verify identity is not lost.
-  name: "Brian López"
-  # Guards against a known past error — this exact wrong surname appeared in generated text.
-  never_called: ["Brian Aguilar"]
+  name: "{{OWNER}}"
+  # Nombres con los que NUNCA debe llamarte (errores conocidos). Ejemplo:
+  #   never_called: ["Brayan Lopez"]
+  never_called: []
 
 # ── WHERE THE SESSION TRANSCRIPTS LIVE ──────────────────────────────────────
 session:

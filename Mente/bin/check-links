@@ -127,6 +127,24 @@ GENERIC = {"BLOCK.md", "SUMMARY.md", "README.md", "MEMORY.md", "connections.md",
            "settings.json", "settings.local.json", "package.json", "__init__.py"}
 # One level above Mente: the project root holds CLAUDE.md and PROJECT-RULES.md.
 PARENT = {"CLAUDE.md", "PROJECT-RULES.md", ".gitignore"}
+
+# ⭐ Directorios que el `.gitignore` excluye A PROPÓSITO: existen en la máquina del dueño y
+# NUNCA viajan al repositorio. Un puntero hacia ellos es correcto, no roto — pero solo se
+# acepta si el directorio no está presente (clon) o si el archivo sí existe (máquina real).
+# Se LEE del .gitignore: una lista escrita a mano aquí se desincroniza del archivo que manda.
+def _ignorados():
+    fuera = set()
+    try:
+        for line in open(".gitignore", encoding="utf-8"):
+            s = line.strip()
+            if s and not s.startswith("#") and s.endswith("/") and "*" not in s:
+                fuera.add(s.rstrip("/").split("/")[0])
+    except OSError:
+        pass
+    return fuera
+
+
+IGNORADOS_A_PROPOSITO = _ignorados()
 # Outside Mente: other repos, the harness, the agent. Not ours to resolve.
 # ⚠️ `memory/<fecha>.md` es de OpenClaw (diarios del agente ajeno), NO de nuestra memory/.
 # Colisión de nombre creada al elegir `memory/` como destino v2 en M1 (2026-07-30).
@@ -285,9 +303,19 @@ def main():
             # RETOMAR.md pointing at the demo secrets — present on disk, gitignored on purpose
             # (rule-config-hygiene §1.1) — read as a broken pointer. Reporting it invites
             # deleting a correct one. Resolved by existence, so a wrong path still fails.
-            if re.sub(r"^Mente/", "", c).startswith("secrets/") \
-                    and os.path.exists(re.sub(r"^Mente/", "", c)):
-                continue
+            # ⭐ GENERALIZADO 2026-08-06: no solo `secrets/`, sino CUALQUIER destino que el
+            # `.gitignore` excluya a propósito. Medido en un clon limpio ese día: 17 de las 30
+            # citas rotas apuntaban a `Maestro/` y `secrets/` — carpetas que NO viajan por
+            # decisión, no por error. En la máquina de Brian existen y el check pasaba; un clon
+            # las veía rotas y **arrancaba reportando 30 fallos, pareciendo roto sin estarlo**.
+            #
+            # ⛔ Y esto NO es eximir por nombre: un puntero a `Maestro/no-existe.md` sigue
+            # fallando EN LA MÁQUINA QUE SÍ TIENE `Maestro/`, que es donde se puede verificar.
+            # Lo que se acepta es "el destino es local por diseño", no "no lo comprobamos".
+            _limpia = re.sub(r"^Mente/", "", c)
+            if _limpia.split("/")[0] in IGNORADOS_A_PROPOSITO:
+                if os.path.exists(_limpia) or not os.path.isdir(_limpia.split("/")[0]):
+                    continue
             if name in GENERIC and "/" not in c:
                 continue                      # a kind of file, not a specific one
             if name in PARENT and os.path.exists(os.path.join("..", name)):

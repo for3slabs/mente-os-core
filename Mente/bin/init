@@ -132,7 +132,21 @@ def wire_hooks():
 
 def main():
     print("\n\033[1m── mente init ──\033[0m")
+
+    # ⭐ SIN CONFIG, SE CREA DESDE LA PLANTILLA (2026-08-06).
+    # 🔴 Antes `mente.config.yml` VIAJABA en el repo con el nombre de Brian dentro, así que en
+    # un clon ajeno `owner_name()` lo encontraba ya escrito y **nunca preguntaba**: el nuevo
+    # dueño heredaba la identidad del anterior sin enterarse. Ahora la config viva está en el
+    # .gitignore y solo viaja la plantilla, con `{{OWNER}}` sin resolver — que es un valor
+    # imposible de confundir con un nombre real, así que el flujo de abajo SÍ pregunta.
+    _cfg, _tpl = "mente.config.yml", os.path.join(TPL, "mente.config.yml.template")
+    if not os.path.exists(_cfg) and os.path.exists(_tpl):
+        shutil.copy2(_tpl, _cfg)
+        print(f"\n   📄 {_cfg} creado desde la plantilla — se preguntará lo que falta")
+
     owner = cfg.owner_name()
+    if owner and "{{" in str(owner):
+        owner = ""          # un placeholder sin resolver NO es un nombre
     if not owner or owner in ("", "None"):
         print("\n   mente.config.yml has no owner. This is CRITERION — it is asked, never guessed.")
         owner = ask("owner name")

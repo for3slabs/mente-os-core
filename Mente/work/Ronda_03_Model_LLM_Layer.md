@@ -724,10 +724,10 @@ Estos 4 archivos se actualizan en FASE 2 (OPCIÓN 1) inmediatamente después de 
 **R3 100% CERRADO** — los 4 bloques LOCKED, 14/14 sub-temas, 4 decisiones (D-012, D-013, D-014, D-015).
 
 **Inmediato (FASE 2 cierre formal):**
-- Actualizar `09-technical-architecture/model-llm-layer.md` con Bloque 4
-- Actualizar `09-technical-architecture/README.md` (R3 → ✅ CERRADO 100%)
-- Actualizar `02-product/mvp-scope.md` (stack annotation FINAL R3)
-- Actualizar `05-finance/unit-economics.md` (costo total final)
+- Actualizar `../for3s-inter/09-technical-architecture/model-llm-layer.md` con Bloque 4
+- Actualizar `../for3s-inter/09-technical-architecture/README.md` (R3 → ✅ CERRADO 100%)
+- Actualizar `../for3s-inter/02-product/mvp-scope.md` (stack annotation FINAL R3)
+- Actualizar `../for3s-inter/05-finance/unit-economics.md` (costo total final)
 
 **Después de FASE 2:**
 - Iniciar **R4 — Tools / MCP Layer** (siguiente ronda técnica)

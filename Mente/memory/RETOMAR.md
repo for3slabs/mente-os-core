@@ -218,7 +218,7 @@ ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fó
 |---|---|
 | **🖥️⭐ LA DEMO — índice maestro (ENTRAR POR AQUÍ)** | memoria `project_bloque_demo_pendientes` |
 | **TODOS los pendientes a detalle** | `memory/PENDIENTES.md` |
-| **Secretos de la demo (DEMO_ENC_KEY) — FUERA de git** | `Mente/secrets/Secretos_Demo_Sitio.md` |
+| **Secretos de la demo (DEMO_ENC_KEY) — FUERA de git** | `secrets/Secretos_Demo_Sitio.md` |
 | Demo: Ronda F0 · mapa · plan BD · auditoría | repo del sitio: `marca-personal/DEMO_*.md` |
 | 🎓 Caso: limpiar un hardcodeo heredado sin romper | `memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` |
 | **Telemetría de conversaciones (registrar ANTES del `/clear`)** | `Cerebro/Registro_Conversaciones.md` |

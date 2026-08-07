@@ -4116,10 +4116,10 @@ Esta sub-sección documenta el cierre completo de R5 en una sola sesión (4 bloq
 - ✅ `dmn-default-mode.md` (B4)
 
 **Otros:**
-- ✅ `07-operations/decision-log.md` — D-019 a D-022 agregadas
-- ✅ `02-product/mvp-scope.md` — stack annotation R5 100%
-- ✅ `05-finance/unit-economics.md` — costo total v1 FINAL post-R5 actualizado
-- ✅ `09-technical-architecture/README.md` — R5 marked CERRADO
+- ✅ `../for3s-inter/07-operations/decision-log.md` — D-019 a D-022 agregadas
+- ✅ `../for3s-inter/02-product/mvp-scope.md` — stack annotation R5 100%
+- ✅ `../for3s-inter/05-finance/unit-economics.md` — costo total v1 FINAL post-R5 actualizado
+- ✅ `../for3s-inter/09-technical-architecture/README.md` — R5 marked CERRADO
 - ✅ Memoria global `project_dmn_tasks_critical_refinement.md` — flag refinamiento 5.4.2
 
 ### Cobertura Grafo Maestro post-R5
@@ -4225,10 +4225,10 @@ Esta sub-sección documenta el cierre completo de R6 en una sola sesión (4 bloq
 - ✅ `memory-eval.md` (B4)
 
 **Otros:**
-- ✅ `07-operations/decision-log.md` — D-023 a D-026 agregadas
-- ✅ `02-product/mvp-scope.md` — stack annotation R6 100%
-- ✅ `05-finance/unit-economics.md` — costo total v1 FINAL post-R6
-- ✅ `09-technical-architecture/README.md` — R6 marked CERRADO
+- ✅ `../for3s-inter/07-operations/decision-log.md` — D-023 a D-026 agregadas
+- ✅ `../for3s-inter/02-product/mvp-scope.md` — stack annotation R6 100%
+- ✅ `../for3s-inter/05-finance/unit-economics.md` — costo total v1 FINAL post-R6
+- ✅ `../for3s-inter/09-technical-architecture/README.md` — R6 marked CERRADO
 - ✅ Memoria global `project_r6_critical_pre_code_review.md` (flag pre-código)
 
 ### Cobertura Grafo Maestro post-R6
@@ -4344,10 +4344,10 @@ Esta sub-sección documenta el cierre completo de R7 en una sola sesión (4 bloq
 - ✅ `dashboard-notifications.md` (B4)
 
 **Otros:**
-- ✅ `07-operations/decision-log.md` — D-027 a D-030 agregadas
-- ✅ `02-product/mvp-scope.md` — stack annotation R7 100%
-- ✅ `05-finance/unit-economics.md` — costo total v1 FINAL post-R7
-- ✅ `09-technical-architecture/README.md` — R7 marked CERRADO
+- ✅ `../for3s-inter/07-operations/decision-log.md` — D-027 a D-030 agregadas
+- ✅ `../for3s-inter/02-product/mvp-scope.md` — stack annotation R7 100%
+- ✅ `../for3s-inter/05-finance/unit-economics.md` — costo total v1 FINAL post-R7
+- ✅ `../for3s-inter/09-technical-architecture/README.md` — R7 marked CERRADO
 
 ### Grafo Maestro layers materializados post-R7
 

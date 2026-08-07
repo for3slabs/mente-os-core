@@ -66,7 +66,7 @@ Code, this file plus the pointers below is enough to work correctly.
 | Architectural truth | `Cerebro/For3s_OS_Grafo_Maestro.md` |
 | Active blocks | `blocks/active/<name>/BLOCK.md` |
 | What Brian still owes | `docs/PENDING-BRIAN.md` |
-| Secrets | `Mente/secrets/` — ⛔ never in git |
+| Secrets | `secrets/` — ⛔ never in git |
 
 ---
 

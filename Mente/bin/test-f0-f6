@@ -1814,6 +1814,35 @@ grep -q "AGPL" "$REPO/CLAUDE.md" 2>/dev/null \
 _abs=$(grep -oE '/home/[a-z0-9_-]+/' "$REPO/.claude/settings.json" 2>/dev/null | sort -u | wc -l)
 eq "el settings PUBLICADO no lleva rutas absolutas de una máquina" "0" "$_abs"
 
+# ── 13 · CADA GRUPO DE HOOKS DECLARA A QUÉ HERRAMIENTA SE APLICA (2026-08-06) ──
+# 🔴 EL FALLO QUE ESTO CIERRA, y fue mío: al hacer portables las rutas (PR #4) el script
+# reescribió `.claude/settings.json` entero con `json.dump` en vez de editar solo las rutas, y
+# **perdió el `matcher` de los grupos de PreToolUse**. Sin matcher, un hook corre en TODAS las
+# herramientas: `gate-handoff.py` —que solo debe vigilar `Agent|Task`— pasó a bloquear `Bash`,
+# `Read`, `Grep` y hasta `Edit`. El sistema se cerró sobre sí mismo: ni siquiera se podía editar
+# la configuración para arreglarlo, ni crear el manifiesto que el propio hook proponía como
+# salida. Brian tuvo que corregirlo a mano en el IDE.
+#
+# ⭐ Y pasó EN SILENCIO porque el JSON seguía siendo VÁLIDO: la batería dio 192/0 con la
+# configuración rota. Un `matcher` ausente no es un error de sintaxis — es un cambio de alcance
+# que ningún parser detecta. **Lo que no se mide, no existe.**
+_sinm=$(python3 -c "
+import json
+n=0
+for f in ('settings.json','settings.local.json'):
+    try:
+        d=json.load(open('$REPO/.claude/'+f))
+    except Exception:
+        continue
+    for ev,gs in (d.get('hooks') or {}).items():
+        if ev in ('SessionStart','PostCompact','PreCompact','SessionEnd','Stop'):
+            continue          # estos no reciben herramienta: un matcher no aplica
+        for g in gs:
+            if not g.get('matcher'):
+                n+=1
+print(n)" 2>/dev/null)
+eq "todo grupo de hooks de herramienta declara su matcher" "0" "${_sinm:-ERR}"
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"
