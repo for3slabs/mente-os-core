@@ -123,7 +123,11 @@ import mente_config as c
 print(' '.join(p.rstrip('/').split('/')[-1] if 'Mente' not in p.split('/')[-1] else '/'.join(p.rstrip('/').split('/')[-2:]) for p,_ in c.gates()))" 2>/dev/null)
 [ -n "$_GATES" ] || _GATES="5M-incubathon"
 for target in $_GATES; do
+  # ⚠️ `settings.local.json` está en el .gitignore: NO viaja. En un clon no existe, así que
+  # exigirle reglas es pedir un archivo que por diseño no está — 5 falsos rojos en cada clon
+  # (medido 2026-08-07). Si existe, se le exige lo mismo que siempre.
   for f in settings.json settings.local.json; do
+    [ -f "$REPO/.claude/$f" ] || continue
     n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/$f'))
 rules=[r for r in d['permissions'].get('deny',[]) if '$target' in r]
@@ -136,6 +140,7 @@ done
 # ⭐ The gap that Read/Edit/Write alone leaves open: a shell reads whatever the file tools refuse.
 # Every protected target needs a Bash deny too, or the lock has a back door.
 for f in settings.json settings.local.json; do
+  [ -f "$REPO/.claude/$f" ] || continue
   n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/$f'))
 dn=[r for r in d['permissions'].get('deny',[]) if r.startswith('Bash(')]
@@ -152,6 +157,7 @@ done
 # and the test that counted exactly 3 rules per target. A fixed list is a hole with a schedule.
 # This asserts COVERAGE of what exists on disk, so a new credential file fails the battery.
 for f in settings.json settings.local.json; do
+  [ -f "$REPO/.claude/$f" ] || continue
   n=$(python3 -c "
 import json,os
 d=json.load(open('$REPO/.claude/$f'))
@@ -177,6 +183,7 @@ grep -q "def check_isolation" bin/check-health \
 
 # A broad Read grant with no deny over credentials is an open door nothing was watching.
 for f in settings.json settings.local.json; do
+  [ -f "$REPO/.claude/$f" ] || continue
   n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/$f'))
 dn=d['permissions'].get('deny',[])
@@ -189,7 +196,15 @@ n=$(grep -ohE "sshpass -p '[^']+'|sk-ant-[A-Za-z0-9]{15,}|ghp_[A-Za-z0-9]{20,}" 
      "$REPO/.claude/settings.json" "$REPO/.claude/settings.local.json" 2>/dev/null | wc -l)
 eq "no secret VALUES inside approved commands" "0" "$n"
 
-eq "secrets/ is 700 (owner only)" "700" "$(stat -c %a secrets 2>/dev/null || echo MISSING)"
+# ⚠️ `secrets/` está en el .gitignore: NO viaja, así que en un clon no existe y este check
+# daba MISSING — exigir permisos de un directorio que por diseño no está. Si existe, se le
+# exige 700 como siempre; si no, no hay nada que proteger todavía. (Medido 2026-08-07: era 1
+# de los 21 fallos de un clon limpio.)
+if [ -d secrets ]; then
+  eq "secrets/ is 700 (owner only)" "700" "$(stat -c %a secrets 2>/dev/null || echo ERR)"
+else
+  ok "secrets/ no existe en este árbol (gitignored) — nada que proteger aún"
+fi
 n=$(find secrets -type f ! -perm 600 2>/dev/null | wc -l)
 eq "every file in secrets/ is 600" "0" "$n"
 ( cd "$M" && git check-ignore -q secrets/ ) && ok "secrets/ is gitignored" \
@@ -536,8 +551,17 @@ rm -f /tmp/hb-probe.bak
 # stopped firing looks exactly like one with nothing to block. Measured the day it was built:
 # gate-handoff had blocked three launches, and after dozens of edits there was NO way to tell
 # whether gate-critical had fired even once.
+# 🔴 SE INVOCA LA PUERTA Y SE COMPRUEBA QUE DEJA LA MARCA (2026-08-07).
+# Antes solo miraba si `.beats/<puerta>` YA existía — y `.beats/` no viaja (es por máquina, a
+# propósito: un latido ajeno enmascara un hook muerto en la tuya). Así que en un clon los tres
+# salían MISSING en la primera corrida y verdes en la segunda. **Medían si alguien había
+# trabajado antes en ese árbol, no si la puerta late.**
+# Ahora se dispara cada puerta con una entrada inocua y se exige la marca DESPUÉS: eso es el
+# comportamiento, y se verifica igual en la máquina de Brian que en un clon recién nacido.
 for _g in gate-critical gate-handoff pre-edit-standards; do
-  [ -f ".beats/$_g" ] || bad "gate $_g leaves a beat" "a stamped date" "MISSING"
+  printf '{"tool_input":{"file_path":"/tmp/zz-beat-probe.txt"}}' \
+    | python3 "hooks/$_g.py" >/dev/null 2>&1
+  [ -f ".beats/$_g" ] || bad "gate $_g leaves a beat" "a stamped date" "MISSING tras invocarla"
 done
 ok "the three gates stamp a beat when they fire"
 

@@ -32,7 +32,7 @@ battery catching a fix that had just been written for something else.
 
 ---
 
-## 1 · THE THREE FAMILIES
+## 1 · THE FOUR FAMILIES
 
 ### A · Loose comparison — the string is too short to mean anything
 
@@ -71,6 +71,40 @@ of the four required header fields, two dead pointers, three frozen numbers.
 
 `$?` survives exactly one command. This one only showed when the expected value was `1`: with `0`
 the clobbered value coincided **by accident**, so it passed for weeks.
+
+---
+
+### D · Exigir algo que POR DISEÑO no viaja — el check mide la máquina, no el sistema
+
+```bash
+⛔  eq "secrets/ is 700" "700" "$(stat -c %a secrets)"     # secrets/ está en .gitignore
+⛔  for f in settings.json settings.local.json; do …       # la .local NUNCA viaja
+⛔  [ -f ".beats/$_g" ] || bad …                            # .beats/ es por máquina
+✅  [ -d secrets ] && eq … || ok "no existe aquí — nada que proteger aún"
+✅  [ -f "$REPO/.claude/$f" ] || continue
+✅  printf '…' | python3 "hooks/$_g.py" >/dev/null 2>&1     # se INVOCA, luego se exige la marca
+```
+
+🔴 **Medido el 2026-08-07 y es la familia más cara de todas:** la batería daba **195/0 en la
+máquina de Brian y 22 fallos en un clon limpio**. Nadie lo vio durante meses porque nadie corría
+la batería fuera de este árbol — lo encontró una auditoría externa, no el sistema.
+
+**Encontrada en 4 sitios** por la misma causa: `piezas.tsv` (atrapada en `Maestro/`, otro repo) ·
+`secrets/` y `settings.local.json` (en el `.gitignore`) · `blocks/blocked/` (git no versiona
+directorios vacíos) · `.beats/` (por máquina, a propósito).
+
+> **El test:** *¿este archivo llega a un clon?* Si está en `.gitignore`, es de otro repo, o se
+> crea al usar el sistema — entonces exigirlo presente mide **quién trabajó antes en ese árbol**,
+> no si el sistema funciona.
+>
+> ⭐ **Y la salida nunca es dejar de verificar:** si el archivo existe, se le exige lo mismo de
+> siempre; si no, se comprueba el COMPORTAMIENTO en su lugar. Los latidos pasaron de *"¿existe la
+> marca?"* a *"invoco la puerta y exijo la marca después"* — eso se verifica igual en cualquier
+> máquina.
+
+⚠️ **Corolario, aprendido cuatro veces el mismo día:** corregir esta familia en un validador **no
+la corrige en sus hermanos**. `check-health` arrastraba el mismo fallo que ya se había arreglado
+en `test-f0-f6`. Al encontrar uno, se busca el patrón en los demás.
 
 ---
 

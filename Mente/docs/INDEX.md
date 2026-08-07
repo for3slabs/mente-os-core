@@ -8,7 +8,7 @@
 **Generated:** 2026-08-07 · **Type:** generated
 
 
-**303 documents** · **5 blocks** · 25 directories
+**304 documents** · **5 blocks** · 26 directories
 
 
 | Directory | Docs |
@@ -26,6 +26,7 @@
 | `blocks/archive/plan-tests-demo_2026-08/` | 3 |
 | `blocks/archive/plan-tests-demo_2026-08/docs/` | 1 |
 | `blocks/archive/split-architecture_2026-07/` | 3 |
+| `blocks/blocked/` | 1 |
 | `bridges/` | 6 |
 | `docs/` | 19 |
 | `docs/analysis/` | 28 |
@@ -149,6 +150,12 @@
 | `SUMMARY.md` | analysis | current | 2026-07-30 | 73 |
 | `connections.md` | analysis | current | 2026-07-30 | 30 |
 
+## `blocks/blocked/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `README.md` | contract | current | 2026-08-07 | 44 |
+
 ## `bridges/`
 
 | Document | Type | Status | Updated | Lines |
@@ -166,7 +173,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 475 |
+| `INDEX.md` | generated | — |  | 482 |
 | `METRICS.md` | generated | current | 2026-08-07 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 29 |
@@ -318,7 +325,7 @@
 | `contract-document.md` | rule | current | 2026-07-29 | 206 |
 | `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
 | `qa-dimensions.md` | contract | current | 2026-08-05 | 312 |
-| `rule-checks-must-measure.md` | rule | current | 2026-08-02 | 135 |
+| `rule-checks-must-measure.md` | rule | current | 2026-08-02 | 169 |
 | `rule-config-hygiene.md` | rule | current | 2026-07-31 | 240 |
 | `rule-fix-not-patch.md` | rule | current | 2026-07-29 | 109 |
 | `rule-friction.md` | rule | current | 2026-07-29 | 100 |

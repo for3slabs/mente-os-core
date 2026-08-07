@@ -151,9 +151,43 @@ else
       (cd "$_tmp/c/Mente" && timeout 300 bin/check-blocks >/dev/null 2>&1)
       [ $? -le 1 ] && ok "un clon corre check-blocks sin errores" \
                    || mal "clon check-blocks" "exit 0/1" "falló"
-      for f in LICENSE CLAUDE.md PROJECT-RULES.md .claude/settings.json; do
+      for f in LICENSE CLAUDE.md PROJECT-RULES.md .claude/settings.json Mente/piezas.tsv; do
         [ -e "$_tmp/c/$f" ] && ok "el clon trae $f" || mal "clon $f" "presente" "falta"
       done
+
+      # ⭐ Y LA BATERÍA COMPLETA, DENTRO DEL CLON (2026-08-07).
+      # 🔴 El hueco que esto cierra: F8 solo corría `check-blocks` y comprobaba 4 archivos, así
+      # que daba VERDE mientras la batería fallaba 22 veces ahí dentro. Lo descubrió una
+      # auditoría externa, no este script. **Un frente que dice "clon limpio" y no corre lo que
+      # importa mide su propio nombre, no el clon.**
+      #
+      # ⚠️ El techo NO es 0, y es deliberado: unos 9 de esos fallos son el sistema fallando
+      # CERRADO ante una instancia sin configurar (`settings.local.json` que no viaja, sesión no
+      # registrada, `{{OWNER}}` sin resolver) — eso es correcto, no deuda. Lo que se prohíbe es
+      # que EMPEORE. El techo baja con la deuda, igual que WARN_CAP en pre-commit.
+      # 📊 Medido 2026-08-07: 21 desde un clon LOCAL (`git clone .`) y 16 desde uno de GitHub.
+      # La diferencia son latidos (`.beats/`) y `mente.config.yml`, que no viajan y aquí sí
+      # existían — el clon local es el caso MÁS DURO, así que el techo se fija sobre él.
+      # ⭐ ESTE ES EL GUARDIÁN DE LA FAMILIA D de `rules/rule-checks-must-measure.md`:
+      # *un check que exige algo que por diseño no viaja mide la máquina, no el sistema*.
+      # Ningún check interno puede detectarla —por definición pasa en el árbol del autor—, así
+      # que la única prueba es correr la batería DENTRO de un clon y comparar. El techo es el
+      # número medido; si sube, alguien escribió un check atado a esta máquina.
+      #
+      # ⚠️ LÍMITE, medido y dicho: `git clone` copia lo COMMITEADO, no el árbol de trabajo. Así
+      # que este guardián no ve un check recién escrito hasta que se commitea — atrapa la
+      # regresión antes del PR, no antes del commit. Clonar el working tree daría un falso
+      # positivo por cada archivo a medio escribir, que sería peor.
+      CLON_CAP=11
+      _cf=$(cd "$_tmp/c/Mente" && timeout 900 bin/test-f0-f6 2>&1 \
+            | grep -oE 'failed: [0-9]+' | grep -oE '[0-9]+' | head -1)
+      if [ -z "$_cf" ]; then
+        mal "batería en el clon" "un número" "no se pudo medir"
+      elif [ "$_cf" -le "$CLON_CAP" ]; then
+        ok "batería en el clon: $_cf fallo(s) — bajo el techo de $CLON_CAP"
+      else
+        mal "batería en el clon" "≤ $CLON_CAP fallos" "$_cf — empeoró"
+      fi
     else
       mal "clon" "validadores ejecutables" "no lo son"
     fi
