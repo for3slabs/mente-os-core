@@ -285,7 +285,12 @@ disco"*. Corregido: un puntero mal escrito es lo que `principles/expertise/doc-s
 
 ---
 
-## 🟡 graphify #4 · TESTS DEL PRODUCTO — el plan está escrito, faltan 2 decisiones tuyas
+## ✅ graphify #4 · TESTS DEL PRODUCTO — **CERRADO 2026-08-06**, las 2 decisiones se tomaron
+
+> **Verificado 2026-08-07:** Vitest 4.1.10 en `marca-personal/package.json` (`"test": "vitest run"`),
+> los 4 caminos escritos en `marca-personal/tests/` y **23/23 en verde** contra la rama de Neon.
+> El bloque cerró en `blocks/archive/plan-tests-demo_2026-08`. Lo de abajo es el registro de cómo
+> se decidió, no algo pendiente.
 
 **El plan:** `blocks/active/plan-tests-demo/docs/plan-critical-paths.md`.
 

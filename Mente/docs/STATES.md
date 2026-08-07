@@ -10,7 +10,7 @@
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | **demo** | code | active | full-block | 6/7 |  | 2026-08-05 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **demo** | code | active | full-block | 6/7 |  | 2026-08-07 | `blocks/active/demo/BLOCK.md` |
 | 🟢 | **separacion-motor-instancia** | infra | active | task | — |  | 2026-08-07 | `blocks/active/separacion-motor-instancia/BLOCK.md` |
 | 🟢 | **distribucion_2026-08** | code | closed | full-block | — |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
 | 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | — |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |

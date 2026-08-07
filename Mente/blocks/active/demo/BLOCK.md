@@ -57,9 +57,10 @@ phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead cod
 next: §F-11 — reestructurar CÓMO se ejecuta lo de las rutas OAuth (Brian lo pidió así)
 blockers: ninguno. §F-11 queda pendiente de reestructurar, no bloquea
 progress: **11/12 cerrados** · 🟢 23/23 tests en verde contra BD real. Solo queda §F-11
-note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR y el bloque NO cierra —
-      §F-7 sigue abierto con un agujero de autorización real.
-updated: 2026-08-05
+note: 🟢 PRODUCT es la CAPA 1 (medible); la capa 2 se corre AL CERRAR. ⚠️ Esta nota decía que
+      §F-7 seguía abierto — **falso desde el 06-ago**: se cerró por la raíz (jazz/mashe borradas,
+      `allowedEmails.ts` eliminado). La tabla §F ya lo decía; la nota se quedó atrás.
+updated: 2026-08-07
 note: the red test is the deliverable, not a defect — how to run them and what NOT to touch is
       `blocks/active/demo/docs/como-correr-los-tests.md`.
 

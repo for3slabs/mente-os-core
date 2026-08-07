@@ -90,9 +90,8 @@ repos hermanos ausentes · `owner == "Maestro"` hardcodeado en `check-structure`
 **🔴 El único rojo que queda en un clon es la respuesta CORRECTA:** `check-clear-ready
 registered=no` — la sesión de un árbol recién nacido no está registrada. Verde ahí sería mentir.
 
-**🆕 Cierre (08-07):** PR #12 **mergeado**. + 2 arreglos: ① `hooks/pre-edit-standards.py` ya no
-confunde MENCIONAR con RECLAMAR (compara por segmentos, ignora la prosa) — sin tocar el formato
-del §B; ② `bin/check-clear-ready` no exige fecha de hoy a un `Type: fossil`. Batería **198/0**.
+**🆕 Cierre (08-07):** PR #12 mergeado + 3 arreglos (matcher de `hooks/pre-edit-standards.py`,
+fósiles en `bin/check-clear-ready`, línea fantasma en `bin/check-health`). Batería **198/0**.
 
 **👉 PRÓXIMO PASO:** sub-bloque 5 (clon limpio end-to-end) y, cuando Brian lo marque, publicar
 el motor sin los 221 archivos de instancia — el bloque pospuesto a propósito.

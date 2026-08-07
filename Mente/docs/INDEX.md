@@ -86,7 +86,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 187 |
+| `BLOCK.md` | — | — |  | 188 |
 
 ## `blocks/active/demo/docs/`
 
@@ -248,8 +248,8 @@
 |---|---|---|---|---|
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1646 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
-| `PENDIENTES.md` | pending | current | 2026-08-05 | 4720 |
-| `RETOMAR.md` | entry-point | current | 2026-08-07 | 250 |
+| `PENDIENTES.md` | pending | current | 2026-08-05 | 4725 |
+| `RETOMAR.md` | entry-point | current | 2026-08-07 | 249 |
 
 ## `memory/archive/`
 
