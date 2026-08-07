@@ -48,7 +48,7 @@
 |---|---|---|---|---|
 | `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 173 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
-| `README.md` | entry-point | current | 2026-07-31 | 189 |
+| `README.md` | entry-point | current | 2026-08-06 | 190 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
 
 ## `Cerebro/`

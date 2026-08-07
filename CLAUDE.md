@@ -4,6 +4,9 @@
 **Level:** 🚪 el ARRANQUE — lo carga Claude Code solo; no hereda ni es heredado (no lleva reglas)
 **Verified by:** `Mente/bin/check-links` · `Mente/bin/test-f0-f6` (§F6 · router + métricas)
 **Scope:** ⚠️ documento de INSTANCIA, no del motor — el motor publicado es `mente-os` (MIT)
+**Licencia:** este repositorio es **AGPL-3.0** (ver `LICENSE`). ⚠️ Distinta a la del motor
+publicado a propósito: aquí vive también la INSTANCIA (`Cerebro/`, `memory/`), y AGPL obliga
+a que quien lo use —incluso como servicio— publique sus cambios.
 
 ## Purpose
 

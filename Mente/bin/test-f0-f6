@@ -1777,6 +1777,24 @@ _r=$(REPO="$_tmp" git -C "$_tmp" rev-parse --abbrev-ref HEAD 2>/dev/null)
   || bad "sonda de rama" "master" "$_r"
 rm -rf "$_tmp"
 
+# ── 11 · LA LICENCIA EXISTE Y ES COHERENTE (2026-08-06) ─────────────────────
+# 🔴 Hallazgo de una auditoría externa, y era CIERTO: el repo no tenía licencia. Sin ella
+# **legalmente nadie puede reutilizarlo** — ni siquiera leerlo con seguridad jurídica. Era el
+# bloqueo duro para dejar de ser un artefacto personal.
+# Brian eligió AGPL-3.0, la misma que For3s OS: quien lo use debe publicar sus cambios, incluso
+# si solo lo ofrece como servicio. Coherente con que este repo contiene también la INSTANCIA.
+[ -f "$REPO/LICENSE" ] && ok "el repositorio declara su licencia (LICENSE en la raíz)" \
+                       || bad "licencia" "LICENSE en la raíz" "no existe"
+# Y debe ser la AGPL de verdad, no un texto cualquiera: la §13 (Remote Network Interaction) es
+# lo que la distingue de la GPL, y es justo la cláusula por la que Brian la eligió.
+grep -qi "Remote Network Interaction" "$REPO/LICENSE" 2>/dev/null \
+  && ok "LICENSE es la AGPL real (contiene la §13 Remote Network Interaction)" \
+  || bad "licencia AGPL" "§13 presente" "el texto no es AGPL-3.0"
+# El aviso debe llegar a quien arranca: un LICENSE que nadie menciona no se encuentra.
+grep -q "AGPL" "$REPO/CLAUDE.md" 2>/dev/null \
+  && ok "el arranque (CLAUDE.md) declara la licencia" \
+  || bad "aviso de licencia" "CLAUDE.md la menciona" "silencio"
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"

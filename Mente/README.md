@@ -1,6 +1,7 @@
 # Mente OS v2
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-07-31 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-06 · **Owner:** brian
+**Licencia:** AGPL-3.0 — ver `LICENSE` en la raíz del repositorio
 
 ## Purpose
 
