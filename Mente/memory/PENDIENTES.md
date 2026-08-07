@@ -446,12 +446,33 @@ entradas de `cp` y `python3` — exactamente los genéricos que decidimos no dec
 **5 están construidas** (aislamiento como doctrina · handoff file-backed + verifier ·
 auto-inyección al arranque · disciplina de tamaño · registry/health). Estas 2 nunca se hicieron.
 
-### ⬜ #2 · SHARED-THREAD INBOX — un chat, varios temas
-En Telegram/WhatsApp **no hay hilos nativos**: un DM es la superficie de varios trabajos.
-`intern-os` v0.4.0 lo resolvió con `shared_thread_ids: true` — el thread resuelve al PROYECTO
-(contenedor) y el trabajo activo se decide por estado + intención explícita del humano.
-**Por qué importa aquí:** For3s **vive en Telegram**, así que es literalmente su caso.
-🙋 **Decide Brian:** si aplica a For3s OS (el producto) o también a Mente OS (el motor).
+### ✅ #2 · SHARED-THREAD INBOX — **CERRADO 2026-08-06.** Ya estaba hecho; nadie lo registró
+
+**El problema:** en Telegram/WhatsApp **no hay hilos nativos** — un DM es la superficie de
+varios trabajos a la vez, así que el agente no sabe de cuál le hablas. `intern-os` v0.4.0 lo
+resolvió con `shared_thread_ids: true`: el chat resuelve al PROYECTO y el trabajo activo se
+decide por estado + intención explícita del humano.
+
+🔬 **Medido al ir a cerrarlo: For3s OS YA LO IMPLEMENTÓ el 2026-07-02.** No era un pendiente
+de construir, era un pendiente de VERIFICAR. **656 líneas** en `for3s_core`:
+
+| Módulo | Líneas | Qué resuelve |
+|---|---|---|
+| `temas.py` | 296 | qué temas existen y **cuál está activo** |
+| `tema_estado.py` | 216 | por tema: fase · próximo paso · blockers — *"un RETOMAR.md por tema"* |
+| `hilo_status.py` | 144 | el resumen narrativo de *"de qué hablamos"* |
+
+La cabecera de `tema_estado.py` lo dice literal: *"Adopción de intern-os → código propio (C1,
+2026-07-02)"*.
+
+⛔ **Y el MOTOR no lo replica, a propósito.** Mente OS ya resuelve lo mismo con otra forma: los
+**bloques**. Cada bloque es un trabajo con su §E estado, su próximo paso y sus blockers — es
+`tema_estado.py` en documentos. Duplicarlo crearía dos sistemas de estado que podrían divergir,
+que es justo lo que `principles/expertise/doc-structure.md` §2.3 prohíbe: *una copia no puede
+divergir si no existe*.
+
+⚠️ **Cuándo se reabre:** si algún día Mente OS gobierna varios proyectos desde un solo chat.
+Hoy eso no existe.
 
 ### ✅ #5 · VERSION-SELF-AWARENESS — CERRADO 2026-08-05
 
@@ -1303,7 +1324,19 @@ Usarlo solo como capa de API lo limitó. La gente pedía (semillas del carril):
   - [ ] **F6 cierre** — re-preguntar el sentimiento a Brian ("¿ya lo soltarías?"). La métrica ES él.
   - [ ] Propagar F1-F4 a las otras instancias (hoy en general+jazz; brian/mashe/Foresito no).
 
-### 🔴 BUG-EQUIPO — El equipo multi-agente NO hereda la identidad de For3s (VERIFICADO en código)
+### ✅ BUG-EQUIPO — **CERRADO.** Verificado en el código el 2026-08-06
+
+🔬 **La MISMA línea que documentaba el bug es la que lo arregla.** El pendiente citaba
+`specialists.py:252` → `prompt = f"[{rol}]\n\n{entrada}"` (sin identidad ni memoria). Medido
+hoy, esa línea dice:
+
+    prompt = f"{identidad.capsula_equipo()}[{definicion.rol}]\n\n{entrada}"
+
+Los 5 specialists ya no se lanzan en frío: reciben la cápsula de identidad de For3s. Coincide
+con la memoria `project_bug_equipo_sin_identidad` (*capsula_equipo sellado, 5/5*, commit
+`06c5f99`) — **el arreglo existía, solo faltaba registrarlo aquí.**
+
+⚠️ El enunciado original se conserva debajo como evidencia de qué se cazó y cómo.
 - **Cazado** auditando la conversación del domingo (RNN/LSTM): los 5 specialists dijeron *"for3s OS
   no está definido"* e imaginaron un kernel. Se lanzan EN FRÍO.
 - **Evidencia:** `specialists.py:252` `prompt = f"[{rol}]\n\n{entrada}"` — sin identidad ni memoria;
@@ -4600,7 +4633,14 @@ Toca `CLAUDE.md` (se inyecta en cada sesión) y `base-rules.md` (la puerta del s
 **Nota:** el bloque `demo` ya separa `⛔ OUT` (propio) de `🌐 System-wide rules` (heredadas) — se hizo
 en F3, así que el patrón está probado antes de la migración.
 
-### 🟡 `docs/plan-v2-rollout.md` en 413/400 líneas (2026-07-30)
+### ✅ `docs/plan-v2-rollout.md` — **CERRADO 2026-08-06: no había que partirlo**
+
+🔬 Medido al ir a arreglarlo: su **`Status` ya es `fossil`** — un plan EJECUTADO, con 21 fases
+✅. El contrato dice que un fósil se consulta, no se mantiene, así que el aviso pedía **editar
+historia congelada**.
+🔴 **El defecto era del validador:** `fossil` estaba exento como TIPO (tabla `LIMITS`) pero no
+como STATUS, y este documento es `Type: plan` + `Status: fossil`. Corregido; probado con sonda
+que un documento NO fósil sigue avisando al pasar su techo.
 
 Pasó su límite al documentar F4. Se sacaron 2 secciones que eran bitácora, no plan
 (`docs/f4-execution-log.md`) y bajó de 460 → 413. **Faltan 13 líneas.**
@@ -4611,7 +4651,12 @@ partición correcta es **una fase = un archivo** cuando cierre F5, no cortar lí
 
 **Cuándo:** al cerrar F5.
 
-### 🟡 31 warnings de rutas sin raíz en 18 archivos (medido 2026-07-30)
+### ✅ Rutas sin raíz — **CERRADO 2026-08-06: 31 → 0** (pasaron por 76 antes de bajar)
+
+Crecieron de 31 a 76 porque **nadie las miraba**: `hooks/pre-commit.sh` solo bloqueaba con
+errores. Arreglado en los dos frentes: 71 rutas reescritas desde la raíz (solo con resolución
+ÚNICA) **y un techo `WARN_CAP` en la puerta** para que no vuelvan a acumularse en silencio.
+🔬 3 eran falsos positivos del propio validador — uno causaba un bucle infinito.
 
 `bin/check-blocks` reporta 31 🟡: rutas escritas sueltas (`principles/owner-2-dev.md`) en vez de desde la raíz
 de Mente (`principles/owner-2-dev.md`). **Preexistentes**, no introducidos por F4 — están en
@@ -4636,7 +4681,11 @@ alguien se acuerda de enlazarlo a mano.
 
 **Cuándo:** F7 (generar índices).
 
-### 🔴 la demo tiene 0 archivos de test en TODO el sitio (medido 2026-07-30)
+### ✅ Tests de la demo — **CERRADO 2026-08-06: 0 → 4 archivos, 23/23 en verde**
+
+Los 4 caminos críticos (entrar · autorizar · hablar · apagar) contra una rama de Neon real.
+Cada uno se VIO FALLAR con un sabotaje antes de creerle. Detalle:
+`blocks/active/demo/docs/como-correr-los-tests.md`.
 
 `bin/grade-block demo` → 🔴 MVP. Dos rojos: `ConnectClaude.tsx` huérfano (ya es el sub-bloque 10 del
 bloque demo) y **cero tests**. El sub-bloque 8 existe para esto y sigue `open`.

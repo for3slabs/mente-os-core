@@ -142,8 +142,14 @@ def check_documents():
         # un warning permanente e inarreglable sin tocar historia.
         cap_doc = LIMITS.get(dtype)
         exento = exenciones(text)
+        # ⛔ Un documento con **Status: fossil** está CONGELADO: se consulta, no se mantiene.
+        # `fossil` estaba exento como TIPO (tabla LIMITS) pero no como STATUS, así que
+        # `docs/plan-v2-rollout.md` —Type: plan, Status: fossil, un plan YA EJECUTADO con 21
+        # fases ✅— seguía recibiendo un aviso de tamaño que pedía editarlo. Medido 2026-08-06:
+        # 429/400. **Pedir que adelgace un documento congelado es pedir que se edite historia.**
+        congelado = (status or "").lower().startswith("fossil")
         if (cap_doc and lines > cap_doc and "/archive/" not in f
-                and "size" not in exento):
+                and "size" not in exento and not congelado):
             yel(f, f"{lines} lines — over the {dtype} limit of {LIMITS[dtype]}")
 
         # superseded must name its replacement
