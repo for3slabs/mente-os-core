@@ -170,7 +170,7 @@
 | `METRICS.md` | generated | current | 2026-08-06 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 29 |
-| `WORKSPACE.md` | entry-point | current | 2026-08-05 | 143 |
+| `WORKSPACE.md` | entry-point | current | 2026-08-05 | 151 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 211 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 293 |
 | `audit-adversarial.md` | analysis | current | 2026-07-30 | 105 |

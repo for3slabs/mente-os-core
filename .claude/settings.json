@@ -45,12 +45,12 @@
       "Bash(./bin/generate-index:*)",
       "Bash(bin/generate-metrics:*)",
       "Bash(./bin/generate-metrics:*)",
-      "Bash(cd /home/brianweb3/for3s/marca-personal *)"
+      "Bash(cd ${CLAUDE_PROJECT_DIR}/marca-personal *)"
     ],
     "additionalDirectories": [
       "/tmp",
-      "/home/brianweb3/for3s/marca-personal/app/[locale]",
-      "/home/brianweb3/for3s/.claude"
+      "${CLAUDE_PROJECT_DIR}/marca-personal/app/[locale]",
+      "${CLAUDE_PROJECT_DIR}/.claude"
     ],
     "deny": [
       "Bash(base64 *.aws/*)",
@@ -232,12 +232,12 @@
       "Bash(cat *marca-personal/Mente/*)",
       "Bash(head *5M-incubathon/*)",
       "Bash(tail *5M-incubathon/*)",
-      "Edit(//home/brianweb3/5M-incubathon/**)",
-      "Edit(//home/brianweb3/for3s/marca-personal/Mente/**)",
-      "Read(//home/brianweb3/5M-incubathon/**)",
-      "Read(//home/brianweb3/for3s/marca-personal/Mente/**)",
-      "Write(//home/brianweb3/5M-incubathon/**)",
-      "Write(//home/brianweb3/for3s/marca-personal/Mente/**)"
+      "Edit($HOME/5M-incubathon/**)",
+      "Edit(${CLAUDE_PROJECT_DIR}/marca-personal/Mente/**)",
+      "Read($HOME/5M-incubathon/**)",
+      "Read(${CLAUDE_PROJECT_DIR}/marca-personal/Mente/**)",
+      "Write($HOME/5M-incubathon/**)",
+      "Write(${CLAUDE_PROJECT_DIR}/marca-personal/Mente/**)"
     ],
     "ask": [
       "Bash(chmod *Mente/bin/*)",
@@ -275,19 +275,19 @@
       "Edit($CLAUDE_PROJECT_DIR/Mente/hooks/**)",
       "Edit($CLAUDE_PROJECT_DIR/Mente/principles/**)",
       "Edit($CLAUDE_PROJECT_DIR/Mente/rules/**)",
-      "Edit(/${CLAUDE_PROJECT_DIR}/.claude/settings.json)",
-      "Edit(/${CLAUDE_PROJECT_DIR}/.claude/settings.local.json)",
-      "Edit(/${CLAUDE_PROJECT_DIR}/Mente/bin/**)",
-      "Edit(/${CLAUDE_PROJECT_DIR}/Mente/hooks/**)",
-      "Read(/${CLAUDE_PROJECT_DIR}/Mente/secrets/Conectar_Servidor_For3s.md)",
+      "Edit(${CLAUDE_PROJECT_DIR}/.claude/settings.json)",
+      "Edit(${CLAUDE_PROJECT_DIR}/.claude/settings.local.json)",
+      "Edit(${CLAUDE_PROJECT_DIR}/Mente/bin/**)",
+      "Edit(${CLAUDE_PROJECT_DIR}/Mente/hooks/**)",
+      "Read(${CLAUDE_PROJECT_DIR}/Mente/secrets/Conectar_Servidor_For3s.md)",
       "Write($CLAUDE_PROJECT_DIR/Mente/CAPABILITIES.md)",
       "Write($CLAUDE_PROJECT_DIR/Mente/bin/**)",
       "Write($CLAUDE_PROJECT_DIR/Mente/hooks/**)",
       "Write($CLAUDE_PROJECT_DIR/Mente/principles/**)",
       "Write($CLAUDE_PROJECT_DIR/Mente/rules/**)",
-      "Write(/${CLAUDE_PROJECT_DIR}/.claude/settings.json)",
-      "Write(/${CLAUDE_PROJECT_DIR}/.claude/settings.local.json)",
-      "Write(/${CLAUDE_PROJECT_DIR}/Mente/hooks/**)",
+      "Write(${CLAUDE_PROJECT_DIR}/.claude/settings.json)",
+      "Write(${CLAUDE_PROJECT_DIR}/.claude/settings.local.json)",
+      "Write(${CLAUDE_PROJECT_DIR}/Mente/hooks/**)",
       "Bash(cat *secrets/*)",
       "Bash(grep *secrets/*)",
       "Bash(head *secrets/*)",
@@ -297,7 +297,7 @@
       "Bash(strings *secrets/*)",
       "Bash(tail *secrets/*)",
       "Bash(xxd *secrets/*)",
-      "Read(/${CLAUDE_PROJECT_DIR}/Mente/secrets/**)"
+      "Read(${CLAUDE_PROJECT_DIR}/Mente/secrets/**)"
     ],
     "defaultMode": "default"
   },

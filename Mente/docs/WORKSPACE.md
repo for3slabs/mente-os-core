@@ -62,6 +62,14 @@ Declared in `mente.config.yml` `gates:` — that file is the source, this table 
 
 Rules: `bridges/Puentes_Mente_OS.md`. The reason is **consumption**, not secrecy.
 
+> 🔑 **2026-08-06 · EL `settings.json` PUBLICADO ES PORTABLE.** Llevaba 9 rutas absolutas a
+> `/home/brianweb3` y **se publica**: un clon las recibía apuntando a directorios inexistentes —
+> reglas que no protegen y permisos que no conceden, en silencio. Ahora:
+> · dentro del proyecto → `${CLAUDE_PROJECT_DIR}/…` (el patrón que ya usaban 29 reglas)
+> · ⛔ el gate a otros Mente OS → `$HOME/5M-incubathon/**`, porque es un repo HERMANO y el
+>   candado debe seguir cerrado en cualquier máquina, no solo en la de Brian.
+> Un check de la batería impide que vuelvan (`grep` de `/home/<user>/` sobre el archivo).
+
 ## 3 · WHERE THE CREDENTIALS LIVE — pointers only
 
 | What | Where it lives | ⛔ |

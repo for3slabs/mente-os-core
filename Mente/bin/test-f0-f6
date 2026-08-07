@@ -196,12 +196,20 @@ eq "every file in secrets/ is 600" "0" "$n"
   || bad "secrets/ gitignored" "ignored" "TRACKED"
 
 # A dead path in additionalDirectories is a grant nobody can audit.
+# 🔴 EXPANDE LAS VARIABLES ANTES DE COMPROBAR (2026-08-06). Antes hacía `os.path.exists()`
+# sobre el texto LITERAL, así que una ruta portable —`${CLAUDE_PROJECT_DIR}/…`, que es la forma
+# CORRECTA de escribirla— se reportaba como muerta por no existir un directorio con ese nombre.
+# El check medía el TEXTO en vez del DESTINO, y castigaba justo la práctica que hace instalable
+# el repo. Se resuelve la variable igual que la resuelve el harness.
 n=$(python3 -c "
 import json,os
+os.environ.setdefault('CLAUDE_PROJECT_DIR','$REPO')
 t=0
 for f in ('settings.json','settings.local.json'):
     d=json.load(open('$REPO/.claude/'+f))
-    t+=sum(1 for e in d['permissions'].get('additionalDirectories',[]) if not os.path.exists(e))
+    for e in d['permissions'].get('additionalDirectories',[]):
+        if not os.path.exists(os.path.expandvars(os.path.expanduser(e))):
+            t+=1
 print(t)")
 eq "no dead paths in additionalDirectories" "0" "$n"
 
@@ -1794,6 +1802,17 @@ grep -qi "Remote Network Interaction" "$REPO/LICENSE" 2>/dev/null \
 grep -q "AGPL" "$REPO/CLAUDE.md" 2>/dev/null \
   && ok "el arranque (CLAUDE.md) declara la licencia" \
   || bad "aviso de licencia" "CLAUDE.md la menciona" "silencio"
+
+# ── 12 · EL SETTINGS PUBLICADO NO LLEVA LA RUTA DE NADIE (2026-08-06) ───────
+# 🔴 Segundo hallazgo cierto de la auditoría externa: `.claude/settings.json` —que SÍ se
+# publica— llevaba 9 rutas absolutas a `/home/brianweb3`. Un clon las recibe apuntando a
+# directorios que no existen en su máquina: reglas que no protegen nada y permisos que no
+# conceden nada, en silencio.
+# ⭐ La forma correcta ya se usaba en 29 reglas del mismo archivo: `${CLAUDE_PROJECT_DIR}`.
+# ⚠️ El gate a otros Mente OS (`5M-incubathon`) se ancla a `$HOME`, no al proyecto: es un repo
+# HERMANO, y el candado debe seguir cerrado en cualquier máquina, no solo en la de Brian.
+_abs=$(grep -oE '/home/[a-z0-9_-]+/' "$REPO/.claude/settings.json" 2>/dev/null | sort -u | wc -l)
+eq "el settings PUBLICADO no lleva rutas absolutas de una máquina" "0" "$_abs"
 
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
