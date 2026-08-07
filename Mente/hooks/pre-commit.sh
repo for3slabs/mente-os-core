@@ -110,4 +110,31 @@ if [ -n "$w" ] && [ "$w" -gt "$WARN_CAP" ]; then
   printf '\n   Or: git commit --no-verify   (and log why in the block §H)\n'
   exit 1
 fi
+
+# ── ⛔ NADIE COMMITEA DIRECTO A LA RAMA BASE (2026-08-06) ────────────────────
+# 🔴 EL AGUJERO QUE ESTO CIERRA, encontrado por Brian: `rules/rule-shipping-flow.md` existe
+# desde el 2026-08-05 y describe el flujo entero — rama → verificar → PR → ⛔ no mergear.
+# **Nada lo aplicaba.** Medido ese día: 15 de 15 commits fueron DIRECTOS a master, cero ramas,
+# cero PRs. La batería daba verde porque solo comprueba que un bloque DECLARE la regla en su §D
+# — declararla y cumplirla son cosas distintas, y solo se medía la primera.
+#
+# ⭐ Es la ley del propio sistema fallando sobre sí misma: *una regla en código se cumple 100%;
+# una que solo vive en un documento, 40-60%*. Esta se cumplió **0 de 15 veces**.
+#
+# Brian, al decidirlo: *"aunque no fuera para producción, si es una rama de prueba lo tienes
+# que hacer sí o sí, porque son buenas prácticas"*. Aplica a TODOS los repos, no solo a los
+# que despliegan.
+BASE_BRANCHES="master main"
+_rama=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+for _b in $BASE_BRANCHES; do
+  if [ "$_rama" = "$_b" ]; then
+    printf '⛔ COMMIT BLOCKED — estás en `%s`, la rama base.\n\n' "$_rama"
+    printf '   El flujo es: rama → verificar → PR → ⛔ no mergear.\n'
+    printf '   Regla: Mente/rules/rule-shipping-flow.md\n\n'
+    printf '   Crea la rama y repite el commit:\n'
+    printf '     git checkout -b <tipo>/<descripcion-corta>\n'
+    printf '\n   Excepción consciente: git commit --no-verify   (y dilo en el §H del bloque)\n'
+    exit 1
+  fi
+done
 exit 0

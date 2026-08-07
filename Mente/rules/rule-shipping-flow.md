@@ -20,6 +20,31 @@ The workflow that turns a ticket into a reviewable PR: **branch → verify → P
 > The flow is **transversal**: it does not change with the discipline. What changes per discipline
 > is *what gets verified*, and that stays in each `expertise/*.md`.
 
+---
+
+## ⛔ 0 · APLICA A TODOS LOS REPOS, SIEMPRE — y ahora hay un candado
+
+> **Brian, 2026-08-06:** *"si producción desde main, debe. Y aun así, aunque no fuera para
+> producción, si es una rama de prueba lo tienes que hacer sí o sí, porque son buenas prácticas."*
+
+⛔ **Sin excepción por repo.** No solo `marca-personal` (que despliega desde `main`): también
+`mente-os-for3s`, aunque Brian sea el único que escribe en él. Un PR que uno abre y revisa solo
+sigue dejando el diff legible antes de entrar — que es para lo que existe.
+
+### 🔴 Por qué esta sección nació: la regla se cumplió 0 de 15 veces
+
+Esta regla existía desde el 2026-08-05 y **nada la aplicaba**. Medido el 2026-08-06, y lo
+encontró Brian, no un validador: **15 de 15 commits fueron DIRECTOS a `master`. Cero ramas,
+cero PRs.** La batería daba verde porque su check 5c solo verifica que un bloque **DECLARE**
+la regla en su §D — y declararla no es cumplirla.
+
+⭐ **Es la ley de este sistema fallando sobre sí misma:** *una regla en código se cumple 100%;
+una que solo vive en un documento, 40-60%*. Esta, siendo solo documento, se cumplió **0%**.
+
+**Ya no:** `hooks/pre-commit.sh` **BLOQUEA** cualquier commit sobre `master` o `main`, y un
+check de la batería verifica que ese candado siga puesto. La excepción consciente existe
+(`git commit --no-verify`) pero deja rastro y hay que justificarla en el §H del bloque.
+
 > 🔴 **This is imported methodology, NOT Brian's criterion** (ADR-003). It is usable today, but it
 > is not his judgement. His criterion lives in `principles/expertise/*` §2-§4.
 
@@ -63,6 +88,15 @@ the body.
 · patterns that worked · known issues hit, so the next agent does not repeat them.
 
 **Push + PR:** open the PR against the base branch using the checklist in §3.
+
+> ⛔ **Y EL ÚLTIMO PASO, OBLIGATORIO: PEGAR EL LINK DEL PR EN LA RESPUESTA.**
+> **Brian, 2026-08-06:** *"cuando me des un PR a revisar tienes que agregar el link de dicho PR."*
+>
+> Un PR abierto que Brian no puede abrir de un clic **no está entregado**: le obliga a ir a
+> GitHub, buscar el repo y encontrar el PR — fricción que convierte una revisión de 30 segundos
+> en una tarea. El link va en el bloque 📦 ENTREGA, no enterrado en la prosa.
+>
+> ⚠️ Aplica también a cada actualización: si se empuja un cambio al PR, se repite el link.
 
 > ## ⛔ DO NOT MERGE. Creating the PR is the end of the agent's job. **Merging is a human decision.**
 

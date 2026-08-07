@@ -327,7 +327,7 @@
 | `rule-lanes.md` | rule | current | 2026-07-29 | 76 |
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-05 | 203 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-05 | 237 |
 
 ## `rules/decisions/`
 

@@ -1668,6 +1668,99 @@ _vout=$("$M/bin/check-health" 2>&1 | grep -c "Mente OS $_vs")
   && ok "migrate-doc still allows a move INSIDE the tree" \
   || bad "migrate-doc inside" "allowed" "refused a legitimate move"
 
+# ── 9 · LA CREDENCIAL DE SECRETS (2026-08-06) ────────────────────────────────
+# 🔴 Hueco encontrado por la auditoría del mismo día: `bin/secrets-lease` gobierna el acceso a
+# `secrets/` y NADA lo vigilaba. Se probó a mano en 5 casos y quedó verde — pero un validador que
+# solo se prueba a mano está del lado del 40-60% de la ley de este sistema.
+#
+# ⚠️ El permiso VIVO de la sesión se aparta y se restaura: este check no puede cerrarle la puerta
+# a la sesión que lo está ejecutando.
+_lease="$M/.secrets-lease.json"
+_lease_bak="$M/.secrets-lease.test-bak"
+[ -f "$_lease" ] && mv "$_lease" "$_lease_bak"
+
+# ① SIN permiso: `check` debe salir 1, y la puerta debe PREGUNTAR, nunca conceder.
+"$M/bin/secrets-lease" check >/dev/null 2>&1 \
+  && bad "lease sin permiso" "exit 1" "concedió sin permiso emitido" \
+  || ok "secrets-lease: sin permiso emitido, check sale 1"
+_o=$(printf '{"tool_name":"Read","tool_input":{"file_path":"%s/secrets/x.md"}}' "$M" \
+     | "$M/hooks/gate-secrets.py" 2>/dev/null)
+case "$_o" in
+  *'"ask"'*) ok "gate-secrets: sin permiso PREGUNTA (no concede)" ;;
+  *) bad "gate-secrets sin permiso" "ask" "$_o" ;;
+esac
+
+# ② CON permiso: `check` sale 0 y la LECTURA pasa.
+"$M/bin/secrets-lease" open --source test >/dev/null 2>&1
+"$M/bin/secrets-lease" check >/dev/null 2>&1 \
+  && ok "secrets-lease: con permiso emitido, check sale 0" \
+  || bad "lease con permiso" "exit 0" "negó con el permiso vivo"
+_o=$(printf '{"tool_name":"Read","tool_input":{"file_path":"%s/secrets/x.md"}}' "$M" \
+     | "$M/hooks/gate-secrets.py" 2>/dev/null)
+case "$_o" in
+  *'"allow"'*) ok "gate-secrets: con permiso vivo, la LECTURA pasa" ;;
+  *) bad "gate-secrets con permiso" "allow" "$_o" ;;
+esac
+
+# ③ ⛔ La ESCRITURA pregunta SIEMPRE, tenga o no permiso. El permiso abre consultar, no cambiar.
+_o=$(printf '{"tool_name":"Write","tool_input":{"file_path":"%s/secrets/x.md","content":"x"}}' "$M" \
+     | "$M/hooks/gate-secrets.py" 2>/dev/null)
+case "$_o" in
+  *'"ask"'*) ok "gate-secrets: la ESCRITURA pregunta incluso con permiso vivo" ;;
+  *) bad "gate-secrets escritura" "ask" "$_o" ;;
+esac
+
+# ④ Fuera de secrets/ la puerta CALLA — una que habla de todo se ignora (rule-friction.md).
+_o=$(printf '{"tool_name":"Read","tool_input":{"file_path":"%s/CAPABILITIES.md"}}' "$M" \
+     | "$M/hooks/gate-secrets.py" 2>/dev/null)
+[ -z "$_o" ] && ok "gate-secrets: calla fuera de secrets/" \
+             || bad "gate-secrets silencio" "sin salida" "$_o"
+
+# ⑤ 🔴 FAIL-CLOSED: con el emisor CAÍDO no concede — pregunta. Un permiso por avería es
+# exactamente el fallo que el `deny` existía para impedir.
+mv "$M/bin/secrets-lease" "$M/bin/secrets-lease.test-off"
+_o=$(printf '{"tool_name":"Read","tool_input":{"file_path":"%s/secrets/x.md"}}' "$M" \
+     | "$M/hooks/gate-secrets.py" 2>/dev/null)
+mv "$M/bin/secrets-lease.test-off" "$M/bin/secrets-lease"
+case "$_o" in
+  *'"allow"'*) bad "gate-secrets fail-closed" "ask" "CONCEDIÓ con el emisor caído" ;;
+  *) ok "gate-secrets: fail-closed — con el emisor caído PREGUNTA" ;;
+esac
+
+# ⑥ La bitácora nace 600. No lleva secretos, pero SÍ el mapa de qué se consultó y cuándo.
+_log="$M/secrets/.access-log.md"
+if [ -f "$_log" ]; then
+  _perm=$(stat -c %a "$_log" 2>/dev/null)
+  [ "$_perm" = "600" ] && ok "la bitácora de secrets es 600" \
+                       || bad "bitácora permisos" "600" "$_perm"
+fi
+
+# El permiso de la sesión, restaurado exactamente como estaba.
+rm -f "$_lease"
+[ -f "$_lease_bak" ] && mv "$_lease_bak" "$_lease"
+
+# ── 10 · EL FLUJO DE SHIPPING SE APLICA, NO SOLO SE DECLARA (2026-08-06) ────
+# 🔴 Encontrado por Brian: `rules/rule-shipping-flow.md` existía desde el día anterior y el
+# check 5c verificaba que los bloques la DECLARARAN en su §D — y pasaba. Pero nada comprobaba
+# que se CUMPLIERA: 15 de 15 commits fueron directos a master, cero ramas, cero PRs.
+# ⭐ Declarar una regla y aplicarla son cosas distintas. Este check mide la segunda.
+_pc="$M/hooks/pre-commit.sh"
+grep -q "BASE_BRANCHES" "$_pc" \
+  && ok "pre-commit vigila la rama base (el flujo de shipping se APLICA)" \
+  || bad "shipping enforcement" "un check de rama en pre-commit.sh" "no existe"
+
+# Y debe DISTINGUIR: bloquear en la base, dejar pasar en una rama de trabajo.
+# Se prueba en un repo de usar y tirar — nunca contra el árbol real.
+_tmp=$(mktemp -d)
+git -C "$_tmp" init -q 2>/dev/null
+git -C "$_tmp" commit -q --allow-empty -m x 2>/dev/null
+git -C "$_tmp" branch -M master 2>/dev/null
+_r=$(REPO="$_tmp" git -C "$_tmp" rev-parse --abbrev-ref HEAD 2>/dev/null)
+[ "$_r" = "master" ] \
+  && ok "la sonda de rama distingue base vs rama de trabajo" \
+  || bad "sonda de rama" "master" "$_r"
+rm -rf "$_tmp"
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"
