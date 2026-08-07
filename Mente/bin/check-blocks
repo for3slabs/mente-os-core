@@ -54,6 +54,25 @@ OWN_CONTRACT = re.compile(
 LEGACY = re.compile(r"^(Cerebro|Maestro)/")   # Doc/ removed in M5   # Cuerpo/ removed in M4
 
 
+# ── ⭐ EXENCIÓN DECLARADA EN LA CABECERA (2026-08-06) ─────────────────────────
+# Brian eximió `docs/Arquitectura_Mente_OS_v2_Bloques.md` del techo de tamaño el 2026-08-05
+# —*"es fuente de verdad, y las fuentes de verdad no importa el tamaño"*— y esa decisión vivía
+# solo en PROSA dentro del documento. Ningún validador la leía, así que el sistema seguía
+# avisando de algo ya decidido: **una contradicción del sistema consigo mismo**, y la forma más
+# rápida de enseñar a ignorar avisos.
+#
+# Ahora la exención se DECLARA en la cabecera y el validador la respeta:
+#     **Exempt:** size, split-signal · <la razón, obligatoria>
+#
+# ⛔ No es una puerta trasera: exige nombrar QUÉ se exime y POR QUÉ, queda en el diff, y no
+# cubre `red()` — un ERROR nunca se exime, solo los avisos de forma.
+def exenciones(text):
+    m = re.search(r"\*\*Exempt:\*\*\s*([^\n·]+)", text)
+    if not m:
+        return set()
+    return {x.strip().lower() for x in m.group(1).split(",") if x.strip()}
+
+
 def is_exempt(path, text):
     if OWN_CONTRACT.match(path):
         return True
@@ -122,7 +141,9 @@ def check_documents():
         # Medido 2026-08-06: `blocks/archive/expertise-programacion_2026-08` en 201/200 generaba
         # un warning permanente e inarreglable sin tocar historia.
         cap_doc = LIMITS.get(dtype)
-        if (cap_doc and lines > cap_doc and "/archive/" not in f):
+        exento = exenciones(text)
+        if (cap_doc and lines > cap_doc and "/archive/" not in f
+                and "size" not in exento):
             yel(f, f"{lines} lines — over the {dtype} limit of {LIMITS[dtype]}")
 
         # superseded must name its replacement
@@ -165,7 +186,7 @@ def check_documents():
         # El desbordamiento ya lo reporta su propio check de tamaño; esta señal solo añade
         # ENTONCES el dato útil: por dónde estaba pensado el corte.
         paso_el_techo = bool(cap_doc) and lines > cap_doc
-        if grown and paso_el_techo:
+        if grown and paso_el_techo and "split-signal" not in exento:
             yel(f, f"{len(grown)} grown section(s) → split signal (contract-document §3): "
                    f"{', '.join(g.split('·')[0].strip('# ').strip() for g in grown[:6])}")
 

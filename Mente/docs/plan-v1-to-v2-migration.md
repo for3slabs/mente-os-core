@@ -256,14 +256,14 @@ sobre la mesa cuando decidió** — se los reporto en vez de ejecutar a ciegas:
 |---|---|---|
 | 1 | El repo remoto se llama **`mente-os-maestro`** | Renombrar la carpeta local **no cambia GitHub**. Quedaría `registry/` apuntando a `mente-os-maestro.git` — **dos nombres para lo mismo**, peor que la inconsistencia actual |
 | 2 | `Maestro/` **no es una carpeta de Mente OS: es otro sistema** | Los otros 4 renombres movían documentos dentro del mismo repo. Este mueve el punto de montaje de un repo con vida propia |
-| 3 | El nombre está en su **identidad**, no en su ruta | Sus documentos dicen *"el Mente OS Maestro"*, el script se llama `maestro`, la librería `maestro_lib.sh`. Renombrar solo la carpeta deja el sistema hablando de algo que ya no existe |
+| 3 | El nombre está en su **identidad**, no en su ruta | Sus documentos dicen *"el Mente OS Maestro"*, el script se llama `maestro`, la librería `Maestro/maestro_lib.sh`. Renombrar solo la carpeta deja el sistema hablando de algo que ya no existe |
 
 > ⭐ **Renombrarlo bien no es mover una carpeta: es renombrar un sistema entero** — repo remoto,
 > comando, librería y documentos. Eso es un bloque propio, no la última fase de esta migración.
 
 ### ✅ Lo que SÍ era deuda real, y quedó cerrado
 
-🔴 **`indexador.py` estaba roto.** Su regex buscaba `Alma|Cerebro|Cuerpo|Doc|Maestro` — y tres de
+🔴 **`Maestro/indexador.py` estaba roto.** Su regex buscaba `Alma|Cerebro|Cuerpo|Doc|Maestro` — y tres de
 esas carpetas **fueron eliminadas** en M1-M5. **El indexador no encontraba NADA de la estructura
 v2, y Foresito lee su salida EN VIVO por MCP.**
 

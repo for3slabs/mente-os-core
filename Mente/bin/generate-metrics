@@ -291,7 +291,7 @@ actually costs something. The 21-jul incident came from one of them.
 | `system.blocks_active` | {n(active)} |
 | `system.blocks_archived` | {n(archived)} |
 
-⚠️ `hook_files` and `hooks_registered` differ on purpose: `pre-commit.sh` is invoked by git, not
+⚠️ `hook_files` and `hooks_registered` differ on purpose: `hooks/pre-commit.sh` is invoked by git, not
 by the harness, so it is a file without a settings entry.
 
 ## permissions

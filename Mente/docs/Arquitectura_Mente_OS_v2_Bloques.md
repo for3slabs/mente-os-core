@@ -1,6 +1,7 @@
 # 🏗️ ARQUITECTURA — Mente OS v2: el sistema de BLOQUES
 
-**Status:** current · **Type:** architecture · **Updated:** 2026-08-05 · **Owner:** brian
+**Status:** current · **Type:** architecture · **Updated:** 2026-08-06 · **Owner:** brian
+**Exempt:** size, split-signal · FUENTE DE VERDAD — decisión de Brian 2026-08-05: *"las fuentes de verdad no importa el tamaño"*. 46 documentos la citan para RESOLVER; partirla inventaría una segunda autoridad.
 
 ## Purpose
 

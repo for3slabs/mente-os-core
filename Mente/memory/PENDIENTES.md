@@ -93,15 +93,15 @@ silencio: quien añada otra tiene que escribirla ahí.
 
 **P2 ✅ · el `--check` cableado a la puerta.** `hooks/pre-commit.sh` ahora **bloquea un índice
 generado desfasado**. 🔬 Verificado en ambas direcciones — y **me cazó a mí en la primera
-ejecución**: `INDEX.md` estaba desfasado de verdad. Volvió a cazarme **dos veces más** al crear
+ejecución**: `docs/INDEX.md` estaba desfasado de verdad. Volvió a cazarme **dos veces más** al crear
 `VERSION` y `CHANGELOG`. Es el `skillgen --check` de `graphify` adaptado a la puerta del commit.
 ⚠️ **Solo `generate-index`**: `generate-metrics --check` corre la batería entera — **medido: 2m31s**
 contra **0.118s** del índice. Una puerta que cuesta 2½ min por commit se esquiva, y una puerta
-esquivada no protege nada (`rule-friction.md`).
+esquivada no protege nada (`rules/rule-friction.md`).
 
 **P1 ✅ · `check-clear-ready` lee el resultado de la batería** antes de permitir un `/clear`:
 🔴 **bloquea** si `battery.failed > 0` · 🟡 **avisa** si el resultado es de otro día (*"un verde de
-antes del trabajo de hoy no es evidencia sobre el trabajo de hoy"* — `val-functional.md` §2.2).
+antes del trabajo de hoy no es evidencia sobre el trabajo de hoy"* — `principles/expertise/val-functional.md` §2.2).
 ⚠️ **No la ejecuta desde ahí**, por la misma razón que P2: el cierre debe seguir costando 0.13s.
 🔬 Verificado rompiéndolo: con `failed: 3` bloquea; con el archivo de hace 3 días, avisa.
 
@@ -150,7 +150,7 @@ limpios**, así que el bug nunca causó daño.
 | Ciclo de vida E2E | crear → detectar huecos → llenar → suficiente → cerrar: **funciona** |
 | Las 2 puertas contra un bloque insuficiente | ambas **bloquean con exit 2** |
 | Estabilidad en 3 corridas seguidas | **idénticas** · 13.3-15.9s |
-| Cobertura | **los 16 validadores** los ejercita la batería · `_beat.py` es un módulo, no un hook |
+| Cobertura | **los 16 validadores** los ejercita la batería · `hooks/_beat.py` es un módulo, no un hook |
 | Los latidos de las 3 puertas | **al día** — las puertas dispararon hoy y lo registraron |
 
 ### ⚠️ LA LECCIÓN DE MÉTODO — 3 falsas alarmas mías, misma causa
@@ -201,7 +201,7 @@ ambiguos** (112 y 21 coincidencias) · **F4 7/7**: hooks a 0.04s · commit bloqu
 libera solo** · **cero restos de sonda**.
 
 ⛔ **F2 y F3 DESCARTADAS con el dato en la mano** — ahorrarían ~2s tocando 5 sitios del validador
-que protege 294 citas. *Una fase que no cambia el resultado es relleno* (`doc-planning.md` §2.6).
+que protege 294 citas. *Una fase que no cambia el resultado es relleno* (`principles/expertise/doc-planning.md` §2.6).
 
 ---
 
@@ -228,7 +228,7 @@ en cada commit molesta. Candidatos: al cerrar sesión · antes de un push · en 
 ⚠️ **CORRECCIÓN a lo reportado antes:** el `--check` **ya existe** en `bin/generate-index` y
 `bin/generate-metrics`, y `test-f0-f6` lo ejecuta. Lo que falta es que lo ejecute **la puerta**:
 `hooks/pre-commit.sh` no lo llama, así que un índice desfasado **sí puede commitearse**.
-🐛 **Medido al auditar: `generate-index --check` daba exit 1** — `INDEX.md` estaba desfasado por los
+🐛 **Medido al auditar: `generate-index --check` daba exit 1** — `docs/INDEX.md` estaba desfasado por los
 archivos creados hoy. Regenerado; ambos generadores en exit 0.
 **Esto es el `skillgen --check` de `graphify` adaptado:** ellos hacen imposible la deriva porque el
 CI la caza; aquí la puerta del commit es el equivalente.
@@ -261,7 +261,7 @@ deshace solo**. Por eso va el último: sin P3 (CI) que lo vigile, se vuelve a in
 
 🐛 **Defecto real corregido al medir esto:** `plan-tests-demo` citaba `blk-demo` en su §C, pero el
 id real es `blk-demo-2026-07` — `check-health` lo cazó como *"conexión a un bloque que no existe en
-disco"*. Corregido: un puntero mal escrito es lo que `doc-structure.md` §3 regla 2 prohíbe.
+disco"*. Corregido: un puntero mal escrito es lo que `principles/expertise/doc-structure.md` §3 regla 2 prohíbe.
 
 ---
 
@@ -344,7 +344,7 @@ esta sesión**, una por cada tanda de huecos llenados.
 🔬 **Verificado:** lo desfasé a mano a `99`, regeneré, y volvió a **0** solo.
 
 ⭐ **La lección de `graphify` aplicada, no copiada:** su `tools/skillgen --check` no vigila que un
-valor generado siga siendo correcto — **lo RENDERIZA desde su fuente**. `contract-document.md`
+valor generado siga siendo correcto — **lo RENDERIZA desde su fuente**. `rules/contract-document.md`
 §0-bis lo dice igual: *el fix no es más disciplina, es quitar la copia.*
 La verificación cruzada de la batería se queda como cinturón, **pero ya no debería dispararse nunca**.
 
@@ -466,7 +466,7 @@ es la línea que se pega en un reporte de fallo, no una advertencia.
 
 ⭐ **Dónde diverge de `intern-os`, a propósito:** ellos validan que el número coincida en **3
 sitios**; aquí la fuente es **UNA** (`VERSION`) y el check verifica que **llegue al operador**.
-*Una copia no puede divergir si no existe* — el mismo criterio de `doc-structure.md` §2.3.
+*Una copia no puede divergir si no existe* — el mismo criterio de `principles/expertise/doc-structure.md` §2.3.
 
 🐛 **Y un defecto de mi propio check, hallado al ejecutarlo:** lo escribí con rutas relativas
 (`./bin/check-health`, `head -1 VERSION`) y fallaba dentro de la batería, que corre desde otro
@@ -492,7 +492,7 @@ de tenerlo sin eliminar nada de texto pero sin perder funcionalidad por partici�
 | Antes | Ahora | Cómo |
 |---|---|---|
 | ⭐ `principles/owner-0-voice.md` **582/350** | **285** | su §7 (el contrato de entrega, 315 líneas) → 🆕 `principles/contract-delivery.md` (343) |
-| `dev-database.md` **381/350** | **364** | su §4-BIS → 🆕 `principles/imported-patterns.md`, junto con los de backend y frontend |
+| `principles/expertise/dev-database.md` **381/350** | **364** | su §4-BIS → 🆕 `principles/imported-patterns.md`, junto con los de backend y frontend |
 | `RETOMAR.md` **251/250** | **249** | condensado, sin perder contenido |
 
 🔬 **Verificado línea a línea: las 232 líneas con contenido del §7 están íntegras en el archivo
@@ -509,12 +509,12 @@ unidad, y trocearlas haría saltar de archivo a media revisión.
 
 ### 🐛 Un defecto que la partición destapó
 
-Puse `imported-patterns.md` **dentro de `principles/expertise/`** y **dos checks se pusieron rojos
+Puse `principles/imported-patterns.md` **dentro de `principles/expertise/`** y **dos checks se pusieron rojos
 al instante**: *"expertise disciplines: esperaba 7, obtuvo 8"* y *"cada disciplina nombra a su
 dueño por prefijo"*. Tenían razón — **no es una disciplina**, es material importado. Movido a
 `principles/`. **El sistema cazó el error de ubicación en la primera ejecución.**
 
-⬜ **Quedan 3**, ninguna bloquea: `Arquitectura_Mente_OS_v2_Bloques.md` (2454/800, el único que
+⬜ **Quedan 3**, ninguna bloquea: `docs/Arquitectura_Mente_OS_v2_Bloques.md` (2454/800, el único que
 triplica) · `docs/plan-v2-rollout.md` (423/400) · `MEMORY.md` (109/80, del harness).
 
 ---
@@ -524,12 +524,12 @@ triplica) · `docs/plan-v2-rollout.md` (423/400) · `MEMORY.md` (109/80, del har
 Las 3 restantes **no se partieron, y no por pereza**: medirlas mostró que el techo estaba mal
 aplicado en las tres, cada una por un motivo distinto.
 
-### ⛔ `Arquitectura_Mente_OS_v2_Bloques.md` (2460/800) — FUENTE DE VERDAD, exenta
+### ⛔ `docs/Arquitectura_Mente_OS_v2_Bloques.md` (2460/800) — FUENTE DE VERDAD, exenta
 
 > **Brian, 2026-08-05:** *"deja el archivo como está, intacto como en v1. Es fuente de verdad, y
 > las fuentes de verdad no importa el tamaño del archivo."*
 
-**Es criterio nuevo, y contradecía lo que `doc-structure.md` §2.1 decía esa misma mañana** — así que
+**Es criterio nuevo, y contradecía lo que `principles/expertise/doc-structure.md` §2.1 decía esa misma mañana** — así que
 se escribió ahí como **la única excepción**, no se dejó tácito. Su razón, medida:
 **se partió una vez en julio** (`blk-split-architecture`, 6 archivos en `docs/architecture/`) y el
 resultado hoy es **74% duplicado + 330 líneas que solo viven en el original**. **La partición creó
@@ -540,7 +540,7 @@ la divergencia que pretendía evitar** — misma forma que la tabla 75-vs-37.
 
 Medido: **las fases F0-F8 están todas cerradas** (24 ✅ contra 5 ⬜, y esos 5 viven ya aquí).
 **No era un plan sobre su techo: era historia clasificada como plan.** Un fósil no tiene techo
-(`contract-document.md` §5) y **no se poda** — *borrar historia es perder la capacidad de
+(`rules/contract-document.md` §5) y **no se poda** — *borrar historia es perder la capacidad de
 diagnosticar*. Queda íntegro, con punteros al estado vivo.
 
 ### 🧹 `MEMORY.md` (109/80) → **fuera del check**
@@ -585,7 +585,7 @@ apuntando**"*. Con eso, estos 6 dejan de ser advertencias 🟡 y pasan a ser **t
 ## 🔴 2026-08-05 · UN SESGO DE DISEÑO QUE BRIAN CAZÓ — "Mente OS no es solo para programadores"
 
 **El síntoma:** el check *todo expertise lleno llega a un bloque activo* exigía que
-`doc-planning.md` lo declarara `blk-demo`, que es de tipo `code` y cuyo único plan es un **fósil**
+`principles/expertise/doc-planning.md` lo declarara `blk-demo`, que es de tipo `code` y cuyo único plan es un **fósil**
 de trabajo ya entregado. Añadirlo habría inflado el §D — justo lo que `check-applied` castiga.
 
 **La causa de fondo, y no la vi yo** (Brian, 2026-08-05):
@@ -602,7 +602,7 @@ abierto un bloque **del tipo que ella gobierna** (`dev-*`/`val-*` → code·data
 **Y se abrió el bloque que faltaba: `plan-tests-demo` (`type: docs`).** No es relleno: `blk-demo`
 tiene **0 archivos de test** y su sub-bloque 8 lleva abierto desde el 26-jul sin nada escrito.
 Entrega **el plan**, no los tests — ⛔ su §B lo prohíbe explícitamente (*explicar antes de
-construir*). Es el primer bloque que ejercita `doc-planning.md`.
+construir*). Es el primer bloque que ejercita `principles/expertise/doc-planning.md`.
 
 > 🔬 **Lo que el sistema me exigió al abrirlo, y estuvo bien en las tres:** declarar el flujo de PR
 > en §D · no dejar el §F vacío · **no citar un documento que aún no existe** (*"un puntero a la nada
@@ -631,10 +631,10 @@ dueños con su estado real: owner-2 ✅ · owner-3 ✅ · owner-1 ⬜.
 llenas. Corregido en los 5.
 
 > ⭐ **Tensión REAL resuelta, no silenciada:** Método F §2.3 dice *"cero hardcodeo (todo de ENV)"* y
-> tu `dev-database.md` §2.2 dice que las env vars son solo para **cableado**. No se contradicen:
+> tu `principles/expertise/dev-database.md` §2.2 dice que las env vars son solo para **cableado**. No se contradicen:
 > Método F responde *dónde NO va*, y el tuyo responde *dónde va en su lugar*. **Mover una lista fija
 > de código a una env var cumple Método F y sigue fallando aquí.** Escrito en §2.2 con la
-> jerarquía: gana el más estricto (`rule-inheritance.md`).
+> jerarquía: gana el más estricto (`rules/rule-inheritance.md`).
 
 **Lo que la auditoría verificó SANO:** ADR-027 declara el principio, no los números → los techos
 que subimos hoy no lo contradicen · los 3 umbrales de duplicación son coherentes (el general no
@@ -653,12 +653,12 @@ caminos críticos"* con **0 archivos de test hoy** (eso es `val-functional`), y 
 `DEV_FALLBACK` que autoriza un correo falso (eso es `val-integration` §2.2: *la identidad se
 verifica, nunca se asume*). 🔬 **Verificado ejecutando el hook**: entrega los 7 estándares.
 
-**② Los DUEÑOS declaraban vacío lo que ya estaba lleno.** `owner-3-validation.md` decía
+**② Los DUEÑOS declaraban vacío lo que ya estaba lleno.** `principles/owner-3-validation.md` decía
 `⬜ pending` de sus dos disciplinas — y ese archivo gobierna **todo cierre de bloque**, así que
 quien lo leyera aplicaría el camino débil (solo la batería §5-BIS) teniendo criterio más estricto
 disponible. Corregido, con la tabla de qué se puede exigir ahora en cada cierre.
 
-**③ 🔴 Y el check nuevo cazó uno que yo no había visto:** `owner-2-dev.md` también declaraba
+**③ 🔴 Y el check nuevo cazó uno que yo no había visto:** `principles/owner-2-dev.md` también declaraba
 `dev-database` como pendiente — lleno esa misma mañana. Nadie lo vio hasta que un script lo midió.
 
 **④ `CAPABILITIES.md` no mencionaba la capa 2 ni una vez.** Un agente que lee el mapa no sabía que
@@ -675,13 +675,13 @@ existe → escribiría un veredicto a mano, que es justo lo que ADR-003 prohíbe
 
 Batería **165 → 171**. Los 4 eran de la MISMA familia: piezas escritas y no conectadas.
 
-**① La regla nueva no llegaba a nadie ✅.** `rule-shipping-flow.md` solo la declaraba un bloque
-**archivado**; `demo`, el único activo, no la tenía en su §D — y `pre-edit-standards.py` inyecta
+**① La regla nueva no llegaba a nadie ✅.** `rules/rule-shipping-flow.md` solo la declaraba un bloque
+**archivado**; `demo`, el único activo, no la tenía en su §D — y `hooks/pre-edit-standards.py` inyecta
 solo lo que §D lista. Añadida al §D de `demo` con su razón en §G. 🔬 **Verificado ejecutando el
 hook**: al tocar `lib/demo/session.ts` ahora entrega la regla. No es que esté escrita — **llega**.
 
 **② `CAPABILITIES.md` no conocía las piezas nuevas ✅.** Cero menciones de `rule-shipping-flow` y
-`WORKSPACE.md`; además **le faltaba `bin/init`** y su cabecera decía *"15 validators"* con 16 en
+`docs/WORKSPACE.md`; además **le faltaba `bin/init`** y su cabecera decía *"15 validators"* con 16 en
 disco. Todo corregido; el conteo se quitó (un número en prosa es correcto exactamente una vez).
 ⭐ **Y la causa de fondo:** su check era **asimétrico** — verificaba que no nombrara validadores
 inexistentes, nunca que nombrara los existentes. Cazaba la mentira, no el olvido. **Añadida la
@@ -692,14 +692,14 @@ otra dirección**, verificada quitando `bin/init` del mapa → 🔴 con la pieza
 exista —eso ya lo hace `check-links`— sino **la afirmación de cada una**: ningún bloque relaja una
 puerta heredada · ninguna cita apunta a un bloque archivado · todo bloque activo recibe el flujo.
 
-**④ `WORKSPACE.md` sin check propio ✅.** Dos comprobaciones: **no lleva ni un valor de
+**④ `docs/WORKSPACE.md` sin check propio ✅.** Dos comprobaciones: **no lleva ni un valor de
 credencial** (dice DÓNDE, nunca CUÁL) y **todo repo que nombra existe en disco**.
 
 > 🔬 **Los 5 checks se verificaron POR REVERSIÓN**, no viéndolos verdes. Y ahí saltaron 2 defectos:
 > **el 5c no medía** — `grep` sobre el archivo entero pasaba porque la regla se MENCIONABA en §G;
 > ahora lee solo el §D · **el 5b cazó un puntero muerto real**: `CAPABILITIES.md` apuntaba a
 > el bloque `distribucion` bajo `blocks/active/`, archivado esa misma mañana.
-> ⭐ *Un check que solo has visto en verde no está probado* — `rule-checks-must-measure.md`, aplicada
+> ⭐ *Un check que solo has visto en verde no está probado* — `rules/rule-checks-must-measure.md`, aplicada
 > a mis propios checks.
 
 ---
@@ -749,7 +749,7 @@ cazó el mismo día.
 
 | Opción | Qué implica | Costo |
 |---|---|---|
-| **Partir en dos** (recomendado) | `principles/owner-0-voice.md` = las 8 reglas + §6; `contract-delivery.md` = todo el §7 | hay que actualizar quien lo cite |
+| **Partir en dos** (recomendado) | `principles/owner-0-voice.md` = las 8 reglas + §6; `principles/contract-delivery.md` = todo el §7 | hay que actualizar quien lo cite |
 | Subir el límite del tipo `contract` | reconoce que 250 no da para un contrato con ejemplos | debilita el techo para TODOS los contratos |
 | Dejarlo 🟡 | cero trabajo | un 🟡 permanente enseña a ignorar los 🟡 |
 
@@ -953,7 +953,7 @@ propósito: es de Brian, no de la sesión.
    la superficie completa que cerró el agujero de S8.
 
 > ⭐ **La razón de fondo, y es la que importa:** leer ese archivo aquí **vuelca el password a la
-> transcripción**, y los `.jsonl` no se editan. `rule-config-hygiene.md` §1.1: un secreto filtrado
+> transcripción**, y los `.jsonl` no se editan. `rules/rule-config-hygiene.md` §1.1: un secreto filtrado
 > se **ROTA**, no se borra. Es el caso H-11 del examen de Foresito — la contraseña del server vivía
 > en 60 episodios. **Desarmar la guardia Y quemar la credencial, para algo que se consigue con una
 > línea, no compra nada.**
@@ -993,7 +993,7 @@ Registradas como **§R1-R3** en `Cerebro/Registro_Conversaciones.md`, con datos 
 cerró — porque inventarlo sería peor que no tenerlo. Ese es el costo exacto que la regla previene.
 
 `4c187f33` era la del incidente del 21-jul: 23.4 MB, 999K de contexto pico, 96h. Llevaba **10 días
-sin entrada pese a que `rule-session-close.md` §2 la cita por nombre** como "el peor infractor".
+sin entrada pese a que `rules/rule-session-close.md` §2 la cita por nombre** como "el peor infractor".
 
 ---
 
@@ -1168,7 +1168,7 @@ Contexto: `docs/analysis-internos-v1.md` · comparación medida del 2026-07-31 (
 - [x] **El controlador LIGERO que APUNTA (no replica) — regla madre "no replicamos, conectamos".**
   - [x] **F1 registro** — `Maestro/registro.md` apunta a 6 ramas (For3s OS, marca-personal, Foresito, instancias, NavigoX-gate, Diseño Jazz). Sin copiar nada.
   - [x] **F2 puentes** — comando `maestro`: A (git efímero `leer`/`grep`, no deja clones) + B (canal API vivo `vivo`, pregunta al agente). Rama madre versionada (`mente-os-for3s`, 166 docs, secretos excluidos).
-  - [x] **Bienvenida** — `BIENVENIDA.md`: la IA que clona LEE CLAUDE.md/.claude/.agents + PREGUNTA (rama existente o nueva) + exige DESCRIPCIÓN (por qué ocupa Mente OS + qué hará). Fail-closed.
+  - [x] **Bienvenida** — `Maestro/BIENVENIDA.md`: la IA que clona LEE CLAUDE.md/.claude/.agents + PREGUNTA (rama existente o nueva) + exige DESCRIPCIÓN (por qué ocupa Mente OS + qué hará). Fail-closed.
   - [x] **F3 crear rama** — `mente-os-nueva`: genera {Alma,Cerebro,Cuerpo,Doc}+RETOMAR desde plantilla orientadora, descripción obligatoria, ficha para el registro.
   - [x] **F4 permisos** — `Maestro/permisos.md` + puerta en `maestro`: por persona/carril, fail-closed, reusa H8. Colaborador ve SOLO su carril.
   - [x] **F5 piloto Jazz** — rama REAL `mente-os-diseno-jazz` (privado) creada, registrada, con permiso. E2E: Jazz ve su rama, NO ve el núcleo; brian ve todo.
@@ -2992,7 +2992,7 @@ PRODUCTO DISTRIBUIBLE · MULTI-INSTANCIA) + deuda no-urgente de hitos completos 
 > **Orden sugerido (cuando se retome):** H9-D1 (cache, útil y bajo riesgo) → H9-D3 (eval/golden
 > set, importante para clientes) → H9-D5/D6 (ROI fino + loop, cierran el aprendizaje) →
 > H9-D2/D4 (esperan H7 / AC3). Todas NO urgen: el DMN ya se mantiene solo con lo real de H9-b.
-> Detalle de cada una en el diseño R5 (`Ronda_05_DMN_Tasks_Detailed.md`) + plan H9.
+> Detalle de cada una en el diseño R5 (`work/Ronda_05_DMN_Tasks_Detailed.md`) + plan H9.
 
 ---
 
@@ -3025,7 +3025,7 @@ PRODUCTO DISTRIBUIBLE · MULTI-INSTANCIA) + deuda no-urgente de hitos completos 
 > **Orden sugerido:** HP3 (self-report fino, barato) → HP2 (cubrir tool-loop/equipo) →
 > HP1 (señales reales conforme llegue su infra) → HP4/HP5 (motor PFC + re-plan, grande) →
 > HP6 (multi-tenant). NO urgen: el "sé cuándo no sé" en chat ya da el valor principal.
-> Detalle: `Ronda_06_Bloque_1_PFC_Orchestrator.md` + plan H10-PLANEA.
+> Detalle: `work/Ronda_06_Bloque_1_PFC_Orchestrator.md` + plan H10-PLANEA.
 
 ---
 
@@ -3804,7 +3804,7 @@ valkey/sandbox: 0 errores. 9 hermanos estables.
 > P5→H10-H11-H12. Es decir: ya están repartidas en el camino de construcción
 > existente (no rompen el orden foundation-first). La única que necesita DISEÑO
 > previo es P1 (modelar al usuario). Detalle de la comparación: tabla "qué tiene
-> Hermes y For3s no" + `Comparacion_Funcional_For3s_OS_vs_Hermes.md`.
+> Hermes y For3s no" + `docs/analysis/Comparacion_Funcional_For3s_OS_vs_Hermes.md`.
 
 ---
 
@@ -4031,7 +4031,7 @@ sincronía a mano murió"*.
 | 1 | **Un solo origen de permisos** (o dos generados del mismo) | hoy `Maestro/permisos.md` y `settings.local.json` se contradicen — y se contradecían |
 | 2 | **`Maestro/registro.md` GENERADO, no escrito** | miente en las cifras que Foresito lee en vivo |
 | 3 | **`Maestro/punteros.tsv` como fuente única real** | el registro debe referenciarlo, no duplicarlo (su propia regla) |
-| 4 | **Nombres nuevos:** `Maestro/`→`registry/` · `Tickets/`→`bridges/` | `NAMING_CONVENTION.md` |
+| 4 | **Nombres nuevos:** `Maestro/`→`registry/` · `Tickets/`→`bridges/` | `rules/NAMING_CONVENTION.md` |
 
 ### ⚠️ Requisitos y dependencias
 
@@ -4192,7 +4192,7 @@ v2 repita eso.
 
 ### El estándar propuesto — ADR (Architecture Decision Record)
 
-Ya está adoptado como convención de nombres (`NAMING_CONVENTION.md` §4.2: `ADR-NNN-nombre.md`).
+Ya está adoptado como convención de nombres (`rules/NAMING_CONVENTION.md` §4.2: `ADR-NNN-nombre.md`).
 Falta **el mecanismo**.
 
 **Un archivo por decisión**, en `rules/decisions/`, con 6 campos fijos:
@@ -4311,7 +4311,7 @@ equivocarse.* Se escribió la regla (añade) y se aplazó la partición (mueve).
 | Dentro del propio documento (`§12-T.1`, `§3.2-TER`, `§11.4`…) | **decenas** |
 | `docs/plan-v2-rollout.md` | varias |
 | `Vision_Mente_OS_v2...md` | varias |
-| `rules/qa-dimensions.md` · `contract-adr.md` · los 3 `expertise/*` | varias |
+| `rules/qa-dimensions.md` · `rules/contract-adr.md` · los 3 `expertise/*` | varias |
 | Las memorias | varias |
 
 **Procedimiento obligatorio:**
@@ -4415,14 +4415,14 @@ Se movieron los que eran baratos (≤10 referencias, escritos ese mismo día):
 
 **Verificado: 0 punteros huérfanos** (20 archivos actualizados, incluidas memorias y `CLAUDE.md`).
 
-> ⭐ **El caso que lo motivó:** `NAMING_CONVENTION.md` vivía en `Cerebro/` — **el estándar de nombres
+> ⭐ **El caso que lo motivó:** `rules/NAMING_CONVENTION.md` vivía en `Cerebro/` — **el estándar de nombres
 > incumplía el estándar de nombres.**
 
 ### 🔴 LO QUE FALTA
 
 | # | Qué | Bloqueo |
 |---|---|---|
-| 1 | **`Arquitectura_Mente_OS_v2_Bloques.md` → `blocks/architecture-v2.md`** | 🔴 **42 referencias** — no es barato. Cruza con el pendiente de PARTIR la arquitectura: **conviene mover y partir en la misma operación** |
+| 1 | **`docs/Arquitectura_Mente_OS_v2_Bloques.md` → `blocks/architecture-v2.md`** | 🔴 **42 referencias** — no es barato. Cruza con el pendiente de PARTIR la arquitectura: **conviene mover y partir en la misma operación** |
 | 2 | **`bin/` no existe** | se crea en F4/F5 con el primer validador |
 | 3 | **`Maestro/` → `registry/`** | cruza con la reestructuración del Maestro (sub-repo con su propio git) |
 | 4 | **`Tickets/` → `bridges/`** | 6 archivos, congelados desde 14-jun |
@@ -4496,7 +4496,7 @@ Secuencia de 5 pasos donde *"¿está rastreado?"* es el **paso 1**, no un consej
 > se va a saltar.** Un condicional dicho al vuelo no es un procedimiento.
 
 **Bonus:** los 3 archivos recuperados recibieron su header del contrato, y ahí salió el dato útil —
-**solo 1 de los 3 está vivo**: `guide-github-oauth-app.md` (paso operativo pendiente de Brian).
+**solo 1 de los 3 está vivo**: `blocks/active/demo/docs/guide-github-oauth-app.md` (paso operativo pendiente de Brian).
 Los otros 2 son `fossil`.
 
 <details><summary>Diagnóstico original</summary>
@@ -4600,12 +4600,12 @@ Toca `CLAUDE.md` (se inyecta en cada sesión) y `base-rules.md` (la puerta del s
 **Nota:** el bloque `demo` ya separa `⛔ OUT` (propio) de `🌐 System-wide rules` (heredadas) — se hizo
 en F3, así que el patrón está probado antes de la migración.
 
-### 🟡 `plan-v2-rollout.md` en 413/400 líneas (2026-07-30)
+### 🟡 `docs/plan-v2-rollout.md` en 413/400 líneas (2026-07-30)
 
 Pasó su límite al documentar F4. Se sacaron 2 secciones que eran bitácora, no plan
 (`docs/f4-execution-log.md`) y bajó de 460 → 413. **Faltan 13 líneas.**
 
-**NO se sigue recortando a mordidas** — eso es el patrón de parche que `rule-fix-not-patch.md`
+**NO se sigue recortando a mordidas** — eso es el patrón de parche que `rules/rule-fix-not-patch.md`
 prohíbe. El límite es la SEÑAL (ADR-027): el plan tiene 9 fases y crecerá con F5-F8, así que la
 partición correcta es **una fase = un archivo** cuando cierre F5, no cortar líneas hoy.
 
@@ -4613,7 +4613,7 @@ partición correcta es **una fase = un archivo** cuando cierre F5, no cortar lí
 
 ### 🟡 31 warnings de rutas sin raíz en 18 archivos (medido 2026-07-30)
 
-`bin/check-blocks` reporta 31 🟡: rutas escritas sueltas (`owner-2-dev.md`) en vez de desde la raíz
+`bin/check-blocks` reporta 31 🟡: rutas escritas sueltas (`principles/owner-2-dev.md`) en vez de desde la raíz
 de Mente (`principles/owner-2-dev.md`). **Preexistentes**, no introducidos por F4 — están en
 `base-rules.md`, los 3 `principles/owner-*`, `rules/*`, la arquitectura y los docs recuperados.
 
@@ -4626,10 +4626,10 @@ un puntero muera silenciosamente al mover un archivo.
 
 `bin/grade-block t-docs` (tipo `docs`) sobre `rules/decisions/` cazó **1 huérfano real**: el propio
 ADR-028 que se acababa de escribir. Nadie lo enlazaba. Se cerró citándolo desde
-`contract-block.md`, **pero el patrón sigue abierto**: cada ADR nuevo nace huérfano hasta que
+`rules/contract-block.md`, **pero el patrón sigue abierto**: cada ADR nuevo nace huérfano hasta que
 alguien se acuerda de enlazarlo a mano.
 
-**La causa raíz:** `contract-adr.md` dice que el índice es GENERADO, y el generador no existe.
+**La causa raíz:** `rules/contract-adr.md` dice que el índice es GENERADO, y el generador no existe.
 
 **El arreglo real:** el índice de ADRs se genera en F7 (`docs/INDEX.md`). Hasta entonces, correr
 `bin/grade-block` con un bloque `docs` sobre `rules/decisions/` detecta los huérfanos.

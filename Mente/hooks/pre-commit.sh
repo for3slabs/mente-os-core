@@ -97,9 +97,11 @@ fi
 # defecto, y forzarla a cero empujaría a partir documentos por obediencia. Lo que se prohíbe
 # es la ACUMULACIÓN silenciosa: por encima del techo hay que bajar la deuda o subirlo a
 # conciencia, que es una decisión visible en el diff.
-# 📉 15 → 10 → 8 el mismo día, según bajaba la deuda real (76 → 5 warnings).
-# **El techo se baja con la deuda**: uno que no aprieta no frena nada.
-WARN_CAP=8
+# 📉 15 → 10 → 8 → 3 el mismo día, según bajaba la deuda real: **76 → 0 warnings**.
+# **El techo se baja con la deuda**: uno que no aprieta no frena nada. Se deja en 3 y no en 0
+# para que un warning legítimo recién aparecido se pueda ver y arreglar sin bloquear el commit
+# que lo destapó — cero sería una puerta que castiga al que encuentra el problema.
+WARN_CAP=3
 w=$("$CHECK" 2>/dev/null | grep -oE '[0-9]+ warnings' | grep -oE '^[0-9]+' | head -1)
 if [ -n "$w" ] && [ "$w" -gt "$WARN_CAP" ]; then
   printf '🔴 COMMIT BLOCKED — %s warnings, por encima del techo de %s.\n\n' "$w" "$WARN_CAP"

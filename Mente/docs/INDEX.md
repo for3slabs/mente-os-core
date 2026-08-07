@@ -164,7 +164,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-05 | 2470 |
+| `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
 | `INDEX.md` | generated | — |  | 475 |
 | `METRICS.md` | generated | current | 2026-08-06 | 104 |
