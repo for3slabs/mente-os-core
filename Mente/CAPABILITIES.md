@@ -102,6 +102,7 @@ measures** — that is how a measured verdict becomes an opinion.
 | `bin/migrate-doc <src> <dst>` | moves ONE document safely (`--dry-run` first) |
 | `bin/init` | a NEW instance: reads `mente.config.yml` → generates `CLAUDE.md`, `PROJECT-RULES.md` and the 4 portable hook paths. **Run once, by whoever clones the engine** |
 | `bin/test-f0-f6` | the whole system end to end — **what matters is `failed: 0`** |
+| `bin/verify-all` | ⭐ **TODO lo probado en v2 en una corrida** — la batería + los 8 frentes que no tenían dueño: robustez de hooks ante basura · evasión de rutas · idempotencia · los tests de la demo · un CLON limpio. Más lenta que la batería: es para antes de un release, no para cada commit (`--rapido` omite clon y demo) |
 
 > 🔴 **Never type a live number into prose.** Run `generate-metrics` and cite the metric name:
 > ⛔ *"the battery is 151/151"* → ✅ *"green — count in `docs/METRICS.md` (`battery.checks`)"*.

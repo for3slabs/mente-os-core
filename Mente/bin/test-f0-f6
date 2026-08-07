@@ -1843,6 +1843,24 @@ for f in ('settings.json','settings.local.json'):
 print(n)" 2>/dev/null)
 eq "todo grupo de hooks de herramienta declara su matcher" "0" "${_sinm:-ERR}"
 
+# ── 14 · LA SUITE MAESTRA EXISTE Y CORRE (2026-08-06) ───────────────────────
+# ⭐ Brian: *"todas las pruebas de funcionalidad que hemos hecho a lo largo de v2, vuelve a
+# implementarlas para verificar que nada se omitió"*. `bin/verify-all` reúne lo que estaba
+# REPARTIDO: la batería + los frentes que no tenían dueño (robustez ante basura, evasión de
+# rutas, idempotencia, los tests de la demo, un clon limpio).
+# 🔴 Este check existe porque una suite que nadie invoca se pudre en silencio: si `verify-all`
+# desaparece o deja de ser ejecutable, la batería lo dice.
+[ -x "$M/bin/verify-all" ] && ok "bin/verify-all existe y es ejecutable" \
+                           || bad "verify-all" "presente y ejecutable" "no está"
+# ⛔ Y NO se ejecuta desde aquí: `verify-all` INVOCA esta batería, así que llamarlo sería
+# RECURSIÓN — la batería esperando a una suite que la está esperando. Tercera vez hoy con el
+# mismo patrón: **un check no puede ser evidencia de sí mismo.**
+# Lo que sí se verifica es que la suite siga siendo COHERENTE: que declare los frentes que dice
+# cubrir. Si alguien la vacía, esto lo dice; ejecutarla es trabajo del operador, no de la puerta.
+_frentes=$(grep -cE '^frente "F[0-9]' "$M/bin/verify-all" 2>/dev/null || echo 0)
+[ "${_frentes:-0}" -ge 8 ] && ok "verify-all declara sus $_frentes frentes de verificación" \
+  || bad "verify-all frentes" "≥8" "${_frentes:-0}"
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"
