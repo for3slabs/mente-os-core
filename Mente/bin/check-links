@@ -208,7 +208,19 @@ def is_harness_memory(c):
     if "/" in c or not re.match(r"^(project|feedback|reference)_.+\.md$", c):
         return False
     d, _ = cfg.session_dir()
-    return bool(d) and os.path.exists(os.path.join(d, "memory", c))
+    if not d or not os.path.isdir(os.path.join(d, "memory")):
+        # 🔴 FAMILIA D de `rules/rule-checks-must-measure.md` (2026-08-07): el almacén del
+        # harness vive en `~/.claude/projects/<slug>/`, FUERA de este árbol y por máquina. En un
+        # clon no existe, así que exigir el archivo allí reportaba 20 citas CORRECTAS como rotas
+        # — medido corriendo `check-links` en un clon limpio.
+        # ⚠️ LÍMITE MEDIDO Y DICHO: sin el almacén esto es un INDULTO GENERAL — cualquier
+        # `project_loquesea.md` pasa, erratas incluidas (probado: una inventada no se cazó).
+        # Se acepta a conciencia porque la alternativa es peor: 20 citas correctas reportadas
+        # como rotas en cada clon, que es cómo un validador se vuelve ruido y se ignora entero.
+        # ⭐ Dónde SÍ se verifican: en la máquina que tiene el almacén — la del dueño de esas
+        # memorias, que es la única que puede saber si el nombre es correcto.
+        return True
+    return os.path.exists(os.path.join(d, "memory", c))
 
 
 def in_sibling_repo(c):
