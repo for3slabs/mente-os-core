@@ -376,7 +376,12 @@ def check_sizes():
         if not m:
             continue
         t = m.group(1)
-        n = text.count("\n") + 1
+        # 🔴 `count("\n") + 1` contaba una línea FANTASMA (2026-08-07). Todo archivo de texto
+        # bien formado termina en salto, así que ese `+1` sumaba la cadena vacía que va después:
+        # un documento de 250 líneas se reportaba como 251 y el techo real quedaba en 249.
+        # ⚠️ Silencioso y caro: se recorta un documento que ya cumplía, persiguiendo una línea
+        # que no existe. Medido con `memory/RETOMAR.md` — `wc -l` decía 250 y esto decía 251.
+        n = len(text.splitlines())
         if t in LIMITS and n > LIMITS[t]:
             yel(f"{f}: {n} lines — over the {t} limit of {LIMITS[t]}")
 

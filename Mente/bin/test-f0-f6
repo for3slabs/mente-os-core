@@ -640,6 +640,37 @@ o=$(printf '{"tool_input":{"file_path":"/tmp/unrelated.txt"}}' | ./hooks/pre-edi
 [ -z "$o" ] && ok "pre-edit stays silent outside every block" \
   || bad "pre-edit silence" "no output" "$o"
 
+# 🔴 MENCIONAR UNA RUTA NO ES RECLAMARLA (2026-08-07). El matcher hacía `d in target` sobre
+# CUALQUIER ruta de la línea, prosa incluida: un §B que nombra una carpeta para decir de quién
+# NO es se quedaba con los archivos de otro bloque. Con dos bloques activos el más "hablador"
+# se roba los del otro, y entonces el aviso CORRECTO ya no llega — el daño no es ruido de más.
+# Se fabrica el caso: una ruta ajena que solo aparece en la EXPLICACIÓN de un ítem.
+_pe_tmp="blocks/active/zz-probe-scope"
+mkdir -p "$_pe_tmp"
+cat > "$_pe_tmp/BLOCK.md" <<'PROBE'
+# BLOCK · zz-probe-scope
+id: blk-zz-probe-scope-2026-08
+type: docs
+intent: probe — a mentioned path must not be claimed
+status: active · lane: direct · owner: brian
+## ✅ IN
+- `rules/qa-dimensions.md` — nada que ver con zzz-territorio-ajeno/, que es de otro
+## ⛔ OUT
+- nothing
+PROBE
+o=$(printf '{"tool_input":{"file_path":"%s/zzz-territorio-ajeno/x.ts"}}' "$REPO" \
+    | ./hooks/pre-edit-standards.py 2>&1)
+printf '%s' "$o" | grep -q "zz-probe-scope" \
+  && bad "pre-edit: mencionar = reclamar" "silencio (la ruta solo se menciona)" "reclamó el archivo" \
+  || ok "pre-edit: una ruta MENCIONADA en la prosa no reclama el archivo"
+# ⚠️ Y la contraparte: la ruta DECLARADA sí debe reconocerse, o el arreglo sería enmudecerlo todo.
+o=$(printf '{"tool_input":{"file_path":"%s/Mente/rules/qa-dimensions.md"}}' "$REPO" \
+    | ./hooks/pre-edit-standards.py 2>&1)
+printf '%s' "$o" | grep -q "zz-probe-scope" \
+  && ok "pre-edit: la ruta DECLARADA sigue reconociéndose" \
+  || bad "pre-edit: ruta declarada" "reconoce zz-probe-scope" "enmudeció"
+rm -rf "$_pe_tmp"
+
 # An unclosed sub-block covering the file is the fix-on-fix pattern. Must warn.
 # ⭐ EL SUJETO SE BUSCA, NO SE FIJA (2026-08-06).
 # Este check caducó CUATRO veces en un día: apuntaba a `allowedEmails.ts` (borrado al cerrar

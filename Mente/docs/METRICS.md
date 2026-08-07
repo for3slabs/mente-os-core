@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **196** |
+| `battery.checks` | **198** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -68,7 +68,7 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 
 | Metric | Value |
 |---|---|
-| `sessions.registered` | **11** |
+| `sessions.registered` | **12** |
 | `sessions.on_disk` | 17 |
 | `sessions.heavy_unregistered` | **0** |
 

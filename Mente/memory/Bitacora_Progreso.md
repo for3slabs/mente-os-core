@@ -4,6 +4,31 @@
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
 
+
+## LO ANTERIOR (2026-08-04, S10 ~7h) — **LA VOZ AHORA TIENE CONTRATO DE ENTREGA**
+
+**Sin commit — todo en disco.** Detalle: `Cerebro/Registro_Conversaciones.md` §S10.
+
+Brian reportó *"no entiendo qué leer ni cómo leerlo, ni sé qué sigue"*. 🔍 **La causa era la voz
+misma** — 8 reglas, todas de qué NO hacer, y **2 CAUSABAN el defecto**. §6 de `owner-0-voice`
+LLENO con sus citas · **3 modos 🟢🟡🔵** (el contrato no medía el peso de la pregunta) · vehículo
+**−48%** (5,167 → 2,644 tokens, se paga en cada turno), 16/16 reglas verificadas.
+
+> ⭐ **LA LECCIÓN:** *no faltaban reglas, sobraban dos mal escritas.* Y la que me toca: **dejé
+> `principles/owner-0-voice.md` en 582 líneas con límite de 250, el mismo día que escribí la regla del techo.**
+
+**✅ RESUELTO EN S11 — el contrato YA gobernó una sesión real** (el cierre de `distribucion` + las
+6 dimensiones), sin tocarlo durante el uso. Brian seguía en *"me gusta más, pero no me fascina"*
+tras 6 rondas: **eso sigue abierto.**
+⛔ **Superficie = terminal SIEMPRE** — nada de web/navegador salvo que Brian lo pida para esa
+entrega. Prohibición escrita en ambos archivos.
+
+## LO ANTERIOR (2026-08-03, S9) — un clon con otro dueño se instala solo
+
+8 hallazgos de la misma familia (checks que corrían, decían verde y **no medían**) → `rule-checks-must-measure`. Citas rotas 144 → 0. Bloque `distribucion` 6/6.
+📦 Detalle → `memory/Bitacora_Progreso.md` (movido el 2026-08-06).
+
+
 ## Purpose
 
 El registro cronológico de qué se decidió y qué se cerró, por periodos, con herencia entre ellos.

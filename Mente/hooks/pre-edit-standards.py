@@ -49,16 +49,47 @@ def main():
         except OSError:
             continue
 
-        # §B IN declares the block's territory. A path matches if any declared
-        # directory appears in it — the same measurement bin/grade-block uses.
+        # §B IN declares the block's territory.
+        #
+        # 🔴 MENCIONAR UNA RUTA NO ES RECLAMARLA (2026-08-07). Dos defectos en el mismo sitio:
+        #
+        #   1. `re.findall` barría la línea ENTERA, así que una ruta citada en la explicación
+        #      contaba igual que la declarada. El bloque `separacion-motor-instancia` nombró
+        #      `marca-personal/` **sólo para decir de quién NO era** —"las rutas de los hooks las
+        #      cerró tal bloque"— y el hook le atribuyó los archivos de `demo`.
+        #      ⚠️ Con dos bloques activos, el que más EXPLICA se roba los archivos del otro,
+        #      y el editor recibe los estándares equivocados: el daño no es un aviso de más,
+        #      es el aviso CORRECTO que ya no llega.
+        #      → Ahora solo cuenta el primer token del ítem: `- ruta/…`. Lo que va después de
+        #        la ruta es prosa, y la prosa explica, no reclama.
+        #
+        #   2. `d in target` era SUBCADENA, no ruta: `lib/demo` casaba dentro de
+        #      `otro-lib/demo-viejo/x.ts`. Ahora se compara por SEGMENTOS, así que un prefijo
+        #      a medias de un nombre de carpeta ya no engancha.
         m = re.search(r"##\s*✅?\s*IN\s*\n((?:\s*-.*\n)+)", text)
         if not m:
             continue
+        # ⚠️ Un ítem puede declarar VARIAS rutas separadas por `·` — `bin/a · bin/b · bin/c`.
+        # La primera versión de este arreglo solo leía la primera y perdía las otras dos
+        # (medido: `bin/init` dejó de reconocerse). Se toma el tramo del ítem ANTERIOR al
+        # primer guion largo, que es donde empieza la explicación en prosa, y dentro de ese
+        # tramo cuentan todas las rutas.
+        seg = [s for s in target.split("/") if s]
         owned = False
-        for tok in re.findall(r"[\w./-]+/[\w./*-]*", m.group(1)):
-            d = tok.split("*")[0].rstrip("/")
-            if len(d) > 4 and d in target:
-                owned = True
+        for linea in m.group(1).splitlines():
+            cuerpo = re.match(r"\s*-\s*(.*)", linea)
+            if not cuerpo:
+                continue                       # continuación de línea: no declara nada nuevo
+            decl = cuerpo.group(1).split("—")[0]          # la prosa empieza tras el guion largo
+            for tok in re.findall(r"[\w./-]+/[\w./*-]*", decl):
+                d = tok.split("*")[0].rstrip("/")
+                if len(d) <= 4:
+                    continue
+                partes = [s for s in d.split("/") if s]
+                if any(seg[i:i + len(partes)] == partes for i in range(len(seg))):
+                    owned = True
+                    break
+            if owned:
                 break
         if not owned:
             continue

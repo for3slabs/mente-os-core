@@ -43,7 +43,8 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S8 | `523998b8` | 2026-07-31 19:51 | 2026-08-02 22:09 (**~50h**) 🔴 | 5.6 MB 🟢 | 670 turnos | **722K** 🔴 | **LA JORNADA DE ENDURECER EL v2** — F8-4 pasó (el brief bastó) y luego 12 commits cerrando huecos que la propia auditoría destapó: el token de GitHub expuesto · el guardia que vigilaba 9 de 21 · el cableado de los hooks · el latido F1+F2. Mente OS v2 **publicado en GitHub**. Batería 105 → 138 |
 | S10 | `1b9338a4` | 2026-08-03 18:51 | 2026-08-04 01:32 (**~7h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
 | S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
-| S11 | `8b4bddcb` | 2026-08-04 02:31 | 2026-08-05 23:07 (**~45h**) 🔴 | 11.8 MB 🟢 | 65 mensajes | **999,757** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
+| S11 | `8b4bddcb` | 2026-08-04 02:31 | ⚠️ **NO cerró aquí** — el mismo `.jsonl` siguió vivo hasta 08-07 21:26 (ver S12) | 11.8 MB → 25 MB | 65 → 2,381 | **999,757 → 1,000,030** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
+| S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 21:26 (**~46h**) 🔴 | **25 MB** 🟡 | 2,381 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -408,6 +409,86 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 
 Ninguna. Sesión sana en todos los ejes.
 
+
+## S12 · `8b4bddcb` — LA JORNADA DEL CLON QUE POR FIN VERIFICA (2026-08-05 23:07 → 08-07 21:26, ~46h)
+
+> ⚠️ **Mismo `.jsonl` que S11.** El registro declaró a S11 cerrada el 05-ago 23:07 y la sesión
+> siguió viva **46 horas más**. Se separa en dos entradas porque el trabajo es distinto, pero
+> **el archivo nunca se cortó**: la fila de S11 quedó corregida con esa advertencia.
+> ⭐ Registrar el cierre no es cerrar. `/clear` es lo que corta.
+
+### Consumo — medido del `.jsonl`, no estimado
+
+| Señal | Valor | |
+|---|---|---|
+| peso | 25 MB | 🟡 (rojo a 50) |
+| duración | **90.9 h** acumuladas | 🔴 |
+| turnos de usuario | 2,381 | |
+| **contexto pico** | **1,000,030** | 🔴 **máximo histórico del proyecto** |
+| salida acumulada | 2,152,579 tokens | |
+| cache read | 2,257 M tokens | |
+| API connection errors | 5 (los ve `check-health`; 0 en el `.jsonl` como texto) | 🟡 |
+
+🔴 **Es la primera sesión que supera el millón de contexto.** El incidente del 21-jul
+(`project_incidente_degradacion_21jul`) ocurrió a **999K y 4 días**; ésta llegó a 1,000,030 y
+3.8 días. **La marca se cruzó, no se rozó.**
+
+### Cuándo empezó a crecer anormalmente
+
+Desde el arranque: la sesión heredaba ya ~999K de S11 sin haber pasado por `/clear`. **No hubo
+un momento de degradación — nació saturada.** Lo que la mantuvo utilizable fue que el trabajo
+era de archivos pequeños y verificación por script, no de leer código masivo.
+
+### Qué se hizo
+
+**El hallazgo que define la jornada:** la batería daba **195/0 en la máquina de Brian y 22
+fallos en un clon limpio**. Lo destapó **una auditoría externa, no el sistema** — nadie corría
+la batería fuera de este árbol.
+
+- **12 PRs abiertos y mergeados** (#1-#12) siguiendo el flujo rama → verificar → PR → ⛔ no
+  mergear, tras la pregunta de Brian *"¿por qué el sistema de PRs no está integrado?"*. Se cerró
+  el agujero con un candado en `pre-commit.sh` que bloquea commits directos a `master`.
+- **`bin/verify-all`** — 8 frentes en una corrida, incluido F8: **correr la batería DENTRO de un
+  clon**, lo único que ningún check interno puede sustituir.
+- **Familia D crece de 4 a 8 casos.** Los 4 nuevos no nombran ningún archivo ausente, por eso
+  sobrevivieron a la primera pasada. 🔴 El peor: `grade-block archived` fallaba porque bajo
+  `pipefail` el pipe tomaba el exit `2` del veredicto 🔴 MVP **aunque el `grep` acertara** —
+  decía medir *"¿sigue siendo calificable?"* y exigía **la nota que saca en la máquina de su
+  autor**. ⭐ Un check puede atarse a la instancia **sin mencionarla una sola vez**.
+- **Clon limpio: 22 → 10 → 1 fallo.** El único que queda es la respuesta CORRECTA
+  (`check-clear-ready registered=no`: la sesión de un árbol recién nacido no está registrada).
+- **Credencial de secrets atada al caché** (nace en `SessionStart`/`PostCompact`, muere al
+  recargar contexto, fail-closed), **licencia AGPL-3.0**, **QUICKSTART** con números medidos,
+  `piezas.tsv` sale de `Maestro/` y por fin viaja.
+
+### Errores propios — de método, los que importan
+
+- 🔴 **Reporté 195/0 desde el disco de Brian cuando un clon daba 22 fallos.** No lo cacé yo.
+- 🔴 **El PR #4 perdió los `matcher` de los hooks** → `gate-handoff` bloqueó Bash/Read/Grep/Edit
+  y **el sistema se cerró sobre sí mismo**; Brian tuvo que arreglarlo a mano en el IDE.
+  Después, al darle solo el bloque `PreToolUse` para pegar, se perdieron 3 hooks más (7→4).
+- 🔴 **Una prueba de `bin/init` sobrescribió el `mente.config.yml` vivo de Brian** con
+  `{{OWNER}}` y no lo restauré. Lección escrita: *una prueba que escribe en un archivo vivo debe
+  restaurarlo*.
+- ⚠️ Varios sabotajes que **no discriminaban** (un `sys.exit(0)` que daba el mismo valor que el
+  estado sano). *Un sabotaje que no cambia el comportamiento observable no prueba nada.*
+- ⚠️ **La hipótesis de partida de la separación motor/instancia era falsa.** Se iban a mover 221
+  archivos; medido, **ninguno estorbaba** — fallaban los checks que los interrogaban mal. Mover
+  archivos habría escondido el defecto.
+
+### Lo raro
+
+**`check-links` en un clon es un indulto general** para las memorias del harness: probado con una
+errata inventada, **no se cazó**. Se aceptó a conciencia y está escrito en el código, porque la
+alternativa (20 citas correctas en rojo en cada clon) es cómo un validador se vuelve ruido.
+
+### Por qué se cierra
+
+Contexto en **1,000,030** — récord del proyecto y por encima del umbral del incidente del
+21-jul. `check-health` reporta **5 API connection errors**, la señal de saturación. El trabajo
+llegó a frontera natural: PR #12 abierto, batería 196/0, nada a medias.
+
+---
 
 ## S11 · `8b4bddcb` — LA JORNADA DEL CRITERIO Y LOS TESTS (2026-08-04 02:31 → 08-05 23:07, ~45h)
 

@@ -83,16 +83,19 @@ que la etiqueta *"son fallos de la instancia de Brian"* llevaba meses tapando:
   **aunque el `grep` acertara**. Decía medir *"¿sigue siendo calificable?"* y exigía **la nota que
   saca en la máquina de su autor** — un check atado a la instancia **sin nombrarla una sola vez**.
 
-También: `WORKSPACE.md` sale del repo y `bin/init` lo GENERA (su línea 3 lo declaraba desde el
+También: `docs/WORKSPACE.md` sale del repo y `bin/init` lo GENERA (su línea 3 lo declaraba desde el
 05-ago y nadie lo hacía cumplir) · `check-links` deja de llamar rotas a 12 citas que resuelven en
 repos hermanos ausentes · `owner == "Maestro"` hardcodeado en `check-structure` corregido.
 
 **🔴 El único rojo que queda en un clon es la respuesta CORRECTA:** `check-clear-ready
 registered=no` — la sesión de un árbol recién nacido no está registrada. Verde ahí sería mentir.
 
-**👉 PRÓXIMO PASO:** PR abierto, ⛔ sin mergear. Pendiente para Brian en el §H del bloque:
-`pre-edit-standards.py` confunde MENCIONAR una ruta con RECLAMARLA (`d in target`, subcadena) —
-con dos bloques activos, el más "hablador" se roba los archivos del otro.
+**🆕 Cierre (08-07):** PR #12 **mergeado**. + 2 arreglos: ① `hooks/pre-edit-standards.py` ya no
+confunde MENCIONAR con RECLAMAR (compara por segmentos, ignora la prosa) — sin tocar el formato
+del §B; ② `bin/check-clear-ready` no exige fecha de hoy a un `Type: fossil`. Batería **198/0**.
+
+**👉 PRÓXIMO PASO:** sub-bloque 5 (clon limpio end-to-end) y, cuando Brian lo marque, publicar
+el motor sin los 221 archivos de instancia — el bloque pospuesto a propósito.
 
 ---
 
@@ -171,28 +174,7 @@ motor** — el job los nombra uno a uno para que la exención no crezca sola.
 los dejó el 26-jul (§5 "LO ANTERIOR"). Deuda abierta: **prueba de campo real** de `mente-os`
 (alguien que no sea Brian clonando) · los **35 huecos** restantes (**solo queda owner-1**: `doc-planning` + `doc-structure`) · las 2 decisiones 🔑🔐 de abajo.
 
-### LO ANTERIOR (2026-08-04, S10 ~7h) — **LA VOZ AHORA TIENE CONTRATO DE ENTREGA**
-
-**Sin commit — todo en disco.** Detalle: `Cerebro/Registro_Conversaciones.md` §S10.
-
-Brian reportó *"no entiendo qué leer ni cómo leerlo, ni sé qué sigue"*. 🔍 **La causa era la voz
-misma** — 8 reglas, todas de qué NO hacer, y **2 CAUSABAN el defecto**. §6 de `owner-0-voice`
-LLENO con sus citas · **3 modos 🟢🟡🔵** (el contrato no medía el peso de la pregunta) · vehículo
-**−48%** (5,167 → 2,644 tokens, se paga en cada turno), 16/16 reglas verificadas.
-
-> ⭐ **LA LECCIÓN:** *no faltaban reglas, sobraban dos mal escritas.* Y la que me toca: **dejé
-> `principles/owner-0-voice.md` en 582 líneas con límite de 250, el mismo día que escribí la regla del techo.**
-
-**✅ RESUELTO EN S11 — el contrato YA gobernó una sesión real** (el cierre de `distribucion` + las
-6 dimensiones), sin tocarlo durante el uso. Brian seguía en *"me gusta más, pero no me fascina"*
-tras 6 rondas: **eso sigue abierto.**
-⛔ **Superficie = terminal SIEMPRE** — nada de web/navegador salvo que Brian lo pida para esa
-entrega. Prohibición escrita en ambos archivos.
-
-### LO ANTERIOR (2026-08-03, S9) — un clon con otro dueño se instala solo
-
-8 hallazgos de la misma familia (checks que corrían, decían verde y **no medían**) → `rule-checks-must-measure`. Citas rotas 144 → 0. Bloque `distribucion` 6/6.
-📦 Detalle → `memory/Bitacora_Progreso.md` (movido el 2026-08-06).
+### LO ANTERIOR — S10 (voz) y S9 (instalador) → `memory/Bitacora_Progreso.md`
 
 ### LO ANTERIOR (2026-07-31, S7) — el v2 se construyó y F8-4 lo verificó
 

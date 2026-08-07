@@ -4,6 +4,26 @@
 **Migrated:** desde v1 (2026-07-30, ADR-029)
 
 
+
+## ✅ RESUELTO (2026-08-07) — `hooks/pre-edit-standards.py` confundía MENCIONAR con RECLAMAR
+
+Su matcher hace `d in target` — **subcadena, no ruta**. El bloque `separacion-motor-instancia`
+nombró `marca-personal/` en su §B **solo para decir de quién NO era**, y el hook le atribuyó los
+archivos del bloque `demo`.
+
+⚠️ **Consecuencia:** con dos bloques activos, el que más "habla" en su §B se roba los archivos
+del otro, y el editor recibe los estándares equivocados.
+
+**Arreglado el mismo día, sin cambiar el formato del §B** — no hizo falta la decisión que se
+temía: la prosa sigue pudiendo explicar un límite. Dos correcciones en el matcher: solo cuenta
+el tramo del ítem ANTERIOR al guion largo (la prosa explica, no reclama) y la comparación pasa
+de subcadena a SEGMENTOS de ruta (`lib/demo` ya no casa dentro de `otro-lib/demo-viejo/`).
+Verificado en 5 direcciones + un sabotaje que lo caza. Batería 196 → **198**.
+
+Origen: `blocks/active/separacion-motor-instancia` §H.
+
+---
+
 ## Purpose
 
 Todo lo que queda abierto en For3s OS y en Mente OS v2, con su estado medido. ⚠️ Conserva el

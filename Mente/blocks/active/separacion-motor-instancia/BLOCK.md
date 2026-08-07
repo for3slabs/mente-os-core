@@ -70,12 +70,12 @@ updated: 2026-08-07
 - La etiqueta *"son 8 fallos y son de la instancia de Brian"* estaba TAPANDO 3 defectos reales
   del motor (familia D casos 5 y 6, + un `owner == "Maestro"` hardcodeado en check-structure).
   ⭐ Una explicación cómoda para un rojo es cómo un bug sobrevive a una auditoría.
-- 🔴 **`pre-edit-standards.py` confunde MENCIONAR una ruta con RECLAMARLA.** Su matcher hace
-  `d in target` (subcadena): este bloque nombró `marca-personal/` sólo para decir de quién NO
-  era, y el hook le atribuyó los archivos de `demo`. Un §B que explica un límite reclama
-  territorio. Medido 2026-08-07; se esquivó reescribiendo el §B, **el matcher sigue igual**.
-  ⚠️ Con dos bloques activos el más "hablador" se roba los archivos del otro. Pendiente para
-  Brian: arreglarlo pide decidir si §B pasa a ser una lista de rutas parseable.
+- ✅ **`pre-edit-standards.py` confundía MENCIONAR una ruta con RECLAMARLA** — RESUELTO el
+  mismo día (Brian: *"arréglalo"*). Su matcher hacía `d in target` sobre cualquier ruta de la
+  línea: este bloque nombró `marca-personal/` sólo para decir de quién NO era y el hook le
+  atribuyó los archivos de `demo`. ⚠️ El daño no era ruido de más — con dos bloques activos el
+  más "hablador" se roba los del otro, y el aviso CORRECTO deja de llegar.
+  **No hizo falta cambiar el formato del §B**, que era el coste que se temía.
 
 <!-- ══ I · CHECKPOINTS ══ -->
 ## Checkpoints
