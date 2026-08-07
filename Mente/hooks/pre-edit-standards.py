@@ -31,7 +31,15 @@ def main():
     except Exception:                                          # noqa: BLE001
         return 0                                               # malformed input never blocks
 
-    target = (payload.get("tool_input", {}) or {}).get("file_path", "")
+    # 🔴 `json.load` acepta CUALQUIER JSON válido, no solo un objeto: con `[]` o `null` el
+    # try/except de arriba no salta —el parseo tuvo éxito— y `.get()` reventaba con
+    # AttributeError. Cazado por la auditoría del 2026-08-06; los otros tres hooks
+    # (gate-critical, gate-handoff, gate-secrets) ya comprobaban el tipo. Este era el único.
+    # ⚠️ Un hook que lanza una excepción no protege: imprime un traceback y deja pasar.
+    if not isinstance(payload, dict):
+        return 0
+    ti = payload.get("tool_input")
+    target = ti.get("file_path", "") if isinstance(ti, dict) else ""
     if not target:
         return 0
 
