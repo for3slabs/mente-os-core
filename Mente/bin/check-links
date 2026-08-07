@@ -196,6 +196,32 @@ OPENCLAW_MEMORY = re.compile(r"^memory/(\d{4}-\d{2}-\d{2}|AAAA-MM-DD)\.md$")
 # Declared per instance (mente.config.yml): pointers into these belong to other repos.
 OUTSIDE = tuple(cfg.outside())
 
+# ⭐ ¿Está presente el repo hermano donde una cita PODRÍA resolver? (2026-08-07)
+# `in_sibling_repo` resuelve contra `../<repo>`. Si ese repo no está clonado, devuelve False y
+# la cita se reporta ROTA — pero no lo está: es que el destino no viaja.
+# 🔴 Medido en un clon limpio: 12 citas de `work/`, `memory/` y `Cerebro/` señaladas como rotas.
+# Las 12 resuelven de verdad en la máquina de Brian (`for3s-inter/`, `For3s-OS/`,
+# `marca-personal/`), todos ya declarados `outside:`. El clon las llamaba defectos.
+# ⛔ NO es un indulto: si el hermano ESTÁ presente, la cita se verifica como siempre y un
+# puntero equivocado sigue fallando. Solo se calla cuando no hay dónde comprobar — y entonces
+# el silencio es honesto, porque afirmar "rota" sería afirmar sin medir.
+#
+# ⚠️ Y "hermano" significa REPO hermano, no cualquier entrada de `outside:`. La primera versión
+# preguntaba `any(isdir(...))` sobre la lista entera y salía False siempre: `.claude/` está en
+# esa lista y **existe en todo clon** porque lo crea `bin/init`. Bastaba una entrada interna
+# para que el flag nunca se encendiera. Se descartan las que empiezan por punto y las que son
+# nombres de tooling — no son árboles donde una cita pueda resolver.
+_NO_ES_REPO = ("node_modules", "workspace")
+_SIN_HERMANOS = not any(
+    os.path.isdir(os.path.join("..", r.rstrip("/")))
+    for r in OUTSIDE
+    if not r.startswith(".") and r.rstrip("/") not in _NO_ES_REPO)
+
+# ⚠️ Y se acota a los documentos que son INSTANCIA. Un flag global habría callado también las
+# citas de `rules/` y `bin/` —el motor—, y ahí una cita rota SÍ es un defecto que viaja a todos.
+# Estas tres carpetas son la bitácora de un trabajo concreto: hablan de los repos de su autor.
+DOCS_DE_INSTANCIA = ("work/", "memory/", "Cerebro/")
+
 
 def is_harness_memory(c):
     """A `project_*.md` / `feedback_*.md` citation naming a harness memory, not a file here.
@@ -350,6 +376,10 @@ def main():
                 continue
             if in_sibling_repo(c):
                 continue                      # resolves in a repo declared `outside`
+            # Documento de instancia + ningún repo hermano clonado = no hay dónde verificar.
+            # Se calla, y solo aquí: en el motor una cita rota sigue siendo un defecto.
+            if _SIN_HERMANOS and f.startswith(DOCS_DE_INSTANCIA):
+                continue
             if c in DISCUSSED.get(f, ()):
                 continue                      # this document's subject, not its pointer
             if is_harness_memory(c):

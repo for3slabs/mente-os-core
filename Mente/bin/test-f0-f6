@@ -56,6 +56,22 @@ trap 'rm -rf "$_LOCK"' EXIT INT TERM
 REPO="$(dirname "$M")"
 PASS=0; FAIL=0; NOTE=()
 
+# ── LA RAÍZ DE LA INSTANCIA ─────────────────────────────────────────────────
+# ⭐ Siete checks califican el bloque `demo` con `--root <repo>/marca-personal`. Ese árbol es la
+# INSTANCIA de quien escribió el bloque: no viaja con el motor y en un clon no existe. Sin él,
+# `grade-block` medía sobre la nada — 0 archivos, veredicto 🔴 MVP, exit 2 — y los checks
+# llamaban FALLO a lo que en realidad era ausencia. Un rojo así no informa: entrena a ignorar.
+#
+# 🔴 Y ausencia NO es aprobado. Cuando la raíz falta, el check se SALTA y lo DICE en 🟡; nunca
+# se cuenta como ✅, porque un hueco silencioso convertido en verde es exactamente el falso
+# positivo que esta batería existe para impedir (rule-checks-must-measure.md §D).
+#
+# La ruta se DERIVA del §B del bloque, así que sigue viva se llame como se llame su carpeta.
+_demo_in=$(sed -n '/## ✅ IN/,/## ⛔ OUT/p' "$M/blocks/active/demo/BLOCK.md" 2>/dev/null \
+           | grep -oE '^- [A-Za-z0-9_-]+/' | head -1 | sed 's/^- //;s#/$##')
+INST_ROOT="$REPO/${_demo_in:-marca-personal}"
+HAS_INST=0; [ -d "$INST_ROOT" ] && HAS_INST=1
+
 ok()   { PASS=$((PASS+1)); printf '  ✅ %s\n' "$1"; }
 bad()  { FAIL=$((FAIL+1)); printf '  🔴 %s\n     expected: %s\n     got:      %s\n' "$1" "$2" "$3"; }
 eq()   { [ "$2" = "$3" ] && ok "$1" || bad "$1" "$2" "$3"; }
@@ -216,13 +232,23 @@ eq "every file in secrets/ is 600" "0" "$n"
 # CORRECTA de escribirla— se reportaba como muerta por no existir un directorio con ese nombre.
 # El check medía el TEXTO en vez del DESTINO, y castigaba justo la práctica que hace instalable
 # el repo. Se resuelve la variable igual que la resuelve el harness.
+# 🔴 SOLO MIDE LOS ARCHIVOS QUE EXISTEN (2026-08-07 · familia D, quinto caso).
+# Antes abría `settings.local.json` sin condición. Ese archivo está en `.gitignore` A PROPÓSITO
+# —es la capa local de cada máquina—, así que en cualquier clon el `json.load` reventaba con un
+# traceback y el conteo llegaba VACÍO a `eq`: el check no reportaba "1 ruta muerta", reportaba
+# un stack trace, que parece un sistema roto en vez de un dato ausente.
+# ⭐ La regla: un check que abre un archivo que por diseño no viaja mide la máquina del autor.
+# Un archivo ausente aquí NO es un fallo — es que esa máquina no declaró permisos locales.
 n=$(python3 -c "
 import json,os
 os.environ.setdefault('CLAUDE_PROJECT_DIR','$REPO')
 t=0
 for f in ('settings.json','settings.local.json'):
-    d=json.load(open('$REPO/.claude/'+f))
-    for e in d['permissions'].get('additionalDirectories',[]):
+    p='$REPO/.claude/'+f
+    if not os.path.exists(p):   # gitignored por diseño: nada que auditar, no un fallo
+        continue
+    d=json.load(open(p))
+    for e in d.get('permissions',{}).get('additionalDirectories',[]):
         if not os.path.exists(os.path.expandvars(os.path.expanduser(e))):
             t+=1
 print(t)")
@@ -407,9 +433,9 @@ n=$(wc -l < blocks/active/demo/BLOCK.md)
 head2 "F4 · MEASURE — the verdict must be reproducible, not a mood"
 
 # The whole point: same numbers on two consecutive runs. If they drift, it is an opinion.
-a=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+a=$(./bin/grade-block demo --root "$INST_ROOT" --json 2>/dev/null | python3 -c "
 import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].items()))" 2>/dev/null)
-b=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+b=$(./bin/grade-block demo --root "$INST_ROOT" --json 2>/dev/null | python3 -c "
 import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].items()))" 2>/dev/null)
 [ -n "$a" ] && [ "$a" = "$b" ] && ok "grade-block is deterministic across runs" \
   || bad "determinism" "identical output twice" "drifted or empty"
@@ -420,15 +446,19 @@ import json,sys;d=json.load(sys.stdin);print(d['verdict'],sorted(d['metrics'].it
 # estado en curso de un bloque real** — se vuelve falso justo cuando el trabajo tiene éxito.
 # Lo que sí es invariante y vale la pena sujetar: el veredicto medido y el código de salida
 # NUNCA se contradicen.
-gout="$(./bin/grade-block demo --root "$REPO/marca-personal" 2>/dev/null || true)"
-./bin/grade-block demo --root "$REPO/marca-personal" --quiet >/dev/null 2>&1
-gexit=$?
-case "$gout" in
-  *"🟢 PRODUCT"*) want_exit=0 ;;   # grade-block: 0 product · 1 close · 2 MVP
-  *"🟡 CLOSE"*)   want_exit=1 ;;
-  *)              want_exit=2 ;;
-esac
-eq "el exit code concuerda con el veredicto medido" "$want_exit" "$gexit"
+if [ "$HAS_INST" = 1 ]; then
+  gout="$(./bin/grade-block demo --root "$INST_ROOT" 2>/dev/null || true)"
+  ./bin/grade-block demo --root "$INST_ROOT" --quiet >/dev/null 2>&1
+  gexit=$?
+  case "$gout" in
+    *"🟢 PRODUCT"*) want_exit=0 ;;   # grade-block: 0 product · 1 close · 2 MVP
+    *"🟡 CLOSE"*)   want_exit=1 ;;
+    *)              want_exit=2 ;;
+  esac
+  eq "el exit code concuerda con el veredicto medido" "$want_exit" "$gexit"
+else
+  note "exit code vs veredicto: SALTADO — no hay instancia en $INST_ROOT (no es un ✅)"
+fi
 
 # ADR-028: the type decides the ruler. A block with no type must be REFUSED, not guessed.
 tmp="blocks/active/zz-probe"; mkdir -p "$tmp"
@@ -589,10 +619,23 @@ printf 'not json' | ./hooks/pre-edit-standards.py >/dev/null 2>&1
 eq "pre-edit survives malformed input" "0" "$?"
 
 # It must name the block's standards for a file inside the block, and stay quiet outside.
-o=$(printf '{"tool_input":{"file_path":"%s/marca-personal/lib/demo/session.ts"}}' "$REPO" \
-    | ./hooks/pre-edit-standards.py 2>&1)
-printf '%s' "$o" | grep -q "block \`demo\`" && ok "pre-edit names the owning block" \
-  || bad "pre-edit block match" "names demo" "silent"
+# ⭐ LA RUTA SE DERIVA DEL §B, NO SE FIJA (2026-08-07 · familia D, séptimo caso).
+# Apuntaba a `marca-personal/lib/demo/session.ts`. Esa carpeta es de la INSTANCIA y no viaja:
+# en cualquier clon el hook enmudecía —correctamente, porque ahí no hay tal bloque— y el check
+# lo llamaba fallo. Medía si la máquina es la de Brian, igual que los seis casos anteriores.
+# Ahora se toma la primera ruta que el propio bloque declara en su §B ✅ IN, así que el check
+# sigue vivo se llame como se llame el bloque y viva donde viva su código.
+_blk=$(ls blocks/active | head -1)
+_ruta=$(sed -n '/## ✅ IN/,/## ⛔ OUT/p' "blocks/active/$_blk/BLOCK.md" \
+        | grep -oE '^- [A-Za-z0-9_./-]+' | head -1 | sed 's/^- //')
+if [ -n "$_ruta" ]; then
+  o=$(printf '{"tool_input":{"file_path":"%s/%s/x.ts"}}' "$REPO" "$_ruta" \
+      | ./hooks/pre-edit-standards.py 2>&1)
+  printf '%s' "$o" | grep -q "block \`$_blk\`" && ok "pre-edit names the owning block" \
+    || bad "pre-edit block match" "names $_blk" "silent"
+else
+  bad "pre-edit block match" "el §B de $_blk declara al menos una ruta" "ninguna"
+fi
 o=$(printf '{"tool_input":{"file_path":"/tmp/unrelated.txt"}}' | ./hooks/pre-edit-standards.py 2>&1)
 [ -z "$o" ] && ok "pre-edit stays silent outside every block" \
   || bad "pre-edit silence" "no output" "$o"
@@ -1064,11 +1107,26 @@ rm -rf "$tmp"
 # A nested repo is only a RISK if it has no remote or carries uncommitted work. Reporting it
 # as doomed without checking was itself a false claim (corrected 2026-07-30) — the test now
 # asserts the accurate behaviour: Maestro/ has a remote, so it must NOT be red.
+# 🔴 MIDE LA CAPACIDAD, NO UN NOMBRE (2026-08-07 · familia D, sexto caso).
+# Antes exigía la cadena literal `Maestro/`. Ese sub-repo está en `.gitignore` y NO viaja, así
+# que en cualquier clon el check salía rojo "silent" — y era verdad: no había sub-repo que
+# detectar. Estaba midiendo si la máquina es la de Brian, no si el validador funciona.
+# ⭐ Ahora se le FABRICA uno: si lo caza, la detección sirve en cualquier árbol.
+_nst="nested-probe-$$"
+mkdir -p "$M/$_nst/.git"
 sout="$(./bin/check-structure 2>/dev/null || true)"
 case "$sout" in
-  *"NESTED REPO AT RISK · Maestro"*) bad "nested repo accuracy" "not red (it has a remote)" "red" ;;
-  *"Maestro/"*) ok "check-structure reports Maestro/ accurately (remote exists, work uncommitted)" ;;
-  *) bad "nested repo detection" "mentions Maestro/" "silent" ;;
+  *"$_nst"*) ok "check-structure detecta un sub-repo anidado sin remoto (fabricado)" ;;
+  *) bad "nested repo detection" "menciona el sub-repo fabricado" "silent" ;;
+esac
+rm -rf "${M:?}/$_nst"
+
+# ⚠️ Y el sabotaje debe DESAPARECER al retirarlo: si siguiera reportándolo, estaría leyendo
+# una lista fija en vez del árbol real (que es justo el defecto que se acaba de corregir).
+sout="$(./bin/check-structure 2>/dev/null || true)"
+case "$sout" in
+  *".nested-probe-$$"*) bad "nested repo es del árbol real" "silencio tras retirarlo" "sigue reportándolo" ;;
+  *) ok "el sub-repo retirado deja de reportarse (lee el árbol, no una lista)" ;;
 esac
 
 # And it must catch a REAL break, not only the known ones.
@@ -1272,7 +1330,7 @@ rm -rf "$tmp"
 # (`⬜ NOTHING MEASURED` — el escáner no cuenta un `.ts` suelto fuera del árbol que conoce).
 # Comprobado antes de darlo por bueno. Lo invariante, y lo único que hay que sujetar, es que
 # **la medición NO se cree lo escrito** — da igual cuál sea el veredicto real.
-real="$(./bin/grade-block demo --root "$REPO/marca-personal" 2>/dev/null | grep -o '🟢 PRODUCT\|🟡 CLOSE\|🔴 MVP' | head -1)"
+real="$(./bin/grade-block demo --root "$INST_ROOT" 2>/dev/null | grep -o '🟢 PRODUCT\|🟡 CLOSE\|🔴 MVP' | head -1)"
 case "$real" in
   "🔴 MVP") falso="🟢 PRODUCT" ;;
   *)        falso="🔴 MVP" ;;
@@ -1281,7 +1339,7 @@ esac
 # habría escrito nada y el check habría pasado sin probar nada — un verde falso. Comprobado
 # (`grep -c` = 0) antes de confiar en él.
 printf '\nLAYER 1 VERDICT: %s\n' "$falso" >> blocks/active/demo/BLOCK.md
-gout="$("$M/bin/grade-block" demo --root "$REPO/marca-personal" 2>/dev/null || true)"
+gout="$("$M/bin/grade-block" demo --root "$INST_ROOT" 2>/dev/null || true)"
 case "$gout" in
   *"$real"*) ok "a hand-written verdict is contradicted by measurement" ;;
   *) bad "verdict forgery" "measured $real" "believed the file ($falso)" ;;
@@ -1321,9 +1379,13 @@ done
 eq "every cited ADR exists" "0" "$miss"
 
 # The declared import graph must still match reality — it is measured, never remembered.
-d=$(./bin/grade-block demo --root "$REPO/marca-personal" --json 2>/dev/null | python3 -c "
+if [ "$HAS_INST" = 1 ]; then
+  d=$(./bin/grade-block demo --root "$INST_ROOT" --json 2>/dev/null | python3 -c "
 import json,sys;print(json.load(sys.stdin)['metrics'].get('dependent counts gone stale',0))" 2>/dev/null)
-eq "block §F import counts still match the real graph" "0" "${d:-ERR}"
+  eq "block §F import counts still match the real graph" "0" "${d:-ERR}"
+else
+  note "§F import counts: SALTADO — el grafo vive en la instancia ausente (no es un ✅)"
+fi
 
 # ⭐ TWICE in one day (2026-07-30) a bulk path-completion pass broke real citations: first it
 # corrupted 4 filenames inside Maestro/ (own root), then it "completed" 28 valid RELATIVE paths
@@ -1557,7 +1619,17 @@ rm -rf "$_gbdir"
 _arch=$(ls -d blocks/archive/*/ 2>/dev/null | head -1)
 if [ -n "$_arch" ]; then
   _an=$(basename "${_arch%/}")
-  ./bin/grade-block "$_an" 2>&1 | grep -q "LAYER 1 VERDICT" \
+  # 🔴 MIDE SI SE PUEDE CALIFICAR, NO QUÉ NOTA SACA (2026-08-07 · familia D, octavo caso).
+  # Era `./bin/grade-block "$_an" | grep -q ...`. Bajo `set -o pipefail` (línea 28) el pipe toma
+  # el exit del PRIMER tramo: `grade-block` devuelve 2 cuando el veredicto es 🔴 MVP, así que el
+  # `&&` se caía **aunque el grep hubiera acertado**. Medido en un clon: imprimía sus 17 líneas
+  # con `LAYER 1 VERDICT` dentro y el check igual lo llamaba "refused".
+  # ⭐ Y el veredicto DEPENDE DE LA INSTANCIA: aquí ese bloque puntúa 🟢 (exit 0) porque
+  # `marca-personal/` está presente; en un clon puntúa 🔴 (exit 2) porque no lo está. El check
+  # decía verificar que un archivado "sigue siendo calificable" y en realidad exigía la nota que
+  # saca en la máquina de su autor. La salida se captura primero; el exit no entra en el juicio.
+  _gout=$(./bin/grade-block "$_an" 2>&1 || true)
+  printf '%s' "$_gout" | grep -q "LAYER 1 VERDICT" \
     && ok "grade-block: an archived block can be re-graded ($_an)" \
     || bad "grade-block archived" "gradeable" "refused — §K verdict not reproducible"
 fi

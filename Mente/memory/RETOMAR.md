@@ -1,6 +1,6 @@
 # RETOMAR — Cold-Start Brief (LEER ESTO PRIMERO) ⚡
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-08-05 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-07 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
 
@@ -61,6 +61,40 @@ cazaron **12 hallazgos con fix sistémico** (H-11: la contraseña del server viv
 redactada). 👉 `project_entrenamiento_foresito` · `work/Entrenamiento_Ejecucion_Reporte.md`.
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
+
+### 🆕 ⭐ UN CLON YA VERIFICA EL MOTOR: **10 fallos → 1** (2026-08-07, S13)
+
+**Rama `fix/separacion-motor-instancia`** · bloque activo del mismo nombre (4/5 sub-bloques ✅).
+
+📊 El recorrido medido en un clon limpio, tras `bin/init`:
+`10 → 7` (familia D 5-6) → `6` (additionalDirectories) → `2` (WORKSPACE) → **1**.
+
+⭐ **El hallazgo que da la vuelta al problema:** la hipótesis era mover 221 archivos de instancia
+a una carpeta aparte. **Medido: ninguno estorbaba.** Lo que fallaba eran los CHECKS que los
+interrogaban mal — mover archivos habría escondido el defecto en vez de corregirlo. Por eso
+`instance/` NO se creó y el §B del bloque se corrigió.
+
+**4 defectos reales del motor**, todos familia D (casos 5-8 de `rules/rule-checks-must-measure.md`),
+que la etiqueta *"son fallos de la instancia de Brian"* llevaba meses tapando:
+- `additionalDirectories` **reventaba con un traceback** (abría `settings.local.json`, gitignorado)
+- `nested repo detection` exigía la cadena literal `Maestro/`
+- `pre-edit block match` probaba con una ruta de `marca-personal/`
+- 🔴 `grade-block archived`: bajo `pipefail` el pipe tomaba el exit `2` del veredicto 🔴 MVP
+  **aunque el `grep` acertara**. Decía medir *"¿sigue siendo calificable?"* y exigía **la nota que
+  saca en la máquina de su autor** — un check atado a la instancia **sin nombrarla una sola vez**.
+
+También: `WORKSPACE.md` sale del repo y `bin/init` lo GENERA (su línea 3 lo declaraba desde el
+05-ago y nadie lo hacía cumplir) · `check-links` deja de llamar rotas a 12 citas que resuelven en
+repos hermanos ausentes · `owner == "Maestro"` hardcodeado en `check-structure` corregido.
+
+**🔴 El único rojo que queda en un clon es la respuesta CORRECTA:** `check-clear-ready
+registered=no` — la sesión de un árbol recién nacido no está registrada. Verde ahí sería mentir.
+
+**👉 PRÓXIMO PASO:** PR abierto, ⛔ sin mergear. Pendiente para Brian en el §H del bloque:
+`pre-edit-standards.py` confunde MENCIONAR una ruta con RECLAMARLA (`d in target`, subcadena) —
+con dos bloques activos, el más "hablador" se roba los archivos del otro.
+
+---
 
 ### 🆕 🔴 LA DEMO PASÓ DE 0 A 4 TESTS — y uno **falla a propósito** (2026-08-05)
 

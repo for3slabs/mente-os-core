@@ -11,6 +11,7 @@
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
 | 🟢 | **demo** | code | active | full-block | 6/7 |  | 2026-08-05 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **separacion-motor-instancia** | infra | active | task | — |  | 2026-08-07 | `blocks/active/separacion-motor-instancia/BLOCK.md` |
 | 🟢 | **distribucion_2026-08** | code | closed | full-block | — |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
 | 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | — |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |
 | 🟢 | **plan-tests-demo_2026-08** | docs | closed | direct | — |  | 2026-08-05 | `blocks/archive/plan-tests-demo_2026-08/BLOCK.md` |
@@ -19,6 +20,7 @@
 ## Phase
 
 - **demo**: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos ce
+- **separacion-motor-instancia**: 4/5 sub-bloques cerrados · clon limpio 10 → 1 fallo
 - **distribucion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2
 - **expertise-programacion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 3/3 applicabl
 - **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running

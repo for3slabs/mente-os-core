@@ -69,31 +69,25 @@ Esto es lo que **de verdad** pasa, medido el 2026-08-07 en un clon limpio:
 
 | Momento | Resultado |
 |---|---|
-| recién clonado | 177 pasan · **10 fallan** |
-| tras `bin/init` | 180 pasan · **8 fallan** |
+| recién clonado | 178 pasan · **7 fallan** |
+| tras `bin/init` | 185 pasan · **1 falla** |
 
-> ⚠️ **Sí: termina con 8 en rojo, y el sistema NO está roto.**
+> ⭐ **`bin/init` no es opcional.** Sin él el sistema no sabe quién eres, y siete checks fallan
+> cerrado antes que asumirlo.
 
-Los 8 tienen una causa común: **este repositorio trae la instancia de su autor** — sus bloques
-de trabajo, su memoria, un `docs/WORKSPACE.md` que describe *su* máquina. Los checks verifican
-esa instancia y tú no la tienes.
+**Y el que queda no se arregla — es la respuesta correcta:**
 
-| Lo que falla | Por qué |
-|---|---|
-| `no dead paths in additionalDirectories` | apunta a proyectos vecinos de Brian |
-| `block §F import counts` · `grade-block archived` | verifican SU bloque de trabajo, no el tuyo |
-| `every repo WORKSPACE.md names` | describe SU máquina |
-| `check-clear-ready … registered=no` | tu sesión aún no está en el registro |
-| `nested repo detection` | busca un sub-repo que solo existe en su árbol |
+```
+🔴 check-clear-ready agrees with the registry (registered=no)
+```
 
-⭐ **Es el sistema fallando CERRADO**, que es su diseño: ante algo sin configurar prefiere
-gritar a asumir. Un motor que arrancara verde sin saber quién eres estaría inventando.
+Dice que **tu sesión todavía no está registrada**, y es verdad: acabas de llegar. El registro se
+escribe antes de un `/clear` (`rules/rule-session-close.md`), así que en un clon recién hecho
+ese rojo es el sistema informando con exactitud. Un check que se pusiera verde ahí estaría
+mintiendo. Se apaga solo en cuanto registres tu primera sesión.
 
-**Lo que sí importa:** `check-blocks` corre limpio en tu clon (**0 errores · 0 warnings**),
-`check-health` reporta la versión, y las **3 puertas bloquean**. Puedes trabajar.
-
-⚠️ `check-links` te dirá **unas 5 citas rotas**: apuntan a `Maestro/`, un repositorio hermano
-que no viaja con éste. No son erratas — son punteros a algo que su autor sí tiene.
+**Todo lo demás corre limpio en tu clon:** `check-blocks` (0 errores · 0 warnings),
+`check-links` (300 archivos, cero punteros rotos), `check-health`, y las **3 puertas bloquean**.
 
 ---
 
@@ -135,9 +129,9 @@ qué criterio se juzga y cuándo puede cerrarse. `rules/block-lifecycle.md` lo e
 | Síntoma | Qué pasa |
 |---|---|
 | `bin/init` se niega a preguntar | lo lanzaste sin terminal. Córrelo directo, sin tuberías |
-| más de 8 fallos tras el init | algo se rompió: `bin/check-health` lo nombra con su razón |
+| más de 1 fallo tras el init | algo se rompió: `bin/check-health` lo nombra con su razón |
 | un hook bloquea todo | mira `.claude/settings.json`: cada grupo de `PreToolUse` **debe** llevar `matcher`. Sin él, un hook corre en todas las herramientas |
-| `check-links` reporta rotas | apuntan a `Maestro/`, `secrets/` o repos vecinos que no viajan — el validador ya las exime; si ves otras, son reales |
+| `check-links` reporta rotas | son reales: en un clon limpio corre a cero. Un puntero roto es un defecto, no ruido |
 
 ---
 

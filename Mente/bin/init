@@ -32,6 +32,7 @@ import re
 import sys
 import json
 import shutil
+import datetime
 
 MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(MENTE, "bin"))
@@ -139,11 +140,31 @@ def wire_hooks():
                 g = {"matcher": matcher, "hooks": hs}
             salida.append(g)
         blocks[event] = salida
-    if d.get("hooks") == blocks:
+    # 🔴 LOS PERMISOS A CARPETAS DE OTRA INSTANCIA NO SE HEREDAN (2026-08-07).
+    # `additionalDirectories` viaja dentro de settings.json, y en este repo concedía acceso a
+    # `marca-personal/` — una carpeta de la instancia de Brian. En cualquier clon esa ruta no
+    # existe: la batería la reportaba como "ruta muerta" y el clon nacía en rojo por un permiso
+    # que su dueño nunca pidió.
+    # ⭐ Un permiso concedido a algo que no existe no es inofensivo: es una concesión que nadie
+    # puede auditar, y el día que ESA ruta aparezca queda otorgada sin que nadie lo decidiera.
+    # Se podan las muertas, se conservan las vivas, y se DICE cuántas se quitaron.
+    podadas = []
+    perms = d.setdefault("permissions", {})
+    vivos = []
+    for e in perms.get("additionalDirectories", []):
+        destino = os.path.expandvars(os.path.expanduser(
+            e.replace("${CLAUDE_PROJECT_DIR}", REPO)))
+        (vivos if os.path.exists(destino) else podadas).append(e)
+    nota = ""
+    if podadas:
+        nota = f" · {len(podadas)} additionalDirectories muertos podados"
+
+    if d.get("hooks") == blocks and not podadas:
         return "hooks already wired, portably"
     if check_only:
-        return "would rewire 4 hooks with a portable path"
-    d.setdefault("permissions", d.get("permissions", {}))
+        return f"would rewire 4 hooks with a portable path{nota}"
+    if podadas:
+        perms["additionalDirectories"] = vivos
     d["hooks"] = blocks
     # 🔴 BACK UP BEFORE OVERWRITING (2026-08-05, imported from graphify's install.py #2167).
     # This file belongs to the USER and they have hand-edited it: permissions, env, statusline.
@@ -159,7 +180,8 @@ def wire_hooks():
         except OSError as e:
             return f"🔴 could not back up {p} ({e}) — refusing to overwrite it"
     json.dump(d, open(p, "w"), indent=2, ensure_ascii=False)
-    return "4 hooks wired with ${CLAUDE_PROJECT_DIR} (previous settings.json → .mente-bak)"
+    return ("4 hooks wired with ${CLAUDE_PROJECT_DIR} "
+            f"(previous settings.json → .mente-bak){nota}")
 
 
 def main():
@@ -186,15 +208,22 @@ def main():
             print("🔴 an instance with no owner cannot say who decides. Aborted.", file=sys.stderr)
             return 2
     project = os.path.basename(REPO)
-    values = {"owner": owner, "project": project}
+    values = {"owner": owner, "project": project,
+              "date": datetime.date.today().isoformat()}
 
     print(f"\n   owner   : {owner}")
     print(f"   project : {project}")
     print(f"   engine  : {MENTE}\n")
 
     rc = 0
+    # ⚠️ WORKSPACE.md se GENERA, no se hereda (2026-08-07). Describe ESTA máquina —qué repo es
+    # cuál, qué está vedado, dónde viven los secretos— y viajaba con el motor, así que cada clon
+    # nacía con la descripción de la máquina de otro. El archivo lo declaraba desde el 05-ago
+    # ("A clone regenerates it; it is not copied") y nadie lo hacía cumplir: exactamente el
+    # 40-60% con que se cumple una regla que solo vive en un documento.
     for name, target in (("CLAUDE.md", os.path.join(REPO, "CLAUDE.md")),
-                         ("PROJECT-RULES.md", os.path.join(REPO, "PROJECT-RULES.md"))):
+                         ("PROJECT-RULES.md", os.path.join(REPO, "PROJECT-RULES.md")),
+                         ("WORKSPACE.md", os.path.join(MENTE, "docs", "WORKSPACE.md"))):
         text, err = render(name, values)
         if err:
             print(f"   🟡 {err}")

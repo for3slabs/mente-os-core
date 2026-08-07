@@ -178,7 +178,12 @@ else
       # que este guardián no ve un check recién escrito hasta que se commitea — atrapa la
       # regresión antes del PR, no antes del commit. Clonar el working tree daría un falso
       # positivo por cada archivo a medio escribir, que sería peor.
-      CLON_CAP=11
+      # 📊 11 → 7 (2026-08-07, bloque `separacion-motor-instancia`). El techo baja cuando la
+      # causa se corrige, nunca para que quepa un rojo nuevo. Lo que lo bajó: cuatro checks de
+      # familia D (casos 5-8) y `WORKSPACE.md`, que ahora se GENERA en vez de heredarse.
+      # ⭐ Este número es SIN `bin/init` — el peor caso. Tras el init el clon queda en 1, y ese
+      # 1 es `check-clear-ready registered=no`: la respuesta CORRECTA en un árbol recién nacido.
+      CLON_CAP=7
       _cf=$(cd "$_tmp/c/Mente" && timeout 900 bin/test-f0-f6 2>&1 \
             | grep -oE 'failed: [0-9]+' | grep -oE '[0-9]+' | head -1)
       if [ -z "$_cf" ]; then

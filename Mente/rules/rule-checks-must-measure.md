@@ -108,6 +108,33 @@ en `test-f0-f6`. Al encontrar uno, se busca el patrón en los demás.
 
 ---
 
+#### D-bis · La forma que NO se ve: exigir un RESULTADO que depende de la instancia
+
+Cuatro casos más el 2026-08-07 (bloque `separacion-motor-instancia`), y los cuatro sobrevivieron
+a la primera pasada porque **no nombran ningún archivo ausente**:
+
+| # | Check | Qué exigía de verdad |
+|---|---|---|
+| 5 | `additionalDirectories` | abría `settings.local.json` sin condición → `FileNotFoundError`, y el conteo llegaba VACÍO al comparador: 🔴 **no reportaba un fallo, reportaba un stack trace** |
+| 6 | `nested repo detection` | la cadena literal `Maestro/`. En un clon el silencio era CORRECTO y el check lo llamaba fallo |
+| 7 | `pre-edit block match` | una ruta dentro de `marca-personal/`: el hook enmudecía bien y el check lo leía como avería |
+| 8 | `grade-block archived` | bajo `pipefail`, el pipe tomaba el exit `2` del veredicto 🔴 MVP **aunque el `grep` acertara**. Decía medir *"¿sigue siendo calificable?"* y exigía **la nota que saca en la máquina de su autor** |
+
+⭐ **El 8 es el aviso que vale por todos.** No falta ningún archivo: `grade-block` corre, imprime
+sus 17 líneas y contiene lo que el check busca. Lo que cambia entre máquinas es **la nota**, y la
+nota entró por la puerta de atrás — el código de salida. Un check puede atarse a la instancia
+**sin mencionarla ni una vez**.
+
+> **El test se amplía:** además de *¿este archivo llega a un clon?*, hay que preguntar
+> **¿este NÚMERO sería el mismo en un árbol vacío?** Si depende de cuánto trabajo hay hecho, el
+> check está midiendo el trabajo, no el sistema.
+
+⛔ **Y la salida sigue sin ser dejar de verificar.** Cuando la instancia falta, el check se
+**SALTA y lo DICE en 🟡** — nunca cuenta como ✅. Un hueco silencioso convertido en verde es el
+falso positivo que toda esta regla existe para impedir.
+
+---
+
 ## 2 · ⭐ THE RULE
 
 > ## Before trusting a check, make it FAIL on purpose.

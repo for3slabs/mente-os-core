@@ -46,3 +46,12 @@ __pycache__/
 # 🔴 Por qué: viajando con "Brian López" dentro, `bin/init` en un clon ajeno nunca preguntaba
 # el owner — lo encontraba ya escrito. Un dato personal disfrazado de valor por defecto.
 mente.config.yml
+
+# ⚠️ WORKSPACE.md ES DE LA INSTANCIA, NO DEL MOTOR (2026-08-07).
+# Describe ESTA máquina: qué repo es cuál, qué está vedado, dónde viven los secretos. El propio
+# archivo lo declaraba desde el 05-ago —"A clone regenerates it; it is not copied"— pero viajaba
+# igual, así que cada clon heredaba la descripción de la máquina de otro y la batería la
+# reportaba en rojo: 4 repos nombrados que allí no existen.
+# 🔴 La regla estaba ESCRITA y no APLICADA, que es el 40-60% de cumplimiento de una regla que
+# solo vive en un documento. La plantilla sí viaja → `templates/WORKSPACE.md.template`.
+docs/WORKSPACE.md

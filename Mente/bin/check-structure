@@ -202,7 +202,12 @@ def main():
         if not has_remote:
             RED.append(f"NESTED REPO AT RISK · {owner}/ is its own repo with NO REMOTE.\n"
                        "   Mente does not version it and nothing else backs it up.")
-        elif dirty and owner == "Maestro":
+        # 🔴 SIN NOMBRE PROPIO (2026-08-07). Decía `owner == "Maestro"`: cualquier OTRO sub-repo
+        # con trabajo sin commitear pasaba EN SILENCIO. El aviso existe por lo que le pasó a
+        # Maestro/, pero el riesgo —trabajo que solo vive en un repo que el padre no versiona—
+        # no es de ese nombre, es de la forma. Un validador que nombra una pieza concreta deja
+        # de medir el árbol y pasa a medir la máquina donde se escribió.
+        elif dirty:
             YEL.append(f"{owner}/ (separate repo, remote OK) has {len(dirty)} uncommitted "
                        f"file(s): {', '.join(d[3:] for d in dirty[:4])}\n"
                        "   ⚠️ Paths inside it are relative to ITS OWN root, not to Mente's —\n"
