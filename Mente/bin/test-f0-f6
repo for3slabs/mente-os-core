@@ -1143,8 +1143,16 @@ rm -rf "$tmp"
 # que en cualquier clon el check salía rojo "silent" — y era verdad: no había sub-repo que
 # detectar. Estaba midiendo si la máquina es la de Brian, no si el validador funciona.
 # ⭐ Ahora se le FABRICA uno: si lo caza, la detección sirve en cualquier árbol.
+# 🔴 UN `.git` VACÍO NO ES UN REPO (2026-08-07). La primera versión creaba solo el directorio,
+# y entonces `git -C <sonda> remote` **subía al padre y heredaba SU `origin`**: la sonda parecía
+# tener remoto, así que no salía como "en riesgo" y el check moría en silencio.
+# ⚠️ Pasó desapercibido porque en el árbol donde se escribió el padre aún no tenía `origin`
+# configurado — el mismo patrón de familia D, un check que depende del estado de una máquina.
+# Se fabrica el mínimo que git reconoce como repositorio propio, sin llamar a `git init`.
 _nst="nested-probe-$$"
-mkdir -p "$M/$_nst/.git"
+mkdir -p "$M/$_nst/.git/objects" "$M/$_nst/.git/refs"
+printf 'ref: refs/heads/main\n' > "$M/$_nst/.git/HEAD"
+printf '[core]\n\trepositoryformatversion = 0\n' > "$M/$_nst/.git/config"
 sout="$(./bin/check-structure 2>/dev/null || true)"
 case "$sout" in
   *"$_nst"*) ok "check-structure detecta un sub-repo anidado sin remoto (fabricado)" ;;
