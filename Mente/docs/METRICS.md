@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **198** |
+| `battery.checks` | **205** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -69,8 +69,8 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 | Metric | Value |
 |---|---|
 | `sessions.registered` | **12** |
-| `sessions.on_disk` | 17 |
-| `sessions.heavy_unregistered` | **0** |
+| `sessions.on_disk` | 18 |
+| `sessions.heavy_unregistered` | **1** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
 actually costs something. The 21-jul incident came from one of them.
@@ -79,11 +79,11 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 19 |
+| `system.validators` | 20 |
 | `system.hook_files` | 7 |
 | `system.hooks_registered` | **7** |
-| `system.blocks_active` | 2 |
-| `system.blocks_archived` | 4 |
+| `system.blocks_active` | 1 |
+| `system.blocks_archived` | 5 |
 
 ⚠️ `hook_files` and `hooks_registered` differ on purpose: `hooks/pre-commit.sh` is invoked by git, not
 by the harness, so it is a file without a settings entry.
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 292 | 202 |
+| `permissions.local` (`settings.local.json`) | 303 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

@@ -132,6 +132,68 @@ mezclando 30 secciones cerradas con 46 abiertas. Se cierra cuando **los 87 ítem
 a este formato** y `PENDIENTES.md` quede como histórico de solo lectura.
 📊 Estado: contrato ✅ · regla ✅ · validador ✅ · bloques v2 ✅ · **bloques v1 ⬜ en curso**.
 
+### V2-8 · 🔴 Un clon ajeno hereda el nombre de Brian en sus reglas de proyecto
+
+- **Prioridad:** 🔴 urgente
+- **Estado:** activo
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
+- **Archivos de referencia:** `bin/init` · `templates/` · `PROJECT-RULES.md` · `bin/test-f0-f6`
+- **Plan:** —
+- **Depende de:** —
+
+**Descripción.** 🔬 **Medido en un clon limpio con un dueño ajeno** (`owner: Auditor Externo`):
+`PROJECT-RULES.md` llega con **11 menciones a "Brian" y 0 al dueño real**. `bin/init` sin `--force`
+detecta que el archivo `DIFFERS` y **se niega a regenerarlo**, que es la conducta correcta para no
+pisar ediciones — pero **no dice que el archivo lleva la identidad de otra persona**, así que el
+dueño nuevo no sabe que debe ejecutar `--force`.
+
+📊 Recorrido medido: clon en frío **6 fallos** → `init` **2** → `init --force` **1** (y ese 1,
+`registered=no`, es la respuesta correcta). Con `--force`: Brian **11 → 0**, dueño real **0 → 11**.
+
+⭐ **El mecanismo YA funciona; lo que falta es que el sistema lo diga.** Es la misma familia D de
+`rules/rule-checks-must-measure.md` que cerró `separacion-motor-instancia`: un archivo del motor
+arrastrando la instancia de su autor, y un check (`migrated rule: <owner>`) que sale 🔴 sin explicar
+que la salida es una bandera.
+
+### V2-9 · `piezas.tsv` declara 23 piezas y ningún validador
+
+- **Prioridad:** 🟠 medio
+- **Estado:** activo
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
+- **Archivos de referencia:** `piezas.tsv` · `bin/check-structure`
+- **Plan:** —
+- **Depende de:** —
+
+**Descripción.** 🔬 **Sabotaje medido:** borré `bin/test-f0-f6` —la batería entera— y
+`bin/check-structure` **no dijo absolutamente nada**. La causa no es el validador: `piezas.tsv`
+declara 23 piezas (reglas, docs, arquitectura, memoria) y **ninguno de los 19 validadores de `bin/`**.
+Sí detecta lo que sí declara: borrar `docs/STATES.md` produce el aviso correcto.
+
+⚠️ **Consecuencia:** `piezas.tsv` es el archivo que existe para decir *"dónde vive cada pieza clave"*,
+y las piezas que **hacen cumplir el sistema entero** no están en él. Si un validador desaparece —por
+un merge, un rebase o un borrado— nadie avisa, y el sistema pierde una puerta **en silencio**.
+
+### V2-10 · 2 reglas escritas sin ningún script que las verifique
+
+- **Prioridad:** 🟠 medio
+- **Estado:** activo
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
+- **Archivos de referencia:** `rules/ESTANDAR_Metodo_Fases_F.md` · `rules/case-dangerous-default.md` · `bin/test-f0-f6`
+- **Plan:** —
+- **Depende de:** —
+
+**Descripción.** 📊 **Medido: 21 de 23 reglas tienen script; 2 no.** El registro del 05-ago decía
+*"las 20 reglas ya tienen script"* y era cierto entonces — **se escribieron 3 reglas nuevas después
+y el cableado no las siguió**.
+
+⭐ **Por qué importa, con la ley del propio sistema:** *una regla en código se cumple 100%; una que
+solo vive en un documento, 40-60%*. `ESTANDAR_Metodo_Fases_F` gobierna **cómo se hace todo trabajo
+grande** y hoy se cumple por memoria. ⚠️ Es exactamente el defecto que destapó que
+`rule-shipping-flow` se cumplió **0 de 15 veces** siendo solo documento.
+
 ---
 
 ## BLOQUE · PRODUCTO-FOR3S-OS · el agente y su deuda
