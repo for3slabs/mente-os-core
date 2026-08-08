@@ -26,6 +26,8 @@ import glob
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "bin"))
+import mente_config as cfg                                            # noqa: E402
 os.chdir(ROOT)
 
 RED, YEL, OK = [], [], []
@@ -66,11 +68,11 @@ LEGACY = re.compile(r"^(Cerebro|Maestro)/")   # Doc/ removed in M5   # Cuerpo/ r
 #
 # ⛔ No es una puerta trasera: exige nombrar QUÉ se exime y POR QUÉ, queda en el diff, y no
 # cubre `red()` — un ERROR nunca se exime, solo los avisos de forma.
+# ⭐ La lectura vive en `mente_config.exempt`, no aquí (2026-08-08). Tenía una copia propia y
+# `check-health` no tenía ninguna: el mismo header producía silencio en un validador y un aviso
+# en el otro. Una regla interpretada dos veces son dos reglas.
 def exenciones(text):
-    m = re.search(r"\*\*Exempt:\*\*\s*([^\n·]+)", text)
-    if not m:
-        return set()
-    return {x.strip().lower() for x in m.group(1).split(",") if x.strip()}
+    return cfg.exempt(text)
 
 
 def is_exempt(path, text):

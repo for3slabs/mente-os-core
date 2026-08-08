@@ -50,6 +50,32 @@ check de la batería verifica que ese candado siga puesto. La excepción conscie
 
 ---
 
+## 0-bis · ⭐ UN PR POR BLOQUE, NO POR ERROR — máximo 4 pendientes
+
+> **Brian, 2026-08-08:** *"cuando estás solucionando un bloque no se hace un PR por cada error, es
+> un PR por todo el bloque, de tal manera no tenemos tantos PR. Cada 4 errores de un bloque es un PR."*
+
+| Cuántos pendientes de un mismo bloque | Cuántos PRs |
+|---|---|
+| 1 a 4 | **1 PR** |
+| 5 a 8 | 2 PRs |
+| 9+ | uno por cada 4 |
+
+⛔ **Un PR por error es el anti-patrón.** El 2026-08-08 se abrieron **5 PRs en una sola sesión**
+(#20-#24), cada uno con su rama, su verificación y su merge. **El coste no es el PR: es la cadena
+que arrastra** — cada merge por squash reescribe shas, y este repo ya perdió trabajo **4 veces** por
+esa vía (§2 anti-patrón #8). Menos PRs = menos superficie donde el squash puede morder.
+
+⭐ **Por qué el tope es 4 y no "todo el bloque":** un PR que toca 7 pendientes es **irrevisable** —
+el diff deja de leerse y se aprueba por confianza, que es exactamente lo que un PR existe para
+evitar. Cuatro es el punto donde el diff todavía se lee entero.
+
+**Se agrupa por BLOQUE, no por tema:** los pendientes de un bloque comparten análisis y plan global,
+así que su diff se revisa con el mismo contexto cargado. Mezclar bloques obliga a cambiar de
+contexto dentro del mismo diff.
+
+---
+
 ## 1 · THE EXECUTION LOOP — every ticket, no exceptions
 
 ```

@@ -95,3 +95,37 @@ outside:
 secrets:
   # Never in git. Referenced, never pasted (rules/rule-config-hygiene.md §1.1).
   dir: "secrets"
+
+# ── LA FRONTERA MOTOR / INSTANCIA ───────────────────────────────────────────
+# ⭐ Brian, 2026-07-31: el MOTOR es universal y se clona tal cual; la INSTANCIA es tuya y se
+# declara una vez. Hasta el 2026-08-08 esa línea vivía SOLO en el docstring de
+# `bin/mente_config.py`: una frontera que únicamente existe en un comentario de código es una
+# frontera que ningún validador puede consultar y que ningún dueño nuevo puede ver.
+#
+# ⚠️ Tres claves planas y no un bloque anidado: el parser de este archivo maneja DOS niveles a
+# propósito (su docstring: "un parser general escrito a mano es un generador de bugs"), y un
+# tercer nivel aplanaba los grupos en una sola lista, perdiendo justo lo que se quiere declarar.
+#
+# ⛔ El motor no se edita en una instancia. La instancia no viaja al publicar el motor.
+
+# universal · se clona tal cual · NO se edita aquí
+frontier_engine:
+  - "bin"
+  - "hooks"
+  - "rules"
+  - "principles"
+  - "templates"
+
+# tuyo · nace vacío o se genera · NO viaja al publicar el motor
+frontier_instance:
+  - "Cerebro"
+  - "memory"
+  - "secrets"
+  - "work"
+  - "vision"
+  - "blocks"
+  - "bridges"
+
+# ⚠️ contiene ambos — contratos del motor y bitácoras de la instancia
+frontier_mixed:
+  - "docs"

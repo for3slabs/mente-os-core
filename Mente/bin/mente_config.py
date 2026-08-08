@@ -195,3 +195,42 @@ def thresholds():
     return (_get("session.size_warn_mb", 15),
             _get("session.size_red_mb", 50),
             _get("session.heavy_mb", 2))
+
+
+def frontier():
+    """The engine/instance line, as declared — not as guessed.
+
+    Returns (engine, instance, mixed): three lists of folder names relative to Mente/.
+
+    ⭐ Brian, 2026-07-31: *the ENGINE is universal and cloned as-is; the INSTANCE is declared
+    once*. Until 2026-08-08 that line lived ONLY in this file's docstring — a boundary that
+    exists just in a code comment is one no validator can consult and no new owner can see.
+    Now it is data.
+
+    ⛔ It has no default on purpose. An undeclared boundary must fail loudly: guessing that
+    `bin/` is engine would be inventing criterion (ADR-003), and a frontier that auto-completes
+    in silence stops being a frontier.
+    """
+    return (_get("frontier_engine", []) or [],
+            _get("frontier_instance", []) or [],
+            _get("frontier_mixed", []) or [])
+
+
+def exempt(text):
+    """What a document declares itself exempt from, as a set of lowercase names.
+
+    Reads the header form:  **Exempt:** size, split-signal · <the reason, mandatory>
+
+    ⭐ It lives HERE, not in a validator, because two validators reading the same header with
+    different criteria is worse than neither reading it. Measured 2026-08-08:
+    `docs/Arquitectura_Mente_OS_v2_Bloques.md` declared the exemption in its header, `check-blocks`
+    honoured it and stayed quiet, and `check-health` KEPT WARNING about the same file — the system
+    contradicting itself, which is the fastest way to teach a reader to ignore warnings.
+
+    ⛔ Not a back door: it forces naming WHAT is exempt and WHY, it shows up in the diff, and it
+    never covers an ERROR — only warnings about form. A red is never exempt.
+    """
+    m = re.search(r"\*\*Exempt:\*\*\s*([^\n·]+)", text or "")
+    if not m:
+        return set()
+    return {x.strip().lower() for x in m.group(1).split(",") if x.strip()}

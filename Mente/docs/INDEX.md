@@ -8,7 +8,7 @@
 **Generated:** 2026-08-08 · **Type:** generated
 
 
-**312 documents** · **6 blocks** · 28 directories
+**320 documents** · **6 blocks** · 29 directories
 
 
 | Directory | Docs |
@@ -33,6 +33,7 @@
 | `docs/` | 19 |
 | `docs/analysis/` | 28 |
 | `docs/architecture/` | 6 |
+| `docs/plans/` | 8 |
 | `memory/` | 5 |
 | `memory/archive/` | 38 |
 | `principles/` | 7 |
@@ -189,7 +190,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 502 |
+| `INDEX.md` | generated | — |  | 516 |
 | `METRICS.md` | generated | current | 2026-08-08 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 31 |
@@ -251,6 +252,19 @@
 | `lifecycle-and-learning.md` | architecture | current | 2026-07-30 | 434 |
 | `validators-and-hygiene.md` | architecture | current | 2026-07-30 | 781 |
 
+## `docs/plans/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `PLAN-GLOBAL-motor.md` | plan | current | 2026-08-08 | 122 |
+| `PLAN-V2-1-arquitectura.md` | plan | current | 2026-08-08 | 101 |
+| `PLAN-V2-2-renombrado.md` | plan | current | 2026-08-08 | 84 |
+| `PLAN-V2-3-encarpetado.md` | plan | current | 2026-08-08 | 92 |
+| `PLAN-V2-4-maestro.md` | plan | current | 2026-08-08 | 78 |
+| `PLAN-V2-5-config.md` | plan | current | 2026-08-08 | 81 |
+| `PLAN-V2-6-f0-abierto.md` | plan | current | 2026-08-08 | 82 |
+| `PLAN-V2-7-rotacion.md` | plan | current | 2026-08-08 | 86 |
+
 ## `memory/`
 
 | Document | Type | Status | Updated | Lines |
@@ -259,7 +273,7 @@
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
 | `RETOMAR.md` | entry-point | current | 2026-08-07 | 248 |
-| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 509 |
+| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1544 |
 
 ## `memory/archive/`
 
@@ -333,7 +347,7 @@
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
 | `ESTANDAR_Metodo_Fases_F.md` | rule | current | 2026-07-30 | 140 |
-| `NAMING_CONVENTION.md` | contract | current | 2026-07-29 | 265 |
+| `NAMING_CONVENTION.md` | contract | current | 2026-07-29 | 285 |
 | `block-lifecycle.md` | rule | current | 2026-07-29 | 170 |
 | `case-dangerous-default.md` | case | current | 2026-07-29 | 128 |
 | `contract-adr.md` | contract | current | 2026-07-29 | 141 |
@@ -354,7 +368,7 @@
 | `rule-pending-rotation.md` | rule | current | 2026-08-08 | 103 |
 | `rule-post-merge-cleanup.md` | rule | current | 2026-08-08 | 86 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 250 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 276 |
 
 ## `rules/decisions/`
 

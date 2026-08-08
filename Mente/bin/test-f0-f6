@@ -2096,6 +2096,37 @@ eq "toda regla llega a alguien (validador · hook · base-rules · §D)" "0" "$_
 # es tan defecto como el falso positivo que corrige.
 # ⚠️ Se prueba el BINARIO, no una copia del código en memoria: importar `grade-block` con
 # `exec` reventaba en `__file__` y devolvía vacío — un check que "pasa" midiendo nada.
+# ── 15 · LA FRONTERA MOTOR/INSTANCIA ES DATO, NO COMENTARIO (2026-08-08) ────
+# 🔴 Medido al escribir PLAN-V2-3: la definición de la frontera vivía SOLO en el docstring de
+# `bin/mente_config.py`. Una frontera que solo existe en un comentario no la puede consultar
+# ningún validador ni verla ningún dueño nuevo — y era la línea que gobierna qué se publica.
+# ⭐ Ahora se declara en `mente.config.yml` y este check exige que TODA carpeta de la raíz esté
+# clasificada: sin él, la carpeta 15 nace sin lado y la frontera se erosiona sola.
+_sinlado=$(cd "$M" && python3 - <<'PY'
+import os, sys
+sys.path.insert(0, "bin")
+import mente_config as cfg
+eng, inst, mix = cfg.frontier()
+declaradas = set(eng) | set(inst) | set(mix)
+# `Maestro` es otro repo con su propio .git: no es motor ni instancia de ESTE árbol.
+ignorar = {"Maestro", "__pycache__", ".git", ".claude"}
+reales = {d for d in os.listdir(".") if os.path.isdir(d) and not d.startswith(".")} - ignorar
+faltan = sorted(reales - declaradas)
+for f in faltan:
+    print(f"     ⤷ {f}/ no está declarada ni motor ni instancia", file=sys.stderr)
+print(len(faltan))
+PY
+)
+eq "toda carpeta de la raíz declara de qué lado de la frontera está" "0" "${_sinlado:-x}"
+
+# Y la frontera no puede quedar vacía: sin declaración, el motor no sabe qué publica.
+_fr=$(cd "$M" && python3 -c "
+import sys; sys.path.insert(0,'bin')
+import mente_config as cfg
+e,i,m = cfg.frontier(); print(len(e)+len(i)+len(m))" 2>/dev/null)
+[ "${_fr:-0}" -ge 5 ] && ok "la frontera motor/instancia está declarada ($_fr carpetas)" \
+  || bad "frontera" "declarada en mente.config.yml" "vacía o ilegible"
+
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \
   || bad "exención de tests" "grade-block reconoce .test/.spec" "no los reconoce"

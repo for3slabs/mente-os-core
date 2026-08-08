@@ -382,7 +382,12 @@ def check_sizes():
         # ⚠️ Silencioso y caro: se recorta un documento que ya cumplía, persiguiendo una línea
         # que no existe. Medido con `memory/RETOMAR.md` — `wc -l` decía 250 y esto decía 251.
         n = len(text.splitlines())
-        if t in LIMITS and n > LIMITS[t]:
+        # ⭐ Una exención declarada en la cabecera se RESPETA — y la lee `mente_config`, no este
+        # archivo: dos validadores interpretando el mismo header por su cuenta es cómo se llega a
+        # que uno calle y el otro grite sobre el mismo documento (medido 2026-08-08 con la
+        # arquitectura: `check-blocks` la honraba y esto seguía avisando).
+        # ⛔ La exención cubre avisos de FORMA, nunca un error.
+        if t in LIMITS and n > LIMITS[t] and "size" not in cfg.exempt(text):
             yel(f"{f}: {n} lines — over the {t} limit of {LIMITS[t]}")
 
     # ⛔ MEMORY.md IS NOT AUDITED HERE — removed 2026-08-05, by Brian.

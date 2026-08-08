@@ -115,6 +115,26 @@ blocks/
 > **The rule behind the exception:** UPPERCASE means *"this is a door, read it first"*.
 > Everything else is lowercase. If everything shouts, nothing does.
 
+#### 4.3-bis · ⭐ A NAME DICTATED BY A CONTRACT IS NOT RENAMED
+
+**Decided 2026-08-08** (Brian delegated the call). Found while writing `PLAN-V2-2-renombrado`: the
+plans created that day were **simultaneously correct and incorrect** — `rules/contract-pending.md`
+§3 dictates `PLAN-<name>.md` in uppercase, and §4.1 of this file would ask for lowercase.
+⭐ **Two rules of the system contradicting each other, and the contradiction was born writing the
+plan for the very rule that exposes it.**
+
+| Who wins | Why |
+|---|---|
+| **The contract** | it names a file so a **validator can find it**. Renaming it breaks a mechanism |
+| ~~This convention~~ | it says how a name **reads**. Losing the convention costs legibility, not function |
+
+**So:** `PLAN-GLOBAL-*.md` · `PLAN-<pendiente>.md` · `BLOCK.md` · `SUMMARY.md` · `connections.md`
+keep the shape their contract dictates, and **this file does not claim them**.
+
+⛔ **Not a loophole:** it only covers a name a contract *dictates in writing*. A file that is merely
+important stays lowercase — `rule-inheritance.md` says the stricter rule wins, and here neither is
+stricter: they are two different shapes, so the one attached to a **mechanism** governs.
+
 ### 4.4 · What NEVER goes in a file name
 
 | ⛔ Never | Why |
