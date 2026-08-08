@@ -2086,6 +2086,52 @@ for _r in "$M"/rules/rule-*.md "$M"/rules/ESTANDAR_*.md "$M"/rules/case-*.md "$M
 done
 eq "toda regla llega a alguien (validador · hook · base-rules · §D)" "0" "$_sin"
 
+# ── 14 · UN TEST NO ES CÓDIGO MUERTO (2026-08-08) ──────────────────────────
+# 🔴 Medido en blk-demo: los 4 tests de caminos críticos escritos días antes aparecían como
+# `dead files` y hundían el bloque de 🟢 PRODUCT a 🔴 MVP — es decir, el veredicto EMPEORABA
+# por haber escrito tests. Un corredor los descubre por nombre, así que "0 importadores" es el
+# estado NORMAL de un test sano.
+# ⭐ Se prueba en AMBAS direcciones sobre un árbol de usar y tirar: el test se exime, y un
+# huérfano de verdad bajo la misma carpeta SIGUE contando. Una exención que perdona de más
+# es tan defecto como el falso positivo que corrige.
+# ⚠️ Se prueba el BINARIO, no una copia del código en memoria: importar `grade-block` con
+# `exec` reventaba en `__file__` y devolvía vacío — un check que "pasa" midiendo nada.
+_ex=$(grep -c 'test|spec' "$M/bin/grade-block")
+[ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \
+  || bad "exención de tests" "grade-block reconoce .test/.spec" "no los reconoce"
+
+# Y se EJECUTA de verdad sobre un bloque de usar y tirar, en las dos direcciones: el test se
+# exime y el huérfano de al lado sigue contando. Una exención que perdona de más es tan defecto
+# como el falso positivo que corrige.
+_tmp=$(mktemp -d)
+mkdir -p "$_tmp/repo/app/pruebas" "$_tmp/repo/Mente/bin" "$_tmp/repo/Mente/blocks/active/tmpblk"
+printf 'export const x = 1;\n' > "$_tmp/repo/app/pruebas/algo.test.ts"    # NO debe contar
+printf 'export const y = 2;\n' > "$_tmp/repo/app/pruebas/ayudante.ts"     # SÍ debe contar
+cat > "$_tmp/repo/Mente/blocks/active/tmpblk/BLOCK.md" <<'BLK'
+# BLOCK · tmpblk
+id: blk-tmpblk-2026-08
+type: code
+intent: árbol de usar y tirar para probar la exención de tests
+status: active · lane: task · owner: brian
+created: 2026-08-08 · updated: 2026-08-08
+## ✅ IN
+- app/pruebas/   ⚠️ dos segmentos: `scope_dirs` descarta una ruta sin barra interna
+## ⛔ OUT
+- todo lo demás
+BLK
+cp "$M/bin/grade-block" "$_tmp/repo/Mente/bin/"
+# El conteo es el dato: 1 = solo el huérfano · 2 = el test también cuenta (el defecto) ·
+# 0 = la exención perdona de más y el huérfano se escapa.
+_n=$(cd "$_tmp/repo/Mente" && ./bin/grade-block tmpblk 2>&1 \
+     | sed -n 's/.*files nobody imports (dead code) *\.* *\([0-9]*\).*/\1/p')
+case "${_n:-x}" in
+  1) ok "medido: el test se exime y el huérfano de al lado SÍ cuenta" ;;
+  2) bad "exención de tests" "1 muerto (solo el huérfano)" "2 — el test sigue contando" ;;
+  0) bad "exención de tests" "1 muerto (solo el huérfano)" "0 — la exención perdona de más" ;;
+  *) bad "exención de tests" "1 muerto (solo el huérfano)" "no se pudo medir" ;;
+esac
+rm -rf "$_tmp"
+
 # El archivo del mes VIVO debe existir: sin él, la rotación no ocurrió y los pendientes
 # están donde nadie los lee. El nombre se deriva de la fecha, nunca se escribe a mano.
 _mes=$(LC_ALL=C date +%m); _anio=$(LC_ALL=C date +%Y)

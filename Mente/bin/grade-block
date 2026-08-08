@@ -127,6 +127,16 @@ def dead_code(dirs, root):
             # entry points are imported by the framework, not by code
             if re.match(r"(route|page|layout|index|middleware|main|__init__)$", stem):
                 continue
+            # ⭐ A TEST IS RUN, NEVER IMPORTED — and counting it as dead code punishes exactly
+            # what the system demands. Measured 2026-08-08 on blk-demo: the 4 critical-path tests
+            # written days earlier (apagar · hablar · autorizar · entrar) showed up as `dead
+            # files` and dropped the block from 🟢 PRODUCT to 🔴 MVP — the verdict got WORSE
+            # because the block had gained tests. The runner (vitest/pytest) collects them by
+            # filename, so "0 importers" is the NORMAL state of a healthy test, not evidence.
+            # ⛔ Not a blanket exemption: only names a runner actually collects. A helper that
+            # merely lives under tests/ and nobody imports IS dead, and still counts.
+            if re.search(r"\.(test|spec)$", stem) or re.match(r"(test_|conftest$)", stem):
+                continue
             if not importers(stem, root):
                 dead_files.append(rel)
                 continue

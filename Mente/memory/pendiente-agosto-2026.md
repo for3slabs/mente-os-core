@@ -211,6 +211,34 @@ inventar criterio (ADR-003). Se exige que la regla **LLEGUE a alguien** — un v
 ⭐ Y así el conteo deja de envejecer: *"las 20 reglas ya tienen script"* era cierto el 05-ago y
 falso tres reglas después. **Un número es correcto una vez; un check lo es siempre.**
 
+### V2-11 · 🔴 `grade-block` contaba los TESTS como código muerto
+
+- **Prioridad:** 🔴 urgente
+- **Estado:** cerrado
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
+- **Arrastrado desde:** — (nació en el diagnóstico del 08-08)
+- **Archivos de referencia:** `bin/grade-block` (`dead_code`) · `bin/test-f0-f6`
+- **Plan:** —
+- **Depende de:** —
+
+**Descripción.** 🔬 **Medido en `blk-demo`:** los **4 tests de caminos críticos** escritos días antes
+(`apagar` · `hablar` · `autorizar` · `entrar`) aparecían como `dead files`, y el bloque caía de
+🟢 PRODUCT a **🔴 MVP**. ⭐ **El veredicto empeoraba POR HABER ESCRITO TESTS** — apuntaba justo al
+revés de lo que el sistema exige.
+
+**La causa:** `dead_code` mide "0 importadores = muerto". Un corredor (vitest/pytest) recolecta los
+tests **por nombre de archivo**, así que *nadie los importa nunca*: ese es su estado **sano**.
+
+✅ **CERRADO el mismo día.** ⛔ **La exención NO es por carpeta** —eso perdonaría cualquier basura
+bajo `tests/`— sino **por nombre que un corredor recolecta**: `.test` · `.spec` · `test_` ·
+`conftest`. 🔬 **Probado en las dos direcciones** sobre un bloque de usar y tirar: el test se exime y
+un huérfano en la misma carpeta **sigue contando**. 🔬 **Y visto en rojo por sabotaje**: sin la
+exención, los 2 checks nuevos caen.
+📊 `demo`: **4 → 0** archivos muertos · veredicto **🔴 MVP → 🟡** · batería **208 → 210**.
+
+⭐ **El patrón, por tercera vez esta semana:** el archivo estaba bien y **el medidor leía mal**
+(como `grade-block` con el runbook y `generate-index` con los `✅`). **Se corrige quien LEE.**
+
 ---
 
 ## BLOQUE · PRODUCTO-FOR3S-OS · el agente y su deuda

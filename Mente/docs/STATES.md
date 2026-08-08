@@ -5,7 +5,7 @@
 
 # STATES — every block and its measured health
 
-**Generated:** 2026-08-07 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
+**Generated:** 2026-08-08 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
 
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
