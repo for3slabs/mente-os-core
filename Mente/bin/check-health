@@ -351,8 +351,13 @@ def _check_one(p, name):
     # line — so this check never spoke while 25 broad wildcards, 24 dead scratchpad paths and
     # `rm -rf *` sat in the list. A limit missed by one unit is a limit set by accident.
     # 120 is above the ~30 the mechanism rule would yield, so it flags drift without nagging.
+    # ⭐ EL AVISO NOMBRA SU ARCHIVO (2026-08-08). Decía solo "317 allow entries" y el archivo
+    # COMPARTIDO tiene 45: los otros ~272 viven en settings.local.json, que no viaja. Quien leía
+    # 317 y abría el compartido no entendía nada, y la asimetría es DELIBERADA
+    # (rules/rule-config-hygiene.md §1.6: `deny` vive en los dos, `allow` no).
+    # ⛔ Un número sin su archivo no es una medida: es dos medidas sumadas que no se comparan.
     if len(allow) > 120:
-        yel(f"{len(allow)} allow entries — granularity should be the mechanism, "
+        yel(f"{name}: {len(allow)} allow entries — granularity should be the mechanism, "
             "not the invocation (rules/rule-config-hygiene.md §1.3)")
 
 

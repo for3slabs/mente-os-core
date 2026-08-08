@@ -20,6 +20,7 @@ import re
 import sys
 import glob
 import json
+import time
 import subprocess
 
 
@@ -207,15 +208,24 @@ def main():
         # Maestro/, pero el riesgo —trabajo que solo vive en un repo que el padre no versiona—
         # no es de ese nombre, es de la forma. Un validador que nombra una pieza concreta deja
         # de medir el árbol y pasa a medir la máquina donde se escribió.
+        # ⭐ ESCALA CON EL TIEMPO (2026-08-08). Antes era 🟡 fijo, y un amarillo permanente deja
+        # de leerse: Maestro/ llevaba 7 archivos sin commitear **desde el 07-ago** y el aviso
+        # estaba ahí cada día sin que nadie actuara. Un aviso que nunca cambia es decoración.
+        # 🔴 A los 3 días pasa a ERROR: trabajo que solo vive en un disco, en un repo que el
+        # padre NO versiona, y encima lo lee un agente en producción.
         elif dirty:
-            YEL.append(f"{owner}/ (separate repo, remote OK) has {len(dirty)} uncommitted "
-                       f"file(s): {', '.join(d[3:] for d in dirty[:4])}\n"
-                       "   ⚠️ Paths inside it are relative to ITS OWN root, not to Mente's —\n"
-                       "   a bulk rewrite from Mente broke 8 links here on 2026-07-30.")
-        elif dirty:
-            YEL.append(f"{owner}/ (separate repo, has a remote) has {len(dirty)} uncommitted "
-                       f"file(s):\n   {', '.join(d[3:] for d in dirty[:4])}\n"
-                       "   They live only on this disk until committed and pushed.")
+            antig = 0
+            for d in dirty:
+                f = os.path.join(owner, d[3:].strip().strip('"'))
+                if os.path.exists(f):
+                    antig = max(antig, (time.time() - os.path.getmtime(f)) / 86400)
+            det = (f"{owner}/ (separate repo, remote OK) has {len(dirty)} uncommitted "
+                   f"file(s): {', '.join(d[3:] for d in dirty[:4])}\n"
+                   f"   el más antiguo lleva {antig:.0f} día(s) sin commitear.\n"
+                   "   ⚠️ Paths inside it are relative to ITS OWN root, not to Mente's —\n"
+                   "   a bulk rewrite from Mente broke 8 links here on 2026-07-30.")
+            # ⛔ El umbral NO decide si el trabajo es bueno: decide cuándo dejar de susurrarlo.
+            (RED if antig >= 3 else YEL).append(det)
         elif unpushed and unpushed != "0":
             YEL.append(f"{owner}/ has {unpushed} commit(s) not pushed to its remote")
 

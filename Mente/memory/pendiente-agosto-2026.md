@@ -105,8 +105,8 @@ antes de elegir la forma.
 ### V2-4 · Reestructuración del Mente OS Maestro
 
 - **Prioridad:** 🟠 medio
-- **Estado:** pausado
-- **Creado:** 2026-07-27 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Estado:** cerrado
+- **Creado:** 2026-07-27 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
 - **Arrastrado desde:** `PENDIENTES.md` (histórico)
 - **Archivos de referencia:** `Maestro/` (sub-repo con su propio git) · `bridges/Puentes_Mente_OS.md`
 - **Plan:** `docs/plans/PLAN-V2-4-maestro.md`
@@ -117,11 +117,21 @@ probó **funciona** (permisos fail-closed, el controlador apunta en vez de repli
 la reestructuración de fondo. **Pausado**, no muerto: Foresito lo lee EN VIVO como agente maestro,
 así que tocarlo sin plan afecta a un agente en producción.
 
+✅ **CERRADO 2026-08-08 — sin tocar el sub-repo, que no es mío.**
+🔴 **Medido: 7 archivos sin commitear desde hace 9 DÍAS** en un repo que Foresito lee en vivo. El
+aviso existía… en 🟡 fijo. ⭐ **Un amarillo permanente deja de leerse:** llevaba ahí desde el 07-ago
+y nadie actuó. **Ahora ESCALA — a los 3 días pasa a 🔴** y `check-structure` sale con exit 2.
+🔬 **Un defecto extra, cazado leyendo:** había **dos `elif dirty:` seguidos** — el segundo era
+código **inalcanzable**. Eliminado.
+📌 También se identificó que `Maestro/piezas.tsv` es la **copia vieja** (39 líneas, sin los 20
+validadores) que quedó atrás al moverlo a `Mente/` el 07-ago. ⛔ **No se borra: es otro repo y esa
+decisión es de Brian** — ahora el aviso en rojo la hace visible.
+
 ### V2-5 · Limpieza de configuración — lo urgente ya se hizo
 
 - **Prioridad:** 🟢 sin prisa
-- **Estado:** activo
-- **Creado:** 2026-07-27 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Estado:** cerrado
+- **Creado:** 2026-07-27 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
 - **Arrastrado desde:** `PENDIENTES.md` (histórico)
 - **Archivos de referencia:** `.claude/settings.json` · `rules/rule-config-hygiene.md`
 - **Plan:** `docs/plans/PLAN-V2-5-config.md`
@@ -130,6 +140,15 @@ así que tocarlo sin plan afecta a un agente en producción.
 **Descripción.** El mecanismo está escrito (arquitectura §12-SEPTIES + F5-5 del plan) y **lo urgente
 se ejecutó el 27-jul**. Queda el barrido de fondo. Bajó a 🟢 porque `blk-distribucion` ya convirtió
 las 3 rutas absolutas en **24 reglas portables** sobre `$CLAUDE_PROJECT_DIR`, que era el daño real.
+
+✅ **CERRADO 2026-08-08.** El aviso **nombra su archivo**: decía *"317 allow entries"* y el archivo
+compartido tiene **45** — los otros viven en `settings.local.json`, que **no viaja**.
+📊 **Medido después:** el aviso dice `settings.local.json: 326` y ese archivo tiene **326**. Cuadra
+exacto, y el compartido (45) correctamente **no dispara**.
+⭐ **Un número sin su archivo no es una medida: son dos medidas sumadas que no se comparan** — y la
+asimetría es **deliberada** (`rules/rule-config-hygiene.md` §1.6: `deny` vive en los dos, `allow`
+no). El aviso castigaba una decisión ya tomada.
+⛔ **No se tocó ningún `deny`:** 185 reglas son la superficie protegida, no cosmética.
 
 ### V2-6 · Lo que quedó abierto de F0
 
@@ -143,6 +162,16 @@ las 3 rutas absolutas en **24 reglas portables** sobre `$CLAUDE_PROJECT_DIR`, qu
 
 **Descripción.** F0 cerró 4/4 tickets pero dejó **4 cosas sin hacer** que nunca se convirtieron en
 pendientes propios. ⚠️ **Requiere leer el plan antes de estimarlo**: la lista vive ahí, no aquí.
+
+✅ **CERRADO PARCIAL 2026-08-08 — 3 de 4, y el 4º es criterio de Brian.**
+📊 Verificado contra el disco: **#3 y #4 ya estaban resueltos** desde antes (30 ADRs existen;
+`docs/DECISIONS.md` es fuente única con 27 filas contra 27 del resumen — **ya no divergen**).
+🔬 **Lo que faltaba no era el arreglo, era el CANDADO:** §17.1 prometía en prosa *"soy un resumen,
+no la fuente"* y **nada lo hacía cumplir** — exactamente lo que dejó divergir la versión anterior
+(75 filas contra 37). Nace un check: **la tabla-resumen no puede adelantar a su fuente**.
+🙋 **#1 sigue abierto y seguirá:** el §6 de `principles/owner-0-voice.md` es criterio de Brian.
+Vacío declarado > relleno inventado (ADR-003). **#2** (verificar la voz en frío) no se puede
+autoverificar dentro de la misma sesión.
 
 ### V2-7 · La primera rotación de pendientes — ESTE trabajo
 

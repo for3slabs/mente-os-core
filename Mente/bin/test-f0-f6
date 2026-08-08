@@ -2127,6 +2127,37 @@ e,i,m = cfg.frontier(); print(len(e)+len(i)+len(m))" 2>/dev/null)
 [ "${_fr:-0}" -ge 5 ] && ok "la frontera motor/instancia está declarada ($_fr carpetas)" \
   || bad "frontera" "declarada en mente.config.yml" "vacía o ilegible"
 
+# ── 16 · LOS PR SE AGRUPAN POR BLOQUE, Y EL ÚLTIMO ES EL CIERRE (2026-08-08) ──
+# 🔴 Medido: el 08-ago se abrieron 5 PRs en una sola sesión (#20-#24). El coste no es el PR, es
+# la cadena: cada squash reescribe shas y este repo ya perdió trabajo 4 veces por esa vía.
+# ⭐ Y su otra mitad, que Brian añadió después: el ÚLTIMO PR de un bloque NO espera a llenar 4 —
+# cierra con los que queden y APUNTA a los PRs anteriores. Sin eso, un bloque terminado se queda
+# meses en active/ (pasó con separacion-motor-instancia: 5/5 hecho, semanas sin cerrar).
+_pb=0
+[ -f "$M/rules/rule-pr-batching.md" ] || _pb=$((_pb+1))
+grep -q "CIERRE" "$M/rules/rule-pr-batching.md" 2>/dev/null || _pb=$((_pb+1))
+grep -qi "apunt" "$M/rules/rule-pr-batching.md" 2>/dev/null || _pb=$((_pb+1))
+# La mitad de la que se partió debe apuntarla: una regla partida que deja huérfana a la otra
+# cambia un problema por otro (doc-structure §2.1).
+grep -q "rule-pr-batching" "$M/rules/rule-shipping-flow.md" 2>/dev/null || _pb=$((_pb+1))
+eq "los PR se agrupan por bloque y el último cierra apuntando a los anteriores" "0" "$_pb"
+
+# ── 17 · LA TABLA-RESUMEN DE DECISIONES NO PUEDE ADELANTAR A LA FUENTE (2026-08-08) ──
+# 🔴 Origen (F0, 27-jul): las decisiones vivían DUPLICADAS en Arquitectura §17.1 y Visión §6, y
+# ya habían divergido — 75 filas contra 37. Se declaró `docs/DECISIONS.md` fuente única y §17.1
+# pasó a decir "soy un RESUMEN de lectura, no la fuente"… pero NADA lo hacía cumplir.
+# ⭐ Medido hoy: 27 contra 27, cuadran. Este check existe para que sigan cuadrando — una promesa
+# escrita en prosa es exactamente lo que dejó divergir la versión anterior.
+_dec=$(grep -c "^| [0-9]" "$M/docs/DECISIONS.md" 2>/dev/null || echo 0)
+_res=$(sed -n '/^### 17.1 ·/,/^### /p' "$M/docs/Arquitectura_Mente_OS_v2_Bloques.md" 2>/dev/null \
+       | grep -c "^| [0-9]" || echo 0)
+if [ "$_res" -le "$_dec" ]; then
+  ok "la tabla-resumen de decisiones no adelanta a su fuente ($_res ≤ $_dec)"
+else
+  bad "resumen de decisiones" "≤ $_dec (las de DECISIONS.md)" \
+      "$_res — el resumen tiene decisiones que la FUENTE no"
+fi
+
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \
   || bad "exención de tests" "grade-block reconoce .test/.spec" "no los reconoce"
