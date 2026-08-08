@@ -200,16 +200,39 @@ def orphan_docs(dirs, root):
     return orphans
 
 
-def infra_evidence(dirs, root):
-    """infra blocks: is the operation documented, or does it live in someone's head?"""
+def infra_evidence(dirs, root, block_dir=None):
+    """infra blocks: is the operation documented, or does it live in someone's head?
+
+    ⚠️ Two blind spots, both measured on blk-separacion-motor-instancia (2026-08-07), each of
+    which forced a 🔴 NO **while the document existed**:
+
+    1. Only `isdir` entries were read. A block whose §B declares FILES (`bin/init`,
+       `bin/test-f0-f6`) produced an empty text, so both metrics came back NO no matter what.
+       An infra block that names the exact pieces it touches could never leave 🔴 MVP — the
+       verdict stopped discriminating precisely where it should.
+    2. `blocks/<block>/docs/` was never read, and `contract-block.md` says that is where the
+       block's own documentation lives. The runbook was written exactly where the contract
+       asks for it, and the measurement looked everywhere else.
+
+    ⛔ The fix is NOT to widen the §B to directories so the meter finds text: the scope is the
+    document that states what the block touches, and falsifying it to score 🟢 turns the verdict
+    into decoration. The meter is what reads wrong, so the meter is what changed.
+    """
     text = ""
+    md = []
     for d in dirs:
         base = os.path.join(root, d)
-        for f in glob.glob(f"{base}/**/*.md", recursive=True) if os.path.isdir(base) else []:
-            try:
-                text += open(f, encoding="utf-8", errors="replace").read().lower()
-            except OSError:
-                pass
+        if os.path.isdir(base):
+            md += glob.glob(f"{base}/**/*.md", recursive=True)
+        elif base.endswith(".md") and os.path.isfile(base):
+            md.append(base)
+    if block_dir:                       # the block's own docs/ — where the contract puts them
+        md += glob.glob(os.path.join(block_dir, "docs", "**", "*.md"), recursive=True)
+    for f in sorted(set(md)):
+        try:
+            text += open(f, encoding="utf-8", errors="replace").read().lower()
+        except OSError:
+            pass
     return {
         "runbook": bool(re.search(r"runbook|step by step|paso a paso|how to run", text)),
         "rollback": bool(re.search(r"rollback|revert|how to undo|volver atr", text)),
@@ -389,7 +412,7 @@ def main():
         detail = {"broken links": bad, "orphans": orph}
 
     elif btype == "infra":
-        ev = infra_evidence(dirs, root)
+        ev = infra_evidence(dirs, root, os.path.dirname(path))
         row("runbook documented", "yes" if ev["runbook"] else "NO", red_if=not ev["runbook"])
         row("rollback documented", "yes" if ev["rollback"] else "NO", red_if=not ev["rollback"])
         row("test files", 0, na="infrastructure is verified by running it, not by unit tests")

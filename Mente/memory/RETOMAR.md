@@ -64,7 +64,9 @@ redactada). 👉 `project_entrenamiento_foresito` · `work/Entrenamiento_Ejecuci
 
 ### 🆕 ⭐ UN CLON YA VERIFICA EL MOTOR: **10 fallos → 1** (2026-08-07, S13)
 
-**Rama `fix/separacion-motor-instancia`** · bloque activo del mismo nombre (4/5 sub-bloques ✅).
+🏁 **BLOQUE CERRADO Y ARCHIVADO 2026-08-07** en `blocks/archive/separacion-motor-instancia_2026-08/`
+(5/5 · 🟡 cierra: capa 2 **6/6 🟢** con evidencia · capa 1 🔴 por el límite del medidor, ver §K).
+👉 **Queda 1 solo bloque activo: `demo`.**
 
 📊 El recorrido medido en un clon limpio, tras `bin/init`:
 `10 → 7` (familia D 5-6) → `6` (additionalDirectories) → `2` (WORKSPACE) → **1**.
@@ -96,6 +98,19 @@ tras `bin/init`, y ese 1 (`registered=no`) es la respuesta correcta. graphify **
 
 **👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. **Cero
 instalaciones externas verificadas**; sin eso, graphify #5-#6 solo se medirían a sí mismos.
+
+🔬 **Cerrarlo destapó 5 defectos en los DOS medidores del sistema — todos corregidos el 08-07:**
+
+- **`bin/grade-block`** marcaba `runbook NO`/`rollback NO` **con el documento escrito**: solo leía
+  directorios (este scope son archivos) y **nunca leía `blocks/<bloque>/docs/`**, justo donde el
+  contrato los pone. 📊 El bloque pasó de **🔴 MVP → 🟢 PRODUCT** sin tocar un solo documento.
+- **`bin/generate-index`** subdeclaraba el avance de todos: un `✅` no contaba como cerrado ·
+  capturaba filas de fuera del §F · exigía 5 columnas cuando los §F reales tienen 4 o 5.
+  📊 `demo` **6/7 → 11/12** · `expertise-programacion` **— → 6/6** · `plan-tests-demo` **— → 2/2**.
+
+⭐ **La lección:** el bloque cerró primero en 🟡 dejando el 🔴 escrito y medible en vez de ensanchar
+su §B para complacer al medidor. **Se arregló quien LEE, no quien escribe** — falsear el scope
+habría convertido el veredicto en decoración. Verificado por sabotaje en ambos.
 
 ---
 

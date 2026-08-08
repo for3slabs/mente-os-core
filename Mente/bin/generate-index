@@ -73,14 +73,49 @@ def block_health(text, path):
             " · ".join(problems))
 
 
+def sub_blocks(text):
+    """The §F rows — and ONLY the §F rows.
+
+    ⚠️ Measured 2026-08-07 on blk-separacion-motor-instancia: the old regex scanned the WHOLE
+    file for any 5-column row starting with a digit, so a numbered table in §K counted as a
+    sub-block and a 5/5 block published 5/6. The §F is the propagation graph; nothing else is.
+
+    ⚠️ Column count is NOT fixed either: the real §F tables run 4 columns (expertise-programacion,
+    plan-tests-demo) or 5 (demo, separacion-motor-instancia). Hard-coding five made two fully
+    closed blocks publish 0/3 and 0/1. The status is the LAST cell of the row, whatever the width.
+    """
+    m = re.search(r"══\s*F\s*·\s*SUB-BLOCKS.*?-->\n(.*?)(?=\n<!--\s*══|\Z)", text, re.S)
+    if not m:
+        return []
+    out = []
+    for line in m.group(1).split("\n"):
+        line = line.strip()
+        if not re.match(r"^\|\s*\d+\w*\s*\|", line) or line.count("|") < 3:
+            continue
+        out.append(line.strip("|").split("|")[-1])
+    return out
+
+
+def is_closed(cell):
+    """A sub-block is closed whatever notation the §F used to say so.
+
+    ⚠️ The old check was `cell == "closed"`, so a `✅` — the majority convention across the
+    real blocks — was invisible: blk-demo had 11/12 closed and the index published 6/7.
+    ⛔ An index that under-reports makes finished work get reopened, so the fix is to read the
+    notation in use, not to rewrite every §F to one word.
+    """
+    c = cell.strip().lower()
+    return "✅" in c or c in ("closed", "done", "cerrado")
+
+
 def collect_blocks():
     rows = []
     for f in sorted(glob.glob("blocks/**/BLOCK.md", recursive=True)):
         t = open(f, encoding="utf-8", errors="replace").read()
         state = f.split("/")[1]
         icon, why = block_health(t, f)
-        subs = re.findall(r"^\|\s*\d+\s*\|[^|]*\|[^|]*\|[^|]*\|\s*(\w+)\s*\|", t, re.M)
-        closed = sum(1 for s in subs if s == "closed")
+        subs = sub_blocks(t)
+        closed = sum(1 for s in subs if is_closed(s))
         rows.append({
             "name": os.path.basename(os.path.dirname(f)),
             "id": bfield(t, "id"), "type": bfield(t, "type"),

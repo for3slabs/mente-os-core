@@ -4,7 +4,7 @@
 id: blk-separacion-motor-instancia-2026-08
 type: infra
 intent: que un clon de este repo verifique el MOTOR sin exigir la INSTANCIA de Brian
-status: active · lane: task · owner: brian
+status: closed · lane: task · owner: brian
 created: 2026-08-07 · updated: 2026-08-07
 
 <!-- ══ B · SCOPE ══ required to OPEN · ≤15 lines ══ -->
@@ -40,21 +40,21 @@ created: 2026-08-07 · updated: 2026-08-07
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: **5/5 cerrados.** Verificado end-to-end en un clon de master ya mergeado (PRs #12-#14)
-next: cerrar el bloque — o dejarlo abierto si Brian quiere la separación real (motor publicable)
+phase: **CERRADO 2026-08-07** · 🟡 cierra (capa 2 6/6 🟢 · capa 1 🔴 por límite del medidor, §K)
+next: ninguno aquí. La separación real (motor publicable, opción A) es OTRO bloque
 blockers: none
-progress: 5/5 sub-blocks closed
+progress: 5/5 sub-blocks closed · verificado end-to-end en un clon de master mergeado
 updated: 2026-08-07
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
 | # | task | code piece | dependents | status |
 |---|---|---|---|---|
-| 1 | `init` poda los `additionalDirectories` muertos y lo dice | bin/init | 0 | ✅ |
-| 2 | `WORKSPACE.md` se GENERA de plantilla, no se hereda | bin/init | 0 | ✅ |
-| 3 | los checks de instancia se SALTAN lo ausente en 🟡, no fallan | bin/test-f0-f6 | 0 | ✅ |
-| 4 | un hermano ausente no es una cita rota (12 → 0 en el clon) | bin/check-links | 0 | ✅ |
-| 5 | clon limpio verificado end-to-end **desde master mergeado** | — | — | ✅ |
+| 1 | `init` poda los `additionalDirectories` muertos y lo dice | bin/init | 0 | closed |
+| 2 | `WORKSPACE.md` se GENERA de plantilla, no se hereda | bin/init | 0 | closed |
+| 3 | los checks de instancia se SALTAN lo ausente en 🟡, no fallan | bin/test-f0-f6 | 0 | closed |
+| 4 | un hermano ausente no es una cita rota (12 → 0 en el clon) | bin/check-links | 0 | closed |
+| 5 | clon limpio verificado end-to-end **desde master mergeado** | — | — | closed |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions
@@ -115,7 +115,7 @@ una vez*. Este bloque la lleva del documento al árbol.
 comportamiento bueno. Un check que se pusiera verde ahí estaría mintiendo.
 
 ### Runbook y rollback
-→ `blocks/active/separacion-motor-instancia/docs/runbook-y-rollback.md` — cómo se verifica esto
+→ `blocks/archive/separacion-motor-instancia_2026-08/docs/runbook-y-rollback.md` — cómo se verifica esto
 en un clon (3 pasos) y cómo se revierte cada uno de los 4 cambios por separado.
 
 ⚠️ **`bin/grade-block` los sigue marcando 🔴 NO, y el documento SÍ existe.** Medido 2026-08-07:
@@ -128,4 +128,70 @@ lo que es —un límite del validador, no una carencia del bloque— y queda en 
 
 <!-- ══ K · CLOSING ══ required to CLOSE ══ -->
 ## Closing
-(pending — the block is still active)
+
+**Cerrado 2026-08-07.** Los tres criterios de `owner-3-validation.md` §2, medidos:
+
+| Criterio | Resultado |
+|---|---|
+| **Funcional** | 🟢 `bin/test-f0-f6` **199 passed · 0 failed** · `bin/check-blocks` 0 errores |
+| **Suficiencia** | 🟢 `bin/check-sufficiency` — *SUFFICIENT: A-E answer all seven restart questions* |
+| **Veredicto de calidad** | 🟢 capa 1 **🟢 PRODUCT** (tras corregir el medidor) · capa 2 🟢 6/6 |
+
+<!-- ⚠️ Esta tabla NO se numera a propósito: `bin/generate-index` captura como sub-bloque
+     cualquier fila que empiece por un dígito con 5 columnas, y contaba este §K como uno más. -->
+
+
+
+### Capa 1 — `bin/grade-block separacion-motor-instancia`
+
+`secret values written down 0 🟢` · `runbook documented yes 🟢` · `rollback documented yes 🟢` ·
+las 3 métricas de código `n/a ⬜` (no hay código en scope). **LAYER 1 VERDICT: 🟢 PRODUCT.**
+
+🔬 **Al cerrar, estas dos salían 🔴 — y el medidor era el que leía mal.** Verificado antes de
+tocarlo: el runbook de este bloque existía (43 líneas, §Runbook en la 10, §Rollback en la 25).
+`infra_evidence()` tenía **dos puntos ciegos**: solo leía entradas `isdir` (este §B declara
+**archivos sueltos** — `bin/init`, `bin/test-f0-f6` — así que el texto llegaba vacío y ambas
+métricas salían NO pasara lo que pasara) y **nunca leía `blocks/<bloque>/docs/`**, que es donde
+`contract-block.md` dice que vive la documentación del bloque.
+
+⛔ **No se ensanchó el §B para complacer al medidor** — falsear el scope convierte el veredicto en
+un número decorativo. **Se corrigió el medidor** (`bin/grade-block`, 2026-08-07) y se verificó por
+sabotaje: escondido el documento, `runbook` vuelve a 🔴; restaurado, 🟢.
+⭐ Un bloque de infraestructura que nombra las piezas exactas que toca **ya puede salir de 🔴 MVP**.
+
+### Capa 2 — revisión de criterio (`rules/qa-dimensions.md`)
+
+```
+BLOCK separacion-motor-instancia — criterion review · 2026-08-07
+  1 architecture ... 🟢  la frontera motor/instancia vive en mente.config.yml, no repartida
+                         evidencia: los 4 cambios leen esa declaración; ninguno reintroduce ruta absoluta
+  2 data .......... 🟢  no hay esquema; el único estado es el config declarativo
+                         evidencia: `n/a` medido, no asumido — el §B no declara BD ni tablas
+  3 abstraction ... 🟢  un solo lugar decide "esto es instancia": el config
+                         evidencia: 4 checks corregidos, 0 copias de la regla en cada uno
+  4 naming ........ 🟢  `additionalDirectories`, `WORKSPACE.md` dicen qué contienen
+                         evidencia: ningún nombre exigió leer el cuerpo para entenderlo
+  5 contracts ..... 🟢  un check ausente lo DICE (🟡 skip), nunca calla en verde
+                         evidencia: §G decisión 2 · el clon reporta `1 additionalDirectories podados`
+  6 necessity ..... 🟢  ⭐ medido: `instance/` NO se creó porque NINGÚN archivo estorbaba
+                         evidencia: §I checkpoint 3 — 221 archivos medidos, 0 movidos
+  ─────────────────────────────────────────────────────────────
+  CRITERION VERDICT: 🟢 pass — 6/6 con evidencia
+```
+
+**VEREDICTO COMBINADO: 🟢 PRODUCTO** — capa 1 🟢 + capa 2 6/6 🟢, ambas con evidencia.
+
+⭐ **Cerró primero en 🟡 y subió a 🟢 arreglando el medidor, no el documento.** El bloque no se
+auto-aprobó declarando que el validador se equivocaba: lo dejó escrito, medible, y Brian ordenó
+corregirlo el mismo día (`bin/grade-block` + `bin/generate-index`, verificados por sabotaje).
+
+### La deuda que deja
+
+1. ⭐ **La prueba de campo** — cero instalaciones externas. El clon lo verificó la IA en esta
+   máquina: eso demuestra el mecanismo, **no la experiencia de otro dueño.**
+2. **La separación real** (motor publicable en limpio, opción A) — otro bloque, después de éste,
+   tal como el §B lo declaró desde el principio.
+
+✅ **Cerrado el mismo día, ya no es deuda:** los 2 defectos de `bin/grade-block` (scope de archivos
+sueltos · `blocks/<bloque>/docs/` nunca leído) y los 3 de `bin/generate-index` (un `✅` no contaba ·
+capturaba filas fuera del §F · exigía 5 columnas cuando los §F reales tienen 4 o 5).

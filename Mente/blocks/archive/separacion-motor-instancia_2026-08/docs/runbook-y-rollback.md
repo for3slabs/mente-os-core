@@ -38,6 +38,6 @@ del disco lo pierde de la copia viva. Se recupera del historial con el comando d
 
 ---
 
-Related: `blocks/active/separacion-motor-instancia/BLOCK.md` (el contrato que esto ejecuta) ·
+Related: `blocks/archive/separacion-motor-instancia_2026-08/BLOCK.md` (el contrato que esto ejecuta) ·
 `bin/verify-all` (F8 automatiza el paso ①) · `rules/rule-checks-must-measure.md` (§D, la familia
 que este bloque aplicó).

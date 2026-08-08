@@ -6,24 +6,58 @@
 
 
 
-## 🔧 `bin/grade-block` no puede medir un bloque cuyo scope son ARCHIVOS (2026-08-07)
+## ✅ RESUELTO (2026-08-07) — `bin/generate-index` cuenta mal los sub-bloques (3 defectos)
 
-`infra_evidence()` (y el mismo patrón en las métricas de código) recorre los **directorios** que
-el §B declara. Un bloque cuyo scope son archivos sueltos —`bin/init`, `bin/test-f0-f6`— produce
-un `text` vacío, y entonces **`runbook documented` y `rollback documented` salen 🔴 NO aunque los
-documentos existan**. Medido con `separacion-motor-instancia`: el documento está escrito en
-`blocks/active/separacion-motor-instancia/docs/runbook-y-rollback.md` y el veredicto no cambia.
+Su regex (`bin/generate-index:82-83`) captura la celda de estado como `\w+` y compara con la
+palabra `closed`. Dos consecuencias medidas al archivar `separacion-motor-instancia`:
 
-⚠️ **Consecuencia:** un bloque de infraestructura que toca piezas concretas **no puede salir de
-🔴 MVP**, por bien documentado que esté. El veredicto deja de discriminar justo donde debería.
+1. **Un `✅` no cuenta como cerrado.** `blocks/active/demo` tiene **11/12** sub-bloques cerrados y
+   el índice publica **6/7**: las filas marcadas con emoji son invisibles para el contador.
+2. **Cualquier fila numerada de 5 columnas cuenta como sub-bloque**, aunque no esté en el §F. Una
+   tabla de criterios en el §K hacía que un bloque de 5 sub-bloques publicara **5/6**.
 
-⛔ **La salida NO es ensanchar el §B a directorios** para que el medidor encuentre texto: eso
-falsea el scope, que es el documento que dice qué toca el bloque. La corrección es que
-`infra_evidence` mire también `blocks/active/<bloque>/docs/`, que es donde el contrato dice que
-vive la documentación del bloque.
+⚠️ **Consecuencia:** `docs/STATES.md` —el índice que se lee para saber qué falta— **subdeclara el
+avance real de todos los bloques que usan emoji**, que es la convención mayoritaria del §F.
+Un índice que miente a la baja hace que se reabra trabajo ya cerrado.
 
-🙋 Decisión de Brian: es un cambio en el medidor, y cambiar cómo se puntúa afecta a todos los
-bloques ya calificados.
+**ARREGLADO el mismo día** (Brian: *"soluciónalo"*). El contador ahora **lee el §F y solo el §F**
+(`sub_blocks()`) y **acepta la notación que el §F use** (`is_closed()`: `✅`, `closed`, `done`,
+`cerrado`). ⛔ No se reescribieron los §F a una sola palabra: la convención con emoji es legítima
+y está en la mayoría de los bloques — se corrigió quien lee, no quien escribe.
+
+🔬 **Arreglarlo destapó un 3er defecto:** el regex exigía **5 columnas**, y los §F reales tienen 4
+(`expertise-programacion`, `plan-tests-demo`) o 5 (`demo`, `separacion-motor-instancia`). Al leer
+solo el §F, esos dos bloques —cerrados por completo— pasaron a publicar `0/3` y `0/1`. Corregido:
+el estado es **la última celda de la fila**, sea cual sea el ancho.
+
+📊 **Medido antes → después:** `demo` **6/7 → 11/12** · `expertise-programacion` **— → 6/6** ·
+`plan-tests-demo` **— → 2/2** · `distribucion` **— → 6/6**. Los 6 bloques publican su avance real.
+🔬 Verificado que **discrimina**: `pendiente`, `open`, `blocked` y celda vacía siguen contando
+como abiertos — un contador que dijera "todo cerrado" no mediría nada.
+
+---
+
+## ✅ RESUELTO (2026-08-07) — `bin/grade-block` no podía medir un bloque cuyo scope son ARCHIVOS
+
+`infra_evidence()` recorría solo los **directorios** que el §B declara. Un bloque cuyo scope son
+archivos sueltos —`bin/init`, `bin/test-f0-f6`— producía un `text` vacío, y entonces **`runbook
+documented` y `rollback documented` salían 🔴 NO aunque los documentos existieran**. Medido con
+`separacion-motor-instancia`: el documento estaba escrito, 43 líneas, y el veredicto no cambiaba.
+
+⚠️ **Consecuencia:** un bloque de infraestructura que nombra las piezas exactas que toca **no
+podía salir de 🔴 MVP**, por bien documentado que estuviera. El veredicto dejaba de discriminar
+justo donde debería.
+
+**ARREGLADO el mismo día** (Brian: *"soluciónalo"*), en dos puntos:
+1. `infra_evidence` lee ahora los **archivos `.md` sueltos** del scope, no solo los directorios.
+2. Lee **siempre `blocks/<bloque>/docs/`**, que es donde `contract-block.md` dice que vive la
+   documentación del bloque — y que nunca se miraba.
+
+⛔ **No se ensanchó el §B a directorios** para que el medidor encontrara texto: eso falsea el
+scope, que es el documento que dice qué toca el bloque. Se corrigió el medidor.
+
+🔬 **Verificado por sabotaje:** escondido el runbook, `runbook documented` vuelve a 🔴; restaurado,
+🟢. 📊 `separacion-motor-instancia`: **🔴 MVP → 🟢 PRODUCT**.
 
 ---
 
