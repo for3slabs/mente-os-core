@@ -1,5 +1,5 @@
 # SHIPPING FLOW · how a ticket becomes a merged PR
-**Status:** current · **Type:** rule · **Updated:** 2026-08-05 · **Owner:** brian
+**Status:** current · **Type:** rule · **Updated:** 2026-08-08 · **Owner:** brian
 **Language:** US English · **Applies to:** EVERY discipline — backend · frontend · database · docs
 **Declared by:** a block's §D `Required standards` · injected by `hooks/pre-edit-standards.py`
 **Source:** `cracked-dev` (MIT), imported 2026-08-05 → `blocks/archive/expertise-programacion_2026-08`
@@ -101,7 +101,20 @@ the body.
 > ## ⛔ DO NOT MERGE. Creating the PR is the end of the agent's job. **Merging is a human decision.**
 
 **Post-merge, only when told to merge:** verify the deployment succeeded · verify backend changes
-are live · smoke-test the critical paths · delete the branch.
+are live · smoke-test the critical paths · **verify what shipped, then delete the branch** (§1-bis).
+
+---
+
+## 1-bis · POST-MERGE — vive en su propia regla
+
+Cuando el PR se mergea, la rama **se verifica y se borra** (local + remoto). Los dos pasos, el
+porqué del orden y las dos únicas excepciones (migración de versión mayor · cambio de vida o
+muerte) están en **`rules/rule-post-merge-cleanup.md`**.
+
+> **Brian, 2026-08-07:** *"cuando la rama ya fue mergeada, eliminada de local + remoto."*
+
+⛔ **Verificar SIEMPRE antes de borrar** — el squash puede dejar trabajo fuera sin que git avise
+(§2, anti-patrón #8). Partido de aquí el 2026-08-08: este archivo pasó su techo de 250 líneas.
 
 ---
 

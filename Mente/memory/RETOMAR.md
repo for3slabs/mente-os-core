@@ -99,18 +99,11 @@ tras `bin/init`, y ese 1 (`registered=no`) es la respuesta correcta. graphify **
 **👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. **Cero
 instalaciones externas verificadas**; sin eso, graphify #5-#6 solo se medirían a sí mismos.
 
-🔬 **Cerrarlo destapó 5 defectos en los DOS medidores del sistema — todos corregidos el 08-07:**
-
-- **`bin/grade-block`** marcaba `runbook NO`/`rollback NO` **con el documento escrito**: solo leía
-  directorios (este scope son archivos) y **nunca leía `blocks/<bloque>/docs/`**, justo donde el
-  contrato los pone. 📊 El bloque pasó de **🔴 MVP → 🟢 PRODUCT** sin tocar un solo documento.
-- **`bin/generate-index`** subdeclaraba el avance de todos: un `✅` no contaba como cerrado ·
-  capturaba filas de fuera del §F · exigía 5 columnas cuando los §F reales tienen 4 o 5.
-  📊 `demo` **6/7 → 11/12** · `expertise-programacion` **— → 6/6** · `plan-tests-demo` **— → 2/2**.
-
-⭐ **La lección:** el bloque cerró primero en 🟡 dejando el 🔴 escrito y medible en vez de ensanchar
-su §B para complacer al medidor. **Se arregló quien LEE, no quien escribe** — falsear el scope
-habría convertido el veredicto en decoración. Verificado por sabotaje en ambos.
+🔬 **Cerrarlo destapó 5 defectos en los DOS medidores — corregidos el 08-07** (detalle en el §K del
+bloque archivado y en `memory/PENDIENTES.md`): `grade-block` marcaba `runbook NO` **con el documento
+escrito** (📊 🔴 MVP → 🟢 PRODUCT sin tocar un documento) · `generate-index` subdeclaraba a todos
+(📊 `demo` **6/7 → 11/12**). ⭐ **Se arregló quien LEE, no quien escribe:** falsear el §B para
+complacer al medidor habría convertido el veredicto en decoración. Verificado por sabotaje.
 
 ---
 
@@ -201,14 +194,11 @@ ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fó
 
 ## 5-ter · 🏗️ el PORQUÉ del v2 (diagnóstico 27-jul) · ✅ construido, ver §5
 
-**Causa raíz:** documentaba bien, no GOBERNABA la ejecución. **La ley:** *código = 100%, documento
-= 40-60%* → **la doctrina es documento, la VERIFICACIÓN es script.** BLOQUE (archivo único A-K) ·
-3 encargados + Encargado 0 la VOZ · ⭐ **veredicto en 2 capas** — validado contra 4 frameworks:
-**ninguno responde *"¿producto o MVP?"***, y ese veredicto es el diferenciador.
-
+**Causa raíz:** documentaba bien, no GOBERNABA. **La ley:** *código = 100%, documento = 40-60%* →
+**la doctrina es documento, la VERIFICACIÓN es script.** ⭐ El diferenciador: **veredicto en 2
+capas** — validado contra 4 frameworks, **ninguno responde *"¿producto o MVP?"***.
 👉 `principles/vision-mente-os-v2.md` · `docs/Arquitectura_Mente_OS_v2_Bloques.md` ·
-`docs/plan-v2-rollout.md`. Memorias: `project_mente_os_v2_bloques` ·
-`project_ser_duenos_del_contexto` · `project_incidente_degradacion_21jul`.
+`docs/plan-v2-rollout.md` · memoria `project_mente_os_v2_bloques`.
 
 ## 5-bis · Cerrados grandes recientes (solo punteros — historia en Bitácora Julio)
 
@@ -235,6 +225,9 @@ ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fó
 - 🏗️ Hitos grandes = **Método de Fases "F"** (`rules/ESTANDAR_Metodo_Fases_F.md`): explicar→aprobar
   →construir · investigar terreno · caza bugs · **batería §5-BIS** · red de seguridad · server-primero.
 - 📏 **Server-primero:** desarrollar+probar en el server; push a GitHub SOLO con orden explícita.
+- 🧹 **Rama mergeada = rama borrada** (local + remoto), **tras verificar que su trabajo viajó**.
+  Solo 2 excepciones: migración de versión mayor · cambio de vida o muerte.
+  `rules/rule-post-merge-cleanup.md` (Brian, 2026-08-07).
 - ⛔ **NO loops de espera** contra el server que sigan si Brian cierra (gasta cuota) · **NO cambiar
   el modelo** (lo fija con /model; el bot corre sonnet-4-6, NO es bug) · **NO sesgar hacia
   charla/descubribilidad** — él marca el momento.

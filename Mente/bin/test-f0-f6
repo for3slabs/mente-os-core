@@ -1921,6 +1921,32 @@ grep -q "BASE_BRANCHES" "$_pc" \
   && ok "pre-commit vigila la rama base (el flujo de shipping se APLICA)" \
   || bad "shipping enforcement" "un check de rama en pre-commit.sh" "no existe"
 
+# ── 10-bis · EL POST-MERGE ESTÁ ESCRITO Y EN EL ORDEN CORRECTO (2026-08-08) ──
+# Brian: "cuando la rama ya fue mergeada, eliminada de local + remoto". El daño que esta regla
+# evita NO es la rama colgando: es BORRARLA ANTES DE VERIFICAR que el squash la contenía.
+# Medido 4 veces el 2026-08-07 — una borró de master el candado que vigila este mismo defecto.
+# ⭐ Por eso el check no busca "borrar la rama": busca que el ORDEN y las EXCEPCIONES existan.
+# Un check que solo contara la palabra daría verde con la regla escrita al revés.
+_sf="$M/rules/rule-post-merge-cleanup.md"
+_pm=0
+[ -f "$_sf" ]                                     || _pm=$((_pm+1))
+grep -qi "push origin --delete" "$_sf" 2>/dev/null || _pm=$((_pm+1))
+grep -q "git diff origin/" "$_sf" 2>/dev/null      || _pm=$((_pm+1))
+grep -qi "EXCEPCIONES" "$_sf" 2>/dev/null          || _pm=$((_pm+1))
+# Y la mitad de la que se partió debe APUNTARLA: una regla partida que deja huérfana a su
+# otra mitad cambia un problema por otro (doc-structure.md §2.1).
+grep -q "rule-post-merge-cleanup" "$M/rules/rule-shipping-flow.md" 2>/dev/null || _pm=$((_pm+1))
+eq "el post-merge borra la rama, pero VERIFICA antes (y declara sus excepciones)" "0" "$_pm"
+
+# La verificación debe ir ANTES del borrado en el texto: al revés, la regla ordena el defecto.
+_ln_ver=$(grep -n "git diff origin/" "$_sf" 2>/dev/null | head -1 | cut -d: -f1)
+_ln_del=$(grep -n "push origin --delete" "$_sf" 2>/dev/null | head -1 | cut -d: -f1)
+if [ -n "$_ln_ver" ] && [ -n "$_ln_del" ] && [ "$_ln_ver" -lt "$_ln_del" ]; then
+  ok "verificar viene ANTES de borrar (borrar primero destruye la única copia)"
+else
+  bad "orden del post-merge" "verificar antes de borrar" "borrar aparece primero o falta"
+fi
+
 # Y debe DISTINGUIR: bloquear en la base, dejar pasar en una rama de trabajo.
 # Se prueba en un repo de usar y tirar — nunca contra el árbol real.
 _tmp=$(mktemp -d)

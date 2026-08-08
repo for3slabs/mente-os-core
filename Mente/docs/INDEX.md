@@ -8,7 +8,7 @@
 **Generated:** 2026-08-07 · **Type:** generated
 
 
-**308 documents** · **6 blocks** · 28 directories
+**309 documents** · **6 blocks** · 28 directories
 
 
 | Directory | Docs |
@@ -37,7 +37,7 @@
 | `memory/archive/` | 38 |
 | `principles/` | 7 |
 | `principles/expertise/` | 7 |
-| `rules/` | 20 |
+| `rules/` | 21 |
 | `rules/decisions/` | 30 |
 | `vision/` | 8 |
 | `work/` | 88 |
@@ -189,7 +189,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 500 |
+| `INDEX.md` | generated | — |  | 499 |
 | `METRICS.md` | generated | current | 2026-08-07 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 31 |
@@ -258,7 +258,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1646 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-05 | 4794 |
-| `RETOMAR.md` | entry-point | current | 2026-08-07 | 265 |
+| `RETOMAR.md` | entry-point | current | 2026-08-07 | 258 |
 
 ## `memory/archive/`
 
@@ -349,8 +349,9 @@
 | `rule-isolation.md` | rule | current | 2026-07-29 | 76 |
 | `rule-lanes.md` | rule | current | 2026-07-29 | 76 |
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
+| `rule-post-merge-cleanup.md` | rule | current | 2026-08-08 | 86 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-05 | 237 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 250 |
 
 ## `rules/decisions/`
 
