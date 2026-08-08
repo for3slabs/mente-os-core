@@ -273,7 +273,7 @@
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
 | `RETOMAR.md` | entry-point | current | 2026-08-07 | 248 |
-| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1573 |
+| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1581 |
 
 ## `memory/archive/`
 

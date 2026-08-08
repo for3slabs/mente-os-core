@@ -2158,6 +2158,30 @@ else
       "$_res — el resumen tiene decisiones que la FUENTE no"
 fi
 
+# ── 18 · LOS DOS MEDIDORES DE TECHO LEEN LA MISMA EXENCIÓN (2026-08-08) ─────
+# 🔴 El defecto que cerró V2-1: `docs/Arquitectura_Mente_OS_v2_Bloques.md` declaraba
+# `**Exempt:** size` en su cabecera, `check-blocks` la respetaba y CALLABA, y `check-health`
+# la ignoraba y SEGUÍA AVISANDO del mismo archivo — el sistema contradiciéndose a sí mismo.
+# ⭐ Se arregló moviendo la lectura a `mente_config.exempt`, que ambos importan. Este check
+# existe porque el arreglo sin candado se deshace: el próximo validador que mida tamaños
+# volvería a nacer sordo, y nadie lo notaría hasta ver dos avisos que no coinciden.
+# ⚠️ Encontrado al VERIFICAR la sesión, no al implementarla: el arreglo estaba, el candado no.
+_dual=0
+grep -q "cfg.exempt" "$M/bin/check-health"  || { _dual=$((_dual+1)); printf '     ⤷ check-health no lee la exención declarada\n'; }
+grep -q "cfg.exempt" "$M/bin/check-blocks"  || { _dual=$((_dual+1)); printf '     ⤷ check-blocks no usa la lectura compartida\n'; }
+grep -q "def exempt" "$M/bin/mente_config.py" || { _dual=$((_dual+1)); printf '     ⤷ la lectura no vive en mente_config\n'; }
+eq "los dos medidores de techo leen la MISMA exención" "0" "$_dual"
+
+# Y se mide de verdad: el archivo exento no puede producir aviso en NINGUNO de los dos.
+_arq="docs/Arquitectura_Mente_OS_v2_Bloques.md"
+if grep -q "^\*\*Exempt:\*\*" "$M/$_arq" 2>/dev/null; then
+  _a=$("$M/bin/check-health" 2>&1 | grep -c "architecture limit" || true)
+  _b=$("$M/bin/check-blocks" --docs 2>&1 | grep -c "architecture limit" || true)
+  [ "${_a:-9}" = "0" ] && [ "${_b:-9}" = "0" ] \
+    && ok "el archivo exento no dispara en ninguno de los dos medidores" \
+    || bad "exención de techo" "0 avisos en ambos" "check-health=$_a · check-blocks=$_b"
+fi
+
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \
   || bad "exención de tests" "grade-block reconoce .test/.spec" "no los reconoce"

@@ -54,6 +54,14 @@ dos veces son dos reglas.
 🔬 **Verificado por sabotaje en las dos direcciones:** sin la exención **ambos** avisan; con ella
 **ambos** callan.
 
+🔬 **VERIFICACIÓN POSTERIOR (2026-08-08):** al probar la sesión entera por sabotaje se destapó que
+**el arreglo estaba y el CANDADO no**. Quitar la exención hacía que ambos validadores avisaran
+—correcto— pero **la batería no lo notaba**, porque esos avisos son 🟡 y no la hacen fallar.
+⭐ **Un arreglo sin check se deshace:** el próximo validador que mida tamaños volvería a nacer
+sordo y nadie lo vería hasta encontrar dos avisos que no coinciden. Nacen **2 checks** (batería
+214 → 216): los tres puntos de lectura usan `cfg.exempt`, y el archivo exento **no dispara en
+ninguno de los dos medidores**. Reprobado por sabotaje.
+
 ### V2-2 · Renombrado a la convención inglesa: quedan 28 archivos
 
 - **Prioridad:** 🟢 sin prisa
