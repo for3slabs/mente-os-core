@@ -2044,6 +2044,48 @@ _frentes=$(grep -cE '^frente "F[0-9]' "$M/bin/verify-all" 2>/dev/null || echo 0)
 [ -x "$M/bin/check-pendings" ] && ok "bin/check-pendings existe y es ejecutable" \
   || bad "check-pendings" "presente y ejecutable" "no está"
 
+# ── 12 · LOS ARCHIVOS DE ARRANQUE NO VIAJAN EN EL REPO (2026-08-08) ─────────
+# 🔴 Medido en un clon con `owner: Auditor Externo`: PROJECT-RULES.md llegaba con 11 menciones
+# a "Brian" y 0 al dueño real. Viajaban commiteados, así que el clon los recibía ANTES de que
+# `bin/init` corriera, e init —correctamente— se negaba a pisar archivos existentes.
+# ⭐ Lo que describe una INSTANCIA se genera; lo que se hereda es del MOTOR. Misma familia que
+# `docs/WORKSPACE.md` (07-ago). Este check impide que vuelvan a entrar por un `git add -A`.
+_arranque=0
+for _f in CLAUDE.md PROJECT-RULES.md; do
+  git -C "$REPO" ls-files --error-unmatch "$_f" >/dev/null 2>&1 && {
+    _arranque=$((_arranque+1))
+    printf '     ⤷ %s está COMMITEADO — un clon lo recibiría con la identidad de su autor\n' "$_f"; }
+done
+eq "los archivos de arranque se GENERAN, no viajan en el repo" "0" "$_arranque"
+
+# Y sus plantillas sí deben viajar: sin ellas, `bin/init` no puede generar nada y el clon
+# se queda sin arranque en vez de con un arranque ajeno — peor, no mejor.
+_tpl=0
+for _f in CLAUDE.md PROJECT-RULES.md WORKSPACE.md; do
+  [ -f "$M/templates/$_f.template" ] || { _tpl=$((_tpl+1)); printf '     ⤷ falta templates/%s.template\n' "$_f"; }
+done
+eq "las plantillas de los 3 generados SÍ viajan" "0" "$_tpl"
+
+# ── 13 · NINGUNA REGLA SE QUEDA SIN QUIEN LA ENTREGUE (2026-08-08) ──────────
+# 🔴 Medido en la auditoría profunda: 21 de 23 reglas tenían script y 2 no
+# (ESTANDAR_Metodo_Fases_F · case-dangerous-default). El registro del 05-ago decía "las 20
+# reglas ya tienen script" Y ERA CIERTO ENTONCES: se escribieron 3 reglas después y el
+# cableado no las siguió. Un conteo correcto una vez envejece; un check no.
+# ⭐ La ley del sistema sobre sí mismo: una regla que solo vive en un documento se cumple
+# 40-60%. `rule-shipping-flow` lo demostró cumpliéndose 0 de 15 veces.
+# ⚠️ Qué se mide y qué NO: no se exige que un SCRIPT la verifique — hay reglas de metodología
+# (cómo se trabaja) que ningún validador puede medir sin inventar criterio. Se exige que la
+# regla LLEGUE a alguien: un validador, un hook, `base-rules.md`, o el §D de un bloque. Una
+# regla que nadie nombra es una regla que nadie recibe.
+_sin=0
+for _r in "$M"/rules/rule-*.md "$M"/rules/ESTANDAR_*.md "$M"/rules/case-*.md "$M"/rules/qa-*.md; do
+  [ -f "$_r" ] || continue
+  _n=$(basename "$_r" .md)
+  grep -rqlF "$_n" "$M/bin" "$M/hooks" "$M/base-rules.md" "$M"/blocks/active/*/BLOCK.md 2>/dev/null \
+    || { _sin=$((_sin+1)); printf '     ⤷ %s no la nombra ningún validador, hook, base-rules ni §D\n' "$_n"; }
+done
+eq "toda regla llega a alguien (validador · hook · base-rules · §D)" "0" "$_sin"
+
 # El archivo del mes VIVO debe existir: sin él, la rotación no ocurrió y los pendientes
 # están donde nadie los lee. El nombre se deriva de la fecha, nunca se escribe a mano.
 _mes=$(LC_ALL=C date +%m); _anio=$(LC_ALL=C date +%Y)

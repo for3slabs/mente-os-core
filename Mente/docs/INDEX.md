@@ -51,7 +51,7 @@
 |---|---|---|---|---|
 | `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 175 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
-| `README.md` | entry-point | current | 2026-08-06 | 190 |
+| `README.md` | entry-point | current | 2026-08-06 | 210 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
 
 ## `Cerebro/`
@@ -193,7 +193,7 @@
 | `METRICS.md` | generated | current | 2026-08-07 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 31 |
-| `WORKSPACE.md` | entry-point | current | 2026-08-05 | 151 |
+| `WORKSPACE.md` | entry-point | current | 2026-08-07 | 55 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 211 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 293 |
 | `audit-adversarial.md` | analysis | current | 2026-07-30 | 105 |
@@ -259,7 +259,7 @@
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
 | `RETOMAR.md` | entry-point | current | 2026-08-07 | 248 |
-| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 464 |
+| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 481 |
 
 ## `memory/archive/`
 

@@ -92,12 +92,45 @@ def render(name, values):
     if not os.path.exists(src):
         return None, f"template missing: {src}"
     text = open(src, encoding="utf-8").read()
+    # ⭐ The template's own banner is scaffolding, not content: it addresses whoever EDITS the
+    # template, and copying it into the generated file makes an instance document open with a
+    # warning aimed at somebody else. Measured 2026-08-08: `init --force` prepended 6 lines of
+    # "⚠️ PLANTILLA — la genera bin/init" to CLAUDE.md, so the file that Claude Code reads first
+    # started by telling the reader not to edit it by hand.
+    text = re.sub(r"\A<!--.*?-->\n", "", text, count=1, flags=re.S)
     for k, v in values.items():
         text = text.replace("{{" + k + "}}", str(v))
     left = re.findall(r"\{\{(\w+)\}\}", text)
     if left:
         return None, f"{name}: unresolved placeholders {sorted(set(left))}"
     return text, None
+
+
+def foreign_owner(path, owner, rendered):
+    """Does the file on disk still carry ANOTHER owner's name where this one should be?
+
+    ⭐ It measures, it does not guess (ADR-003). The template marks every spot the owner's name
+    belongs in, so the rendered text says exactly where `owner` must appear. If the file on disk
+    has the declared owner in FEWER of those spots than the template asks for, it is carrying
+    somebody else's identity — no name-guessing heuristic involved.
+
+    A file that merely differs is an edit; a file missing its owner is INHERITED, and only the
+    second is dangerous: it ships a stranger's identity to a new owner.
+
+    Returns (present, expected) when it is foreign, else None. Never raises — a detector that
+    breaks `init` would be worse than the defect it reports.
+    """
+    if not owner:
+        return None
+    try:
+        disk = open(path, encoding="utf-8", errors="replace").read()
+    except OSError:
+        return None
+    expected = rendered.count(owner)
+    if expected == 0:                      # this file never names the owner: nothing to inherit
+        return None
+    present = disk.count(owner)
+    return None if present >= expected else (present, expected)
 
 
 def write(path, text):
@@ -232,8 +265,24 @@ def main():
         icon = {"DIFFERS": "🔴", "unchanged": "✅", "written": "🆕", "would write": "🔎"}[status]
         print(f"   {icon} {name}: {status}")
         if status == "DIFFERS":
-            print("      it was edited after generation — rerun with --force to overwrite "
-                  "(a .bak is kept)")
+            # ⭐ DIFFERS has two very different causes and saying only "it was edited" hides the
+            # dangerous one. Measured 2026-08-08 on a clone owned by "Auditor Externo":
+            # PROJECT-RULES.md arrived with 11 mentions of "Brian" and 0 of the real owner, and
+            # init said nothing but "rerun with --force". A new owner has no way to know the file
+            # carries somebody else's identity — so the engine shipped a stranger's name and the
+            # only signal was a check failing much later, without naming the cause.
+            # ⛔ Refusing to clobber stays: it is the right default. What changes is that the
+            # refusal now REPORTS WHAT IT FOUND.
+            owner = values.get("OWNER", "")
+            foreign = foreign_owner(target, owner, text)
+            if foreign:
+                present, expected = foreign
+                print(f"      ⚠️  INHERITED: names {owner!r} {present}× where this engine writes"
+                      f" it {expected}× — the rest still belongs to another owner's tree.")
+                print("      Run `bin/init --force` to make it yours (a .bak is kept).")
+            else:
+                print("      it was edited after generation — rerun with --force to overwrite "
+                      "(a .bak is kept)")
             rc = 1
 
     print(f"   🔌 {wire_hooks()}")

@@ -45,3 +45,28 @@ validadores-higiene	docs/architecture/validators-and-hygiene.md	brian	canonical	
 ciclo-aprendizaje	docs/architecture/lifecycle-and-learning.md	brian	canonical	ciclo de vida del bloque + aprendizaje de errores (§6,7,10)
 estructura-carpetas	docs/architecture/folder-structure.md	brian	canonical	árbol de carpetas + inventario (§12, 12-BIS)
 politica-idioma	docs/architecture/language-policy.md	brian	canonical	qué se escribe en inglés y qué en español (§0-BIS, ADR-023)
+# ── 🔴 LOS VALIDADORES · añadidos 2026-08-08 tras la auditoría profunda ──────
+# Sabotaje medido ese día: se borró `bin/test-f0-f6` —la batería entera— y `check-structure`
+# NO DIJO NADA. Esta tabla declaraba 23 piezas (reglas, docs, memoria) y CERO de los 19
+# validadores, así que las piezas que HACEN CUMPLIR el sistema eran las únicas sin vigilancia.
+# ⭐ Una puerta puede desaparecer en un merge o un rebase y el sistema la pierde en SILENCIO.
+bateria	bin/test-f0-f6	mente	canonical	la prueba viva del sistema — lo único que importa es failed: 0
+val-bloques	bin/check-blocks	mente	canonical	contratos de documento, bloque y ADR
+val-citas	bin/check-links	mente	canonical	toda cita interna resuelve
+val-estructura	bin/check-structure	mente	canonical	el árbol es el declarado en esta tabla
+val-salud	bin/check-health	mente	canonical	salud del sistema al arrancar sesión
+val-suficiencia	bin/check-sufficiency	mente	canonical	¿el §A-E basta para reiniciar?
+val-veredicto	bin/grade-block	mente	canonical	capa 1 del veredicto: producto o MVP
+val-aplicado	bin/check-applied	mente	canonical	los §D declarados muestran evidencia
+val-clear	bin/check-clear-ready	mente	canonical	niega el /clear si algo se perdería
+val-pendientes	bin/check-pendings	mente	canonical	forma de un pendiente y de su bloque
+val-handoff	bin/verify-handoff	mente	canonical	el traspaso entre sesiones cumple su esquema
+suite	bin/verify-all	mente	canonical	los 8 frentes de verificación encadenados
+instalador	bin/init	mente	canonical	genera CLAUDE.md, PROJECT-RULES.md y WORKSPACE.md
+gen-indice	bin/generate-index	mente	canonical	produce docs/INDEX.md y docs/STATES.md
+gen-metricas	bin/generate-metrics	mente	canonical	produce docs/METRICS.md
+nuevo-bloque	bin/new-block	mente	canonical	andamiaje de un bloque + mide su grafo
+puerta-critica	hooks/gate-critical.py	mente	canonical	bloquea cierres inválidos y BD sin rollback
+puerta-secretos	hooks/gate-secrets.py	mente	canonical	fail-closed sobre secrets/
+puerta-commit	hooks/pre-commit.sh	mente	canonical	bloquea commit en rama base e índice desfasado
+inyector	hooks/pre-edit-standards.py	mente	canonical	inyecta los §D del bloque dueño antes de editar

@@ -36,11 +36,31 @@ That is the whole list. A dependency you have to install is a system that does n
 ```bash
 git clone <this-repo> Mente
 cd Mente
-bin/check-health            # tells you what is missing, in plain language
+$EDITOR mente.config.yml    # 1 · put your name in `owner.name` — it is asked, never guessed
+bin/init                    # 2 · ⭐ FIRST. Generates CLAUDE.md + PROJECT-RULES.md + WORKSPACE.md
+bin/check-health            # 3 · tells you what is missing, in plain language
 ```
 
-`check-health` is the first thing you run and the first thing that talks to you. If it says
-nothing, nothing is wrong.
+> ## ⭐ `bin/init` IS STEP ONE, not an optional extra
+>
+> **A fresh clone has no `CLAUDE.md` and no `PROJECT-RULES.md`** — those describe *an instance*,
+> so they are **generated**, never inherited. Until you run `bin/init`, the AI starts with no
+> instructions at all.
+>
+> 🔴 **Why they are not shipped, measured 2026-08-08:** when they travelled inside the repo, a
+> clone owned by someone else arrived carrying **11 mentions of the previous owner** in its
+> project rules and **zero** of the real one — and `init` could not fix it, because it correctly
+> refuses to overwrite files that already exist. The engine was handing a stranger another
+> person's rules. Same diagnosis and same cure as `docs/WORKSPACE.md` (2026-08-07).
+
+`check-health` is the first thing that talks to you after `init`. If it says nothing, nothing is
+wrong.
+
+> ⚠️ **Consequence you will hit, measured 2026-08-08:** because these files are no longer tracked,
+> **checking out a branch created before this change deletes them from disk**, and the battery
+> drops from 208/0 to 196/12 — every failure pointing at the missing `PROJECT-RULES.md`.
+> **The cure is `bin/init`**, and it takes one second. It is not a defect: it is what "generated,
+> not inherited" costs, and knowing it beats rediscovering it as an incident.
 
 ---
 

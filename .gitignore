@@ -30,3 +30,18 @@ Varios/
 # 🔑 El permiso de secrets: atado a ESTE caché y ESTA máquina. Commitearlo lo haría
 # heredable por otro clon, que es lo contrario de atarlo al contexto que lo emitió.
 Mente/.secrets-lease.json
+
+# ── ⭐ LOS DOS ARCHIVOS DE ARRANQUE SON DE LA INSTANCIA (2026-08-08) ─────────
+# 🔴 Medido en un clon con `owner: Auditor Externo`: `PROJECT-RULES.md` llegaba con **11
+# menciones a "Brian" y 0 al dueño real**, y `CLAUDE.md` con 4. Viajaban commiteados, así que un
+# clon los recibía ANTES de que `bin/init` corriera; init veía que ya existían y —correctamente—
+# se negaba a pisarlos. Resultado: el motor entregaba a un desconocido las reglas de otra persona.
+#
+# ⭐ Mismo diagnóstico y misma cura que `docs/WORKSPACE.md` el 2026-08-07: **lo que describe una
+# instancia se GENERA, no se hereda.** Las plantillas sí viajan → `Mente/templates/`.
+#
+# ⚠️ El coste aceptado a conciencia: un clon recién hecho NO tiene `CLAUDE.md` hasta ejecutar
+# `bin/init`, así que la primera sesión arranca sin instrucciones. Lo dice el README en su
+# primera línea, y `bin/init` es el primer paso de la instalación.
+/CLAUDE.md
+/PROJECT-RULES.md

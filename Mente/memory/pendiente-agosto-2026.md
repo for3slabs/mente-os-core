@@ -135,8 +135,8 @@ a este formato** y `PENDIENTES.md` quede como histórico de solo lectura.
 ### V2-8 · 🔴 Un clon ajeno hereda el nombre de Brian en sus reglas de proyecto
 
 - **Prioridad:** 🔴 urgente
-- **Estado:** activo
-- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Estado:** cerrado
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
 - **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
 - **Archivos de referencia:** `bin/init` · `templates/` · `PROJECT-RULES.md` · `bin/test-f0-f6`
 - **Plan:** —
@@ -151,16 +151,21 @@ dueño nuevo no sabe que debe ejecutar `--force`.
 📊 Recorrido medido: clon en frío **6 fallos** → `init` **2** → `init --force` **1** (y ese 1,
 `registered=no`, es la respuesta correcta). Con `--force`: Brian **11 → 0**, dueño real **0 → 11**.
 
-⭐ **El mecanismo YA funciona; lo que falta es que el sistema lo diga.** Es la misma familia D de
-`rules/rule-checks-must-measure.md` que cerró `separacion-motor-instancia`: un archivo del motor
-arrastrando la instancia de su autor, y un check (`migrated rule: <owner>`) que sale 🔴 sin explicar
-que la salida es una bandera.
+✅ **CERRADO 2026-08-08 — y la causa raíz era más profunda que el aviso.** Al abrir el código:
+`CLAUDE.md` y `PROJECT-RULES.md` **estaban COMMITEADOS**, así que el clon los recibía *antes* de
+que `init` corriera. Avisar no bastaba: **salieron del repo** (`.gitignore`), como `WORKSPACE.md`
+el 07-ago. Verificado primero que las plantillas los reproducen.
+De paso, 2 defectos que solo se ven ejecutándolo: `init` copiaba la cabecera `<!-- PLANTILLA -->`
+al archivo generado, y `DIFFERS` no distinguía *"lo edité yo"* de *"esto es de otra persona"*.
+📊 **Medido en un clon nuevo con `owner: Auditor Externo`, sin `--force`:** "Brian" **11 → 0**,
+dueño real **0 → 11** · batería del clon **197/1**, y ese 1 (`registered=no`) es la respuesta
+correcta. ⭐ El README declara ahora `bin/init` como **paso uno**, con su coste escrito.
 
 ### V2-9 · `piezas.tsv` declara 23 piezas y ningún validador
 
 - **Prioridad:** 🟠 medio
-- **Estado:** activo
-- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Estado:** cerrado
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
 - **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
 - **Archivos de referencia:** `piezas.tsv` · `bin/check-structure`
 - **Plan:** —
@@ -175,11 +180,15 @@ Sí detecta lo que sí declara: borrar `docs/STATES.md` produce el aviso correct
 y las piezas que **hacen cumplir el sistema entero** no están en él. Si un validador desaparece —por
 un merge, un rebase o un borrado— nadie avisa, y el sistema pierde una puerta **en silencio**.
 
+✅ **CERRADO 2026-08-08.** Declaradas **20 piezas**: los 11 validadores, los 3 generadores, los 4
+hooks, el instalador y la suite. 🔬 **Reprobado por sabotaje:** borrar `bin/test-f0-f6` pasa de
+**silencio total** a `🔴 PIECE MOVED OR LOST · bateria`.
+
 ### V2-10 · 2 reglas escritas sin ningún script que las verifique
 
 - **Prioridad:** 🟠 medio
-- **Estado:** activo
-- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** —
+- **Estado:** cerrado
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
 - **Arrastrado desde:** — (nació en la auditoría profunda del 08-08)
 - **Archivos de referencia:** `rules/ESTANDAR_Metodo_Fases_F.md` · `rules/case-dangerous-default.md` · `bin/test-f0-f6`
 - **Plan:** —
@@ -193,6 +202,14 @@ y el cableado no las siguió**.
 solo vive en un documento, 40-60%*. `ESTANDAR_Metodo_Fases_F` gobierna **cómo se hace todo trabajo
 grande** y hoy se cumple por memoria. ⚠️ Es exactamente el defecto que destapó que
 `rule-shipping-flow` se cumplió **0 de 15 veces** siendo solo documento.
+
+✅ **CERRADO 2026-08-08 — con un matiz que cambia el check.** No se exige que un SCRIPT verifique
+cada regla: hay reglas de **metodología** (cómo se trabaja) que ningún validador puede medir sin
+inventar criterio (ADR-003). Se exige que la regla **LLEGUE a alguien** — un validador, un hook,
+`base-rules.md` o el §D de un bloque. **Una regla que nadie nombra es una regla que nadie recibe.**
+🔬 **Reprobado por sabotaje:** una regla nueva sin cablear hace caer el check.
+⭐ Y así el conteo deja de envejecer: *"las 20 reglas ya tienen script"* era cierto el 05-ago y
+falso tres reglas después. **Un número es correcto una vez; un check lo es siempre.**
 
 ---
 
