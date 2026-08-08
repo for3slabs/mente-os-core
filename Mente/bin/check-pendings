@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""check-pendings — verifies the SHAPE of the monthly pending file. It decides nothing.
+
+The doctrine is a document. The VERIFICATION is a script.
+
+⭐ What this script will never do: judge whether a pending is important, or whether it should
+have been closed. Priority is criterion (ADR-003) and belongs to Brian. This checks that every
+pending carries the fields that let a human decide — nothing more.
+
+Contracts enforced:
+  rules/contract-pending.md        the shape of a pending and of a block
+  rules/rule-pending-rotation.md   the monthly rotation and the `Arrastrado desde` trail
+
+Usage:
+  bin/check-pendings              the live month
+  bin/check-pendings <file>       a specific file
+  bin/check-pendings --quiet      exit code only, for hooks
+
+Exit codes: 0 clean · 1 warnings (yellow) · 2 errors (red)
+"""
+import os
+import re
+import sys
+import glob
+import datetime
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(ROOT)
+
+MESES = ("enero febrero marzo abril mayo junio julio agosto "
+         "septiembre octubre noviembre diciembre").split()
+
+RED, YEL = [], []
+PRIOS = ("🔴", "🟠", "🟢")
+ESTADOS = ("activo", "pausado", "cerrado", "eliminado", "terminado")
+
+
+def live_file():
+    """The file for the CURRENT month. Its absence is not an error: the month may not have
+    rotated yet, and a validator that invents a deadline is a validator that cries wolf."""
+    hoy = datetime.date.today()
+    return f"memory/pendiente-{MESES[hoy.month - 1]}-{hoy.year}.md"
+
+
+def parse(path):
+    """Blocks and their pendings. A pending outside a block is the error §2 exists to catch."""
+    text = open(path, encoding="utf-8", errors="replace").read()
+    bloques, actual = {}, None
+    for line in text.split("\n"):
+        mb = re.match(r"^##\s+BLOQUE\s+·\s+(.+?)\s*$", line)
+        if mb:
+            actual = mb.group(1).strip()
+            bloques.setdefault(actual, [])
+            continue
+        mp = re.match(r"^###\s+(\S+)\s+·\s+(.+?)\s*$", line)
+        if mp:
+            bloques.setdefault(actual, []).append(
+                {"id": mp.group(1), "titulo": mp.group(2), "bloque": actual, "campos": {}})
+            continue
+        # ⚠️ Several fields may share one line: `**Creado:** X · **Modificado:** Y · **Cerrado:** Z`
+        # is the readable form and the contract uses it. Parsing only the first pair made the
+        # date validator read "2026-07-04 · **Modificado:** …" as a date and fail all 16 pendings
+        # (measured 2026-08-08, on this file's first run). The validator was wrong, not the file.
+        if line.lstrip().startswith("-") and "**" in line:
+            for k, v in re.findall(r"\*\*(.+?):\*\*\s*([^·]*)", line):
+                if actual and bloques.get(actual):
+                    bloques[actual][-1]["campos"][k.strip().lower()] = v.strip()
+    return bloques
+
+
+def check(path):
+    bloques = parse(path)
+    if not bloques:
+        RED.append(f"{path}: no `## BLOQUE · <nombre>` heading — every pending lives in a block")
+        return
+
+    huerfanos = bloques.pop(None, [])
+    for p in huerfanos:
+        RED.append(f"{path}: pending {p['id']} sits outside any block "
+                   "(contract-pending §2 — it belongs in one, or in BLOQUE · PENDIENTE-EXTRA)")
+
+    for nombre, pends in bloques.items():
+        # A block with one pending is only legal for a genuinely NEW topic, and that is
+        # criterion — so this warns, never blocks.
+        # An EMPTY PENDIENTE-EXTRA is the good news, not a defect: it means everything found a
+        # block. Warning about it would train the reader to ignore the warnings.
+        if len(pends) < 2 and not nombre.startswith("PENDIENTE-EXTRA") and pends:
+            YEL.append(f"{path}: block {nombre!r} has {len(pends)} pending(s) — "
+                       "§2 asks for 2+ unless it is a brand-new topic")
+
+        for p in pends:
+            c, ident = p["campos"], f"{path}: {nombre} / {p['id']}"
+
+            for campo in ("prioridad", "estado", "creado", "archivos de referencia"):
+                if campo not in c:
+                    RED.append(f"{ident}: missing field `{campo}`")
+
+            prio = c.get("prioridad", "")
+            if prio and not any(s in prio for s in PRIOS):
+                RED.append(f"{ident}: priority must be one of 🔴 🟠 🟢, got {prio!r}")
+
+            est = c.get("estado", "").lower()
+            if est and not any(e in est for e in ESTADOS):
+                RED.append(f"{ident}: state {est!r} is not "
+                           "activo | pausado | cerrado | eliminado | terminado")
+
+            # ⭐ The rule that stops a pending from lying: prose saying "closed" proves nothing.
+            # A close is a DATE. Measured 2026-08-08 on the old file: a section titled
+            # "✅ CERRADO" carried 7 unticked boxes.
+            cerrado = c.get("cerrado", "—")
+            if any(e in est for e in ("cerrado", "terminado")) and cerrado in ("—", "", "-"):
+                RED.append(f"{ident}: state is closed but there is no closing DATE "
+                           "(rule-pending-rotation §1 — without it, it rotates forever)")
+            if est == "activo" and cerrado not in ("—", "", "-"):
+                RED.append(f"{ident}: active but carries a closing date {cerrado!r}")
+
+            # Deleting without a reason is how a pending is reborn as a "new finding".
+            if "eliminado" in est and len(c.get("razon", c.get("razón", ""))) < 10:
+                RED.append(f"{ident}: deleted without a written reason (contract-pending §4)")
+
+            for campo in ("creado", "modificado"):
+                v = c.get(campo, "")
+                if v and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+                    RED.append(f"{ident}: `{campo}` must be YYYY-MM-DD, got {v!r}")
+
+            if "arrastrado desde" not in c:
+                YEL.append(f"{ident}: no `Arrastrado desde` — write `—` if it was born here "
+                           "(rule-pending-rotation §3: age is information)")
+
+            cuerpo = c.get("descripcion", c.get("descripción", ""))
+            if len(p["titulo"]) < 10 and not cuerpo:
+                YEL.append(f"{ident}: title is too short to describe the pending")
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    quiet = "--quiet" in sys.argv
+    paths = args or [live_file()]
+
+    faltan = [p for p in paths if not os.path.exists(p)]
+    if faltan and not args:
+        # No live file yet is a state, not a defect — say so and exit clean.
+        if not quiet:
+            print(f"⬜ {faltan[0]} does not exist yet (the month has not rotated)")
+        return 0
+    for p in faltan:
+        RED.append(f"{p}: file not found")
+
+    for p in [p for p in paths if os.path.exists(p)]:
+        check(p)
+
+    if quiet:
+        return 2 if RED else (1 if YEL else 0)
+
+    for m in RED:
+        print(f"🔴 {m}")
+    for m in YEL:
+        print(f"🟡 {m}")
+    if not RED and not YEL:
+        print(f"✅ clean — every pending carries its contract ({', '.join(paths)})")
+    print(f"\n{len(RED)} errors · {len(YEL)} warnings")
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

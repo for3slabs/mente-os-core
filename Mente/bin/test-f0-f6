@@ -2035,6 +2035,37 @@ _frentes=$(grep -cE '^frente "F[0-9]' "$M/bin/verify-all" 2>/dev/null || echo 0)
 [ "${_frentes:-0}" -ge 8 ] && ok "verify-all declara sus $_frentes frentes de verificación" \
   || bad "verify-all frentes" "≥8" "${_frentes:-0}"
 
+# ── 11 · LOS PENDIENTES TIENEN FORMA, Y EL MES VIVO EXISTE (2026-08-08) ─────
+# Brian rediseñó los pendientes: rotan por archivo cada mes, todo pendiente vive en un BLOQUE y
+# lleva sus 3 fechas + prioridad + archivos de referencia (`rules/contract-pending.md`).
+# 🔴 El defecto que esto evita, medido en el archivo viejo: 4,794 líneas donde 2 pendientes v2
+# ya HECHOS seguían contando como deuda y una sección "✅ CERRADO" tenía 7 casillas abiertas.
+# ⭐ Un pendiente que miente sobre su estado es peor que no tenerlo: se planifica sobre él.
+[ -x "$M/bin/check-pendings" ] && ok "bin/check-pendings existe y es ejecutable" \
+  || bad "check-pendings" "presente y ejecutable" "no está"
+
+# El archivo del mes VIVO debe existir: sin él, la rotación no ocurrió y los pendientes
+# están donde nadie los lee. El nombre se deriva de la fecha, nunca se escribe a mano.
+_mes=$(LC_ALL=C date +%m); _anio=$(LC_ALL=C date +%Y)
+_meses="enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre"
+_nom=$(echo "$_meses" | cut -d' ' -f"$((10#$_mes))")
+[ -f "$M/memory/pendiente-${_nom}-${_anio}.md" ] \
+  && ok "el archivo de pendientes del mes vivo existe (pendiente-${_nom}-${_anio}.md)" \
+  || bad "rotación de pendientes" "pendiente-${_nom}-${_anio}.md" "no existe — el mes no rotó"
+
+# Y su forma se cumple: 0 errores. Los warnings no bloquean (un bloque de 1 pendiente puede ser
+# un tema nuevo legítimo — eso es criterio, y el criterio es de Brian, ADR-003).
+"$M/bin/check-pendings" --quiet >/dev/null 2>&1; _cp=$?
+[ "$_cp" -le 1 ] && ok "los pendientes del mes vivo cumplen su contrato (0 errores)" \
+  || bad "contrato de pendientes" "0 errores" "check-pendings salió $_cp"
+
+# El histórico quedó CONGELADO: si vuelve a crecer, alguien está escribiendo donde no debe.
+if [ -f "$M/memory/PENDIENTES.md" ]; then
+  grep -qi "histórico\|historico\|solo lectura\|read-only\|CONGELADO" "$M/memory/PENDIENTES.md" \
+    && ok "PENDIENTES.md se declara histórico (ya no recibe escrituras)" \
+    || bad "histórico de pendientes" "PENDIENTES.md declarado histórico" "no lo dice"
+fi
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"

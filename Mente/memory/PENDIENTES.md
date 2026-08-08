@@ -1,7 +1,21 @@
-# PENDIENTES — For3s OS
+# PENDIENTES — For3s OS · ⛔ HISTÓRICO, SOLO LECTURA
 
-**Status:** current · **Type:** pending · **Updated:** 2026-08-05 · **Owner:** brian
+**Status:** current · **Type:** pending · **Updated:** 2026-08-08 · **Owner:** brian
 **Migrated:** desde v1 (2026-07-30, ADR-029)
+
+> # ⛔ CONGELADO — este archivo ya no recibe escrituras (2026-08-08)
+>
+> **Los pendientes vivos están en `memory/pendiente-<mes>-<año>.md`.** Rotan por archivo cada
+> mes; el pendiente se arrastra hasta que se cierra (`rules/rule-pending-rotation.md`).
+>
+> **Por qué se congeló, medido:** 4,794 líneas · 348 KB mezclando **30 secciones cerradas con 46
+> abiertas**. Dos pendientes v2 ya HECHOS seguían contando como deuda (los 30 ADRs existen; las 3
+> jerarquías de reglas existen) y una sección marcada `✅ CERRADO` tenía **7 casillas sin marcar**.
+> ⭐ Un archivo que mezcla lo resuelto con lo vivo **no puede ser una métrica**: su tamaño dejó de
+> significar deuda.
+>
+> ⚠️ **Se conserva entero, no se borra:** guarda el POR QUÉ de decisiones que siguen vigentes.
+> Escribir aquí un pendiente nuevo es el defecto que `bin/test-f0-f6` vigila.
 
 
 

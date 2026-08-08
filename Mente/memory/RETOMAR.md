@@ -107,21 +107,14 @@ complacer al medidor habría convertido el veredicto en decoración. Verificado 
 
 ---
 
-### 🆕 🔴 LA DEMO PASÓ DE 0 A 4 TESTS — y uno **falla a propósito** (2026-08-05)
+### 🆕 LA DEMO: de 0 a 4 tests, con 23/23 en verde (2026-08-05/06)
 
-`plan-tests-demo` **CERRADO 🟢 PRODUCTO** y archivado. Los **4 caminos críticos escritos**:
-② autorizar · ① entrar · ③ hablar · ④ apagar. **Suite: 15 pasan · 8 saltados · 1 FALLA.**
-⏸️ Los 8 saltados esperan una **rama de Neon de test** — `DEMO_DATABASE_URL` es PRODUCCIÓN
-(medido: 4 instancias vivas), así que los tests de integración **se saltan** en vez de caer ahí.
-🔬 **Cada test se VIO FALLAR antes de creerle** (sabotaje + restaurar byte a byte); en ④ eso destapó que **mi propio caso no discriminaba**. ⚠️ **④ iba a probar el archivo equivocado** (`container.ts`): la regla *"solo el dueño"* vive en `app/api/demo/general/agent/route.ts`.
-🔬 **2 defectos del MOTOR de paso:** `check-applied` no seguía punteros de un bloque partido, y daba por aplicado un estándar por palabras **sueltas** (preexistente, verificado contra HEAD). Corregidos y reprobados. Detalle: `blocks/active/demo/BLOCK.md` §G.
-🔴 **El rojo ES la entrega:** `DEV_FALLBACK` autoriza `jazz@example.com`, una dirección que nadie
-controla (`expected false, received true`). ⛔ **No lo "arregles" debilitando el assert** — su verde
-es la definición de cerrar `blocks/active/demo` §F-7, y eso necesita un dato que solo tiene Brian:
-**quién es dueño de jazz y de mashe.**
-📊 demo: `test files` **0 → 1** — cae uno de sus 2 rojos (queda el muerto `ConnectClaude.tsx`). Corredor: **Vitest 4.1.10**.
-⛔ **Nada commiteado ni empujado** — Vercel despliega `marca-personal` desde `main`: lo decide Brian.
-🔬 **Un validador lee la CELDA, no la intención** — el matiz va en la descripción; la celda, UNA palabra.
+`plan-tests-demo` cerró 🟢 PRODUCTO. Los 4 caminos críticos escritos (autorizar · entrar · hablar ·
+apagar) y **23/23 en verde** contra la rama de Neon de test. 🔬 **Cada test se VIO FALLAR antes de
+creerle** — en ④ eso destapó que mi propio caso no discriminaba, y que iba a probar el archivo
+equivocado. 🔬 De paso, **2 defectos del MOTOR** (`check-applied`) corregidos.
+📊 El bloque `demo` está **11/12**; su único pendiente vivo es §F-11 (rutas OAuth).
+👉 Detalle y estado real: `blocks/active/demo/BLOCK.md`.
 
 ### ⚡ RENDIMIENTO: el sistema es **86x más rápido** (2026-08-05)
 
@@ -203,12 +196,9 @@ capas** — validado contra 4 frameworks, **ninguno responde *"¿producto o MVP?
 ## 5-bis · Cerrados grandes recientes (solo punteros — historia en Bitácora Julio)
 
 - 🌐 **SUPER-CEREBRO CONECTADO ✅** — Maestro F1-F5 + Foresito entrenado + 👑 Agente Maestro (§4).
-  Visión: `vision/Vision_Mente_OS_Maestro_Y_Foresito_Entrenado.md`.
-- 🎯 **APRENDIZAJES DE CAMPO post-Incubathon** (`vision/Aprendizajes_De_Campo_Post_Incubathon.md`):
-  🔴A ✅ · 🔵D ✅ · 🟠B ✅ · 🟣E ✅ · 🟡C multi-canal PENDIENTE (sin urgencia).
-- **Congelados hasta orden de Brian** (NO empujar): brechas OpenClaw/Hermes · identidades
-  secundarias · descubribilidad (SEO/AEO/GEO).
-- **Deuda no urgente:** H9 D1-D8 · H10 HP1-HP6 · UX. Lista completa: **`memory/PENDIENTES.md`**.
+- 🎯 **APRENDIZAJES post-Incubathon:** 🔴A ✅ · 🔵D ✅ · 🟠B ✅ · 🟣E ✅ · 🟡C multi-canal pendiente.
+- ⭐ **Toda la deuda viva —congelados incluidos— está en 🗓️ `memory/pendiente-<mes>-<año>.md`**,
+  por bloque y con prioridad. Ya no se lista aquí: dos listas de pendientes divergen.
 
 ## 6 · 🏆 Incubathon (jul 2026) + 🌉 puente a otros Mente OS
 
@@ -241,7 +231,7 @@ capas** — validado contra 4 frameworks, **ninguno responde *"¿producto o MVP?
 | Necesitas… | Lee… |
 |---|---|
 | **🖥️⭐ LA DEMO — índice maestro (ENTRAR POR AQUÍ)** | memoria `project_bloque_demo_pendientes` |
-| **TODOS los pendientes a detalle** | `memory/PENDIENTES.md` |
+| **TODOS los pendientes a detalle** | 🗓️ `memory/pendiente-<mes>-<año>.md` (rota mensual) · `PENDIENTES.md` = histórico congelado |
 | **Secretos de la demo (DEMO_ENC_KEY) — FUERA de git** | `secrets/Secretos_Demo_Sitio.md` |
 | Demo: Ronda F0 · mapa · plan BD · auditoría | repo del sitio: `marca-personal/DEMO_*.md` |
 | 🎓 Caso: limpiar un hardcodeo heredado sin romper | `memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` |

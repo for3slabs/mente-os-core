@@ -131,7 +131,7 @@ reglas. **La prueba viva es `Mente/bin/test-f0-f6`; lo único que importa es `fa
 | ⭐ **estado real + próximo paso** | `Mente/memory/RETOMAR.md` |
 | cualquier **número vivo** (batería, huecos, permisos, citas) | 🤖 `Mente/docs/METRICS.md` |
 | versión del producto · fases cerradas · qué bloques hay | `Mente/memory/RETOMAR.md` §5 |
-| pendientes abiertos | `Mente/memory/PENDIENTES.md` |
+| pendientes abiertos | 🗓️ `Mente/memory/pendiente-<mes>-<año>.md` — rota cada mes (`Mente/rules/rule-pending-rotation.md`) |
 
 ---
 

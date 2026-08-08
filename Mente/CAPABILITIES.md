@@ -61,6 +61,7 @@ measures** — that is how a measured verdict becomes an opinion.
 | `bin/check-health` | *is anything wrong right now?* — runs itself at session start | 0 clean · 1 warn · 2 error |
 | `bin/check-blocks` | *do documents, blocks and ADRs satisfy their contracts?* | 0 · 1 warn · 2 error |
 | `bin/check-links` | *does every citation resolve?* | 0 · 1 something points nowhere |
+| `bin/check-pendings` | *does every pending carry its block, dates and priority?* | 0 · 1 warn · 2 error |
 | `bin/check-structure` | *is the folder tree the one the design declared?* | 0 · 1 warn · 2 missing |
 | `bin/check-sufficiency <block>` | *can this block restart from disk alone?* | 0 sufficient · 2 not |
 | `bin/check-applied <block>` | *were the declared standards actually applied?* | 0 · 1 not |
