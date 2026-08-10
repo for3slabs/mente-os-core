@@ -367,9 +367,9 @@
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-pending-rotation.md` | rule | current | 2026-08-08 | 103 |
 | `rule-post-merge-cleanup.md` | rule | current | 2026-08-08 | 86 |
-| `rule-pr-batching.md` | rule | current | 2026-08-08 | 103 |
+| `rule-pr-batching.md` | rule | current | 2026-08-08 | 131 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 249 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 250 |
 
 ## `rules/decisions/`
 

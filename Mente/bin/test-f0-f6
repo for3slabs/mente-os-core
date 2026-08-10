@@ -506,13 +506,14 @@ done
 n=$(python3 -c "
 import json;d=json.load(open('$REPO/.claude/settings.json'))
 print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
-# 7 = session-start + pre-edit-standards + gate-critical (F6-3) + gate-handoff (2026-07-31)
-#   + gate-secrets + 2 emisores del permiso de secrets, SessionStart y PostCompact (2026-08-05).
+# 8 = session-start + pre-edit-standards + gate-critical (F6-3) + gate-handoff (2026-07-31)
+#   + gate-secrets + 2 emisores del permiso de secrets, SessionStart y PostCompact (2026-08-05)
+#   + watch-prs (2026-08-08): avisa de un merge ajeno antes de tocar git, sin preguntar a Brian.
 # A hardcoded count is on purpose: a hook silently disappearing from settings.json is exactly
 # the failure this catches. It fired correctly when gate-handoff was added, y otra vez al
 # cablear la puerta de secrets — the count is meant to be updated deliberately, never widened
 # to "N or more".
-eq "project hooks registered (session-start + standards + 3 gates + 2 leases)" "7" "$n"
+eq "project hooks registered (session-start + standards + 3 gates + 2 leases + vigía PR)" "8" "$n"
 
 # ⭐ THE SEAM: counting 4 says nothing about whether they point at anything real.
 # Found 2026-07-31 by breaking settings.json and measuring who noticed: a hook rewritten to
@@ -2192,6 +2193,10 @@ fi
 _prs=0
 [ -x "$M/bin/check-prs" ] || { _prs=$((_prs+1)); printf '     ⤷ bin/check-prs no existe o no es ejecutable\n'; }
 grep -q "check-prs" "$M/hooks/session-start.sh" || { _prs=$((_prs+1)); printf '     ⤷ el arranque no lo consulta: un detector que nadie invoca no detecta\n'; }
+# ⭐ Y no basta con el arranque: Brian mergea A MITAD DE SESIÓN, cuando el SessionStart ya pasó.
+# `hooks/watch-prs.py` mira justo antes de un git que el merge volvería obsoleto.
+[ -x "$M/hooks/watch-prs.py" ] || { _prs=$((_prs+1)); printf '     ⤷ falta hooks/watch-prs.py: solo se mira al arrancar, no a mitad de sesión\n'; }
+grep -q "watch-prs" "$M/bin/init" || { _prs=$((_prs+1)); printf '     ⤷ bin/init no lo cablea: un clon nacería sin el detector\n'; }
 grep -q "check-prs" "$M/CAPABILITIES.md" || { _prs=$((_prs+1)); printf '     ⤷ CAPABILITIES no lo nombra\n'; }
 eq "el estado de los PR se mira al arrancar, no se pregunta" "0" "$_prs"
 
@@ -2214,6 +2219,41 @@ grep -q "force-with-lease" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); p
 grep -qi "GitHub" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ no prohíbe resolver en la web, donde no corre la batería\n'; }
 grep -qi "REGENERAN\|regenerar" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ no dice que los generados se regeneran, no se eligen\n'; }
 eq "un PR con conflictos tiene procedimiento escrito (rebase · lease · no en la web)" "0" "$_cf"
+
+# ── 21 · EL CICLO COMPLETO TIENE DUEÑO EN CADA ETAPA (2026-08-08) ──────────
+# 🔴 Brian, tras encontrar que los conflictos no estaban cubiertos: "creo que lo hiciste pero al
+# parecer nunca lo implementaste. Este tipo de cosas son con las que yo no puedo trabajar."
+# ⭐ La causa NO fue olvidar una implementación: fue que el ciclo declarado TERMINABA en ⛔ STOP.
+# Conflicto, merge y limpieza no estaban en ningún mapa, así que su ausencia era invisible —
+# un hueco del que nadie habla es indistinguible de un hueco que no existe.
+# Este check recorre la tabla del §1 y verifica que CADA etapa apunte a algo que EXISTE.
+_ciclo=$(cd "$M" && python3 - <<'PY'
+import re, os, sys
+t = open("rules/rule-pr-batching.md", encoding="utf-8").read()
+m = re.search(r"\| # \| Etapa \| Regla que la gobierna \|\n\|[-| ]+\|\n((?:\|.*\n)+)", t)
+if not m:
+    print("     ⤷ la tabla del ciclo completo no existe en rule-pr-batching §4", file=sys.stderr); print(99); raise SystemExit
+filas = [l for l in m.group(1).split("\n") if l.startswith("|")]
+malas = 0
+for l in filas:
+    cols = [c.strip() for c in l.strip("|").split("|")]
+    if len(cols) < 3:
+        continue
+    etapa, gob = cols[1], cols[2]
+    # Cada `ruta.md` o `bin/x` citado en la columna de gobierno debe existir de verdad.
+    refs = re.findall(r"`([\w./-]+(?:\.md|\.sh|\.py)|bin/[\w-]+)`", gob)
+    if not refs:
+        print(f"     ⤷ etapa sin regla declarada: {etapa[:44]}", file=sys.stderr); malas += 1; continue
+    for r in refs:
+        if not os.path.exists(r):
+            print(f"     ⤷ {etapa[:34]} apunta a {r}, que NO existe", file=sys.stderr); malas += 1
+if len(filas) < 12:
+    print(f"     ⤷ el ciclo declara {len(filas)} etapas; eran 12 al escribirlo", file=sys.stderr)
+    malas += 1
+print(malas)
+PY
+)
+eq "cada etapa del ciclo (incluidos conflicto y merge) tiene regla que existe" "0" "${_ciclo:-99}"
 
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \

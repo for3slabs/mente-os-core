@@ -45,3 +45,6 @@ Mente/.secrets-lease.json
 # primera línea, y `bin/init` es el primer paso de la instalación.
 /CLAUDE.md
 /PROJECT-RULES.md
+
+# Respaldo local que deja bin/init al recablear los hooks — es instancia, no motor.
+*.mente-bak

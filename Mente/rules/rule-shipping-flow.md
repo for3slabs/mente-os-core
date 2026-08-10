@@ -11,14 +11,10 @@ The workflow that turns a ticket into a reviewable PR: **branch → verify → P
 
 > ⭐ **Why this is a RULE and not part of an expertise file** (Brian, 2026-08-05):
 > *"no solo los PR deben ir en backend, porque va a haber PR de frontend, de base de datos."*
->
-> **Measured, and it is what makes this a real defect:** `hooks/pre-edit-standards.py` injects
-> **only what the block declares in its §D**. A frontend block declares `principles/expertise/dev-frontend.md`, so if
-> the PR flow lived in `principles/expertise/dev-backend.md` it would **never reach that block** — the agent shipping a
-> frontend ticket would not know how to open the PR. Same for a database block.
->
-> The flow is **transversal**: it does not change with the discipline. What changes per discipline
-> is *what gets verified*, and that stays in each `expertise/*.md`.
+> **Measured:** `hooks/pre-edit-standards.py` injects **only what the block declares in its §D**,
+> so a PR flow living in `principles/expertise/dev-backend.md` **never reaches** a frontend block. The flow is
+> **transversal**; lo que cambia por disciplina es *qué se verifica*, y eso vive en cada
+> `principles/expertise/*.md`.
 
 ---
 
@@ -31,39 +27,31 @@ The workflow that turns a ticket into a reviewable PR: **branch → verify → P
 `mente-os-for3s`, aunque Brian sea el único que escribe en él. Un PR que uno abre y revisa solo
 sigue dejando el diff legible antes de entrar — que es para lo que existe.
 
-### 🔴 Por qué esta sección nació: la regla se cumplió 0 de 15 veces
+### 🔴 Por qué nació: la regla se cumplió 0 de 15 veces
 
-Existía desde el 05-ago y **nada la aplicaba**: medido el 06-ago —y lo encontró Brian, no un
-validador— **15 de 15 commits fueron DIRECTOS a `master`**. La batería daba verde porque su check
-solo verifica que un bloque **DECLARE** la regla, y declararla no es cumplirla.
-⭐ **La ley del sistema fallando sobre sí misma:** *código 100%, documento 40-60%*. Esta, siendo
-solo documento, se cumplió **0%**.
+Existía desde el 05-ago y **nada la aplicaba**: medido el 06-ago, **15 de 15 commits fueron
+DIRECTOS a `master`** — y lo encontró Brian, no un validador. La batería daba verde porque su
+check solo verificaba que un bloque **DECLARE** la regla, y declararla no es cumplirla.
+⭐ *Código 100%, documento 40-60%*. Esta, siendo solo documento, se cumplió **0%**.
+**Ya no:** `hooks/pre-commit.sh` **BLOQUEA** el commit sobre la base, y un check vigila el candado.
+La excepción (`--no-verify`) deja rastro y se justifica en el §H del bloque.
 
-**Ya no:** `hooks/pre-commit.sh` **BLOQUEA** cualquier commit sobre `master` o `main`, y un
-check de la batería verifica que ese candado siga puesto. La excepción consciente existe
-(`git commit --no-verify`) pero deja rastro y hay que justificarla en el §H del bloque.
-
-> 🔴 **This is imported methodology, NOT Brian's criterion** (ADR-003). It is usable today, but it
-> is not his judgement. His criterion lives in `principles/expertise/*` §2-§4.
+> 🔴 **Metodología importada, NO criterio de Brian** (ADR-003). Su criterio vive en
+> `principles/expertise/*` §2-§4.
 
 ---
 
-## 0-bis · DOS REGLAS HERMANAS — agrupación de PRs y limpieza post-merge
+## 0-bis · DOS REGLAS HERMANAS — el resto del ciclo vive aparte
 
-Este archivo cubre **un ticket → un PR**. Dos piezas del mismo ciclo viven aparte porque llegó a
-297 líneas sobre su techo de 250, y `-bis` es la señal literal de *"pártanme"*:
+Este archivo cubre **un ticket → un PR**. Lo demás se partió al pasar de 297 líneas sobre su techo:
 
 | Regla | Qué gobierna |
 |---|---|
-| **`rules/rule-pr-batching.md`** | **cuántos pendientes** por PR: máximo 4, y el **último de un bloque es su CIERRE** — no espera a llenar 4 y **apunta a los PRs anteriores** |
-| **`rules/rule-post-merge-cleanup.md`** | qué pasa **después** del merge: **verificar que el trabajo viajó, luego borrar la rama** (local + remoto) |
+| **`rules/rule-pr-batching.md`** | cuántos pendientes por PR (máx. 4) · el **último de un bloque es su CIERRE** · **conflictos** · ⭐ **la tabla de las 12 etapas** |
+| **`rules/rule-post-merge-cleanup.md`** | **verificar que el trabajo viajó, luego borrar la rama** |
 
-> **Brian, 2026-08-08:** *"cada 4 errores de un bloque es un PR"* · *"cuando se terminan los
-> pendientes de un bloque, sin importar la cantidad, se genera un PR."*
-> **Brian, 2026-08-07:** *"cuando la rama ya fue mergeada, eliminada de local + remoto."*
-
-⛔ **Verificar SIEMPRE antes de borrar** — el squash puede dejar trabajo fuera sin que git avise
-(§2, anti-patrón #8): ya pasó 4 veces en este repo.
+⛔ **Verificar SIEMPRE antes de borrar** — el squash deja trabajo fuera sin que git avise
+(§2, anti-patrón #8): ya pasó 4 veces aquí.
 
 ---
 
@@ -71,7 +59,21 @@ Este archivo cubre **un ticket → un PR**. Dos piezas del mismo ciclo viven apa
 
 ```
 PRE-FLIGHT → BRANCH → IMPLEMENT → VERIFY → COMMIT → UPDATE CONTEXT → PUSH + PR → ⛔ STOP
+                                                                                    │
+                              ⬇ y DESPUÉS del ⛔ (decisión humana) el ciclo sigue ⬇
+                                                                                    │
+                             CONFLICTO? → MERGE (Brian) → DETECTAR → VERIFICAR → BORRAR RAMA
 ```
+
+### ⭐ EL CICLO COMPLETO — 12 etapas, cada una con su regla
+
+El diagrama de arriba llega hasta el ⛔ STOP; **el ciclo sigue después** (conflicto → merge →
+detectar → verificar → borrar). La tabla de las 12 etapas y quién gobierna cada una vive en
+**`rules/rule-pr-batching.md` §4**, y `bin/test-f0-f6` verifica que ninguna se quede sin dueño.
+
+> 🔴 **Por qué se escribió** (Brian, 2026-08-08): *"creo que lo hiciste pero al parecer nunca lo
+> implementaste."* El ciclo declarado **terminaba en ⛔ STOP**, así que las etapas de después no
+> estaban en ningún mapa — **un hueco del que nadie habla es indistinguible de uno que no existe.**
 
 **Pre-flight, before writing ANY code:** read the project's `CLAUDE.md` (phase status, architecture
 rules, known issues, last commit log) · read the spec the ticket references · check what just
@@ -243,7 +245,6 @@ Six layers, to exist before the first sub-agent is ever spawned:
 
 ---
 
-Related: `principles/expertise/dev-backend.md` §4-BIS (backend-specific failure patterns) ·
-`principles/expertise/dev-database.md` §4-BIS · `principles/expertise/dev-frontend.md` §4-BIS ·
-`rules/contract-block.md` (§D declares this file) · `rules/rule-isolation.md` ·
-`principles/owner-3-validation.md` §4 (the §5-BIS battery) · `blocks/archive/expertise-programacion_2026-08`.
+Related: `principles/expertise/dev-backend.md` · `principles/expertise/dev-database.md` ·
+`principles/expertise/dev-frontend.md` (§4-BIS en las tres) · `rules/contract-block.md` (su §D
+declara este archivo) · `rules/rule-isolation.md` · `principles/owner-3-validation.md` §4.

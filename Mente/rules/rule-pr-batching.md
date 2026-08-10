@@ -88,13 +88,41 @@ a secas es la forma más rápida de borrar trabajo ajeno.
 | Nunca | Por qué |
 |---|---|
 | **Resolver conflictos en la web de GitHub** | el editor no corre la batería: se mergea sin saber si el sistema sigue verde |
-| **`Accept both changes` sin leer** | en un archivo generado (`INDEX.md`, `METRICS.md`) duplica filas y produce un índice que nadie midió |
+| **`Accept both changes` sin leer** | en un archivo generado (`docs/INDEX.md`, `docs/METRICS.md`) duplica filas y produce un índice que nadie midió |
 | **Resolver sin backup** | un rebase reescribe historia; antes se copia lo que no se puede reconstruir |
 | **Dar por bueno el rebase sin verificar** | tras resolver, **la batería vuelve a correr**: `failed: 0` o no se empuja |
 
-⭐ **Los archivos generados no se resuelven a mano: se REGENERAN.** `INDEX.md` y `METRICS.md`
+⭐ **Los archivos generados no se resuelven a mano: se REGENERAN.** `docs/INDEX.md` y `docs/METRICS.md`
 entraron en conflicto porque ambos lados los habían regenerado. Elegir "el mío" o "el suyo" es
 elegir entre dos fotos viejas — la respuesta correcta es correr `bin/generate-index` después.
+
+---
+
+## 4 · ⭐ EL CICLO COMPLETO — cada etapa con la regla que la gobierna
+
+> 🔴 **Por qué esta tabla existe** (Brian, 2026-08-08): *"creo que lo hiciste pero al parecer nunca
+> lo implementaste. Este tipo de cosas son con las que yo no puedo trabajar."* El ciclo declarado
+> **terminaba en ⛔ STOP**, así que las etapas de después —conflicto, merge, limpieza— no estaban
+> en ningún mapa. **Un hueco del que nadie habla es indistinguible de un hueco que no existe.**
+
+| # | Etapa | Regla que la gobierna |
+|---|---|---|
+| 1 | **PRE-FLIGHT** — leer antes de tocar | `rules/rule-shipping-flow.md` §1 |
+| 2 | **BRANCH** — nunca sobre la base | `rules/rule-shipping-flow.md` §1 · `hooks/pre-commit.sh` |
+| 3 | **IMPLEMENT** — solo lo del scope | `rules/rule-isolation.md` |
+| 4 | **VERIFY** — `failed: 0`, sin excusas | `principles/owner-3-validation.md` §4 |
+| 5 | **COMMIT** — atómico, con su porqué | `rules/rule-shipping-flow.md` §1 |
+| 6 | **PUSH + PR** — con su link pegado | `rules/rule-shipping-flow.md` §1 · §3 |
+| 7 | **AGRUPACIÓN** — 4 por PR, el último cierra el bloque | `rules/rule-pr-batching.md` §1-§2 |
+| 8 | 🆕 **CONFLICTO** — diagnosticar, rebase, `--force-with-lease` | `rules/rule-pr-batching.md` §3 |
+| 9 | **MERGE** — ⛔ decisión humana, nunca del agente | `rules/rule-shipping-flow.md` §1 |
+| 10 | 🆕 **DETECTAR el merge** — mirar, no preguntar | `bin/check-prs` · `hooks/session-start.sh` |
+| 11 | **VERIFICAR que viajó** — antes de borrar nada | `rules/rule-post-merge-cleanup.md` §1-§2 |
+| 12 | **BORRAR la rama** — local + remoto, con sus 2 excepciones | `rules/rule-post-merge-cleanup.md` §3 |
+
+⛔ **Una etapa sin regla es un hueco.** `bin/test-f0-f6` verifica que las 12 sigan teniendo dueño:
+el día que alguien añada una etapa sin gobernarla, la batería lo dice — en vez de descubrirse
+cuando falla.
 
 ---
 

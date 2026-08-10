@@ -67,6 +67,11 @@ HOOKS = {
                         ("python3", "hooks/gate-critical.py")]),
         ("Agent|Task", [("python3", "hooks/gate-handoff.py")]),
         ("Read|Write|Edit|Bash", [("python3", "hooks/gate-secrets.py")]),
+        # ⭐ Detecta un merge de Brian ANTES de tocar git (2026-08-08). `bin/check-prs` ya corre
+        # en el SessionStart, pero su caso real es otro: mergea A MITAD DE SESIÓN, cuando el
+        # arranque ya pasó — y entonces yo sigo empujando sobre una rama ya mergeada.
+        # Este hook mira justo cuando voy a hacer algo que ese merge invalida. Nunca bloquea.
+        ("Bash", [("python3", "hooks/watch-prs.py")]),
     ],
     "PostCompact": [
         (None, [("python3", "bin/secrets-lease|open --source compact")]),
