@@ -119,6 +119,7 @@ frontier_engine:
 # tuyo · nace vacío o se genera · NO viaja al publicar el motor
 frontier_instance:
   - "Cerebro"
+  - "cache"          # datos locales de los validadores · nunca viaja
   - "memory"
   - "secrets"
   - "work"

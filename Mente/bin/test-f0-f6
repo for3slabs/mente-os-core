@@ -2182,6 +2182,39 @@ if grep -q "^\*\*Exempt:\*\*" "$M/$_arq" 2>/dev/null; then
     || bad "exención de techo" "0 avisos en ambos" "check-health=$_a · check-blocks=$_b"
 fi
 
+# ── 19 · EL ESTADO DE LOS PR SE MIRA, NO SE PREGUNTA (2026-08-08) ──────────
+# ⭐ Brian: "no tienes que estarme preguntando si ya lo mergeé… a lo mejor se me olvida decirte,
+# pero sí lo hice". 🔴 Medido ese día: se preguntó 5 veces en una sesión, y UNA respuesta fue
+# "sí" sobre OTRO PR — el #26 estaba mergeado y el #27 seguía abierto. Preguntar cuesta un turno
+# Y puede devolver un dato equivocado; mirar cuesta un segundo y devuelve el hecho.
+# ⛔ No es un cron: un cron dispara cuando no hay nadie escuchando. Va en el SessionStart, que es
+# el momento en que sí puedo actuar sobre lo que encuentre.
+_prs=0
+[ -x "$M/bin/check-prs" ] || { _prs=$((_prs+1)); printf '     ⤷ bin/check-prs no existe o no es ejecutable\n'; }
+grep -q "check-prs" "$M/hooks/session-start.sh" || { _prs=$((_prs+1)); printf '     ⤷ el arranque no lo consulta: un detector que nadie invoca no detecta\n'; }
+grep -q "check-prs" "$M/CAPABILITIES.md" || { _prs=$((_prs+1)); printf '     ⤷ CAPABILITIES no lo nombra\n'; }
+eq "el estado de los PR se mira al arrancar, no se pregunta" "0" "$_prs"
+
+# Y no puede aconsejar borrar una rama con trabajo VIVO: una rama puede tener varios PRs
+# (medido: #26 mergeado y #27 abierto compartían rama). Un consejo así destruiría trabajo.
+grep -q "vivas" "$M/bin/check-prs" 2>/dev/null \
+  && ok "check-prs no propone borrar una rama con PR abierto" \
+  || bad "check-prs" "distingue rama con PR abierto" "aconsejaría borrarla"
+
+# ── 20 · UN PR CON CONFLICTOS TIENE PROCEDIMIENTO ESCRITO (2026-08-08) ─────
+# 🔴 Brian lo encontró: "¿no habías hecho el sistema de conflictos?" — y NO existía. Ninguna
+# regla los trataba, así que el primer conflicto real (PR #27, 3 archivos) se iba a resolver
+# improvisando, y el sitio obvio para improvisar es el editor web de GitHub: el único lugar
+# donde NO corre la batería.
+# ⭐ Medido en ese conflicto: la causa no era trabajo rival sino el SQUASH reescribiendo un sha
+# que la rama ya tenía. `git rebase` lo saltó solo, 0 conflictos.
+_cf=0
+grep -qi "conflicto" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ ninguna regla dice qué hacer con un PR en conflicto\n'; }
+grep -q "force-with-lease" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ no exige --force-with-lease sobre --force\n'; }
+grep -qi "GitHub" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ no prohíbe resolver en la web, donde no corre la batería\n'; }
+grep -qi "REGENERAN\|regenerar" "$M/rules/rule-pr-batching.md" || { _cf=$((_cf+1)); printf '     ⤷ no dice que los generados se regeneran, no se eligen\n'; }
+eq "un PR con conflictos tiene procedimiento escrito (rebase · lease · no en la web)" "0" "$_cf"
+
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \
   || bad "exención de tests" "grade-block reconoce .test/.spec" "no los reconoce"

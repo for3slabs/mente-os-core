@@ -102,7 +102,17 @@ DISCUSSED = {"docs/Arquitectura_Mente_OS_v2_Bloques.md": {
     "work/Plan_Implementacion_Entrenamiento.md": {"persona/IDENTITY.md"},
     # "Equivalente a `godinez-studio/docs/onboarding-flow.md` pero para For3s" — an ANALOGY to
     # another project's document. A comparison is not a pointer.
-    "memory/archive/PR4_Flujo_Usuario_Memoria.md": {"godinez-studio/docs/onboarding-flow.md"}}
+    "memory/archive/PR4_Flujo_Usuario_Memoria.md": {"godinez-studio/docs/onboarding-flow.md"},
+    # ⭐ `Maestro/piezas.tsv` fue BORRADO a conciencia el 2026-08-08 (Brian: "bórralo"): era la
+    # copia obsoleta —23 claves contra 43— que quedó atrás al mover el archivo a `Mente/` el
+    # 07-ago. Verificado antes de borrar: ninguna clave vivía solo ahí.
+    # ⛔ Los dos primeros son un bloque ARCHIVADO, y un fósil no se reescribe
+    # (`rules/contract-document.md` §5: borrar historia es perder la capacidad de diagnosticar).
+    # El tercero es el pendiente que documenta ESTE borrado: citar lo que se borró es su tema.
+    "blocks/archive/split-architecture_2026-07/SUMMARY.md": {"Maestro/piezas.tsv"},
+    "blocks/archive/split-architecture_2026-07/BLOCK.md": {"Maestro/piezas.tsv"},
+    "blocks/archive/split-architecture_2026-07/connections.md": {"Maestro/piezas.tsv"},
+    "memory/pendiente-agosto-2026.md": {"Maestro/piezas.tsv"}}
 # Documents that legitimately name files the pending work will CREATE.
 # ⭐ Added 2026-08-02: both are ROADMAPS. Vision_For3s_Frontier §13 ("Corto/Mediano plazo")
 # and memory/archive/README §7 list documents to WRITE — "Iniciar Cerebro_Humano_acercamiento3.md",

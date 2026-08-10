@@ -70,3 +70,4 @@ puerta-critica	hooks/gate-critical.py	mente	canonical	bloquea cierres inválidos
 puerta-secretos	hooks/gate-secrets.py	mente	canonical	fail-closed sobre secrets/
 puerta-commit	hooks/pre-commit.sh	mente	canonical	bloquea commit en rama base e índice desfasado
 inyector	hooks/pre-edit-standards.py	mente	canonical	inyecta los §D del bloque dueño antes de editar
+val-prs	bin/check-prs	mente	canonical	¿cambió el estado de algún PR desde la última mirada?

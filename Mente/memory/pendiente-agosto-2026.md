@@ -1229,6 +1229,40 @@ oportunidad. Ninguno se desbloquea trabajando más.
 **Plan global:** no aplica — un plan de implementación sobre una decisión ajena sería inventar
 criterio (ADR-003).
 
+### E-8 · 🔴 El indexador del Maestro RECORRE `secrets/` — y su salida la lee Foresito
+
+- **Prioridad:** 🔴 urgente
+- **Estado:** cerrado
+- **Creado:** 2026-08-08 · **Modificado:** 2026-08-08 · **Cerrado:** 2026-08-08
+- **Arrastrado desde:** — (nació verificando la conexión Maestro ↔ v2)
+- **Archivos de referencia:** `Maestro/indexador.py` (otro repo: `for3slabs/mente-os-maestro`)
+- **Plan:** —
+- **Depende de:** —
+
+**Descripción.** 🔬 **Medido ejecutándolo end-to-end contra el árbol v2:** 325 archivos → 5,591
+chunks, y **61 de esos chunks vienen de `secrets/`** (`secrets/.access-log.md` · `secrets/Conectar_Servidor_For3s.md`
+· `README.md` · `secrets/Secretos_Demo_Sitio.md`).
+
+✅ **Lo que SÍ funcionó:** el filtro por chunk excluyó lo peligroso — **0 valores de secreto** en la
+salida (verificado con 4 patrones: claves Anthropic, tokens de GitHub, cadenas de BD con password,
+passwords sueltos). Lo que entró son cabeceras y la bitácora de accesos.
+
+⚠️ **Aun así es un riesgo que no hay que correr:** el indexador **no excluye la carpeta**, solo
+inspecciona chunk por chunk. Un secreto escrito en una forma que el filtro no reconoce entra — y su
+salida **la consume Foresito EN VIVO por MCP**. ⭐ **La defensa correcta es no recorrer la carpeta**,
+no confiar en que el filtro acierte siempre: `principles/owner-3-validation.md` — *ausencia de
+evidencia no es evidencia*.
+
+🙋 **Es OTRO repo** (`for3slabs/mente-os-maestro`): la corrección es de una línea, pero tocar el
+indexador que un agente en producción consume es decisión de Brian.
+
+✅ **CERRADO 2026-08-08** (Brian: *"indéxalo"* — es decir, arréglalo). El indexador **deja de
+recorrer la carpeta**: `NO_RECORRER = {secrets, node_modules, __pycache__, cache}` en el `os.walk`,
+que ya filtraba ocultos. Subido a `for3slabs/mente-os-maestro` (`eb65195`).
+📊 **Medido después:** `secrets/` **61 chunks → 0**, y el resto **intacto** — 321 archivos frente a
+325, exactamente los 4 de esa carpeta. ⛔ **El filtro por chunk NO se tocó:** sigue vivo como
+segunda línea. Quitar la primera defensa al añadir otra es cambiar un riesgo por otro.
+
 ### E-1 · ⭐ LA PRUEBA DE CAMPO — cero instalaciones externas
 
 - **Prioridad:** 🔴 urgente

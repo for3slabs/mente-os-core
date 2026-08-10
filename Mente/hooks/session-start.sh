@@ -35,4 +35,13 @@ fi
 stale="$("$MENTE/bin/flag-stale" 2>/dev/null)" ; scode=$?
 [ "$scode" -ne 0 ] && printf '%s\n' "$stale" | head -6
 
+# ⭐ ¿CAMBIÓ ALGÚN PR MIENTRAS YO NO ESTABA? (2026-08-08)
+# Brian: "no tienes que estarme preguntando si ya lo mergeé… a lo mejor se me olvida decirte,
+# pero sí lo hice". Medido ese día: se preguntó 5 veces en una sesión y una respuesta fue "sí"
+# sobre OTRO PR — preguntar cuesta un turno y puede devolver un dato equivocado.
+# ⛔ No es un cron: un cron dispara cuando no hay nadie escuchando. El estado vive en GitHub y
+# consultarlo al arrancar es barato — el arranque es justo el momento en que puedo actuar.
+prs="$("$MENTE/bin/check-prs" 2>/dev/null)" ; pcode=$?
+[ "$pcode" -eq 1 ] && printf '%s\n' "$prs" | head -8
+
 exit 0   # ⛔ always 0 — this hook informs, it never blocks

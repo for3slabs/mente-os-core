@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-08 · **Owner:** brian
-**Generated:** 2026-08-08 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-10 · **Owner:** brian
+**Generated:** 2026-08-10 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **216** |
+| `battery.checks` | **219** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -79,7 +79,7 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 20 |
+| `system.validators` | 21 |
 | `system.hook_files` | 7 |
 | `system.hooks_registered` | **7** |
 | `system.blocks_active` | 1 |
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 329 | 202 |
+| `permissions.local` (`settings.local.json`) | 335 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

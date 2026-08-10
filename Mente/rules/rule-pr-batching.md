@@ -60,6 +60,44 @@ N PRs sueltos que nadie vuelve a leer juntos.
 
 ---
 
+## 3 · ⭐ UN PR CON CONFLICTOS — casi siempre son el SQUASH, no trabajo rival
+
+> **Brian, 2026-08-08:** *"¿no habías hecho el sistema de conflictos? Aparece conflictos,
+> soluciónalos."* — **y no existía**: ninguna regla los trataba. Se escribió al encontrarlo.
+
+**El caso normal en este repo, medido:** el PR #27 mostró **3 archivos en conflicto**. La causa no
+era trabajo rival — era que **el merge por squash del #26 reescribió el sha** de un commit que la
+rama ya tenía. Git ve dos commits distintos con el mismo contenido y marca conflicto.
+
+### El procedimiento — 3 pasos, y el primero es diagnosticar
+
+```
+1 · ¿DE QUÉ TIPO ES?   git log --oneline HEAD..origin/<base>     ¿qué trae la base?
+                       git log --oneline origin/<base>..HEAD     ¿qué traigo yo?
+                       git show <mío> --stat  vs  git show <suyo> --stat
+2 · SI ES EL SQUASH    git rebase origin/<base>    → git SALTA los ya aplicados, 0 conflictos
+3 · EMPUJAR            git push --force-with-lease  ⛔ nunca --force a secas
+```
+
+⛔ **`--force-with-lease`, jamás `--force`.** El primero **se niega** si alguien empujó a esa rama
+desde tu último fetch; el segundo pisa su trabajo sin avisar. En una rama con PR abierto, `--force`
+a secas es la forma más rápida de borrar trabajo ajeno.
+
+### ⛔ Lo que NUNCA se hace
+
+| Nunca | Por qué |
+|---|---|
+| **Resolver conflictos en la web de GitHub** | el editor no corre la batería: se mergea sin saber si el sistema sigue verde |
+| **`Accept both changes` sin leer** | en un archivo generado (`INDEX.md`, `METRICS.md`) duplica filas y produce un índice que nadie midió |
+| **Resolver sin backup** | un rebase reescribe historia; antes se copia lo que no se puede reconstruir |
+| **Dar por bueno el rebase sin verificar** | tras resolver, **la batería vuelve a correr**: `failed: 0` o no se empuja |
+
+⭐ **Los archivos generados no se resuelven a mano: se REGENERAN.** `INDEX.md` y `METRICS.md`
+entraron en conflicto porque ambos lados los habían regenerado. Elegir "el mío" o "el suyo" es
+elegir entre dos fotos viejas — la respuesta correcta es correr `bin/generate-index` después.
+
+---
+
 Related: `rules/rule-shipping-flow.md` (el ciclo hasta el PR; §0-bis apunta aquí) ·
 `rules/rule-post-merge-cleanup.md` (qué pasa después del merge) ·
 `rules/contract-pending.md` (qué es un bloque de pendientes).

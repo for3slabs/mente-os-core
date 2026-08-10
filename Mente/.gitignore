@@ -55,3 +55,7 @@ mente.config.yml
 # 🔴 La regla estaba ESCRITA y no APLICADA, que es el 40-60% de cumplimiento de una regla que
 # solo vive en un documento. La plantilla sí viaja → `templates/WORKSPACE.md.template`.
 docs/WORKSPACE.md
+
+# Estado local de los validadores (cache/) — es INSTANCIA, no motor: el detector de PRs
+# guarda aquí lo último que vio. Versionarlo haría que un clon "recordara" PRs de otro dueño.
+cache/

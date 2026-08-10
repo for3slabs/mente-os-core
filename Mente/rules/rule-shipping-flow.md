@@ -33,13 +33,11 @@ sigue dejando el diff legible antes de entrar — que es para lo que existe.
 
 ### 🔴 Por qué esta sección nació: la regla se cumplió 0 de 15 veces
 
-Esta regla existía desde el 2026-08-05 y **nada la aplicaba**. Medido el 2026-08-06, y lo
-encontró Brian, no un validador: **15 de 15 commits fueron DIRECTOS a `master`. Cero ramas,
-cero PRs.** La batería daba verde porque su check 5c solo verifica que un bloque **DECLARE**
-la regla en su §D — y declararla no es cumplirla.
-
-⭐ **Es la ley de este sistema fallando sobre sí misma:** *una regla en código se cumple 100%;
-una que solo vive en un documento, 40-60%*. Esta, siendo solo documento, se cumplió **0%**.
+Existía desde el 05-ago y **nada la aplicaba**: medido el 06-ago —y lo encontró Brian, no un
+validador— **15 de 15 commits fueron DIRECTOS a `master`**. La batería daba verde porque su check
+solo verifica que un bloque **DECLARE** la regla, y declararla no es cumplirla.
+⭐ **La ley del sistema fallando sobre sí misma:** *código 100%, documento 40-60%*. Esta, siendo
+solo documento, se cumplió **0%**.
 
 **Ya no:** `hooks/pre-commit.sh` **BLOQUEA** cualquier commit sobre `master` o `main`, y un
 check de la batería verifica que ese candado siga puesto. La excepción consciente existe
@@ -50,16 +48,22 @@ check de la batería verifica que ese candado siga puesto. La excepción conscie
 
 ---
 
-## 0-bis · CUÁNTOS PENDIENTES POR PR — vive en su propia regla
+## 0-bis · DOS REGLAS HERMANAS — agrupación de PRs y limpieza post-merge
 
-**Un PR por BLOQUE, no por error: máximo 4 pendientes.** Y el **último PR de un bloque es su
-CIERRE** — no espera a llenar 4, y **apunta a los PRs anteriores** de ese bloque.
+Este archivo cubre **un ticket → un PR**. Dos piezas del mismo ciclo viven aparte porque llegó a
+297 líneas sobre su techo de 250, y `-bis` es la señal literal de *"pártanme"*:
+
+| Regla | Qué gobierna |
+|---|---|
+| **`rules/rule-pr-batching.md`** | **cuántos pendientes** por PR: máximo 4, y el **último de un bloque es su CIERRE** — no espera a llenar 4 y **apunta a los PRs anteriores** |
+| **`rules/rule-post-merge-cleanup.md`** | qué pasa **después** del merge: **verificar que el trabajo viajó, luego borrar la rama** (local + remoto) |
 
 > **Brian, 2026-08-08:** *"cada 4 errores de un bloque es un PR"* · *"cuando se terminan los
 > pendientes de un bloque, sin importar la cantidad, se genera un PR."*
+> **Brian, 2026-08-07:** *"cuando la rama ya fue mergeada, eliminada de local + remoto."*
 
-Los límites, las razones medidas y qué lleva el PR de cierre: **`rules/rule-pr-batching.md`**.
-Partido de aquí el 2026-08-08: este archivo pasó su techo de 250 líneas.
+⛔ **Verificar SIEMPRE antes de borrar** — el squash puede dejar trabajo fuera sin que git avise
+(§2, anti-patrón #8): ya pasó 4 veces en este repo.
 
 ---
 
@@ -102,32 +106,14 @@ the body.
 
 **Push + PR:** open the PR against the base branch using the checklist in §3.
 
-> ⛔ **Y EL ÚLTIMO PASO, OBLIGATORIO: PEGAR EL LINK DEL PR EN LA RESPUESTA.**
-> **Brian, 2026-08-06:** *"cuando me des un PR a revisar tienes que agregar el link de dicho PR."*
->
-> Un PR abierto que Brian no puede abrir de un clic **no está entregado**: le obliga a ir a
-> GitHub, buscar el repo y encontrar el PR — fricción que convierte una revisión de 30 segundos
-> en una tarea. El link va en el bloque 📦 ENTREGA, no enterrado en la prosa.
->
-> ⚠️ Aplica también a cada actualización: si se empuja un cambio al PR, se repite el link.
+> ⛔ **ÚLTIMO PASO OBLIGATORIO: PEGAR EL LINK DEL PR EN LA RESPUESTA.** Brian, 2026-08-06:
+> *"cuando me des un PR a revisar tienes que agregar el link."* Un PR que no se abre de un clic
+> **no está entregado**. Va en el bloque 📦 ENTREGA, y **se repite en cada actualización**.
 
 > ## ⛔ DO NOT MERGE. Creating the PR is the end of the agent's job. **Merging is a human decision.**
 
 **Post-merge, only when told to merge:** verify the deployment succeeded · verify backend changes
 are live · smoke-test the critical paths · **verify what shipped, then delete the branch** (§1-bis).
-
----
-
-## 1-bis · POST-MERGE — vive en su propia regla
-
-Cuando el PR se mergea, la rama **se verifica y se borra** (local + remoto). Los dos pasos, el
-porqué del orden y las dos únicas excepciones (migración de versión mayor · cambio de vida o
-muerte) están en **`rules/rule-post-merge-cleanup.md`**.
-
-> **Brian, 2026-08-07:** *"cuando la rama ya fue mergeada, eliminada de local + remoto."*
-
-⛔ **Verificar SIEMPRE antes de borrar** — el squash puede dejar trabajo fuera sin que git avise
-(§2, anti-patrón #8). Partido de aquí el 2026-08-08: este archivo pasó su techo de 250 líneas.
 
 ---
 

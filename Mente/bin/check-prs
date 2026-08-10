@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""check-prs — ¿cambió el estado de algún PR desde la última vez que miré?
+
+⭐ Brian, 2026-08-08: *"no tienes que estarme preguntando si ya lo mergeé… a lo mejor se me
+olvida decirte, pero sí lo hice. Crea algo para que sepas cuándo existe un cambio."*
+
+EL DEFECTO QUE CIERRA, medido ese mismo día: se preguntó "¿lo mergeaste?" cinco veces en una
+sesión. Una vez la respuesta fue "sí" y **era otro PR** — el #26 estaba mergeado y el #27 seguía
+abierto. Preguntar cuesta un turno Y puede devolver un dato equivocado; mirar cuesta un segundo
+y devuelve el hecho.
+
+⛔ POR QUÉ NO ES UN CRON: un cron dispara cuando yo no existo. Entre dos mensajes de Brian no
+hay nadie escuchando, así que un aviso emitido a las 3am no llega a ninguna parte. Lo que sí
+funciona es **mirar al arrancar y antes de trabajar**: el estado vive en GitHub, no en la
+memoria de nadie, y consultarlo es barato.
+
+QUÉ HACE
+    Compara el estado actual de los PRs contra el último visto (cache/pr-state.json) y reporta
+    SOLO lo que cambió. Sin cambios → silencio.
+
+    Y detecta lo que de verdad importa: una rama local **cuyo PR ya está MERGED** — la señal de
+    que hay que verificar que el trabajo viajó y borrar la rama (rules/rule-post-merge-cleanup.md).
+
+Usage:
+  bin/check-prs            reporta los cambios desde la última mirada
+  bin/check-prs --quiet    solo exit code, para hooks
+  bin/check-prs --reset    olvida lo visto (vuelve a reportar todo)
+
+Exit: 0 sin novedad · 1 hay cambios que atender · 2 no se pudo consultar
+"""
+import os
+import sys
+import json
+import subprocess
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = os.path.dirname(MENTE)
+CACHE = os.path.join(MENTE, "cache", "pr-state.json")
+
+
+def sh(*cmd, cwd=REPO):
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=30, cwd=cwd)
+        return r.stdout.strip(), r.returncode
+    except Exception:                                          # noqa: BLE001
+        return "", 1
+
+
+def prs():
+    """El estado real, desde GitHub. Devuelve None si no se pudo consultar —
+    ⛔ NUNCA una lista vacía: 'no pude preguntar' y 'no hay PRs' son cosas distintas, y
+    confundirlas es cómo un validador reporta verde por no haber medido."""
+    out, code = sh("gh", "pr", "list", "--state", "all", "--limit", "30",
+                   "--json", "number,state,title,headRefName")
+    if code != 0 or not out:
+        return None
+    try:
+        return {str(p["number"]): p for p in json.loads(out)}
+    except ValueError:
+        return None
+
+
+def visto():
+    try:
+        return json.load(open(CACHE, encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def guardar(estado):
+    os.makedirs(os.path.dirname(CACHE), exist_ok=True)
+    json.dump(estado, open(CACHE, "w", encoding="utf-8"), indent=1)
+
+
+def main():
+    quiet = "--quiet" in sys.argv
+    if "--reset" in sys.argv:
+        if os.path.exists(CACHE):
+            os.remove(CACHE)
+        if not quiet:
+            print("🔄 memoria de PRs borrada — la próxima mirada reporta todo")
+        return 0
+
+    ahora = prs()
+    if ahora is None:
+        if not quiet:
+            print("⬜ no se pudo consultar GitHub (¿sin red, o `gh` sin autenticar?)")
+        return 2
+
+    antes = visto()
+    cambios, accionables = [], 0
+
+    for num, p in ahora.items():
+        prev = antes.get(num, {}).get("state")
+        if prev == p["state"]:
+            continue
+        if prev is None:
+            if p["state"] == "OPEN":                # PR nuevo que yo no conocía
+                cambios.append(f"🆕 #{num} abierto · {p['title'][:56]}")
+            continue                                 # ya venía cerrado: historia, no novedad
+        cambios.append(f"🔀 #{num} {prev} → {p['state']} · {p['title'][:52]}")
+
+    # ⭐ Lo accionable no es que el estado cambie: es que quede una RAMA LOCAL de un PR mergeado.
+    # Esa es la señal de "verifica que viajó y bórrala", y sobrevive aunque nadie mire el cambio
+    # en el momento en que ocurre — que es justo el caso que Brian describió.
+    locales, _ = sh("git", "branch", "--format=%(refname:short)")
+    locales = {b for b in locales.split("\n") if b and b != "master"}
+    # ⚠️ UNA RAMA PUEDE TENER VARIOS PRs (medido 2026-08-08: el #26 mergeado y el #27 abierto
+    # comparten `fix/candado-exencion-techo`). Si alguno sigue abierto, la rama tiene trabajo
+    # VIVO y decir "bórrala" sería un consejo que destruye trabajo. Solo es borrable cuando
+    # NINGÚN PR suyo está abierto.
+    vivas = {p["headRefName"] for p in ahora.values() if p["state"] == "OPEN"}
+    ya = set()
+    for num, p in ahora.items():
+        rama = p["headRefName"]
+        if p["state"] != "MERGED" or rama not in locales or rama in vivas or rama in ya:
+            continue
+        ya.add(rama)
+        accionables += 1
+        cambios.append(
+            f"⚠️  #{num} está MERGED y su rama `{rama}` sigue local.\n"
+            "    → verifica que su trabajo viajó y bórrala "
+            "(rules/rule-post-merge-cleanup.md)")
+    for rama in sorted(vivas & locales):
+        pendientes = [n for n, p in ahora.items()
+                      if p["headRefName"] == rama and p["state"] == "OPEN"]
+        cambios.append(f"📌 `{rama}` tiene PR ABIERTO (#{', #'.join(pendientes)}) — "
+                       "no se borra: hay trabajo esperando revisión")
+
+    guardar({n: {"state": p["state"], "title": p["title"]} for n, p in ahora.items()})
+
+    if quiet:
+        return 1 if accionables else 0
+    if not cambios:
+        print("✅ sin novedad en los PRs desde la última mirada")
+        return 0
+    for c in cambios:
+        print(f"   {c}")
+    return 1 if accionables else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
