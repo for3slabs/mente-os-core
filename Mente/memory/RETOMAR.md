@@ -1,6 +1,6 @@
 # RETOMAR — Cold-Start Brief (LEER ESTO PRIMERO) ⚡
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-08-07 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-10 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
 
@@ -62,50 +62,42 @@ redactada). 👉 `project_entrenamiento_foresito` · `work/Entrenamiento_Ejecuci
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-### 🆕 ⭐ UN CLON YA VERIFICA EL MOTOR: **10 fallos → 1** (2026-08-07, S13)
+### 🆕 EL CICLO DE TRABAJO YA ES UN SISTEMA, NO UNA COSTUMBRE (2026-08-08/10)
 
-🏁 **BLOQUE CERRADO Y ARCHIVADO 2026-08-07** en `blocks/archive/separacion-motor-instancia_2026-08/`
-(5/5 · 🟡 cierra: capa 2 **6/6 🟢** con evidencia · capa 1 🔴 por el límite del medidor, ver §K).
-👉 **Queda 1 solo bloque activo: `demo`.**
+📊 **Batería 199 → 220 · 0 fallos.** Clon ajeno: **209/1**, y ese 1 (`registered=no`) es la
+respuesta correcta. Identidad en el clon: **0 menciones a Brian**, 11 al dueño real.
 
-📊 El recorrido medido en un clon limpio, tras `bin/init`:
-`10 → 7` (familia D 5-6) → `6` (additionalDirectories) → `2` (WORKSPACE) → **1**.
+⭐ **Lo que cambió de raíz:** el ciclo declaraba hasta `⛔ STOP` y **terminaba ahí**. Conflicto,
+merge y limpieza no estaban en ningún mapa — y un hueco del que nadie habla es indistinguible de
+uno que no existe. Ahora son **12 etapas, cada una con su regla**, y un check falla si alguna se
+queda sin dueño o apunta a una regla inexistente (`rules/rule-pr-batching.md` §4).
 
-⭐ **El hallazgo que da la vuelta al problema:** la hipótesis era mover 221 archivos de instancia
-a una carpeta aparte. **Medido: ninguno estorbaba.** Lo que fallaba eran los CHECKS que los
-interrogaban mal — mover archivos habría escondido el defecto en vez de corregirlo. Por eso
-`instance/` NO se creó y el §B del bloque se corrigió.
+🆕 **4 reglas nuevas del ciclo:** `rule-pr-batching` (4 pendientes por PR · el último **cierra**
+el bloque y apunta a los anteriores · **conflictos**: diagnosticar → rebase → `--force-with-lease`,
+⛔ nunca en la web de GitHub) · `rule-post-merge-cleanup` (verificar que viajó, **luego** borrar) ·
+`contract-pending` + `rule-pending-rotation` (los pendientes rotan por archivo cada mes).
 
-**4 defectos reales del motor** (familia D casos 5-8, `rules/rule-checks-must-measure.md`) que la
-etiqueta *"son fallos de la instancia de Brian"* llevaba meses tapando. 🔴 El peor:
-`grade-block archived` — bajo `pipefail` el pipe tomaba el exit `2` del veredicto 🔴 MVP **aunque
-el `grep` acertara**: exigía **la nota que saca en la máquina de su autor**, un check atado a la
-instancia **sin nombrarla una sola vez**.
+🆕 **Ya no se pregunta si un PR se mergeó: se mira.** `bin/check-prs` al arrancar y
+`hooks/watch-prs.py` antes de tocar git a mitad de sesión. ⛔ No es un cron: un cron dispara
+cuando no hay nadie escuchando.
 
-También: `docs/WORKSPACE.md` sale del repo y `bin/init` lo GENERA (su línea 3 lo declaraba desde el
-05-ago y nadie lo hacía cumplir) · `check-links` deja de llamar rotas a 12 citas que resuelven en
-repos hermanos ausentes · `owner == "Maestro"` hardcodeado en `check-structure` corregido.
+🗓️ **Los pendientes viven en `memory/pendiente-<mes>-<año>.md`** — 111 uno por uno (eran 27
+agrupaciones), en 5 bloques. `PENDIENTES.md` quedó **congelado**.
 
-**🔴 El único rojo que queda en un clon es la respuesta CORRECTA:** `check-clear-ready
-registered=no` — la sesión de un árbol recién nacido no está registrada. Verde ahí sería mentir.
-
-**🆕 Cierre (08-07):** PR #12 mergeado + 3 arreglos (matcher de `hooks/pre-edit-standards.py`,
-fósiles en `bin/check-clear-ready`, línea fantasma en `bin/check-health`). Batería **198/0**.
-
-**✅ CIERRE (08-07):** PRs #12·#13·#14 mergeados. Bloque **5/5** — clon de master: 6 fallos → **1**
-tras `bin/init`, y ese 1 (`registered=no`) es la respuesta correcta. graphify **4/6**: #5 y #6
-⏸️ diferidos, miden un producto que nadie externo ha instalado. 🔑 GPG sigue siendo tuya.
+🏁 **Bloque MOTOR cerrado 9/11.** Los 2 abiertos: el §6 de la voz (🙋 criterio de Brian) y el
+renombrado (orden 7 de 7, ya desbloqueado).
 
 **👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. **Cero
-instalaciones externas verificadas**; sin eso, graphify #5-#6 solo se medirían a sí mismos.
+instalaciones externas verificadas**: todo lo medido en un clon lo midió la IA en esta máquina.
 
-🔬 **Cerrarlo destapó 5 defectos en los DOS medidores — corregidos el 08-07** (detalle en el §K del
-bloque archivado y en `memory/PENDIENTES.md`): `grade-block` marcaba `runbook NO` **con el documento
-escrito** (📊 🔴 MVP → 🟢 PRODUCT sin tocar un documento) · `generate-index` subdeclaraba a todos
-(📊 `demo` **6/7 → 11/12**). ⭐ **Se arregló quien LEE, no quien escribe:** falsear el §B para
-complacer al medidor habría convertido el veredicto en decoración. Verificado por sabotaje.
+### LO ANTERIOR · el clon ya verifica el motor (2026-08-07, S13)
 
----
+`separacion-motor-instancia` **cerrado 5/5 y archivado**. Recorrido medido en un clon: `10 → 1`.
+⭐ **El hallazgo que dio la vuelta al problema:** la hipótesis era mover 221 archivos de instancia;
+**medido, ninguno estorbaba** — lo que fallaba eran los CHECKS que los interrogaban mal, y mover
+archivos habría escondido el defecto. **4 defectos del motor** que la etiqueta *"son fallos de la
+instancia de Brian"* llevaba meses tapando.
+👉 Detalle: `blocks/archive/separacion-motor-instancia_2026-08/SUMMARY.md`.
 
 ### 🆕 LA DEMO: de 0 a 4 tests, con 23/23 en verde (2026-08-05/06)
 

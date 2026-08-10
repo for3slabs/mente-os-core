@@ -272,7 +272,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1646 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
-| `RETOMAR.md` | entry-point | current | 2026-08-07 | 248 |
+| `RETOMAR.md` | entry-point | current | 2026-08-10 | 240 |
 | `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1615 |
 
 ## `memory/archive/`
