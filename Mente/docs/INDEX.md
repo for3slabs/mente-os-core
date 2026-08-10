@@ -8,7 +8,7 @@
 **Generated:** 2026-08-10 · **Type:** generated
 
 
-**321 documents** · **6 blocks** · 29 directories
+**322 documents** · **7 blocks** · 30 directories
 
 
 | Directory | Docs |
@@ -29,6 +29,7 @@
 | `blocks/archive/separacion-motor-instancia_2026-08/docs/` | 1 |
 | `blocks/archive/split-architecture_2026-07/` | 3 |
 | `blocks/blocked/` | 1 |
+| `blocks/blocked/orquestacion-multiagente/` | 1 |
 | `bridges/` | 6 |
 | `docs/` | 19 |
 | `docs/analysis/` | 28 |
@@ -173,6 +174,12 @@
 |---|---|---|---|---|
 | `README.md` | contract | current | 2026-08-07 | 44 |
 
+## `blocks/blocked/orquestacion-multiagente/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `BLOCK.md` | — | — |  | 152 |
+
 ## `bridges/`
 
 | Document | Type | Status | Updated | Lines |
@@ -190,10 +197,10 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 517 |
+| `INDEX.md` | generated | — |  | 524 |
 | `METRICS.md` | generated | current | 2026-08-10 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
-| `STATES.md` | generated | — |  | 31 |
+| `STATES.md` | generated | — |  | 37 |
 | `WORKSPACE.md` | entry-point | current | 2026-08-07 | 55 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 211 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 293 |
@@ -273,7 +280,7 @@
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
 | `RETOMAR.md` | entry-point | current | 2026-08-10 | 240 |
-| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1615 |
+| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1645 |
 
 ## `memory/archive/`
 

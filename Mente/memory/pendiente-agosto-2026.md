@@ -1263,6 +1263,36 @@ que ya filtraba ocultos. Subido a `for3slabs/mente-os-maestro` (`eb65195`).
 325, exactamente los 4 de esa carpeta. ⛔ **El filtro por chunk NO se tocó:** sigue vivo como
 segunda línea. Quitar la primera defensa al añadir otra es cambiar un riesgo por otro.
 
+### E-9 · 🔒 ORQUESTACIÓN MULTI-AGENTE — el hueco que Mente OS no cubre (BLOQUEADO)
+
+- **Prioridad:** 🟠 medio
+- **Estado:** pausado
+- **Creado:** 2026-08-10 · **Modificado:** 2026-08-10 · **Cerrado:** —
+- **Arrastrado desde:** — (nació analizando GSD y ultracode-epic)
+- **Archivos de referencia:** `blocks/blocked/orquestacion-multiagente/BLOCK.md`
+- **Plan:** el §J del bloque (el análisis completo)
+- **Depende de:** 🙋 **una decisión de Brian** — cuándo se abre y con qué alcance
+
+**Descripción.** ⭐ **Mente OS v2 gobierna UN agente trabajando EN SERIE.** No es un defecto de lo
+construido: es un límite de su alcance que **nadie había nombrado**. Hoy no duele porque se trabaja
+con un agente a la vez; **dolerá al paralelizar** — dos agentes tocando el mismo archivo y el merge
+decidiendo por nadie.
+
+🔬 **Medido contra el árbol el 2026-08-10: 9 mecanismos que no existen aquí**, ninguno a medias —
+propiedad de archivos · contrato de puertas congelado · puertas HUMANA/AUTO con comando de
+evidencia · ledger de decisiones · olas · worktree por agente · cortacircuitos · perfil de modelo
+por agente · presupuesto de contexto.
+
+⭐ **Dos fuentes independientes señalan el mismo hueco desde ángulos distintos** (GSD y
+ultracode-epic): eso es evidencia, no opinión. ⚠️ Pero ambos son *prompt-enforced* —ultracode lo
+dice de sí mismo— así que **se adopta el MECANISMO, nunca el método**: aquí un mecanismo sin check
+no existe.
+
+🔒 **BLOQUEADO a propósito** (Brian, 2026-08-10): *"no lo vamos a diseñar ahorita… pero sí es
+indispensable que lo señales."* Es **para los DOS sistemas**: For3s OS ya corre multi-agente en
+producción (H8) y Mente OS tiene el gobierno — **cada uno tiene la mitad que al otro le falta**, y
+van a unirse.
+
 ### E-1 · ⭐ LA PRUEBA DE CAMPO — cero instalaciones externas
 
 - **Prioridad:** 🔴 urgente

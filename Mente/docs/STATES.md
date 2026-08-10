@@ -16,6 +16,11 @@
 | 🟢 | **plan-tests-demo_2026-08** | docs | closed | direct | 2/2 |  | 2026-08-05 | `blocks/archive/plan-tests-demo_2026-08/BLOCK.md` |
 | 🟢 | **separacion-motor-instancia_2026-08** | infra | closed | task | 5/5 |  | 2026-08-07 | `blocks/archive/separacion-motor-instancia_2026-08/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
+| 🟡 | **orquestacion-multiagente** | infra | blocked | full-block | 0/9 |  | 2026-08-10 | `blocks/blocked/orquestacion-multiagente/BLOCK.md` |
+
+## Health findings
+
+- 🟡 **orquestacion-multiagente** — blocker names no owner
 
 ## Phase
 
@@ -25,6 +30,7 @@
 - **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running
 - **separacion-motor-instancia_2026-08**: **CERRADO 2026-08-07** · 🟡 cierra (capa 2 6/6 🟢 · ca
 - **split-architecture_2026-07**: CLOSED — 2496 → 632 lines, 5 pieces, verdict 🟢 PRODU
+- **orquestacion-multiagente**: 🔒 **BLOQUEADO A PROPÓSITO** — el hallazgo está regis
 
 ---
 

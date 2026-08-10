@@ -349,7 +349,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Read|Write|Edit|Bash|Grep|Glob",
         "hooks": [
           {
             "type": "command",
