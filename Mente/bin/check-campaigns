@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""check-campaigns — verifica la FORMA de una campaña. No decide nada.
+
+La doctrina es un documento. La VERIFICACIÓN es un script.
+
+⭐ Qué es una campaña (Brian, 2026-08-10): un contenedor que agrupa bloques bajo una misma misión,
+una misma autoridad y **los mismos estándares**, para que cambiar de bloque no reinicie el porqué.
+
+⛔ Lo que este script NUNCA hará: juzgar si una campaña vale la pena, si tiene los bloques
+correctos o si su misión es buena. Eso es criterio y es de Brian (ADR-003). Aquí se comprueba que
+lleve los campos que permiten a un humano decidir — nada más.
+
+Contrato: rules/contract-campaign.md · Plan: docs/plans/PLAN-campana.md (fase C6)
+
+Usage:
+  bin/check-campaigns              todas
+  bin/check-campaigns <nombre>     una
+  bin/check-campaigns --quiet      solo exit code, para hooks
+
+Exit: 0 limpio · 1 avisos · 2 errores
+"""
+import os
+import re
+import sys
+import glob
+
+MENTE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(MENTE)
+
+RED, YEL = [], []
+LIMITE = 150                     # contract-campaign.md §0 — más bajo que un bloque a propósito
+
+
+def seccion(texto, nombre):
+    """El cuerpo de una sección `## Nombre`, hasta el siguiente `##`."""
+    # ⚠️ El look-ahead se ancla a INICIO DE LÍNEA (`^##`), no a `\n##`: con una sección vacía
+    # queda un salto extra y `\n##` no casaba ahí, así que la sección se COMÍA la siguiente y
+    # un §Authority vacío parecía lleno. Cazado con el sabotaje 2 (2026-08-10).
+    m = re.search(rf"^##\s*{nombre}\s*$\n(.*?)(?=^##\s|\Z)", texto, re.S | re.M)
+    return m.group(1) if m else None
+
+
+def bloques_de(texto):
+    """Los bloques que la campaña declara en su §E. La pertenencia la declara la CAMPAÑA:
+    un bloque no puede auto-adscribirse ni quedar huérfano por olvido suyo."""
+    cuerpo = seccion(texto, "Blocks") or ""
+    return [c[0].strip().strip("`") for c in
+            re.findall(r"^\|\s*([^|]+?)\s*\|([^|]*)\|\s*(\w+)\s*\|", cuerpo, re.M)
+            if c[0].strip() and not c[0].strip().startswith("-") and c[0].strip() != "bloque"]
+
+
+def estado_de(texto, bloque):
+    cuerpo = seccion(texto, "Blocks") or ""
+    for c in re.findall(r"^\|\s*([^|]+?)\s*\|([^|]*)\|\s*(\w+)\s*\|", cuerpo, re.M):
+        if c[0].strip().strip("`") == bloque:
+            return c[2].strip()
+    return None
+
+
+def verificar(path):
+    nombre = os.path.basename(os.path.dirname(path))
+    t = open(path, encoding="utf-8", errors="replace").read()
+    n = len(t.splitlines())
+
+    if n > LIMITE:
+        YEL.append(f"{nombre}: {n} líneas — sobre el techo de {LIMITE}.\n"
+                   "   Una campaña ORDENA, no ejecuta: si necesita más, la misión no está clara "
+                   "— o son dos campañas (contract-campaign.md §0).")
+
+    # §A·B·C son obligatorias para ABRIR. Sin ellas nadie sabe qué persigue ni con qué vara.
+    for sec in ("Mission", "Authority", "Blocks"):
+        if seccion(t, sec) is None:
+            RED.append(f"{nombre}: falta §{sec} — obligatoria para abrir "
+                       "(contract-campaign.md §1)")
+
+    aut = seccion(t, "Authority")
+    if aut is not None and not aut.strip():
+        RED.append(f"{nombre}: §Authority vacío — nadie sabría con qué vara se juzgó "
+                   "(contract-campaign.md §6)")
+
+    bloques = bloques_de(t)
+    if not bloques:
+        RED.append(f"{nombre}: §Blocks no declara ninguno.\n"
+                   "   ⛔ Una campaña sin bloques no ordena nada: es un título.\n"
+                   "   ⚠️ El NÚMERO es dinámico (§2) — el mínimo no lo es: al menos uno.")
+
+    # 🔴 HIJO HUÉRFANO: la campaña nombra un bloque que no existe en ningún estado.
+    # Es el defecto que hace que el contexto compartido apunte a nada.
+    for b in bloques:
+        if not (glob.glob(f"blocks/*/{b}/BLOCK.md") or glob.glob(f"blocks/*/{b}_*/BLOCK.md")):
+            RED.append(f"{nombre}: declara el bloque `{b}`, que NO EXISTE en blocks/.\n"
+                       "   Un hijo huérfano hace que el contexto de campaña apunte a nada.")
+
+    # ⭐ EVALUACIÓN DE IMPACTO (Brian: "no se realiza a ciegas, se evalúa toda la campaña").
+    # Un bloque cerrado dentro de una campaña declara qué hermanos quedan afectados — o dice
+    # "ninguno, y por esto". El silencio no vale: un cierre que no mira a los hermanos es
+    # trabajo a ciegas, y el daño solo se ve cuando el hermano se rompe.
+    for b in bloques:
+        if estado_de(t, b) != "closed":
+            continue
+        hits = glob.glob(f"blocks/*/{b}/BLOCK.md") + glob.glob(f"blocks/*/{b}_*/BLOCK.md")
+        if not hits:
+            continue
+        bt = open(hits[0], encoding="utf-8", errors="replace").read()
+        if "Impacto en la campaña" not in bt:
+            RED.append(f"{nombre}: el bloque `{b}` cerró SIN declarar impacto en sus hermanos.\n"
+                       "   contract-campaign.md §5: decir «ninguno, y por esto» es válido; "
+                       "callar no lo es.")
+
+    # Una campaña no cierra con bloques vivos — igual que un bloque no cierra con sub-bloques.
+    ident = seccion(t, "Mission") or ""
+    cerrada = re.search(r"^status:\s*closed", t, re.M) or "status: closed" in t[:400]
+    if cerrada:
+        vivos = [b for b in bloques if estado_de(t, b) in ("active", "blocked")]
+        if vivos:
+            RED.append(f"{nombre}: cierra con bloques abiertos: {', '.join(vivos)}")
+        if seccion(t, "Closing") is None:
+            RED.append(f"{nombre}: cerrada sin §Closing — sin veredicto no hay cierre")
+
+    # El canal es opcional (una campaña puede no necesitarlo), pero si existe debe ser legible:
+    # un hecho sin quién lo aporta no se puede verificar, y entonces vuelve a ser interpretación.
+    canal = seccion(t, "Channel")
+    if canal:
+        for fila in re.findall(r"^\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|", canal, re.M):
+            hecho, aporta = fila
+            if hecho in ("hecho", "---") or hecho.startswith("-"):
+                continue
+            if not aporta:
+                YEL.append(f"{nombre}: el hecho «{hecho[:40]}…» no dice qué bloque lo aporta "
+                           "— sin origen, un hecho vuelve a ser interpretación")
+    _ = ident
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    quiet = "--quiet" in sys.argv
+
+    paths = (glob.glob(f"campaigns/{args[0]}/CAMPAIGN.md") if args
+             else sorted(glob.glob("campaigns/*/CAMPAIGN.md")))
+
+    if args and not paths:
+        print(f"🔴 no hay campaña llamada {args[0]!r}")
+        return 2
+    if not paths:
+        # ⬜ Ninguna campaña NO es un error: el sistema funcionó años sin ellas.
+        if not quiet:
+            print("⬜ no hay campañas todavía")
+        return 0
+
+    for p in paths:
+        verificar(p)
+
+    if quiet:
+        return 2 if RED else (1 if YEL else 0)
+    for m in RED:
+        print(f"🔴 {m}")
+    for m in YEL:
+        print(f"🟡 {m}")
+    if not RED and not YEL:
+        print(f"✅ limpio — {len(paths)} campaña(s) cumplen su contrato")
+    print(f"\n{len(RED)} errores · {len(YEL)} avisos")
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

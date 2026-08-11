@@ -125,6 +125,7 @@ frontier_instance:
   - "work"
   - "vision"
   - "blocks"
+  - "campaigns"   # agrupan bloques bajo una misión — instancia, no motor
   - "bridges"
 
 # ⚠️ contiene ambos — contratos del motor y bitácoras de la instancia

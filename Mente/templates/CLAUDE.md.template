@@ -31,6 +31,9 @@ No guarda reglas ni estado — los apunta, para que el valor se lea de donde se 
 2. ⛔ **NO leer** `Mente/memory/Estado_Sesion_Continuidad.md` (200 KB) salvo que un puntero de RETOMAR
    lo mande explícitamente. Leerlo "por si acaso" gasta tokens (medido por {{owner}}, 2026-06-09).
 3. **Si hay un bloque activo** → cargar su Tier 1 (`§A-E` de `Mente/blocks/active/*/BLOCK.md`).
+   ⭐ **Y si ese bloque pertenece a una CAMPAÑA** (`Mente/campaigns/*/CAMPAIGN.md` lo lista en su
+   `§E`) → cargar también el **`§F Shared context`** de la campaña. Es el contexto GRANDE, igual
+   para todos sus bloques: sin él, cambiar de bloque **reinicia el porqué**.
    Si `§A-E` no alcanza → **decirlo, no inferir.**
 4. Si {{owner}} dice "lee RETOMAR" → ese archivo + sus punteros.
 

@@ -1469,7 +1469,11 @@ for f in glob.glob("**/*.md", recursive=True):
         # produces noise, and noise is how a validator gets ignored.
         FUTURE = ("docs/INDEX.md", "docs/STATES.md", "docs/DECISIONS.md")
         EXAMPLE = ("Doc/X.md", "Cuerpo/Y.md")
-        planned = f in ("memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
+        # ⚠️ Esta lista DUPLICA la de `bin/check-links` (PLANNED). Dos listas para lo mismo
+        # divergen: se añadió `PLAN-campana.md` aquí después de añadirlo allí, y solo se supo
+        # porque la batería falló. Queda declarado como deuda — la cura es una fuente única.
+        planned = f in ("docs/plans/PLAN-campana.md",
+                        "memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
                         "docs/plan-v1-to-v2-migration.md")
         # 4. HONESTLY MARKED — a citation the document itself labels as never produced. Rewriting
         #    it to point somewhere else would be a lie; saying so is the correct fix
@@ -2254,6 +2258,126 @@ print(malas)
 PY
 )
 eq "cada etapa del ciclo (incluidos conflicto y merge) tiene regla que existe" "0" "${_ciclo:-99}"
+
+# ── 22 · LA AUTORIDAD DEL PRODUCTO ESTÁ DECLARADA Y VIGILADA (2026-08-10) ───
+# ⭐ Brian: "para la construcción y verificación de For3s OS vamos a tomar el Cerebro como fuente
+# mayor de verdad, en especial For3s_OS_Grafo_Maestro y cómo es que funciona."
+# 🔴 Medido al escribir la regla: el grafo se declaraba "FUENTE DE VERDAD ARQUITECTÓNICA" en su
+# propia prosa, sin cabecera de contrato y con `Cerebro/` marcado LEGACY exento en check-blocks —
+# **la autoridad del producto era el único documento importante que ningún check miraba.**
+# ⛔ El código NO es autoridad: es lo que se audita. Sin esta precedencia, verificar degenera en
+# "el código dice X, luego X es correcto", que es el defecto que se busca.
+_auth=0
+[ -f "$M/rules/rule-product-authority.md" ] || { _auth=$((_auth+1)); printf '     ⤷ no hay regla que declare quién manda al verificar el producto\n'; }
+grep -q "For3s_OS_Grafo_Maestro" "$M/rules/rule-product-authority.md" 2>/dev/null || { _auth=$((_auth+1)); printf '     ⤷ la regla no nombra al Grafo Maestro como autoridad\n'; }
+[ -f "$M/Cerebro/For3s_OS_Grafo_Maestro.md" ] || { _auth=$((_auth+1)); printf '     ⤷ el Grafo Maestro NO EXISTE — la autoridad apunta a nada\n'; }
+# Y la regla debe decir que el CÓDIGO no manda: es lo único que impide auditar en círculo.
+grep -qi "el código no es autoridad" "$M/rules/rule-product-authority.md" 2>/dev/null || { _auth=$((_auth+1)); printf '     ⤷ la regla no declara que el código se AUDITA, no manda\n'; }
+eq "la autoridad al verificar For3s OS está declarada (grafo > rondas > código)" "0" "$_auth"
+
+# ── 23 · UN GENERADO NUNCA SE RESUELVE, SE REGENERA (2026-08-10) ───────────
+# 🔴 Volvió a pasar dos veces (PR #27 y #31): los conflictos SIEMPRE son docs/INDEX.md y
+# docs/METRICS.md. Medido: 44 commits los han tocado. La regla existía como una FRASE SUELTA
+# —sin procedimiento y sin candado— y una regla sin mecanismo se cumple 40-60%.
+# ⭐ Ambos lados de un generado son fotos viejas: el valor correcto NO está en ninguno, se produce.
+# ⚠️ Y NO se sacan del repo aunque eso mataría el conflicto: 23 documentos los citan y 14 checks
+# los exigen — un clon nacería con 23 citas rotas. El conflicto molesta; un clon roto es peor.
+_gen=0
+grep -q "checkout --theirs" "$M/rules/rule-pr-batching.md" || { _gen=$((_gen+1)); printf '     ⤷ la regla no dice CÓMO resolver un generado en conflicto\n'; }
+grep -q "generate-index && bin/generate-metrics\|bin/generate-index" "$M/rules/rule-pr-batching.md" || { _gen=$((_gen+1)); printf '     ⤷ no manda REGENERAR tras tomar la base\n'; }
+grep -qi "Type: generated" "$M/rules/rule-pr-batching.md" || { _gen=$((_gen+1)); printf '     ⤷ no usa `Type: generated` como señal — memorizar nombres no escala\n'; }
+eq "un archivo generado en conflicto se REGENERA, nunca se elige un lado" "0" "$_gen"
+
+# Y los dos generados que más chocan siguen declarándose como tales: si alguien les quita el
+# `Type: generated`, la regla deja de alcanzarlos y el conflicto vuelve en silencio.
+# ⭐ Y la prueba de que la regla es la correcta: estos archivos SE REGENERAN SOLOS. Medido
+# 2026-08-10 intentando sabotearlos — se les quitó el `Type: generated` de la cabecera, corrió la
+# batería, y volvió a aparecer: el generador los reconstruye. **En un conflicto no hay nada que
+# resolver porque ningún lado es la verdad: la verdad se produce.**
+# ⚠️ Por eso NO se vigila su contenido (sería vigilar la salida de un generador, que es circular).
+# Lo que se vigila es que los GENERADORES existan: sin ellos, el archivo sí se volvería editable
+# a mano y el conflicto pasaría a ser real.
+_genbin=0
+for _g in generate-index generate-metrics; do
+  [ -x "$M/bin/$_g" ] || { _genbin=$((_genbin+1)); printf '     ⤷ falta bin/%s: sin generador, el archivo se edita a mano y el conflicto es real\n' "$_g"; }
+done
+eq "los generadores existen (por eso un conflicto en su salida se regenera)" "0" "$_genbin"
+
+# ── 24 · LA CAMPAÑA ESTÁ CABLEADA, NO SOLO ESCRITA (2026-08-10) ────────────
+# ⭐ Brian: "que nunca pierda nada de contexto entre tareas… todos los códigos van a ser revisados
+# con los mismos estándares". La campaña agrupa bloques bajo una misión, una autoridad y un §D.
+# 🔴 Medido al terminar de escribirla: 6 de sus 8 puntos de conexión estaban SUELTOS — contrato
+# sin declarar en piezas.tsv, validador fuera de CAPABILITIES, la batería sin invocarlo, y
+# `campaigns/` sin lado en la frontera. **Escribir una pieza no es conectarla**, y es justo lo
+# que Brian pidió verificar: "que no existan cosas desconectadas".
+_camp=0
+[ -x "$M/bin/check-campaigns" ] || { _camp=$((_camp+1)); printf '     ⤷ falta bin/check-campaigns\n'; }
+[ -f "$M/rules/contract-campaign.md" ] || { _camp=$((_camp+1)); printf '     ⤷ falta el contrato de campaña\n'; }
+grep -q "check-campaigns" "$M/CAPABILITIES.md" || { _camp=$((_camp+1)); printf '     ⤷ CAPABILITIES no lo nombra\n'; }
+grep -q "check-campaigns" "$M/piezas.tsv" || { _camp=$((_camp+1)); printf '     ⤷ piezas.tsv no lo declara: si desaparece, nadie avisa\n'; }
+# ⚠️ Se mide la LLAMADA, no la definición: la primera versión buscaba `campana_de` y seguía
+# verde tras sustituir la llamada por `(None, [])` — la función existía y nadie la usaba.
+# Cazado con su propio sabotaje (2026-08-10). Presencia ≠ uso.
+grep -q "campana, heredados = campana_de(" "$M/hooks/pre-edit-standards.py" || { _camp=$((_camp+1)); printf '     ⤷ el hook define campana_de pero NO la llama: la herencia está muerta\n'; }
+grep -q "CAMPAIGN.md" "$REPO/CLAUDE.md" || { _camp=$((_camp+1)); printf '     ⤷ el arranque no carga el contexto compartido\n'; }
+eq "la campaña está cableada: contrato · validador · herencia · arranque" "0" "$_camp"
+
+# Y sus campañas cumplen su contrato. `--quiet` devuelve 2 solo con ERRORES: un aviso no
+# tumba la batería, igual que en el resto de validadores.
+"$M/bin/check-campaigns" --quiet >/dev/null 2>&1; _cq=$?
+[ "$_cq" -le 1 ] && ok "las campañas cumplen su contrato (0 errores)" \
+  || bad "contrato de campaña" "0 errores" "check-campaigns salió $_cq"
+
+# ── 25 · NINGUNA PIEZA SUELTA: TODO EJECUTABLE SE DECLARA (2026-08-10) ──────
+# ⭐ Brian: "conecta todos los cables sueltos de Mente OS v2… que no existan cosas desconectadas".
+# 🔴 El barrido encontró 5: bin/flag-stale · bin/migrate-doc · bin/secrets-lease ·
+# hooks/gate-handoff.py · hooks/session-start.sh. Las cinco FUNCIONABAN y estaban invocadas —
+# lo que faltaba era declararlas en piezas.tsv, así que si una desaparecía, check-structure
+# callaba. Es el mismo defecto que los 19 validadores del 08-ago, un barrido después.
+# ⭐ Escribir una pieza no es declararla. Este check lo convierte en imposible de olvidar:
+# cualquier ejecutable nuevo en bin/ o hooks/ nace obligado a entrar en la tabla.
+_suelto=0
+for _f in "$M"/bin/* "$M"/hooks/*.py "$M"/hooks/*.sh; do
+  [ -x "$_f" ] || continue
+  _n=$(basename "$_f")
+  case "$_n" in _*|__*) continue ;;          # módulos importados, no piezas ejecutables
+  esac
+  _dir=$(basename "$(dirname "$_f")")
+  grep -qF "$_dir/$_n" "$M/piezas.tsv" || {
+    _suelto=$((_suelto+1)); printf '     ⤷ %s/%s no está en piezas.tsv: si desaparece, nadie avisa\n' "$_dir" "$_n"; }
+done
+eq "todo ejecutable de bin/ y hooks/ está declarado en piezas.tsv" "0" "$_suelto"
+
+# Y todo CONTRATO declara quién lo verifica, con la MISMA palabra.
+# 🔴 `contract-handoff.md` decía "Validated by" y los otros "Verified by": el barrido no lo vio
+# y pareció un contrato sin verificador. Dos formas de decir lo mismo son dos reglas.
+_sinver=0
+for _c in "$M"/rules/contract-*.md; do
+  _v=$(grep -m1 '\*\*Verified by:\*\*' "$_c" | grep -oE 'bin/[a-z-]+' | head -1)
+  [ -n "$_v" ] || { _sinver=$((_sinver+1)); printf '     ⤷ %s no declara **Verified by:**\n' "$(basename "$_c")"; continue; }
+  [ -x "$M/$_v" ] || { _sinver=$((_sinver+1)); printf '     ⤷ %s apunta a %s, que no existe\n' "$(basename "$_c")" "$_v"; }
+done
+eq "todo contrato declara su verificador, y ese verificador existe" "0" "$_sinver"
+
+# ── 26 · EL MAPA DEL SERVIDOR NO PUEDE MENTIR (2026-08-10) ─────────────────
+# 🔴 Brian: "¿que no recuerdas? La instancia de Jazz ya no existe. ¿Por qué no recuerdas las
+# cosas?" — y tenía razón. `jazz` y `mashe` se borraron el 06-ago (blocks/active/demo §G), pero
+# `memory/RETOMAR.md` las siguió listando CUATRO DÍAS y la IA repitió el dato como si fuera
+# cierto, sin medirlo.
+# ⭐ La causa no es memoria: es que un número escrito a mano es correcto exactamente una vez, y
+# nada vigilaba ese. Este check no puede consultar el servidor (no siempre hay red), pero SÍ
+# puede exigir que el mapa no contradiga lo que el propio repo ya sabe.
+_srv=0
+if grep -q "jazz\|mashe" "$M/memory/RETOMAR.md" 2>/dev/null; then
+  # Mencionarlas para decir que NO existen es correcto; listarlas como instancias vivas no.
+  grep -q "NO EXISTEN\|no existen\|borr" "$M/memory/RETOMAR.md" || {
+    _srv=$((_srv+1)); printf '     ⤷ RETOMAR nombra jazz/mashe sin decir que fueron BORRADAS el 06-ago\n'; }
+fi
+grep -q "secrets/Conectar_Servidor_For3s.md" "$M/docs/WORKSPACE.md" 2>/dev/null || {
+  _srv=$((_srv+1)); printf '     ⤷ WORKSPACE no dice DÓNDE está el acceso al servidor\n'; }
+grep -q "for3s-os" "$M/docs/WORKSPACE.md" 2>/dev/null || {
+  _srv=$((_srv+1)); printf '     ⤷ WORKSPACE no dice dónde vive el código del producto\n'; }
+eq "el mapa del servidor no contradice lo que el repo ya sabe" "0" "$_srv"
 
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \

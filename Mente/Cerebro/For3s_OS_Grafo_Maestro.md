@@ -2,8 +2,10 @@
 
 **El sistema completo como red de nodos: las 11 piezas cerebrales conectadas, con seguridad/encriptación, escalabilidad y autonomía generativa como propiedades estructurales**
 
-**Owner:** Brian López
-**Fecha:** 2026-05-28 (⚠️ actualizado 2026-06-10 — ver §0 Estado de Implementación)
+**Status:** current · **Type:** architecture · **Updated:** 2026-08-10 · **Owner:** brian
+**Exempt:** size, split-signal · ⭐ FUENTE DE VERDAD del PRODUCTO — `principles/expertise/doc-structure.md` §2.1: un documento que otros citan para RESOLVER no se parte por tamaño; partirlo inventaría una segunda autoridad sobre cómo funciona For3s OS.
+**Authority:** `rules/rule-product-authority.md` — al verificar For3s OS este archivo manda sobre CÓMO FUNCIONA; las rondas mandan sobre CON QUÉ se construye; el código se AUDITA, no manda.
+**Fecha original:** 2026-05-28 (⚠️ actualizado 2026-06-10 — ver §0 Estado de Implementación)
 **Estatus:** Mapa visual maestro. Iteración 1. **FUENTE DE VERDAD ARQUITECTÓNICA** (con §0 reconciliando tecnología vs rondas).
 **Capa:** Cerebro — marco teórico estructural.
 **Propósito:** Mostrar For3s OS como un GRAFO DE CONEXIONES completo — no piezas aisladas. Cada nodo, cada edge, cada flujo de información explícito. Con seguridad/escalabilidad/autonomía-generativa integradas estructuralmente desde día 1.
@@ -13,6 +15,18 @@
 - [Mente/Cerebro/Cerebro_Humano_acercamiento1.md](Cerebro_Humano_acercamiento1.md)
 - [Mente/Cerebro/Cerebro_Humano_acercamiento2.md](Cerebro_Humano_acercamiento2.md)
 - [for3s-inter/03-security/security-principles.md](../../for3s-inter/03-security/security-principles.md)
+
+---
+
+## Purpose
+
+Mostrar For3s OS como un **GRAFO DE CONEXIONES** completo —no piezas aisladas—: los 11 nodos
+cerebrales, los 24 edges y qué fluye por cada uno, con **seguridad, escalabilidad y autonomía
+generativa** como propiedades estructurales de cada nodo y cada edge, no como capas añadidas.
+
+⭐ **Al verificar For3s OS, este documento decide CÓMO FUNCIONA** (`rules/rule-product-authority.md`).
+La pregunta ante cada pieza de código no es *"¿funciona?"* sino **"¿a qué nodo pertenece, qué edge
+implementa y respeta los 3 pilares?"**
 
 ---
 
@@ -1277,3 +1291,10 @@ Brian, este es For3s OS visto como **un cerebro completo, no piezas aisladas**:
 ---
 
 **Fin del documento.**
+
+---
+
+Related: `rules/rule-product-authority.md` (la precedencia que hace de este archivo la autoridad) ·
+`Cerebro/Arquitectura_Grafo_vs_Loop.md` · `Cerebro/Mapeo_Nodo_Cerebral_Tabla_SQL.md` ·
+`vision/Vision_For3s_Frontier.md` · `rules/qa-dimensions.md` (las 6 dimensiones con las que se
+juzga el código contra este diseño).

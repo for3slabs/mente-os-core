@@ -24,22 +24,23 @@ El cold-start brief: el ÚNICO archivo que leer al retomar. Dónde quedamos, el 
 - For3s OS = **agente "segundo cerebro" autónomo, self-hosted** en el servidor `for3s` (Telegram +
   consola, Python 3.12 + Postgres+AGE+pgvector, contenerizado). EN PRODUCCIÓN.
 
-## 2 · Servidor `for3s` — 5 FOR3S OS al mismo tiempo
+## 2 · Servidor `for3s` — 3 FOR3S OS al mismo tiempo
 
-Tailscale `for3s` 100.112.177.53 · SSH brianweb3 (pass en `reference_servidor_for3s`) · gestor
-`for3s listar|agregar|entrar|encender|apagar|borrar`. Aislamiento TOTAL por
-`docker compose -p for3s-<nombre>`. Comparten SOLO: máquina + imagen (**v0.20.0**) + suscripción
-Claude (**1 solo cupo**).
+Tailscale `for3s` 100.112.177.53 · SSH brianweb3 · **cómo entrar: `secrets/Conectar_Servidor_For3s.md`**
+· gestor `for3s listar|agregar|entrar|encender|apagar|borrar`. Aislamiento TOTAL por
+`docker compose -p for3s-<nombre>`. Comparten SOLO: máquina + imagen + suscripción Claude
+(**1 solo cupo**). ⭐ **El código del producto vive en `~/for3s-os`** (`for3slabs/for3s-os`, `main`).
 
-| Bot | Instancia | Dueño | Estado |
-|---|---|---|---|
-| 🏢 @For3s_OS_bot | `for3s` | Brian | 🟢 "Foresito" — EMPRESA, microglía ON |
-| 👤 @For3s_Brian_bot | `brian` | Brian | 🟢 PERSONAL — **ENTRENADO** (§4), microglía OFF a drede |
-| 🌐 @For3s_General_bot | `general` | Brian | 🟢 PÚBLICO, puerta ABIERTA |
-| 🎷 @For3s_Jazzita_bot | `jazz` | Jazz @driade_1 | ⚪ apagado — verificado E2E |
-| 👊 @For3s_Mashe_bot | `mashe` | (1er /start) | ⚪ apagado — verificado E2E |
+| Bot | Instancia | Estado |
+|---|---|---|
+| 🏢 @For3s_OS_bot | `for3s` | 🟢 "Foresito" — EMPRESA, microglía ON |
+| 👤 @For3s_Brian_bot | `brian` | 🟢 PERSONAL — **ENTRENADO** (§4) · ⭐ **la que se trabaja** |
+| 🌐 @For3s_General_bot | `general` | 🟢 PÚBLICO, puerta ABIERTA |
 
-⚠️ Las 3 nuevas heredan la auth OAuth de Foresito → `project_multi_instancia`.
+🔴 **`jazz` y `mashe` NO EXISTEN — Brian las borró el 2026-08-06** (*"son ruido y no se han
+ocupado"*, `blocks/active/demo` §G). Esta tabla las siguió listando 4 días y **la IA repitió el
+dato como si fuera cierto**: un número copiado a mano es correcto exactamente una vez.
+📏 **Verificado en el servidor 2026-08-10:** `for3s listar` devuelve 2 encendidas + Foresito.
 
 ## 3 · Estado global del producto
 

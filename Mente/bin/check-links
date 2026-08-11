@@ -119,7 +119,10 @@ DISCUSSED = {"docs/Arquitectura_Mente_OS_v2_Bloques.md": {
 # "futura iteración". Naming work that does not exist yet is what a roadmap IS; reporting it as a
 # broken pointer asks the author to delete the plan. The v1 FOLDERS they wrote those plans into
 # (`Mente/Alma/`, `Mente/Cuerpo/`) were real fossils and were corrected to vision/ and work/.
-PLANNED = ("memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
+PLANNED = (# ⭐ Un PLAN nombra lo que su fase C1 CREARÍA (`rules/contract-campaign.md`): nombrar el
+           # entregable es lo que un plan ES. Reportarlo como puntero roto pide borrar el plan.
+           "docs/plans/PLAN-campana.md",
+           "memory/PENDIENTES.md", "docs/plan-v2-rollout.md",
            "docs/plan-v1-to-v2-migration.md",
            "vision/Vision_For3s_Frontier.md", "memory/archive/README.md",
            # A round's deliverable table names what the round WILL produce — `gdpr-program.md`

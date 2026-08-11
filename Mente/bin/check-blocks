@@ -46,6 +46,7 @@ ADR_STATUSES = {"proposed", "accepted", "superseded", "reverted"}
 OWN_CONTRACT = re.compile(
     r"^rules/decisions/ADR-"        # contract-adr.md
     r"|^blocks/.*/BLOCK\.md$"       # contract-block.md
+    r"|^campaigns/.*/CAMPAIGN\.md$"  # contract-campaign.md (2026-08-10)
     r"|^docs/(INDEX|STATES|DECISIONS)\.md$"   # generated, never hand-written
     r"|^secrets/"                   # never read, never versioned
 )

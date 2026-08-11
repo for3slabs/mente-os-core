@@ -92,9 +92,29 @@ a secas es la forma más rápida de borrar trabajo ajeno.
 | **Resolver sin backup** | un rebase reescribe historia; antes se copia lo que no se puede reconstruir |
 | **Dar por bueno el rebase sin verificar** | tras resolver, **la batería vuelve a correr**: `failed: 0` o no se empuja |
 
-⭐ **Los archivos generados no se resuelven a mano: se REGENERAN.** `docs/INDEX.md` y `docs/METRICS.md`
-entraron en conflicto porque ambos lados los habían regenerado. Elegir "el mío" o "el suyo" es
-elegir entre dos fotos viejas — la respuesta correcta es correr `bin/generate-index` después.
+### ⭐ UN ARCHIVO `Type: generated` NUNCA SE RESUELVE — SE REGENERA
+
+🔴 **Volvió a pasar el 2026-08-10** (PR #31, y antes el #27): los conflictos **siempre** son
+`docs/INDEX.md` y `docs/METRICS.md`. 📊 **Medido: 44 commits los han tocado**, 5 de ellos en tres
+días. La regla estaba escrita como una frase suelta, **sin procedimiento y sin candado** — y una
+regla sin mecanismo se cumple 40-60%.
+
+```
+1 · TOMAR EL DE LA BASE   git checkout --theirs Mente/docs/INDEX.md Mente/docs/METRICS.md
+2 · REGENERAR             bin/generate-index && bin/generate-metrics
+3 · AÑADIR                git add Mente/docs/
+```
+
+⛔ **Nunca `accept mine` ni `accept theirs` como resultado final.** Ambos lados son **fotos viejas**:
+cada rama regeneró el archivo en un momento distinto, así que elegir uno es elegir un conteo que ya
+no corresponde a nada. **El valor correcto no está en ninguno de los dos lados — se produce.**
+
+⚠️ **Por qué NO se sacan del repo**, aunque eso mataría el conflicto para siempre: medido el
+2026-08-10, **23 documentos los citan y 14 checks los exigen**. Un clon nacería con 23 citas rotas
+y la batería en rojo. El conflicto es molesto; un clon roto es peor.
+
+⭐ **La señal es el `Type:` del propio archivo.** No se memoriza una lista de nombres: cualquier
+documento que declare `Type: generated` entra aquí, incluidos los que se creen mañana.
 
 ---
 

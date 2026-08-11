@@ -5,10 +5,10 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-08-10 · **Type:** generated
+**Generated:** 2026-08-11 · **Type:** generated
 
 
-**322 documents** · **7 blocks** · 30 directories
+**327 documents** · **7 blocks** · 31 directories
 
 
 | Directory | Docs |
@@ -31,15 +31,16 @@
 | `blocks/blocked/` | 1 |
 | `blocks/blocked/orquestacion-multiagente/` | 1 |
 | `bridges/` | 6 |
+| `campaigns/producto-for3s-os/` | 1 |
 | `docs/` | 19 |
 | `docs/analysis/` | 28 |
 | `docs/architecture/` | 6 |
-| `docs/plans/` | 8 |
+| `docs/plans/` | 10 |
 | `memory/` | 5 |
 | `memory/archive/` | 38 |
 | `principles/` | 7 |
 | `principles/expertise/` | 7 |
-| `rules/` | 24 |
+| `rules/` | 26 |
 | `rules/decisions/` | 30 |
 | `vision/` | 8 |
 | `work/` | 88 |
@@ -51,7 +52,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 176 |
+| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 177 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
 | `README.md` | entry-point | current | 2026-08-06 | 210 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
@@ -63,7 +64,7 @@
 | `Arquitectura_Grafo_vs_Loop.md` | — | — |  | 1654 |
 | `Cerebro_Humano_acercamiento1.md` | — | — |  | 868 |
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
-| `For3s_OS_Grafo_Maestro.md` | — | — |  | 1279 |
+| `For3s_OS_Grafo_Maestro.md` | architecture | current | 2026-08-10 | 1300 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
 | `Registro_Conversaciones.md` | — | — |  | 849 |
 
@@ -191,17 +192,23 @@
 | `004_H4_TIENE_MANOS.md` | fossil | current | 2026-07-30 | 176 |
 | `Puentes_Mente_OS.md` | rule | current | 2026-07-30 | 73 |
 
+## `campaigns/producto-for3s-os/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `CAMPAIGN.md` | — | — |  | 91 |
+
 ## `docs/`
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `INDEX.md` | generated | — |  | 524 |
-| `METRICS.md` | generated | current | 2026-08-10 | 104 |
+| `INDEX.md` | generated | — |  | 535 |
+| `METRICS.md` | generated | current | 2026-08-11 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | 37 |
-| `WORKSPACE.md` | entry-point | current | 2026-08-07 | 55 |
+| `WORKSPACE.md` | entry-point | current | 2026-08-07 | 91 |
 | `analysis-frameworks-v2.md` | analysis | current | 2026-07-29 | 211 |
 | `analysis-internos-v1.md` | analysis | current | 2026-07-29 | 293 |
 | `audit-adversarial.md` | analysis | current | 2026-07-30 | 105 |
@@ -271,6 +278,8 @@
 | `PLAN-V2-5-config.md` | plan | current | 2026-08-08 | 81 |
 | `PLAN-V2-6-f0-abierto.md` | plan | current | 2026-08-08 | 82 |
 | `PLAN-V2-7-rotacion.md` | plan | current | 2026-08-08 | 86 |
+| `PLAN-campana.md` | plan | current | 2026-08-10 | 198 |
+| `PLAN-fase-comportamiento.md` | plan | current | 2026-08-11 | 316 |
 
 ## `memory/`
 
@@ -279,7 +288,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1646 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
-| `RETOMAR.md` | entry-point | current | 2026-08-10 | 240 |
+| `RETOMAR.md` | entry-point | current | 2026-08-10 | 241 |
 | `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1645 |
 
 ## `memory/archive/`
@@ -357,11 +366,12 @@
 | `NAMING_CONVENTION.md` | contract | current | 2026-07-29 | 285 |
 | `block-lifecycle.md` | rule | current | 2026-07-29 | 170 |
 | `case-dangerous-default.md` | case | current | 2026-07-29 | 128 |
-| `contract-adr.md` | contract | current | 2026-07-29 | 141 |
+| `contract-adr.md` | contract | current | 2026-08-10 | 143 |
 | `contract-archive.md` | contract | current | 2026-07-30 | 131 |
 | `contract-block.md` | contract | current | 2026-07-29 | 338 |
+| `contract-campaign.md` | contract | current | 2026-08-10 | 147 |
 | `contract-document.md` | rule | current | 2026-07-29 | 206 |
-| `contract-handoff.md` | contract | current | 2026-07-31 | 195 |
+| `contract-handoff.md` | contract | current | 2026-08-10 | 195 |
 | `contract-pending.md` | contract | current | 2026-08-08 | 141 |
 | `qa-dimensions.md` | contract | current | 2026-08-05 | 312 |
 | `rule-checks-must-measure.md` | rule | current | 2026-08-02 | 196 |
@@ -374,7 +384,8 @@
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-pending-rotation.md` | rule | current | 2026-08-08 | 103 |
 | `rule-post-merge-cleanup.md` | rule | current | 2026-08-08 | 86 |
-| `rule-pr-batching.md` | rule | current | 2026-08-08 | 131 |
+| `rule-pr-batching.md` | rule | current | 2026-08-08 | 151 |
+| `rule-product-authority.md` | rule | current | 2026-08-10 | 118 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
 | `rule-shipping-flow.md` | rule | current | 2026-08-08 | 250 |
 

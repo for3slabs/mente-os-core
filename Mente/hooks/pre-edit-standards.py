@@ -24,6 +24,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _beat import beat                                        # noqa: E402
 
 
+def campana_de(bloque):
+    """La campaña a la que pertenece un bloque, y los estándares que hereda de ella.
+
+    Devuelve (nombre_campaña, [estándares]) o (None, []).
+
+    ⭐ La pertenencia la declara la CAMPAÑA en su §E, no el bloque. Así un bloque no puede
+    auto-adscribirse para heredar estándares más laxos —no los hay: solo se AÑADE— ni quedar
+    huérfano por olvidarse de declararlo: si la campaña no lo lista, no pertenece.
+
+    ⛔ Nunca lanza. Un hook que revienta deja al editor sin ningún estándar, que es peor que
+    inyectar de menos: el fallo sería silencioso y parecería que no había nada que decir.
+    """
+    try:
+        for cpath in glob.glob(os.path.join(MENTE, "campaigns", "*", "CAMPAIGN.md")):
+            txt = open(cpath, encoding="utf-8", errors="replace").read()
+            bloques = re.search(r"##\s*Blocks\s*\n((?:.*\n)+?)(?=\n##|\Z)", txt)
+            if not bloques or bloque not in bloques.group(1):
+                continue
+            std = re.search(r"##\s*Standards\s*\n((?:\s*-.*\n)+)", txt)
+            return (os.path.basename(os.path.dirname(cpath)),
+                    re.findall(r"-\s*(\S+)", std.group(1)) if std else [])
+    except Exception:                                          # noqa: BLE001
+        pass
+    return (None, [])
+
+
 def main():
     beat(MENTE, "pre-edit-standards")   # proof this gate still fires (hooks/_beat.py)
     try:
@@ -96,11 +122,28 @@ def main():
 
         std = re.search(r"##\s*Required standards\s*\n((?:\s*-.*\n)+)", text)
         name = os.path.basename(os.path.dirname(bpath))
-        lines = [f"📦 {target} belongs to block `{name}` — its §D standards apply:"]
-        if std:
-            for s in re.findall(r"-\s*(\S+)", std.group(1)):
+        propios = re.findall(r"-\s*(\S+)", std.group(1)) if std else []
+
+        # ⭐ HERENCIA DE CAMPAÑA (2026-08-10, fase C2 de docs/plans/PLAN-campana.md).
+        # Brian: "todos los códigos van a ser revisados con los mismos estándares."
+        # 🔴 El defecto que cierra: este hook inyectaba SOLO el §D del bloque dueño, así que dos
+        # bloques hermanos con §D distintos juzgaban el mismo código con dos varas.
+        # ⛔ Se HEREDA, no se copia: los estándares se LEEN de la campaña en cada edición. Si se
+        # copiaran al hijo, las dos listas divergirían — el defecto de las tablas de decisiones
+        # duplicadas (75 filas contra 37). La prueba que lo distingue: quitar un estándar de la
+        # CAMPAÑA debe quitarlo de todos los hijos.
+        # ⚠️ Un hijo puede AÑADIR, nunca quitar (rules/rule-inheligence → rule-inheritance.md).
+        campana, heredados = campana_de(name)
+        lines = [f"📦 {target} belongs to block `{name}` — §D standards apply:"]
+        if campana:
+            lines[0] = (f"📦 {target} → block `{name}` · campaign `{campana}` — "
+                        "standards apply (campaign first, block adds):")
+            for s in heredados:
+                lines.append(f"   · {s}   ⬅ heredado de la campaña")
+        for s in propios:
+            if s not in heredados:
                 lines.append(f"   · {s}")
-        else:
+        if not propios and not heredados:
             lines.append("   🔴 §D is empty — the block declares no standards (contract-block.md)")
 
         # An UNCLOSED sub-block covering this file is the fix-on-fix pattern the block exists to

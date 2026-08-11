@@ -1,6 +1,6 @@
 # 📋 CONTRACT · HANDOFF MANIFEST — bounded delegation
-**Status:** current · **Type:** contract · **Updated:** 2026-07-31 · **Owner:** brian
-**Language:** US English · **Validated by:** `bin/verify-handoff`
+**Status:** current · **Type:** contract · **Updated:** 2026-08-10 · **Owner:** brian
+**Language:** US English · **Verified by:** `bin/verify-handoff`
 **Schema:** `rules/schema-handoff-v1.yml` · **Template:** `rules/template-handoff.yml`
 ---
 

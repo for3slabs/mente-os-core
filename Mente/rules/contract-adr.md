@@ -1,5 +1,7 @@
 # CONTRACT · ADR (Architecture Decision Record)
-**Status:** current · **Type:** contract · **Updated:** 2026-07-29 · **Owner:** brian
+**Status:** current · **Type:** contract · **Updated:** 2026-08-10 · **Owner:** brian
+**Verified by:** `bin/check-blocks --adrs` — lo verificaba desde antes; faltaba DECLARARLO, y una
+verificación que no se declara es indistinguible de una que no existe (barrido 2026-08-10).
 validator from 2026-07-27 onward.
 **Where ADRs live:** `rules/decisions/ADR-NNN-short-name.md`
 **Generated index:** `docs/DECISIONS.md` — produced by `bin/generate-index`, never written by hand.
