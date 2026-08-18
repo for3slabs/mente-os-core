@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **235** |
+| `battery.checks` | **248** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -68,8 +68,8 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 
 | Metric | Value |
 |---|---|
-| `sessions.registered` | **13** |
-| `sessions.on_disk` | 13 |
+| `sessions.registered` | **14** |
+| `sessions.on_disk` | 14 |
 | `sessions.heavy_unregistered` | **0** |
 
 `heavy_unregistered` counts `.jsonl` files over 2 MB with no autopsy — the ones whose loss
@@ -79,7 +79,7 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 23 |
+| `system.validators` | 24 |
 | `system.hook_files` | 8 |
 | `system.hooks_registered` | **8** |
 | `system.blocks_active` | 2 |

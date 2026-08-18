@@ -550,7 +550,36 @@ def check_session():
     js = cfg.session_files()
     if not js:
         return
-    cur = js[0]
+
+    # 🔴 THE RESOLVER, not `js[0]` (measured 2026-08-18). Taking the newest transcript by mtime
+    # as "the current session" is a guess that is WRONG for the first minutes after every
+    # /clear: the new file is a few KB old and loses to the previous one, so this function
+    # measured a session that had already been closed AND registered, and announced
+    # "session open 262h". Evidence: live 5457aafc (145 KB, 15:57) lost to closed 4c2f0014
+    # (42 MB, 14:36). The SessionStart hook now exports the real id; by hand there is none and
+    # the fallback below stays a guess — so the guess is CHECKED before it is allowed to shout.
+    cur, how = cfg.session_current(cfg.live_session_id())
+    if cur is None:
+        yel(f"{how}\n   → session size/age is not being watched")
+        return
+
+    # A session that already has its autopsy written is not an open session — it is a TRACE.
+    # When the resolver had to guess and landed on a registered transcript, that is itself the
+    # finding: the file we are about to measure is not the one being written to.
+    regc = "Cerebro/Registro_Conversaciones.md"
+    regtext = (open(regc, encoding="utf-8", errors="replace").read()
+               if os.path.exists(regc) else "")
+    cur_sid = os.path.basename(cur)[:8]
+    cur_registered = bool(re.search(rf"(?<![0-9a-f]){re.escape(cur_sid)}(?![0-9a-f])", regtext))
+    if how == "mtime" and cur_registered:
+        yel(f"RESOLVER MISS · the newest transcript ({cur_sid}) is already registered in "
+            f"{regc}.\n"
+            "   A session with its autopsy written is a TRACE, not an open session — so this\n"
+            "   is the previous session, and its size/age are NOT the live session's.\n"
+            "   Expected right after a /clear before the new transcript wins on mtime; if the\n"
+            "   SessionStart hook is passing MENTE_SESSION_ID, it should never be seen.")
+        return
+
     size = os.path.getsize(cur) / 1e6
     if size > 50:
         red(f"current session is {size:.0f} MB — over the 50 MB red threshold")
@@ -570,7 +599,12 @@ def check_session():
                 last = ts
         if first and last:
             h = (datetime.fromisoformat(last) - datetime.fromisoformat(first)).total_seconds() / 3600
-            if h > 48:
+            # ⛔ Never 🔴 for a session that is already registered: its autopsy is written,
+            # so the hours it accumulated are HISTORY, not exposure. Shouting about them is the
+            # noise that made this alarm get repeated as a finding on 2026-08-18.
+            if cur_registered:
+                pass
+            elif h > 48:
                 red(f"session open {h:.0f}h — the 2026-07-21 incident happened at 4 days "
                     "(835K context, 6 scope violations)")
             elif h > 24:
@@ -581,16 +615,20 @@ def check_session():
         pass
 
     # a previous session with no entry in the log
-    regc = "Cerebro/Registro_Conversaciones.md"
     if os.path.exists(regc) and len(js) > 1:
-        text = open(regc, encoding="utf-8", errors="replace").read()
+        text = regtext
         # 🔴 Family A (2026-08-02): `[:8] not in text` matches those 8 hex characters ANYWHERE
         # — inside a commit hash, a path, a longer id — and reports a heavy unregistered
         # session as registered. Same defect fixed in check-clear-ready (8d9f5f3).
         def _logged(sid):
             return re.search(rf"(?<![0-9a-f]){re.escape(sid)}(?![0-9a-f])", text)
-        missing = [os.path.basename(f)[:8] for f in js[1:]
-                   if os.path.getsize(f) > 2e6 and not _logged(os.path.basename(f)[:8])]
+        # ⛔ Excluded by IDENTITY, not by position. `js[1:]` assumed js[0] was the live
+        # session; with the resolver the live transcript can sit anywhere in the list, and
+        # skipping js[0] blindly would report the OPEN session as "a past session with no
+        # entry" — it has no entry because it has not ended yet.
+        missing = [os.path.basename(f)[:8] for f in js
+                   if f != cur and os.path.getsize(f) > 2e6
+                   and not _logged(os.path.basename(f)[:8])]
         if missing:
             yel(f"{len(missing)} past session(s) over 2 MB with no entry in "
                 f"Registro_Conversaciones.md: {', '.join(missing[:4])}")

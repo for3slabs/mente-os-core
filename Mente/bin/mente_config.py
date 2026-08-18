@@ -157,6 +157,51 @@ def session_files():
     return sorted(glob.glob(f"{d}/*.jsonl"), key=os.path.getmtime, reverse=True)
 
 
+def session_current(session_id=None):
+    """(path, how) — the transcript of the LIVE session. (None, reason) when unresolved.
+
+    `how` is "id" when it was resolved from the real session id, "mtime" when it fell back to
+    the newest file.
+
+    🔴 The bug this exists for (measured 2026-08-18): every caller took `session_files()[0]` as
+    "the current session". That is a HEURISTIC, not a fact. Right after a `/clear` the new
+    transcript is a few KB old and has not yet won on mtime, so `[0]` still points at the
+    PREVIOUS session — the one already closed and already registered. check-health then measured
+    that dead file and announced "session open 262h", the alarm that exists because of the
+    21-jul incident, aimed at a corpse. Evidence that morning: the live 5457aafc (145 KB,
+    mtime 15:57) lost to the closed 4c2f0014 (42 MB, mtime 14:36) at hook time.
+
+    Claude Code hands the real id to the SessionStart hook, so the guess is unnecessary whenever
+    that id reaches us. The fallback stays because a validator run by hand has no id — but a
+    caller that falls back must treat the answer as a GUESS (see check-health: a "current"
+    session that is already in the log is a resolver miss, not an open session).
+    """
+    d, why = session_dir()
+    if why:
+        return None, why
+    if session_id:
+        hit = os.path.join(d, f"{session_id}.jsonl")
+        if os.path.exists(hit):
+            return hit, "id"
+        # An id that names no transcript is worth saying out loud: it means the folder we watch
+        # is not the folder this session writes to.
+        return None, f"session id {session_id[:8]} has no transcript in {d}"
+    js = session_files()
+    if not js:
+        return None, "no transcripts"
+    return js[0], "mtime"
+
+
+def live_session_id():
+    """The session id Claude Code exported into the environment, or None.
+
+    The SessionStart hook writes it here (hooks/session-start.sh) so that every validator the
+    hook launches resolves the SAME session, instead of each one guessing on its own.
+    """
+    sid = os.environ.get("MENTE_SESSION_ID", "").strip()
+    return sid or None
+
+
 def gates():
     """[(expanded_path, why)] — trees the AI must not read without explicit permission."""
     out = []

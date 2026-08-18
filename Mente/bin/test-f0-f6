@@ -2561,6 +2561,183 @@ if [ -f "$M/memory/PENDIENTES.md" ]; then
     || bad "histórico de pendientes" "PENDIENTES.md declarado histórico" "no lo dice"
 fi
 
+# ── 19 · LA SESIÓN VIVA SE RESUELVE, NO SE ADIVINA (2026-08-18) ─────────────
+# 🔴 El bug medido ese día: check-health tomaba el .jsonl más nuevo por mtime como "la sesión
+# actual". Justo después de un /clear el archivo nuevo pesa unos KB y AÚN NO gana por mtime, así
+# que midió la sesión ANTERIOR — cerrada, registrada, de 154h — y gritó "session open 262h".
+# La alarma que existe por el incidente del 21-jul apuntó a un archivo muerto, y el ruido se
+# repitió como si fuera un hallazgo.
+# Evidencia: la viva 5457aafc (145 KB, mtime 15:57) perdió contra la cerrada 4c2f0014 (42 MB,
+# mtime 14:36).
+#
+# Se reproduce por SABOTAJE en un árbol de usar y tirar: un transcript viejo GRANDE y de 154h
+# YA REGISTRADO, y uno nuevo pequeño. Sin el arreglo, sale 🔴. Con él, no.
+_tmp=$(mktemp -d)
+_proj="$_tmp/home/.claude/projects/-tmp-fakerepo"
+mkdir -p "$_proj" "$_tmp/fakerepo/Mente/bin" "$_tmp/fakerepo/Mente/Cerebro"
+
+# el viejo: 154h de vida, 3 MB (supera el umbral de 2 MB del aviso de "sin registrar")
+_old="aaaa1111-0000-0000-0000-000000000000"
+{
+  printf '{"timestamp":"2026-08-12T08:17:00.000Z"}\n'
+  head -c 3000000 /dev/zero | tr '\0' 'x' | sed 's/^/{"pad":"/' | head -1
+  printf '\n{"timestamp":"2026-08-18T18:17:00.000Z"}\n'
+} > "$_proj/$_old.jsonl"
+# el nuevo: la sesión VIVA, minúscula y con mtime posterior... pero se fuerza el caso duro
+_new="bbbb2222-0000-0000-0000-000000000000"
+printf '{"timestamp":"2026-08-18T15:50:00.000Z"}\n' > "$_proj/$_new.jsonl"
+# ⭐ EL SABOTAJE: el viejo gana por mtime, exactamente como la mañana del 18-ago
+touch -d '2026-08-18 15:57' "$_proj/$_new.jsonl"
+touch -d '2026-08-18 16:36' "$_proj/$_old.jsonl"
+
+# el viejo YA tiene su autopsia escrita: es un RASTRO, no una sesión abierta
+printf '| S99 | `%s` | 2026-08-12 | cerrada | 3 MB | x | y | autopsia de prueba |\n' \
+  "$(printf '%s' "$_old" | cut -c1-8)" > "$_tmp/fakerepo/Mente/Cerebro/Registro_Conversaciones.md"
+
+cp "$M/bin/check-health" "$M/bin/mente_config.py" "$_tmp/fakerepo/Mente/bin/"
+[ -f "$M/mente.config.yml" ] && cp "$M/mente.config.yml" "$_tmp/fakerepo/Mente/"
+# el resolutor lee ~/.claude/projects/<slug>: se apunta HOME al árbol falso y el slug al proyecto
+printf 'session:\n  project_dir: -tmp-fakerepo\n' >> "$_tmp/fakerepo/Mente/mente.config.yml"
+
+_out=$(cd "$_tmp/fakerepo/Mente" && HOME="$_tmp/home" MENTE_SESSION_ID="" \
+       ./bin/check-health 2>&1)
+# ① no debe gritar 🔴 por horas de una sesión ya registrada
+if printf '%s' "$_out" | grep -q "session open"; then
+  bad "resolutor de sesión" "sin 🔴 de horas: el transcript elegido ya está registrado" \
+      "$(printf '%s' "$_out" | grep -m1 'session open')"
+else
+  ok "un transcript YA REGISTRADO no dispara 'session open' (el falso 🔴 del 18-ago)"
+fi
+# ② y el fallo del resolutor se DETECTA, no se traga en silencio
+printf '%s' "$_out" | grep -q "RESOLVER MISS" \
+  && ok "el resolutor AVISA cuando adivinó y cayó en una sesión ya registrada" \
+  || bad "detección del resolutor" "un aviso 'RESOLVER MISS'" "silencio — el fallo no se ve"
+# ③ con el id real, resuelve la viva aunque pierda por mtime
+_out2=$(cd "$_tmp/fakerepo/Mente" && HOME="$_tmp/home" MENTE_SESSION_ID="$_new" \
+        ./bin/check-health 2>&1)
+# ⚠️ "no avisó" NO basta: el código viejo tampoco avisaba, simplemente ignoraba el id y medía
+# la vieja. Lo que prueba que usó el id es que las 154h del transcript viejo NO aparecen.
+_id_ok=0
+printf '%s' "$_out2" | grep -q "RESOLVER MISS" && _id_ok=$((_id_ok+1))
+printf '%s' "$_out2" | grep -q "154h" && { _id_ok=$((_id_ok+1)); printf '     \xe2\xa4\xb7 midió la sesión VIEJA (154h) pese a recibir el id de la viva\n'; }
+eq "con MENTE_SESSION_ID mide la sesión VIVA, no la vieja que gana por mtime" "0" "$_id_ok"
+rm -rf "$_tmp"
+
+# Y el hook debe PASAR ese id: sin eso, todo lo anterior depende de la suerte del mtime.
+_h="$M/hooks/session-start.sh"
+_hn=0
+grep -q "MENTE_SESSION_ID" "$_h" || { _hn=$((_hn+1)); printf '     ⤷ el hook no exporta MENTE_SESSION_ID\n'; }
+grep -q "session_id" "$_h" || { _hn=$((_hn+1)); printf '     ⤷ el hook no lee session_id del payload\n'; }
+grep -q "^export MENTE_SESSION_ID" "$_h" || { _hn=$((_hn+1)); printf '     ⤷ no lo EXPORTA: los validadores que lanza no lo verían\n'; }
+eq "el hook de arranque lee el session_id del payload y lo exporta" "0" "$_hn"
+
+# El resolutor no puede volver a ser `[0]`: ningún validador de sesión adivina por su cuenta.
+_guess=0
+for _f in "$M/bin/check-health" "$M/bin/check-clear-ready"; do
+  grep -q "session_current" "$_f" || { _guess=$((_guess+1)); printf '     ⤷ %s no usa el resolutor\n' "$(basename "$_f")"; }
+done
+eq "los 2 validadores de sesión usan el resolutor, no session_files()[0]" "0" "$_guess"
+
+# ── 20 · LA HORA DEL REGISTRO ES LA LOCAL, Y SE MIDE (2026-08-18) ───────────
+# 🔴 Medido ese día: S13 y S14 llevaban escrita la hora UTC del .jsonl ETIQUETADA COMO LOCAL.
+# S14 declaraba cerrar 20:33 cuando el transcript cierra 20:36:53Z = 14:36 CST. Un desfase de
+# 6h en la hora de cierre es indistinguible de una sesión que siguió viva media jornada más —
+# justo la pregunta que este índice existe para responder. Se escriben a mano, así que ningún
+# script las miraba.
+_reg="$M/Cerebro/Registro_Conversaciones.md"
+_tz=0
+grep -q "Inicio (local" "$_reg" || { _tz=$((_tz+1)); printf '     ⤷ la columna Inicio no declara su huso: UTC y local se ven idénticas\n'; }
+grep -q "Fin (local" "$_reg" || { _tz=$((_tz+1)); printf '     ⤷ la columna Fin no declara su huso\n'; }
+grep -q "nunca en UTC" "$_reg" || { _tz=$((_tz+1)); printf '     ⤷ no dice que la hora NO va en UTC — la regla que se violó\n'; }
+eq "el índice de sesiones declara el huso de sus horas (local, no UTC)" "0" "$_tz"
+
+# Y se MIDE contra el transcript: la hora de cierre de cada fila debe coincidir con el último
+# timestamp de su .jsonl, en local. Una fila escrita a mano que se desvía >90 min miente sobre
+# cuándo se cortó la sesión. Solo se comprueban las filas cuyo .jsonl sigue en disco.
+_drift=$(python3 - "$_reg" <<'PYEOF'
+import os, re, sys, glob
+from datetime import datetime, timezone, timedelta
+sys.path.insert(0, "bin")
+import mente_config as cfg
+d, why = cfg.session_dir()
+if why:
+    print("skip"); raise SystemExit
+LOCAL = timezone(timedelta(hours=-6))          # CST, el huso declarado en la cabecera
+bad, rows = [], {}
+for line in open(sys.argv[1], encoding="utf-8", errors="replace"):
+    m = re.match(r"\|\s*(S\d+)\s*\|\s*`([0-9a-f]{8})`\s*\|[^|]*\|\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}):(\d{2})", line)
+    if not m:
+        continue
+    sid, day, hh, mm = m.group(2), m.group(3), int(m.group(4)), int(m.group(5))
+    hits = glob.glob(os.path.join(d, f"{sid}*.jsonl"))
+    if not hits:
+        continue
+    ts = None
+    for l in open(hits[0], errors="replace"):
+        i = l.find('"timestamp":"')
+        if i > 0:
+            ts = l[i+13:i+32]
+    if not ts:
+        continue
+    real = datetime.fromisoformat(ts.replace("Z", "")).replace(tzinfo=timezone.utc).astimezone(LOCAL)
+    claimed = datetime(int(day[:4]), int(day[5:7]), int(day[8:10]), hh, mm, tzinfo=LOCAL)
+    gap = abs((real - claimed).total_seconds()) / 60
+    # ⚠️ Varias filas pueden compartir un .jsonl: la JORNADA es la unidad de trabajo, el archivo
+    # la de almacenamiento (S13+S14 viven en 4c2f0014, 262h sin corte). Solo la ÚLTIMA fila de
+    # un transcript cierra el archivo; a las anteriores el cierre del .jsonl no las describe.
+    # Se acepta <=90 min de redondeo a mano.
+    rows.setdefault(sid, []).append((m.group(1), day, hh, mm, real, gap))
+for sid, rs in rows.items():
+    # la última de ese transcript = la de fecha/hora declarada más alta
+    last = max(rs, key=lambda r: (r[1], r[2], r[3]))
+    name, day, hh, mm, real, gap = last
+    if gap > 90:
+        bad.append(f"{name} dice {day} {hh:02d}:{mm:02d}, el transcript cierra {real:%Y-%m-%d %H:%M} ({gap/60:.1f}h)")
+print("|".join(bad) if bad else "clean")
+PYEOF
+)
+case "$_drift" in
+  clean) ok "medido: la hora de cierre de cada sesión coincide con su transcript (local)" ;;
+  skip)  note "deriva de horas no medible: no hay directorio de transcripts en esta máquina" ;;
+  *)     _n=$(printf '%s' "$_drift" | tr '|' '\n' | grep -c .)
+         printf '%s' "$_drift" | tr '|' '\n' | sed 's/^/     ⤷ /'
+         bad "hora de cierre del registro" "coincide con el .jsonl" "$_n fila(s) desviadas >90min" ;;
+esac
+
+# ── 21 · LA BASE DE UN PR ES master, Y HAY CANDADO (2026-08-18) ─────────────
+# 🔴 El incidente: #32 (airlock→master, SQUASH) mergeado 23:08:27; #33 (fix→airlock) 9 segundos
+# después. Ambos MERGED, y el arreglo NUNCA llegó a master — 9 archivos, 329 líneas, con la
+# etiqueta puesta. El squash rompe el parentesco, y el PR encadenado se mergea contra un ancestro
+# que ya no lo es.
+# ⭐ El anti-patrón #8 YA estaba escrito y la memoria del 08-ago YA lo registraba: se leyeron al
+# arrancar ese mismo día y no se aplicaron. Documento 40-60% — por eso ahora es código.
+_pb="$M/bin/check-pr-base"
+[ -x "$_pb" ] && ok "existe el candado de la base de un PR (bin/check-pr-base)" \
+  || bad "candado de base" "bin/check-pr-base ejecutable" "no existe"
+
+if [ -x "$_pb" ]; then
+  # ① acepta la rama base
+  "$_pb" master >/dev/null 2>&1
+  eq "check-pr-base ACEPTA master como base" "0" "$?"
+  # ② y RECHAZA exactamente la base que causó el incidente
+  "$_pb" feat/airlock-revision >/dev/null 2>&1
+  eq "check-pr-base RECHAZA una rama que no es base (el error del 18-ago)" "1" "$?"
+  # ③ el rechazo debe EXPLICAR el mecanismo, o se lee como burocracia y se salta
+  _msg=$("$_pb" alguna-rama-inventada 2>&1)
+  _ex=0
+  printf '%s' "$_msg" | grep -qi "squash" || { _ex=$((_ex+1)); printf '     ⤷ no nombra el squash: sin el mecanismo, el aviso no enseña nada\n'; }
+  printf '%s' "$_msg" | grep -q "rebase origin/master" || { _ex=$((_ex+1)); printf '     ⤷ no dice QUÉ HACER en su lugar\n'; }
+  eq "el rechazo explica el mecanismo (squash) y da la salida (rebase)" "0" "$_ex"
+fi
+
+# La regla debe declarar el candado, y haber ANULADO la excepción que lo permitía.
+_r="$M/rules/rule-shipping-flow.md"
+_rn=0
+grep -q "check-pr-base" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ la regla no nombra su validador\n'; }
+grep -q "queda ANULADA" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ no anula el "unless explicitly stacked": esa cláusula ES la que se usó para justificar el error\n'; }
+grep -q "2-bis" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ falta la sección §2-bis con el incidente medido\n'; }
+eq "la regla declara el candado y ANULA la excepción de PRs encadenados" "0" "$_rn"
+
 # ═══════════════════════════════════════════════════════════════════ RESULT
 printf '\n\033[1m════ RESULT ════\033[0m\n'
 printf '  passed: %d\n  failed: %d\n' "$PASS" "$FAIL"

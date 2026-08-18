@@ -71,6 +71,7 @@ puerta-secretos	hooks/gate-secrets.py	mente	canonical	fail-closed sobre secrets/
 puerta-commit	hooks/pre-commit.sh	mente	canonical	bloquea commit en rama base e índice desfasado
 inyector	hooks/pre-edit-standards.py	mente	canonical	inyecta los §D del bloque dueño antes de editar
 val-prs	bin/check-prs	mente	canonical	¿cambió el estado de algún PR desde la última mirada?
+val-pr-base	bin/check-pr-base	mente	canonical	⛔ la base de un PR es master: el candado del anti-patrón #8
 vigia-prs	hooks/watch-prs.py	mente	canonical	avisa de un merge ajeno antes de tocar git, sin preguntar
 contrato-campana	rules/contract-campaign.md	mente	canonical	la forma de una campaña: agrupa bloques bajo una misión y unos estándares
 val-campanas	bin/check-campaigns	mente	canonical	¿una campaña cumple su contrato? hijos, autoridad, impacto, cierre

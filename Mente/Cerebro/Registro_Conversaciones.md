@@ -31,7 +31,19 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 
 ## 📒 Índice de sesiones
 
-| # | ID (corto) | Inicio | Fin | Peso | Msjs Brian | Contexto máx | Veredicto |
+> ⚠️ **Las horas van en LOCAL (CST, UTC−6), nunca en UTC.** Medido 2026-08-18: S13 y S14 tenían
+> escrita la hora UTC del `.jsonl` **etiquetada como local** — S14 decía cerrar 20:33 cuando el
+> transcript cierra 20:36:53Z, que aquí son las **14:36**. Un desfase de 6h en la hora de cierre
+> es indistinguible de una sesión que siguió viva media jornada más, y esa es exactamente la
+> pregunta que este índice existe para responder. Las duraciones sí estaban bien calculadas: se
+> corrigieron las horas, y de paso los spans reales medidos del transcript (111h y 150h).
+>
+> ⭐ **S13 y S14 comparten un solo `.jsonl` (`4c2f0014`), 262h sin corte** — 11 días, el récord
+> del proyecto. Por eso el arranque del 18-ago midió 262h: **la suma de las dos jornadas**, no
+> una sesión abierta. Dos filas sobre un mismo transcript son legítimas (la jornada es la unidad
+> de trabajo, el `.jsonl` la del archivo) pero el lector debe saberlo, o lee un contador roto.
+
+| # | ID (corto) | Inicio (local, CST) | Fin (local, CST) | Peso | Msjs Brian | Contexto máx | Veredicto |
 |---|---|---|---|---|---|---|---|
 | S1 | `2a5131d3` | 2026-05-28 | 2026-07-13 | **278 MB** 🔴 | ~2,900 turnos | **~985K tokens** 🔴 | LA MONSTRUO — causó el incidente del jueves |
 | S2 | `3f5bbe0d` | 2026-07-13 20:28 | 2026-07-14 06:03 | 3.4 MB 🟢 | ~26 | **549K 🔴** | Maratón H13+Frente B — productiva; /clear al cruzar el umbral rojo de contexto |
@@ -39,13 +51,14 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S4 | `c154a2ba` | 2026-07-18 18:38 (Mx) | 2026-07-19 ~18:30 (Mx) | 4.2 MB 🟢 | ~29 | **667K 🔴** | **LA JORNADA DEL SUPER-CEREBRO (30h)** — entrenamiento+examen de AMBOS agentes, 12 fixes sistémicos, v0.19.0 desplegada total. La más productiva de la historia del proyecto; /clear al cierre por contexto rojo |
 | S5 | `7e9ce3b7` | 2026-07-24 20:58 | 2026-07-26 ~06:22 (~33h) | 12 MB 🟢 | ~97 | **917K 🔴** | **LA JORNADA DEMO → PRODUCTO** — BD reestructurada (F1-F6) + cableado + pulido P1-P7 + optimización (heartbeat −68%) + 9 bugs. Sana en disco pero **contexto en rojo**: /clear recomendado al cerrar |
 | S6 | `dac2ce13` | 2026-07-26 ~06:00 | 2026-07-26 ~23:50 (~18h) | 5.9 MB 🟢 | ~60 | ~n/d | **LA JORNADA DE LOS CIMIENTOS DE LA DEMO** — 6 archivos a producto + Ronda F0 `userStore` (U1-U6, C6p2 cerrado) + `container.ts` activado + `DEMO_ENC_KEY` unificada + rebuild del agente. ~15 bugs (3 de seguridad). **2 caídas de producción causadas por mí.** Sana en disco |
-| S7 | `4fc1996c` | 2026-07-27 00:03 | 2026-07-31 19:41 (**~116h**) 🔴 | 12 MB 🟢 | 1,087 turnos | **998K tokens** 🔴 | **LA JORNADA DE MENTE OS v2** — el sistema pasa de documentar a GOBERNAR: 11 validadores + 4 hooks + 3 niveles de reglas + migración v1→v2 completa (M0-M5, 186 docs, 4 carpetas eliminadas). `test-f0-f6` = 105/105. **Contexto máximo del proyecto — supera a S1 (985K), la monstruo.** 9 bugs propios, todos cazados por validadores |
-| S8 | `523998b8` | 2026-07-31 19:51 | 2026-08-02 22:09 (**~50h**) 🔴 | 5.6 MB 🟢 | 670 turnos | **722K** 🔴 | **LA JORNADA DE ENDURECER EL v2** — F8-4 pasó (el brief bastó) y luego 12 commits cerrando huecos que la propia auditoría destapó: el token de GitHub expuesto · el guardia que vigilaba 9 de 21 · el cableado de los hooks · el latido F1+F2. Mente OS v2 **publicado en GitHub**. Batería 105 → 138 |
-| S10 | `1b9338a4` | 2026-08-03 18:51 | 2026-08-04 01:32 (**~7h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
-| S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
+| S7 | `4fc1996c` | 2026-07-26 18:03 | 2026-07-31 13:51 (**~116h**) 🔴 | 12 MB 🟢 | 1,087 turnos | **998K tokens** 🔴 | **LA JORNADA DE MENTE OS v2** — el sistema pasa de documentar a GOBERNAR: 11 validadores + 4 hooks + 3 niveles de reglas + migración v1→v2 completa (M0-M5, 186 docs, 4 carpetas eliminadas). `test-f0-f6` = 105/105. **Contexto máximo del proyecto — supera a S1 (985K), la monstruo.** 9 bugs propios, todos cazados por validadores |
+| S8 | `523998b8` | 2026-07-31 13:51 | 2026-08-02 16:43 (**~51h**) 🔴 | 5.6 MB 🟢 | 670 turnos | **722K** 🔴 | **LA JORNADA DE ENDURECER EL v2** — F8-4 pasó (el brief bastó) y luego 12 commits cerrando huecos que la propia auditoría destapó: el token de GitHub expuesto · el guardia que vigilaba 9 de 21 · el cableado de los hooks · el latido F1+F2. Mente OS v2 **publicado en GitHub**. Batería 105 → 138 |
+| S10 | `1b9338a4` | 2026-08-03 12:51 | 2026-08-03 20:31 (**~8h**) 🟢 | 2.1 MB 🟢 | 237 turnos | **261K** 🟡 | **LA JORNADA DE LA VOZ** — el output style pasó de 8 reglas negativas a un CONTRATO DE ENTREGA: §6 de `owner-0-voice` (hueco de criterio de Brian) LLENO con sus palabras + 3 modos 🟢🟡🔵 + jerarquía de títulos + línea de salud + antes/después/puente + destinatario. **Se corrigieron las 2 reglas que CAUSABAN el problema** (la 2.5 ordenaba cortar el cierre; la 2.8 dejaba omitir el porqué). Vehículo adelgazado 5,167 → 2,644 tokens (**−48% por turno**). Sin commit |
+| S9 | `dc733bc1` | 2026-08-02 16:43 | 2026-08-03 12:51 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
 | S11 | `8b4bddcb` | 2026-08-04 02:31 | ⚠️ **NO cerró aquí** — el mismo `.jsonl` siguió vivo hasta 08-07 21:26 (ver S12) | 11.8 MB → 25 MB | 65 → 2,381 | **999,757 → 1,000,030** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
 | S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 22:41 (**~47h**) 🔴 | **27 MB** 🟡 | 2,499 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
-| S13 | `4c2f0014` | 2026-08-07 23:05 | 2026-08-12 08:17 (**~105h**) 🔴 | **36 MB** 🟡 | 1,530 turnos | **999,702** 🔴 | **LA JORNADA DE LA VERDAD DE V1** — 50 auditorías al servidor + lectura de ~45,000 líneas de Mente OS. Nacen 3 documentos (4,715 líneas): el terreno del código, el del conocimiento y **`LA-VERDAD-DE-V1.md`**. ⭐ Se resolvió la VARA de la campaña (el gate de la fase, no el Grafo) y los 24 hallazgos se redujeron a **4**. 🔴 **cache_read 1,347M — el máximo histórico, supera al 21-jul (1,033M)**. 8 errores míos corregidos en voz alta |
+| S14 | `4c2f0014` | 2026-08-12 02:17 | 2026-08-18 14:36 (**~150h**) 🔴 | **41 MB** 🟡 | **3,526 turnos** (acum.) | **999,702** 🔴 | **LA JORNADA DEL PRIMER BLOQUE** — el DOSSIER para el consultor (1,016 líneas), las 3 piezas de regla, y **el bloque 1 de 12 abierto y llevado a 6/11**. ⭐ El hallazgo mayor: *"se construye la pieza y no se conecta"* apareció **3 veces** (cripto · workspaces · BYOK). 🔴 **cache_read 1,696M — nuevo máximo histórico, supera a S13 (1,347M)**. ⚠️ **Mismo `.jsonl` que S13: 11 días sin corte, el récord del proyecto.** 3 errores míos + 1 de forma que Brian corrigió dos veces |
+| S13 | `4c2f0014` | 2026-08-07 17:05 | 2026-08-12 02:17 (**~111h**) 🔴 | **36 MB** 🟡 | 1,530 turnos | **999,702** 🔴 | **LA JORNADA DE LA VERDAD DE V1** — 50 auditorías al servidor + lectura de ~45,000 líneas de Mente OS. Nacen 3 documentos (4,715 líneas): el terreno del código, el del conocimiento y **`LA-VERDAD-DE-V1.md`**. ⭐ Se resolvió la VARA de la campaña (el gate de la fase, no el Grafo) y los 24 hallazgos se redujeron a **4**. 🔴 **cache_read 1,347M — el máximo histórico, supera al 21-jul (1,033M)**. 8 errores míos corregidos en voz alta |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -411,10 +424,18 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 Ninguna. Sesión sana en todos los ejes.
 
 
-## S14 · `4c2f0014` — LA JORNADA DEL PRIMER BLOQUE (2026-08-12 → 08-18, ~194h) 🔴
+## S14 · `4c2f0014` — LA JORNADA DEL PRIMER BLOQUE (2026-08-12 08:17 → 08-18 20:33, ~154h) 🔴
 
-🔴 **194h abiertas — el récord del proyecto.** El incidente del 21-jul detonó a las 96h. No hubo
-degradación esta vez, pero **el margen se agotó**: se cierra por tiempo, no por trabajo terminado.
+**41 MB** 🟡 · **3,526 turnos** (acumulados con S13, mismo `.jsonl`) · **contexto pico 999,702** 🔴
+· **cache_read 1,696,388,727** 🔴 ⭐ **nuevo máximo del proyecto — supera a S13 (1,347M) y al
+21-jul (1,033M)** · cache_write 22.7M · output 2.2M.
+
+🔴 **11 DÍAS DE `.jsonl` SIN CORTE (07-ago 23:05 → 18-ago 20:33) — el récord del proyecto.**
+S13 y S14 comparten sesión: S13 nunca se cortó, solo se registró. El incidente del 21-jul detonó
+a las **96h**; esto es **3.8×** eso. ⭐ **No hubo degradación medible esta vez** — y esa es
+exactamente la trampa: el patrón de las 3 sesiones huérfanas es que **mueren de EDAD, no de
+tamaño** (96h · 76h · 11 días, ninguna sobre 50 MB). Se cierra por tiempo, no por trabajo
+terminado.
 
 ### Qué se hizo
 

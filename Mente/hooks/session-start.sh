@@ -24,6 +24,22 @@ MENTE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Written FIRST, before check-health runs, so the beat lands even if the check below crashes.
 date -u +%Y-%m-%d > "$MENTE/.heartbeat" 2>/dev/null || true
 
+# ── WHICH SESSION IS THIS? ──────────────────────────────────────────────────
+# 🔴 Measured 2026-08-18: the validators below decided "the current session" by taking the
+# newest .jsonl by mtime. Right after a /clear the new transcript is a few KB old and has NOT
+# yet won on mtime, so they measured the PREVIOUS session — closed, registered, 154h long — and
+# reported "session open 262h". The alarm that exists because of the 21-jul incident fired at a
+# file nobody was writing to, and the noise got repeated as if it were a finding.
+#
+# Claude Code hands us the real id in the SessionStart payload. Reading it turns the guess into
+# a fact. Exported so EVERY validator this hook launches resolves the same session; a validator
+# run by hand still falls back to mtime, and knows that it did.
+payload="$(timeout 2 cat 2>/dev/null || true)"
+MENTE_SESSION_ID="$(printf '%s' "$payload" \
+  | grep -o '"session_id"[[:space:]]*:[[:space:]]*"[^"]*"' \
+  | head -1 | sed 's/.*"\([^"]*\)"$/\1/')"
+export MENTE_SESSION_ID
+
 # Silence unless something is actually red. exit 2 = red (bin/check-health contract).
 out="$("$MENTE/bin/check-health" 2>/dev/null)" ; code=$?
 if [ "$code" -eq 2 ]; then

@@ -1,6 +1,6 @@
 # PENDIENTES · agosto 2026
 
-**Status:** current · **Type:** pending · **Updated:** 2026-08-08 · **Owner:** brian
+**Status:** current · **Type:** pending · **Updated:** 2026-08-18 · **Owner:** brian
 **Shape:** `rules/contract-pending.md` · **Rotation:** `rules/rule-pending-rotation.md`
 **Verified by:** `bin/check-pendings`
 **Rotado desde:** `memory/PENDIENTES.md` (histórico, 4,794 líneas — ya no recibe escrituras)
@@ -313,6 +313,42 @@ exención, los 2 checks nuevos caen.
 
 ⭐ **El patrón, por tercera vez esta semana:** el archivo estaba bien y **el medidor leía mal**
 (como `grade-block` con el runbook y `generate-index` con los `✅`). **Se corrige quien LEE.**
+
+---
+
+### V2-12 · 🔴 La alarma de sesión medía el transcript equivocado
+
+- **Prioridad:** 🔴 urgente
+- **Estado:** cerrado
+- **Creado:** 2026-08-18 · **Modificado:** 2026-08-18 · **Cerrado:** 2026-08-18
+- **Arrastrado desde:** — (nació aquí: lo destapó el arranque de esta misma sesión)
+- **Archivos de referencia:** `bin/mente_config.py` · `bin/check-health` · `bin/check-clear-ready` · `hooks/session-start.sh`
+- **Plan:** cerrado en el mismo commit que lo abrió
+- **Depende de:** —
+
+**Descripción.** `check_session()` tomaba `session_files()[0]` —el `.jsonl` más nuevo **por
+mtime**— como "la sesión actual". Eso es una heurística, no un hecho: justo después de un `/clear`
+el transcript nuevo pesa unos KB y **aún no gana por mtime**, así que el validador medía la sesión
+ANTERIOR. Medido el 2026-08-18: la viva `5457aafc` (145 KB, mtime 15:57) perdió contra la cerrada
+`4c2f0014` (42 MB, mtime 14:36), y el arranque gritó **`session open 262h`** sobre un archivo que
+nadie estaba escribiendo — una sesión ya cerrada, ya registrada y con su autopsia hecha.
+
+⭐ **El daño real no fue el número, fue la credibilidad de la alarma.** Es la que existe por el
+incidente del 21-jul; al dispararse sobre un cadáver, la IA la repitió como si fuera un hallazgo y
+propuso cerrar una sesión que ya estaba cerrada. Una alarma que grita en falso se vuelve ruido, y el
+ruido es exactamente lo que hace que la próxima —la verdadera— se ignore.
+
+**El arreglo, en dos mitades.** ① `session_current()` resuelve por el `session_id` real que Claude
+Code entrega en el payload de SessionStart (`hooks/session-start.sh` lo exporta como
+`MENTE_SESSION_ID`); sin id cae a mtime, pero entonces **sabe que adivinó**. ② Y lo DETECTA: si el
+transcript elegido ya tiene fila en `Cerebro/Registro_Conversaciones.md`, eso es en sí un hallazgo
+—`RESOLVER MISS`— porque una sesión con autopsia escrita es un **rastro**, no una sesión abierta.
+Nunca vuelve a salir 🔴 por horas de una sesión ya registrada.
+
+📏 **Verificado por sabotaje** (batería §19, 4 comprobaciones): con el código viejo las 4 fallan y
+reproducen el `session open 154h` textual; con el arreglo, las 4 pasan. Batería **241/0**.
+⚠️ De paso quedó al descubierto que `js[1:]` asumía que `js[0]` era la viva — ahora se excluye por
+identidad, o la sesión abierta se reportaría como "sesión pasada sin registrar".
 
 ---
 

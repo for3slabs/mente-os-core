@@ -56,7 +56,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 178 |
+| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 179 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
 | `README.md` | entry-point | current | 2026-08-06 | 210 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
@@ -70,7 +70,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | architecture | current | 2026-08-10 | 1300 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 1001 |
+| `Registro_Conversaciones.md` | — | — |  | 1022 |
 
 ## `Maestro/`
 
@@ -323,7 +323,7 @@
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
 | `RETOMAR.md` | entry-point | current | 2026-08-18 | 192 |
-| `pendiente-agosto-2026.md` | pending | current | 2026-08-08 | 1645 |
+| `pendiente-agosto-2026.md` | pending | current | 2026-08-18 | 1681 |
 
 ## `memory/archive/`
 
@@ -421,7 +421,7 @@
 | `rule-pr-batching.md` | rule | current | 2026-08-08 | 199 |
 | `rule-product-authority.md` | rule | current | 2026-08-12 | 180 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-08 | 250 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-18 | 293 |
 
 ## `rules/decisions/`
 

@@ -48,10 +48,15 @@ def main():
         WARN.append(f"{why}\n"
                     "   → the session autopsy cannot be checked. Register it by hand, or set\n"
                     "     session.project_dir in mente.config.yml.")
-    js = cfg.session_files()
-    if js:
-        sid = os.path.basename(js[0])[:8]
-        mb = os.path.getsize(js[0]) / 1e6
+    # 🔴 Was `session_files()[0]` — the newest transcript by mtime, taken as "this session".
+    # That is a guess, and right after a /clear it points at the PREVIOUS session (measured
+    # 2026-08-18: the live 145 KB file lost to a closed 42 MB one). Here the guess failed
+    # SAFE — it asks to register a session that already is — but a guard that is right by luck
+    # is not a guard. The resolver uses the real id the SessionStart hook exports.
+    cur, _how = cfg.session_current(cfg.live_session_id())
+    if cur:
+        sid = os.path.basename(cur)[:8]
+        mb = os.path.getsize(cur) / 1e6
         reg = "Cerebro/Registro_Conversaciones.md"
         text = open(reg, encoding="utf-8", errors="replace").read() if os.path.exists(reg) else ""
         # 🔴 This was `sid not in text` — a bare substring match on 8 hex characters. Any commit

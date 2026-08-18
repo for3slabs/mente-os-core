@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""check-pr-base — ⛔ un PR NUNCA se encadena sobre una rama que aún no se mergeó.
+
+🔴 EL INCIDENTE QUE LO CREA (2026-08-18, medido, no contado):
+    #32 `feat/airlock-revision` → `master`      mergeado 23:08:27  (SQUASH)
+    #33 `fix/session-resolver`  → airlock       mergeado 23:08:36  (9 segundos después)
+
+    Ambos quedaron MERGED en GitHub. El arreglo NO llegó a `master`: 0 ocurrencias de
+    `session_current`, `RESOLVER MISS`, `MENTE_SESSION_ID` y `Inicio (local, CST)`.
+
+    Por qué: el squash de #32 aplastó 51 commits en UNO NUEVO sobre master. Ese commit no es
+    descendiente de la rama airlock, así que el parentesco se rompió. Nueve segundos más tarde
+    #33 se mergeó contra su base — una rama que ya no era ancestro de master — y su trabajo se
+    quedó ahí, colgando. 9 archivos, 329 líneas, con la etiqueta MERGED puesta.
+
+⭐ POR QUÉ ES UN SCRIPT Y NO UN PÁRRAFO: la memoria `feedback_squash_merge_borra_trabajo_empujado`
+YA registraba este anti-patrón desde el 08-ago (dos veces el mismo día). Se leyó al arrancar la
+sesión del 18-ago y NO se aplicó al decidir la base del PR. Tener el dato no impidió el error.
+La ley medida de este sistema: código 100%, documento 40-60%. Este era documento.
+
+⛔ LA REGLA: si el repo squashea, la base de un PR es `master` — SIEMPRE. Una dependencia real
+entre dos PRs se resuelve ESPERANDO al merge de la base y rebasando encima, nunca encadenando.
+
+USO
+    check-pr-base <base>          ¿puedo abrir un PR contra esta base?
+    check-pr-base --audit         ¿hay algún PR abierto ya encadenado?
+
+SALIDA
+    0 = la base es segura · 1 = 🔴 base peligrosa (no abras el PR) · 2 = no se pudo medir
+"""
+import json
+import subprocess
+import sys
+
+
+def sh(*args):
+    try:
+        r = subprocess.run(args, capture_output=True, text=True, timeout=30)
+        return r.stdout.strip() if r.returncode == 0 else ""
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def base_branches():
+    """Las ramas contra las que SÍ se puede abrir un PR: la principal del repo."""
+    out = set()
+    for b in ("master", "main"):
+        if sh("git", "rev-parse", "--verify", "-q", f"refs/remotes/origin/{b}"):
+            out.add(b)
+    return out
+
+
+def open_prs():
+    """[(número, head, base)] de los PRs abiertos. Lista vacía si gh no responde."""
+    raw = sh("gh", "pr", "list", "--state", "open", "--json", "number,headRefName,baseRefName")
+    if not raw:
+        return []
+    try:
+        return [(p["number"], p["headRefName"], p["baseRefName"]) for p in json.loads(raw)]
+    except (ValueError, KeyError):
+        return []
+
+
+def explain(base, pendiente=None):
+    print(f"🔴 NO abras el PR contra `{base}` — no es una rama base")
+    print()
+    if pendiente:
+        n, head = pendiente
+        print(f"   `{base}` tiene el PR #{n} abierto ({head} → {base}) y todavía NO se mergeó.")
+    else:
+        print(f"   `{base}` no es la rama principal del repo.")
+    print("   Si ese PR entra por SQUASH, su commit no será descendiente de esta rama:")
+    print("   el parentesco se rompe y el trabajo de TU PR se queda fuera de master")
+    print("   con la etiqueta MERGED puesta. Pasó el 2026-08-18 (#32/#33, 9 segundos).")
+    print()
+    print("   QUÉ HACER: espera a que la base se mergee, rebasa tu rama sobre master")
+    print("   y abre el PR contra master:")
+    print(f"       git fetch origin && git rebase origin/master")
+
+
+def main():
+    args = sys.argv[1:]
+    bases = base_branches()
+    if not bases:
+        print("⚠️  no se pudo determinar la rama principal (¿sin remoto?)", file=sys.stderr)
+        return 2
+
+    if "--audit" in args:
+        # ¿Hay ya un PR abierto encadenado sobre una rama que no es la principal?
+        prs = open_prs()
+        if not prs:
+            return 0
+        abiertas = {head: n for n, head, _ in prs}
+        malos = [(n, head, base) for n, head, base in prs if base not in bases]
+        for n, head, base in malos:
+            otro = abiertas.get(base)
+            print(f"🔴 PR #{n} ({head}) está encadenado sobre `{base}`, que no es rama base"
+                  + (f" y tiene el PR #{otro} abierto" if otro else ""))
+            print("   → si la base entra por squash, este trabajo NO llega a master "
+                  "(2026-08-18: #32/#33)")
+        return 1 if malos else 0
+
+    if not args:
+        print(__doc__.split("USO")[1].strip(), file=sys.stderr)
+        return 2
+
+    base = args[0].replace("origin/", "")
+    if base in bases:
+        print(f"✅ `{base}` es rama base — el PR puede abrirse contra ella")
+        return 0
+
+    pendiente = next(((n, head) for n, head, _b in open_prs() if head == base), None)
+    explain(base, pendiente)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
