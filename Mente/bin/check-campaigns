@@ -62,10 +62,20 @@ def verificar(path):
     t = open(path, encoding="utf-8", errors="replace").read()
     n = len(t.splitlines())
 
-    if n > LIMITE:
+    # ⭐ EXENCIÓN DE TAMAÑO (Brian, 2026-08-12): "no importa los techos, estos archivos tienen la
+    # funcionalidad de que los puedes alargar tanto como sea necesario".
+    # El techo sigue siendo el DEFAULT — una campaña que no lo declara sí recibe el aviso. Lo que
+    # cambia es que ahora existe una salida EXPLÍCITA, igual que `Exempt:` en contract-document:
+    # una campaña que carga el contexto completo de sus bloques (la ruta de lectura, la línea de
+    # tiempo, el método) no cabe en 150 líneas y partirla la volvería inútil.
+    # ⛔ La exención se DECLARA, nunca se asume: sin la línea `exempt: size` el aviso vuelve.
+    exento = re.search(r"^exempt:\s*.*\bsize\b", t, re.M | re.I)
+    if n > LIMITE and not exento:
         YEL.append(f"{nombre}: {n} líneas — sobre el techo de {LIMITE}.\n"
                    "   Una campaña ORDENA, no ejecuta: si necesita más, la misión no está clara "
-                   "— o son dos campañas (contract-campaign.md §0).")
+                   "— o son dos campañas (contract-campaign.md §0).\n"
+                   "   ⭐ Si la campaña necesita cargar contexto completo, declara `exempt: size` "
+                   "en su cabecera con la razón.")
 
     # §A·B·C son obligatorias para ABRIR. Sin ellas nadie sabe qué persigue ni con qué vara.
     for sec in ("Mission", "Authority", "Blocks"):
@@ -106,6 +116,61 @@ def verificar(path):
             RED.append(f"{nombre}: el bloque `{b}` cerró SIN declarar impacto en sus hermanos.\n"
                        "   contract-campaign.md §5: decir «ninguno, y por esto» es válido; "
                        "callar no lo es.")
+
+    # ⭐⭐ campaign_phase — EN QUÉ CORRIDA VA CADA BLOQUE (contract-block.md §A, 2026-08-12)
+    #
+    # Brian, 2026-08-11: "no mezcles los bloques con las fases. Existen fases y todos los bloques
+    # N van a ser tratados a partir de la estructura de cada una de las fases".
+    #
+    # ⚠️ Vive AQUÍ y no en check-blocks por una razón medida: la pertenencia la declara la
+    # CAMPAÑA (§E), no el bloque — y este validador ya resuelve esa lista contra el disco. Ponerlo
+    # en check-blocks obligaría a duplicar el parser del §E, y "una copia no puede divergir si no
+    # existe" (expertise/doc-structure §2.3).
+    #
+    # ⭐ La prueba de no haber saltado una fase es un ARCHIVO, no una casilla: si un bloque dice
+    # ir en la fase 2, su archivo de hallazgos de la fase 1 tiene que existir. Una lista
+    # `fases_superadas: [1,2]` la escribe el propio bloque y nada la respalda — familia A de
+    # rules/rule-checks-must-measure.md: un validador lee la celda, no la intención.
+    #
+    # ⭐ Y así la carpeta hallazgos/ se prueba VIVA por su USO (Brian: "que realmente se esté
+    # ocupando y no sea un proceso zombie"): vacía con todos los bloques en fase 1 es CORRECTO
+    # —nadie ha terminado una corrida—; lo que delata al zombie es un bloque que dice haber
+    # avanzado sin dejar el archivo que lo prueba.
+    hall = os.path.join(os.path.dirname(path), "hallazgos")
+    for b in bloques:
+        hits = glob.glob(f"blocks/*/{b}/BLOCK.md") + glob.glob(f"blocks/*/{b}_*/BLOCK.md")
+        if not hits:
+            continue                      # ya lo reportó el check de hijo huérfano
+        bt = open(hits[0], encoding="utf-8", errors="replace").read()
+        m = re.search(r"^campaign_phase:\s*(\S+)", bt, re.M)
+
+        # (1) 🟡 listado por la campaña y sin declarar su fase. AVISO, no error: al abrir los N
+        #     bloques hay un momento legítimo en que existen y aún no tienen el campo.
+        if not m:
+            YEL.append(f"{nombre}: el bloque `{b}` no declara `campaign_phase` "
+                       "(contract-block.md §A) — la campaña no sabe en qué corrida va.")
+            continue
+
+        val = m.group(1).strip()
+        # (2) 🔴 un valor libre rompe cualquier lectura por máquina — mismo criterio que `type:`.
+        if val not in ("1", "2", "3"):
+            RED.append(f"{nombre}: el bloque `{b}` declara `campaign_phase: {val}` — "
+                       "solo se admite 1, 2 o 3 (contract-block.md §A).")
+            continue
+        fase = int(val)
+
+        # (3) 🔴 saltar una fase: si va en la N, tienen que existir los hallazgos de las N-1.
+        for previa in range(1, fase):
+            if not os.path.isfile(os.path.join(hall, f"{b}-fase-{previa}.md")):
+                RED.append(f"{nombre}: el bloque `{b}` declara fase {fase} pero falta "
+                           f"`hallazgos/{b}-fase-{previa}.md`.\n"
+                           "   Saltar una fase deja el sistema sin la mirada que esa fase aporta "
+                           "(docs/plans/PLAN-3-fases.md §1).")
+
+        # (4) 🔴 cerrar sin las 3 — Brian, 2026-08-11: "un bloque no cierra hasta pasar las 3".
+        if re.search(r"^status:\s*closed", bt, re.M) and fase < 3:
+            RED.append(f"{nombre}: el bloque `{b}` CIERRA en fase {fase} de 3.\n"
+                       "   Un bloque de campaña no cierra hasta pasar las tres miradas.")
 
     # Una campaña no cierra con bloques vivos — igual que un bloque no cierra con sub-bloques.
     ident = seccion(t, "Mission") or ""

@@ -29,6 +29,98 @@ entrega. Prohibición escrita en ambos archivos.
 📦 Detalle → `memory/Bitacora_Progreso.md` (movido el 2026-08-06).
 
 
+## 📦 Movido de RETOMAR.md el 2026-08-12 (higiene: RETOMAR ≤200 líneas)
+
+### LO ANTERIOR · el clon ya verifica el motor (2026-08-07, S13)
+
+`separacion-motor-instancia` **cerrado 5/5 y archivado**. Recorrido medido en un clon: `10 → 1`.
+⭐ **El hallazgo que dio la vuelta al problema:** la hipótesis era mover 221 archivos de instancia;
+**medido, ninguno estorbaba** — lo que fallaba eran los CHECKS que los interrogaban mal, y mover
+archivos habría escondido el defecto. **4 defectos del motor** que la etiqueta *"son fallos de la
+instancia de Brian"* llevaba meses tapando.
+👉 Detalle: `blocks/archive/separacion-motor-instancia_2026-08/SUMMARY.md`.
+
+### 🆕 LA DEMO: de 0 a 4 tests, con 23/23 en verde (2026-08-05/06)
+
+`plan-tests-demo` cerró 🟢 PRODUCTO. Los 4 caminos críticos escritos (autorizar · entrar · hablar ·
+apagar) y **23/23 en verde** contra la rama de Neon de test. 🔬 **Cada test se VIO FALLAR antes de
+creerle** — en ④ eso destapó que mi propio caso no discriminaba, y que iba a probar el archivo
+equivocado. 🔬 De paso, **2 defectos del MOTOR** (`check-applied`) corregidos.
+📊 El bloque `demo` está **11/12**; su único pendiente vivo es §F-11 (rutas OAuth).
+👉 Detalle y estado real: `blocks/active/demo/BLOCK.md`.
+
+### ⚡ RENDIMIENTO: el sistema es **86x más rápido** (2026-08-05)
+
+`check-links` **47.2s → 0.55s** · batería **1m10 → 15.6s** · métricas **2m31 → 13.5s**. Causa: un `glob` recursivo recorría los 43,986 archivos de `marca-personal` **por cada cita**. 🔬 F0 destapó 2 defectos silenciosos (mi sonda no medía; `glob` no ve ocultos, `os.walk` sí). → `docs/plan-check-links-performance.md`.
+
+### 🆕 ⭐ LO ANTERIOR (2026-08-05, S11) — **LA CAPA 2 EXISTE Y `distribucion` CERRÓ 🟢 PRODUCTO**
+
+**Sin commit — `Mente/` está en `.gitignore` de este repo (el motor se publica en `mente-os`).**
+
+- 📜 **Las 6 dimensiones de QA, LLENAS** (`rules/qa-dimensions.md`, `draft` → `current`). La más
+  dura, literal suya: *"NO PUEDE DEJAR CÓDIGO HUÉRFANO, MUERTO, SIN CONECTAR — Y ESO LO LOGRAMOS
+  PROBANDO EL FLUJO A PROFUNDIDAD CON DATOS REALES"* (§2.5). **Él responde con casos, yo estructuro.**
+- 🏁 **`distribucion` CERRADO 🟢 PRODUCTO** — primer bloque juzgado por **capa 2**. Archivado en
+  `blocks/archive/distribucion_2026-08/` (su `SUMMARY.md` lleva qué se hizo y qué se aprendió).
+
+- 🔌 **3ª ronda de cableado**: el criterio LLENO tampoco llegaba (2 `val-*` sin declarar, 2 dueños
+  diciendo `pending` de lo lleno) → corregido + **2 checks** que lo impiden.
+- 🏁⭐ **LOS 3 DUEÑOS CON CRITERIO PROPIO — huecos 66 → 3.** `principles/expertise/doc-structure.md` cerró el último:
+  ⭐ **si un documento excede su techo DEBE partirse**, y las mitades se apuntan (endurece ADR-027) ·
+  puntero siempre que el dato tenga dueño en otro sitio · `Status: current` es un contrato de 4
+  términos (**quién lo verificó y con qué**) · ⛔ nunca borrar historia para que un check pase.
+  **Los 3 restantes NO son criterio:** 2 punteros de índice + 1 falso positivo del contador.
+- 🎓 **`principles/expertise/doc-planning.md` LLENO** — **todo límite que un plan declare se MIDE** · una fase entrega
+  UNA cosa · ⛔ nada de fases "pulir" · **si tocar algo obliga a BD+frontend+backend, es UN BLOQUE**
+  · un hueco real **se marca como pendiente asignado a Brian** · ⛔ *no omitas algo porque crees
+  que ya lo sé*, ni te excuses con *"no sabía"*.
+- 🔴 **Brian cazó un SESGO DE DISEÑO:** mi check exigía que todo criterio aterrizara en un bloque
+  de código — *"los usuarios pueden hacer código o no, no es ley"*. Corregido + nace el bloque
+  `plan-tests-demo` (`type: docs`), el primero que ejercita owner-1.
+- 🎓⭐ **OWNER-2 COMPLETO** — `principles/expertise/dev-frontend.md`: **el servidor es dueño del estado, React lo
+  refleja** · lo que el usuario decidió sobrevive al refresh · 🔴 **un control nunca miente** · el
+  nombre dice qué MUESTRA · ⛔ secreto en el cliente, botón oculto como única autorización.
+- 🎓 **`principles/expertise/dev-backend.md` LLENO** — **guardián único por regla** (`session.ts` 12→0) · el fallo
+  esperable **es** el contrato · seguridad o dinero **se unifican siempre** · ⛔ endpoint genérico,
+  exponer control, confiar en un id del cliente. 🔬 **El check de cableado me cazó a mí.**
+- 🎓⭐ **OWNER-3 COMPLETO** — *fallar ruidosamente* · **los DATOS deciden** detener vs degradar ·
+  *no se asume nada* · **ausencia de evidencia NO es evidencia** · *nunca cierres algo cuyo fallo
+  no sabrías detectar*.
+- 🎓 **`principles/expertise/dev-database.md` LLENO → fase F1 CERRADA.** 5 categorías que nunca viven en código · 4
+  estados imposibles · **FK siempre** · 4 condiciones antes de una migración. ⭐ Su raíz: *"debe
+  existir un PLAN DE IMPLEMENTACIÓN que valide por qué la tabla existe"*.
+- 🧩 **2 skills externas desmanteladas** → bloque `expertise-programacion` **CERRADO 🟢 PRODUCTO**
+  + nace `rules/rule-shipping-flow.md` (rama → verificar → PR → ⛔ no mergear), **transversal**.
+- 🔧 **`grade-block`: 3 defectos** → arreglados + **5 self-tests** · nace **`docs/WORKSPACE.md`**.
+- 🔌 **2ª ronda de cableado**: piezas escritas y no conectadas — **las 20 reglas ya tienen script**
+  (eran 17) + `docs/WORKSPACE.md` con check propio. 🔬 Verificados **por reversión**.
+
+✅ **P1·P2·P4·P5 HECHOS** (batería **173 → 175**): el commit **bloquea un índice desfasado** (cazó
+3 derivas reales, la primera a mí) · `/clear` **lee la batería** y se niega si está roja · nace
+**`VERSION` 0.1.0 + `CHANGELOG`** con 2 checks · `allow` declarado **por mecanismo**.
+✅ **P3 HECHO: `.github/workflows/ci.yml`** (3 jobs) en `Mente/`, que **es su propio repo**.
+Escribirlo destapó **4 defectos reales**: los 2 bloques archivados hoy **sin `SUMMARY.md` ni
+`connections.md`** (nada de la batería lo vigilaba) y sus encabezados en español que el validador
+no reconocía. 🔬 Medido antes: con `HOME` limpio fallan 3 checks que **leen la máquina, no el
+motor** — el job los nombra uno a uno para que la exención no crezca sola.
+
+**👉 PRÓXIMO PASO:** queda **1 bloque activo: `demo`** (6/10, 🔴 MVP). Sus 3 tapones siguen donde
+los dejó el 26-jul (§5 "LO ANTERIOR"). Deuda abierta: **prueba de campo real** de `mente-os`
+(alguien que no sea Brian clonando) · los **35 huecos** restantes (**solo queda owner-1**: `doc-planning` + `doc-structure`) · las 2 decisiones 🔑🔐 de abajo.
+
+### LO ANTERIOR — S10 (voz) y S9 (instalador) → `memory/Bitacora_Progreso.md`
+
+### LO ANTERIOR (2026-07-31, S7) — el v2 se construyó y F8-4 lo verificó
+
+**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas · migración v1→v2 completa (M0-M5,
+ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fósil**.
+🖥️⭐ **La demo es un bloque grande con índice propio** — entrar por `project_bloque_demo_pendientes`.
+👉 **Sus tapones vivos están en `blocks/active/demo` §F**, que es donde se miden.
+📦 Detalle completo → `memory/Bitacora_Progreso.md` (movido el 2026-08-05).
+
+
+---
+
 ## Purpose
 
 El registro cronológico de qué se decidió y qué se cerró, por periodos, con herencia entre ellos.

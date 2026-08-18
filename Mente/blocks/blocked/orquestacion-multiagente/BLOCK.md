@@ -1,9 +1,10 @@
 # BLOCK · orquestacion-multiagente
 
-<!-- ══ A · IDENTITY ══ required to OPEN · ≤5 lines ══ -->
+<!-- ══ A · IDENTITY ══ required to OPEN · ≤6 lines ══ -->
 id: blk-orquestacion-multiagente-2026-08
 type: infra
 intent: gobernar VARIOS agentes trabajando a la vez, sin que se pisen — en Mente OS v2 y en For3s OS
+campaign_phase: 1
 status: blocked · lane: full-block · owner: brian
 created: 2026-08-10 · updated: 2026-08-10
 

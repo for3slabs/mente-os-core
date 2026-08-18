@@ -320,6 +320,45 @@ def check_blocks():
             if ref not in ids and not glob.glob(f"blocks/**/BLOCK.md", recursive=True):
                 yel(f, f"§C cites {ref} — verify it exists")
 
+        # ⭐ B · EL §B DEBE SER LEGIBLE POR EL HOOK (2026-08-14, hallazgo de SB-1).
+        #
+        # 🔴 EL DEFECTO, medido dos veces con dos años de distancia entre sus víctimas:
+        #   · 2026-08-06, bloque `demo`: los tests estaban en §F pero no en §B, y su propio §G lo
+        #     registra — *"los hooks enmudecían sobre ellos"*.
+        #   · 2026-08-14, bloque `seguridad`: las 5 rutas decían `for3s-os/crypto.py` cuando la
+        #     real es `packages/for3s-core/src/for3s_core/crypto.py`. Las 5 mal en el prefijo.
+        #
+        # ⚠️ EN LOS DOS CASOS EL DAÑO ES EL MISMO Y ES SILENCIOSO: `pre-edit-standards.py` no
+        # reconoce el archivo, no inyecta ningún estándar, y NO BLOQUEA (a propósito: bloquear
+        # sobre un match heurístico haría insoportable editar). Así que el editor trabaja sin
+        # vara y nada avisa. ⭐ **Un §B mal escrito no falla ruidosamente: falla callando.**
+        #
+        # ⛔ NO SE PUEDE VERIFICAR QUE LA RUTA EXISTA — a diferencia del §D de abajo, el §B
+        # apunta FUERA de este repo (`marca-personal/…`, y el código del producto vive en el
+        # servidor). Un `os.path.exists` daría 🔴 sobre rutas correctas: peor que no medir.
+        #
+        # ⭐ LO QUE SÍ SE MIDE, y es exactamente lo que importa: que el extractor del hook
+        # SAQUE ALGO. Se reusa su misma regex, así que si el hook cambia y este check no, el
+        # sabotaje de la batería lo caza. Un §B cuyo primer token no parece ruta es un §B que
+        # el hook no va a poder reclamar, y eso se sabe SIN salir de esta máquina.
+        m = re.search(r"##\s*✅?\s*IN\s*\n((?:\s*-.*\n)+)", text)
+        if m:
+            declara = False
+            for linea in m.group(1).splitlines():
+                cuerpo = re.match(r"\s*-\s*(.*)", linea)
+                if not cuerpo:
+                    continue
+                decl = cuerpo.group(1).split("—")[0]      # la prosa empieza tras el guion largo
+                for tok in re.findall(r"[\w./-]+/[\w./*-]*", decl):
+                    if len(tok.split("*")[0].rstrip("/")) > 4:
+                        declara = True
+                        break
+                if declara:
+                    break
+            if not declara:
+                red(f, "§B IN declares no path the hook can claim — pre-edit will stay silent "
+                       "on every file of this block (see `demo` §G, 2026-08-06)")
+
         # D · required standards must resolve
         m = re.search(r"## Required standards\s*\n((?:\s*-.*\n)+)", text)
         if not m:

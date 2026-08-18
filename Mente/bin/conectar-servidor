@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# 🔌 Entrar al servidor For3s — la ÚNICA forma. No se improvisa, no se pregunta.
+#
+# 🔴 2026-08-11: la IA intentó `ssh` desnudo, falló con "Permission denied", y REPORTÓ
+# el servidor como inaccesible. El servidor llevaba 8h48m encendido. El dato para entrar
+# estaba en secrets/Conectar_Servidor_For3s.md — un archivo que NO se leyó.
+# Brian: "no puedo creer que te lo tengo que estar repitiendo".
+#
+# ⭐ La lección: el dato existía y el procedimiento no. Un procedimiento que vive solo en
+# un documento se cumple 40-60%; en un script se cumple 100%. Por eso esto es un script.
+# ⛔ El secreto NUNCA se escribe aquí: se LEE de secrets/, que está gitignored.
+set -euo pipefail
+S="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/secrets/Conectar_Servidor_For3s.md"
+[ -r "$S" ] || { echo "🔴 no se puede leer $S — sin él no hay conexión"; exit 1; }
+IP=$(grep -oE '100\.[0-9]+\.[0-9]+\.[0-9]+' "$S" | head -1)
+USR=$(grep -oP 'Usuario:\s*\K\S+' "$S" | head -1)
+PW=$(grep -oP 'Contraseña:\s*\K\S+' "$S" | head -1)
+[ -n "$IP" ] && [ -n "$USR" ] && [ -n "$PW" ] || { echo "🔴 secrets/ no tiene IP+usuario+clave"; exit 1; }
+exec sshpass -p "$PW" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=20 "$USR@$IP" "$@"

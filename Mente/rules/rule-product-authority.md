@@ -1,5 +1,5 @@
 # RULE · PRODUCT AUTHORITY — quién manda al verificar For3s OS
-**Status:** current · **Type:** rule · **Updated:** 2026-08-10 · **Owner:** brian
+**Status:** current · **Type:** rule · **Updated:** 2026-08-12 · **Owner:** brian
 **Language:** español (documento de INSTANCIA — describe el producto de Brian, no el motor)
 **Applies to:** todo trabajo sobre `for3slabs/for3s` (For3s OS), en el servidor o en un clon
 **Verified by:** `bin/test-f0-f6`
@@ -35,7 +35,69 @@ funciona sin que nadie sepa si debía estar ahí.**
 
 ---
 
-## 2 · LA PREGUNTA QUE SE HACE ANTE CADA PIEZA
+## 2 · ⭐⭐ EL EJE TEMPORAL — contra qué se juzga NO es lo mismo que cuándo se exige
+
+⭐ **El §1 responde CONTRA QUÉ se juzga. Esta sección responde CUÁNDO se exige.** Son dos
+preguntas distintas, y confundirlas produce un veredicto inútil.
+
+### 2.1 · 🔴 Por qué existe — medido, no supuesto
+
+**El 2026-08-12 se auditó For3s OS con las dos varas. El resultado:**
+
+| Vara | Veredicto | ¿Sirve? |
+|---|---|---|
+| El Grafo Maestro **completo** (el destino) | **15 de 15 tablas ausentes** · 7 piezas mayores sin construir · **24 hallazgos** | 🔴 **declara en rojo un sistema que corre a diario** |
+| El código como autoridad | todo verde por definición | 🔴 no mide nada — es el defecto que el §1 #5 prohíbe |
+| ⭐ **El gate de la fase en curso** | **pasa 6 de 6** · **4 hallazgos** que importan hoy | ✅ **discrimina y es accionable** |
+
+⭐⭐ **Los otros 20 hallazgos no eran falsos: eran PREMATUROS.** Y eso es más peligroso —
+**un hallazgo prematuro se ve idéntico a uno urgente**, y entierra a los que sí importan.
+
+### 2.2 · ⭐ LA REGLA
+
+> **Un sistema en construcción por fases se audita contra el gate de SU fase, nunca contra el
+> destino final.**
+
+**La autoridad temporal es `memory/archive/Plan_Maestro_Programacion.md`** — define 6 fases
+foundation-first, y **cada una tiene su gate objetivo escrito**.
+
+⛔ **El §1 no cambia:** el Grafo sigue mandando sobre **qué debe existir**. El Plan Maestro manda
+sobre **qué se exige hoy**. **Ninguno reemplaza al otro.**
+
+### 2.3 · Cómo se sabe en qué fase está el producto
+
+⭐ **Lo declara la CAMPAÑA en su `§F Shared context`, y esta regla obliga a leerlo antes de
+juzgar.**
+
+⛔ **No se deduce, no se estima y no se mide en cada bloque.** Un solo sitio lo declara; lo mueve
+Brian cuando el sistema avanza de fase.
+
+⚠️ **Y si la campaña NO lo declara, ese es el primer hallazgo** — auditar sin saber la fase
+produce los 24 hallazgos de §2.1.
+
+### 2.4 · Qué se hace con lo que falta pero es de una fase POSTERIOR
+
+**Se registra como FUTURO, no como hallazgo.** Sección aparte en el informe:
+
+```markdown
+### ⬜ AUSENTE POR FASE — no es deuda, es calendario
+
+| Pieza | ¿Quién la trae? |
+|---|---|
+| Output Gate firmado | Fase 4 (R7 B2) |
+| Prometheus + 5,150 series | Fase 4 (R8 B1) |
+| Amígdala (nodo 7) | Fase 5 (R9 B1) |
+```
+
+| | |
+|---|---|
+| ⛔ **NO cuenta** en el veredicto del bloque | no es un defecto: es trabajo no empezado |
+| ⛔ **NO detiene** nada | los 5 criterios de 🔴 crítico son otra cosa |
+| ✅ **Pero SÍ se escribe** | ⭐ **razón medida:** la Amígdala ausente la encontraron **5 métodos independientes** en la misma auditoría. **Lo que no se registra se re-descubre.** |
+
+---
+
+## 3 · LA PREGUNTA QUE SE HACE ANTE CADA PIEZA
 
 **No** *"¿esto funciona?"* — eso ya lo respondió el MVP.
 
@@ -51,7 +113,7 @@ sola: es un hallazgo que se registra y lo decide Brian (ADR-003).
 
 ---
 
-## 3 · ⚠️ LOS TRES PILARES SON EL LISTÓN, Y EL LISTÓN SUBIÓ
+## 4 · ⚠️ LOS TRES PILARES SON EL LISTÓN, Y EL LISTÓN SUBIÓ
 
 El grafo los declara **propiedades estructurales, no features añadidas**: cada nodo y cada edge los
 lleva dentro.
@@ -65,7 +127,7 @@ vara**, no con la del MVP.
 
 ---
 
-## 4 · 🔴 EL HUECO QUE ESTA REGLA DESTAPA — y que hay que cerrar antes
+## 5 · 🔴 EL HUECO QUE ESTA REGLA DESTAPA — y que hay que cerrar antes
 
 **Medido el 2026-08-10, escribiendo esta regla:**
 
@@ -86,7 +148,7 @@ recibe su cabecera y entra en la auditoría, porque es el único que va a decidi
 
 ---
 
-## 5 · ⛔ DÓNDE SE TRABAJA Y HASTA DÓNDE LLEGA — el alcance, decidido
+## 6 · ⛔ DÓNDE SE TRABAJA Y HASTA DÓNDE LLEGA — el alcance, decidido
 
 > **Brian, 2026-08-10:** *"Vamos a trabajar en el servidor de For3s, y precisamente la instancia
 > que modificaremos será `@For3s_Brian_bot`. Hasta que terminemos con este agente vamos a empezar

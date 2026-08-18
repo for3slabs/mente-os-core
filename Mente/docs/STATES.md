@@ -5,12 +5,13 @@
 
 # STATES — every block and its measured health
 
-**Generated:** 2026-08-11 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
+**Generated:** 2026-08-18 · **Source:** `blocks/**/BLOCK.md` · **Type:** generated
 
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | **demo** | code | active | full-block | 11/12 |  | 2026-08-07 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **demo** | code | active | full-block | 11/12 |  | 2026-08-18 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **seguridad** | code | active | full-block | 6/11 |  | 2026-08-18 | `blocks/active/seguridad/BLOCK.md` |
 | 🟢 | **distribucion_2026-08** | code | closed | full-block | 6/6 |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
 | 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | 6/6 |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |
 | 🟢 | **plan-tests-demo_2026-08** | docs | closed | direct | 2/2 |  | 2026-08-05 | `blocks/archive/plan-tests-demo_2026-08/BLOCK.md` |
@@ -25,6 +26,7 @@
 ## Phase
 
 - **demo**: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos ce
+- **seguridad**: **Fase 1 · NODOS** — ¿existe cada pieza que el Grafo
 - **distribucion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2
 - **expertise-programacion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 3/3 applicabl
 - **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running

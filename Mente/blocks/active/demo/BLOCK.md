@@ -55,11 +55,11 @@ created: 2026-07-24 · updated: 2026-08-06
 ## State
 phase: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos cerrados: dead code 1→0, tests 0→4
 next: §F-11 — reestructurar CÓMO se ejecuta lo de las rutas OAuth (Brian lo pidió así)
-blockers: ninguno. §F-11 queda pendiente de reestructurar, no bloquea
+blockers: ninguno. ⏸️ **ESPERA A PROPÓSITO (07-ago):** la campaña `producto-for3s-os` va primero (su §F). No es deriva
 progress: **11/12 cerrados** · 🟢 23/23 tests en verde contra BD real. Solo queda §F-11
 note: 🟢 PRODUCT es la CAPA 1; la capa 2 se corre AL CERRAR. ⚠️ Decía "§F-7 sigue abierto" —
       falso desde el 06-ago (cerrado por la raíz). La tabla §F ya lo decía.
-updated: 2026-08-07
+updated: 2026-08-18
 note: the red test is the deliverable, not a defect — how to run them and what NOT to touch is
       `blocks/active/demo/docs/como-correr-los-tests.md`.
 

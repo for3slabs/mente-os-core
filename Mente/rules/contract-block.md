@@ -1,5 +1,5 @@
 # CONTRACT · BLOCK.md
-**Status:** current · **Type:** contract · **Updated:** 2026-07-29 · **Owner:** brian
+**Status:** current · **Type:** contract · **Updated:** 2026-08-12 · **Owner:** brian
 **Applies to:** every file at `blocks/active/<name>/BLOCK.md`
 **Verified by:** `bin/check-blocks` · **Source design:** architecture §3.2-TER
 ---
@@ -31,7 +31,7 @@ real close landed at 169. The ceiling was sized for open blocks only.)*
 
 | § | Section | Required | Limit | Tier |
 |---|---|---|---|---|
-| **A** | `Identity` | 🔴 OPEN | 5 lines | 1 |
+| **A** | `Identity` | 🔴 OPEN | **6 lines** | 1 |
 | **B** | `Scope` — IN / OUT | 🔴 OPEN | 15 lines | 1 |
 | **C** | `Connections` | 🔴 OPEN | 10 lines | 1 |
 | **D** | `Required standards` | 🔴 OPEN | 8 lines | 1 |
@@ -56,6 +56,7 @@ intent: one sentence — what this block is for
 status: active | blocked | closed
 lane: direct | task | full-block
 owner: <person>
+campaign_phase: 1 | 2 | 3        ← only if a campaign lists this block
 created: YYYY-MM-DD · updated: YYYY-MM-DD
 ```
 
@@ -66,7 +67,43 @@ created: YYYY-MM-DD · updated: YYYY-MM-DD
 | `intent` | one sentence. If you cannot write it, you do not know what you are doing yet |
 | `status` | exactly one of the three |
 | `lane` | set by **propagation**, not by judgment (`rule-lanes.md`) |
+| ⭐ `campaign_phase` | **only if a campaign lists this block in its §E.** Exactly `1`, `2` or `3` — see below. ⚠️ It is why §A allows **6** lines, not 5 |
 | `updated` | ISO date. Stale after 7 days → `bin/flag-stale` |
+
+#### ⭐ `campaign_phase` — en qué CORRIDA de la campaña va este bloque
+
+**No confundir con el `phase:` del §E.** Son dos ejes distintos y por eso se llaman distinto:
+
+| Campo | Dónde | Qué dice |
+|---|---|---|
+| `phase:` (§E State) | el estado del bloque | **dónde va el trabajo DENTRO del bloque** — texto libre |
+| ⭐ `campaign_phase:` (§A) | la identidad | **en qué corrida de la campaña va** — `1`, `2` o `3` |
+
+> **Brian, 2026-08-11:** *"No mezcles los bloques con las fases. Existen fases y todos los bloques
+> N van a ser tratados a partir de la estructura de cada una de las fases."*
+
+**Las reglas del campo** (decididas 2026-08-12):
+
+| | |
+|---|---|
+| **Cuándo se pone** | ⛔ **solo si una campaña lista este bloque en su `§E`.** Un bloque suelto (como `demo`) **no lo lleva, y eso no es un error** |
+| **Quién lo pone** | ⭐ **el propio bloque**, al cerrar una fase — es el airlock nivel 2 (`rules/rule-pr-batching.md` §5): el gate cierra, Brian puede reabrir |
+| **Valores** | exactamente `1`, `2` o `3`. ⛔ ni `fase 1`, ni `uno`, ni `1-2`, ni vacío |
+| **Quién declara la pertenencia** | ⛔ **la CAMPAÑA, nunca el bloque.** `rules/contract-campaign.md` §2: *"un bloque no puede auto-adscribirse"*. El bloque solo reporta **en qué fase va**, no a quién pertenece |
+
+**Qué verifica el validador** (`bin/check-blocks`):
+
+1. 🔴 **un bloque listado por una campaña SIN `campaign_phase`** — pertenece pero no dice dónde va
+2. 🔴 **un valor fuera de `1|2|3`** — un valor libre rompe cualquier lectura por máquina
+3. 🔴 **saltar una fase** — si declara `3`, deben existir los hallazgos de la `1` y la `2`
+4. 🔴 **cerrar sin las 3** — `status: closed` con `campaign_phase` < 3
+
+⭐ **La prueba del punto 3 es un ARCHIVO, no una casilla.** El bloque no dice *"ya pasé la 2"*:
+**tiene que existir su archivo de hallazgos de la fase 2** (`docs/plans/PLAN-3-fases.md` §6).
+
+> ⚠️ **Por qué así, medido:** `rules/rule-checks-must-measure.md` familia A — *un validador lee la
+> celda, no la intención*. Una lista `fases_superadas: [1,2]` la escribe el propio bloque y **nada
+> la respalda**; un archivo en disco lo escribió alguien haciendo el trabajo.
 
 #### ⭐ `type` — because a validator that measures the wrong thing teaches you to ignore it
 
@@ -108,6 +145,24 @@ validator you learn to ignore** — and then the doctrine is back to being a doc
 ```
 
 **Both lists must be non-empty.** An empty `OUT` is a block with no boundary.
+
+#### ⭐ El techo del §B es 20, no 15 — y CUÁNDO se mira un techo
+
+> **Brian, 2026-08-14:** *"sube el techo, no me preguntes. Cuando es una campaña no se considera
+> el techo como acto principal, sino cuando ya está a punto de terminar, para que no te esté
+> pasando la parte de que ya llegaste al techo."*
+
+⭐ **La regla de cuándo:** durante el trabajo el techo **no se consulta**; se escribe lo que el
+contrato exige. Se mira **al cerrar**, cuando ya se sabe qué era esencial y qué era ruido.
+⛔ **Mirarlo a mitad del trabajo cambia QUÉ se escribe**, y eso es exactamente al revés: el techo
+existe para forzar curaduría *sobre lo ya escrito*, no para censurar mientras se escribe.
+
+**Por qué 20 y no 15, medido el 2026-08-14:** el validador cuenta toda línea no vacía, así que los
+tres encabezados (`## ✅ IN`, `## ⛔ OUT`, `## 🌐 System-wide`) ya gastan 3 de las 15. Con las
+rutas reales del producto (`packages/for3s-core/src/for3s_core/…`, 45 caracteres) un bloque de 5
+archivos **no cabe** — `cerebro` tiene 5 archivos grandes. ⚠️ **Que un bloque omita un límite del
+`OUT` por falta de línea es peor que un §B de 18**: el `OUT` que no se escribe es una frontera que
+no existe.
 
 #### ⭐ TWO LEVELS — the block does NOT own system-wide rules
 

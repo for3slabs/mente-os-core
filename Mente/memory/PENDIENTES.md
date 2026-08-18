@@ -64,7 +64,7 @@ justo donde debería.
 
 **ARREGLADO el mismo día** (Brian: *"soluciónalo"*), en dos puntos:
 1. `infra_evidence` lee ahora los **archivos `.md` sueltos** del scope, no solo los directorios.
-2. Lee **siempre `blocks/<bloque>/docs/`**, que es donde `contract-block.md` dice que vive la
+2. Lee **siempre `blocks/<bloque>/docs/`**, que es donde `rules/contract-block.md` dice que vive la
    documentación del bloque — y que nunca se miraba.
 
 ⛔ **No se ensanchó el §B a directorios** para que el medidor encontrara texto: eso falsea el
@@ -618,7 +618,7 @@ de tenerlo sin eliminar nada de texto pero sin perder funcionalidad por partici�
 |---|---|---|
 | ⭐ `principles/owner-0-voice.md` **582/350** | **285** | su §7 (el contrato de entrega, 315 líneas) → 🆕 `principles/contract-delivery.md` (343) |
 | `principles/expertise/dev-database.md` **381/350** | **364** | su §4-BIS → 🆕 `principles/imported-patterns.md`, junto con los de backend y frontend |
-| `RETOMAR.md` **251/250** | **249** | condensado, sin perder contenido |
+| `memory/RETOMAR.md` **251/250** | **249** | condensado, sin perder contenido |
 
 🔬 **Verificado línea a línea: las 232 líneas con contenido del §7 están íntegras en el archivo
 nuevo — 0 perdidas.** Solo cambió el número de sección (§7 → §1), porque **un número es una
@@ -1135,7 +1135,7 @@ externo** que corriera `check-health` en paralelo y avisara si el latido no se m
 1. Un cron **también puede morir en silencio** → dos guardias vigilándose mutuamente y nadie
    vigilando el par. El mismo problema, un nivel más arriba.
 2. Choca con la regla LOCKED de Brian: *"⛔ NO loops de espera / procesos de fondo"*
-   (`RETOMAR.md`).
+   (`memory/RETOMAR.md`).
 3. F1+F2 ya cierran el caso: no detectan *en el momento* —eso es imposible desde dentro— pero
    lo hacen **imposible de ignorar** la primera vez que se corre cualquier validador.
 
@@ -1188,8 +1188,8 @@ evidencia de daño es trabajo sin retorno. **La señal para hacerlo:** la primer
 
 **② `check-structure:REQUIRED_DIRS` declara 7 carpetas; en disco hay 13.**
 Faltan `memory/` `work/` `vision/` `bridges/` `Cerebro/` `Maestro/`. Consecuencia real: si se
-borra `memory/` —donde vive `RETOMAR.md`— el validador de estructura **no lo nota**.
-**Por qué no urge:** `check-health` sí vigila `RETOMAR.md` por otra vía. Es cobertura solapada,
+borra `memory/` —donde vive `memory/RETOMAR.md`— el validador de estructura **no lo nota**.
+**Por qué no urge:** `check-health` sí vigila `memory/RETOMAR.md` por otra vía. Es cobertura solapada,
 no un hueco abierto.
 
 > ⭐ **La regla que salió de la auditoría, y vale más que los dos arreglos:**
@@ -4504,7 +4504,7 @@ mismo, uno de los pendientes.
 | **Límite** | ninguno — es append-only, un pendiente no se borra porque el archivo creció |
 | **Rotación** | **por CIERRE, no por fecha** — un pendiente de enero puede seguir abierto en diciembre |
 | **Destino de lo cerrado** | `docs/archive/pendientes-<año>.md`, con su fecha de cierre |
-| **Contenido de `PENDIENTES.md`** | **solo lo ABIERTO** |
+| **Contenido de `memory/PENDIENTES.md`** | **solo lo ABIERTO** |
 
 ### ⭐ Por qué importa
 
@@ -4656,7 +4656,7 @@ Los otros 2 son `fossil`.
 |---|---|
 | `Demo_For3s_Avance.md` | avance de la demo |
 | `GUIA_Registrar_GitHub_OAuth_App.md` | guía operativa que Brian necesita para la OAuth App |
-| `Estado_Sesion_Continuidad.md` | (de marca-personal, no de For3s OS) |
+| `memory/Estado_Sesion_Continuidad.md` | (de marca-personal, no de For3s OS) |
 
 ### De dónde salieron
 
@@ -4677,7 +4677,7 @@ Brian necesita ejecutar.
 
 1. **Brian levanta el `deny` temporalmente** (o los mueve él mismo — es su directorio)
 2. Mover los 2 que son de la demo → `blocks/active/demo/docs/`
-3. Dejar `Estado_Sesion_Continuidad.md` donde está (es de marca-personal, ahí pertenece)
+3. Dejar `memory/Estado_Sesion_Continuidad.md` donde está (es de marca-personal, ahí pertenece)
 4. Restaurar el `deny`
 
 **Carril:** tarea. **Requisito:** Brian, porque el `deny` lo protege de mí a propósito.

@@ -417,6 +417,24 @@ eq "an orphan block directory is DETECTED (no BLOCK.md inside)" "$((_base + 1))"
 _s=$(./bin/check-blocks --blocks 2>&1 | grep -c "over the ≤")
 [ "$_s" -ge 0 ] && ok "per-section limits are measured against what the block declares ($_s over)"
 
+# ⭐ EL §B DEBE SER LEGIBLE POR EL HOOK (2026-08-14). El defecto que cierra es SILENCIOSO: si el
+# §B IN no declara ninguna ruta que `pre-edit-standards.py` pueda reclamar, el hook no inyecta
+# NINGÚN estándar y no bloquea (a propósito), así que el bloque entero se edita sin vara y nada
+# avisa. Ocurrió dos veces: `demo` 2026-08-06 (*"los hooks enmudecían sobre ellos"*, su §G) y
+# `seguridad` 2026-08-14 (las 5 rutas con el prefijo equivocado, cazadas por SB-1).
+# ⚠️ Se prueba sobre una COPIA en un árbol aparte: sabotear un bloque vivo deja basura si la
+# batería muere a medias, y este es el bloque que gobierna la campaña.
+_probe="blocks/active/zz-scope-mudo"; mkdir -p "$_probe"
+sed 's|^- `packages/.*|- la capa de seguridad, en general|; s|^- tablas .*|- lo que haga falta|' \
+    blocks/active/seguridad/BLOCK.md > "$_probe/BLOCK.md" 2>/dev/null
+_mudo=$(./bin/check-blocks --blocks 2>&1 | grep -c "no path the hook can claim")
+rm -rf "$_probe"
+eq "un §B que el hook no puede reclamar es DETECTADO (el fallo silencioso)" "1" "$_mudo"
+# ⭐ Y LA INVERSA, que es la mitad que decide: un §B legítimo NO se marca. Un check que dijera
+# 🔴 siempre haría exactamente el daño que previene — enseñar a ignorarlo.
+_vivo=$(./bin/check-blocks --blocks 2>&1 | grep -c "no path the hook can claim")
+eq "un §B con rutas reales NO se marca (la inversa)" "0" "$_vivo"
+
 # The two levels of OUT: a block must not claim ownership of system-wide rules.
 grep -q "System-wide rules" blocks/active/demo/BLOCK.md \
   && ok "demo separates its own OUT from inherited rules" \
@@ -2378,6 +2396,112 @@ grep -q "secrets/Conectar_Servidor_For3s.md" "$M/docs/WORKSPACE.md" 2>/dev/null 
 grep -q "for3s-os" "$M/docs/WORKSPACE.md" 2>/dev/null || {
   _srv=$((_srv+1)); printf '     ⤷ WORKSPACE no dice dónde vive el código del producto\n'; }
 eq "el mapa del servidor no contradice lo que el repo ya sabe" "0" "$_srv"
+
+# ── 32 · EL VALIDADOR DE campaign_phase DISCRIMINA (2026-08-12) ────────────
+# 🔴 El campo campaign_phase existe para impedir que un bloque salte una fase. Un check que solo
+# dijera "verde" no probaría nada: el sabotaje es lo único que distingue un candado de una
+# decoración (principles/expertise/val-functional.md §2.2).
+# ⭐ 4 pruebas, y la 4ª es la INVERSA — sin ella, un check que dijera "todo mal" pasaría las 3
+# primeras y nadie lo notaría. Un candado que bloquea el uso normal se acaba quitando
+# (rules/rule-friction.md).
+# ⚠️ check-campaigns resuelve blocks/ desde su CWD, por eso cada corrida va en un subshell con
+# `cd "$M"` — medido: sin eso las 3 sondas dan falso negativo.
+_cp=0
+_BLK="$M/blocks/blocked/orquestacion-multiagente/BLOCK.md"
+cp "$_BLK" "$_BLK.sonda"
+_cc() { ( cd "$M" && ./bin/check-campaigns ) 2>&1 || true; }
+
+sed -i 's/^campaign_phase: 1$/campaign_phase: primera/' "$_BLK"
+_cc | grep -q "solo se admite 1, 2 o 3" || { _cp=$((_cp+1)); printf '     ⤷ un campaign_phase inválido NO se caza\n'; }
+sed -i 's/^campaign_phase: primera$/campaign_phase: 3/' "$_BLK"
+_cc | grep -q "declara fase 3 pero falta" || { _cp=$((_cp+1)); printf '     ⤷ un SALTO de fase NO se caza — es la razón por la que el campo existe\n'; }
+sed -i 's/^campaign_phase: 3$/campaign_phase: 2/; s/^status: blocked/status: closed/' "$_BLK"
+_cc | grep -q "CIERRA en fase 2 de 3" || { _cp=$((_cp+1)); printf '     ⤷ un cierre sin las 3 fases NO se caza\n'; }
+cp "$_BLK.sonda" "$_BLK"
+_cc | grep -q "^0 errores" || { _cp=$((_cp+1)); printf '     ⤷ un bloque LEGÍTIMO da rojo — el candado bloquea el uso normal\n'; }
+rm -f "$_BLK.sonda"
+eq "el validador de campaign_phase caza los 3 defectos y deja pasar lo legítimo" "0" "$_cp"
+
+# ── 31 · LA VARA TEMPORAL: SE AUDITA CONTRA LA FASE, NO CONTRA EL DESTINO (2026-08-12)
+# 🔴 Medido el 12-ago: auditar For3s OS contra el Grafo Maestro COMPLETO da 15 de 15 tablas
+# ausentes y 24 hallazgos — un rojo que declararía muerto un sistema que corre a diario. Contra
+# el gate de su fase en curso: pasa 6 de 6 y solo 4 hallazgos importan. Los otros 20 no eran
+# falsos: eran PREMATUROS, y un hallazgo prematuro se ve idéntico a uno urgente.
+# ⭐ Por eso la regla necesita DOS mitades y las dos se vigilan: la regla declara el eje temporal
+# (§2) y la CAMPAÑA declara en qué fase está el producto (§2.3). Sin la segunda, la primera no
+# puede aplicarse — no hay contra qué comparar.
+# ⛔ NO vigila el número de fase: ese lo mueve Brian y cambia. Vigila que ALGUIEN lo declare.
+_vara=0
+_RPA="$M/rules/rule-product-authority.md"
+_CMP="$M/campaigns/producto-for3s-os/CAMPAIGN.md"
+grep -q "EL EJE TEMPORAL" "$_RPA" 2>/dev/null || { _vara=$((_vara+1)); printf '     ⤷ rule-product-authority no declara el eje temporal: se auditaría contra el destino\n'; }
+grep -q "gate de SU fase" "$_RPA" 2>/dev/null || { _vara=$((_vara+1)); printf '     ⤷ la regla no dice contra QUÉ se audita — sin eso el eje temporal es decorativo\n'; }
+grep -qi "FASE EN CURSO DE FOR3S OS" "$_CMP" 2>/dev/null || { _vara=$((_vara+1)); printf '     ⤷ la campaña no declara su fase: la regla no tiene contra qué comparar\n'; }
+eq "la vara temporal está declarada en la regla Y la campaña declara su fase" "0" "$_vara"
+
+# ── 30 · LA VERDAD DE V1 NO SE PIERDE (2026-08-12) ─────────────────────────
+# 🔴 El origen: Brian, 12-ago — "detalla a lujo de precisión todo lo analizado… va a ser nuestro
+# MD de la verdad de v1". 50 auditorías contra el servidor + la lectura de Mente OS, destiladas
+# en el ÚNICO documento donde el sistema se ve entero: qué ES contra lo que dice ser.
+# ⭐ Vigila 3 cosas y ninguna es contenido: que EXISTA · que declare su exención de tamaño · que
+# la campaña lo cite. Los números caducan (el sistema corre); la existencia del documento no.
+# ⛔ Y exige que declare la VARA — sin ella, la campaña auditaría contra el destino y produciría
+# 24 hallazgos donde solo 4 importan (medido en su §12.2).
+_ver=0
+_VER="$M/campaigns/producto-for3s-os/terreno/LA-VERDAD-DE-V1.md"
+[ -f "$_VER" ] || { _ver=$((_ver+1)); printf '     ⤷ falta LA VERDAD DE V1: la campaña pierde el único mapa del sistema entero\n'; }
+grep -q '^\*\*Exempt:\*\*.*size' "$_VER" 2>/dev/null || { _ver=$((_ver+1)); printf '     ⤷ no declara su exención de tamaño: el techo de 300 lo partiría\n'; }
+# ⚠️ 12-ago: este check buscaba la frase "GATE DE LA FASE EN CURSO" y se puso 🔴 al compactar
+# el CAMPAIGN bajo su techo de 150 — la frase se reescribió como "GATE VIGENTE". El check
+# funcionó: cazó que la declaración había desaparecido. Ahora busca el marcador ESTABLE
+# (📍 FASE EN CURSO DE FOR3S OS), el mismo que vigila el check 31 — una sola frase que romper.
+grep -q "GATE VIGENTE" "$M/campaigns/producto-for3s-os/CAMPAIGN.md" 2>/dev/null || { _ver=$((_ver+1)); printf '     ⤷ la campaña no declara su VARA: sin ella auditaría contra el destino\n'; }
+eq "la verdad de v1 existe, se exime del techo y la campaña declara su vara" "0" "$_ver"
+
+# ── 29 · LA MEMORIA DEL PROYECTO NO SE PIERDE (2026-08-12) ─────────────────
+# 🔴 El origen: Brian, 12-ago — "necesito que así como tuvimos auditoría For3s OS, pero esta vez
+# del conocimiento que tenemos de Mente OS… nos servirá para saber qué pasó antes y no cometer
+# algún error". 332 documentos y 109,377 líneas destilados en 20 lecciones medidas.
+# ⭐ Por qué un check y no confianza: la LEY de este proyecto es que una regla en documento se
+# cumple 40-60%. Las lecciones viven en un documento — lo único que puede garantizarse por código
+# es que el documento EXISTA, se exima del techo, y que la campaña lo cite.
+# ⛔ NO vigila el contenido: las 20 lecciones se leen, no se parsean. Vigilar prosa sería falso.
+_mem=0
+_MEM="$M/campaigns/producto-for3s-os/terreno/AUDITORIA-MENTE-OS-CONOCIMIENTO.md"
+[ -f "$_MEM" ] || { _mem=$((_mem+1)); printf '     ⤷ falta la memoria del proyecto: la campaña repetiría errores ya cometidos\n'; }
+grep -q '^\*\*Exempt:\*\*.*size' "$_MEM" 2>/dev/null || { _mem=$((_mem+1)); printf '     ⤷ no declara su exención de tamaño: el techo de 300 la partiría\n'; }
+grep -q "AUDITORIA-MENTE-OS-CONOCIMIENTO" "$M/campaigns/producto-for3s-os/CAMPAIGN.md" 2>/dev/null || { _mem=$((_mem+1)); printf '     ⤷ la campaña no cita la memoria: existe pero nadie la encuentra\n'; }
+eq "la memoria del proyecto existe, se exime del techo y la campaña la cita" "0" "$_mem"
+
+# ── 28 · EL TERRENO MEDIDO NO SE PIERDE (2026-08-12) ───────────────────────
+# 🔴 El origen: Brian, 12-ago — "For3s OS funciona sí, pero no sé cómo es que se construyó".
+# 35 pasadas de auditoría produjeron el ÚNICO mapa medido de For3s OS. Si ese archivo se borra
+# o la campaña deja de citarlo, la campaña vuelve a entrar A CIEGAS — que es exactamente lo que
+# pidió evitar. Un hallazgo medido que nadie encuentra es indistinguible de uno que no existe.
+# ⭐ 12-ago: Brian lo movió DENTRO de la campaña — "esto va a ayudar a que tengamos un
+# contexto claro de qué posiblemente tenemos y cómo avanzar en cada uno de los bloques".
+# El terreno viaja con la campaña que lo usa; fuera, se lee como un documento suelto.
+# ⛔ El check NO vigila el CONTENIDO (eso caduca y se re-mide): vigila que exista, que declare
+# su exención de tamaño, y que la campaña lo cite. Vigilar contenido volátil sería circular.
+_ter=0
+_TERR="$M/campaigns/producto-for3s-os/terreno/AUDITORIA-FOR3S-OS-2026-08.md"
+[ -f "$_TERR" ] || { _ter=$((_ter+1)); printf '     ⤷ falta la auditoría de terreno de For3s OS\n'; }
+grep -q '^\*\*Exempt:\*\*.*size' "$_TERR" 2>/dev/null || { _ter=$((_ter+1)); printf '     ⤷ no declara su exención de tamaño: sin ella el techo de 300 la partiría\n'; }
+grep -q "AUDITORIA-FOR3S-OS" "$M/campaigns/producto-for3s-os/CAMPAIGN.md" 2>/dev/null || { _ter=$((_ter+1)); printf '     ⤷ la campaña no cita el terreno: existe pero nadie lo encuentra\n'; }
+eq "el terreno medido de For3s OS existe, se exime del techo y la campaña lo cita" "0" "$_ter"
+
+# ── 27 · EL AIRLOCK: EL AGENTE NO ESPERA AL HUMANO (2026-08-11) ────────────
+# 🔴 Medido en esta sesión: la IA abre un PR y PARA. Entre ese momento y el merge de Brian, nada
+# avanza — aunque el trabajo siguiente no dependa del anterior. El sistema tenía UN SOLO nivel de
+# revisión, el más estricto: hasta corregir una ruta desnuda esperaba a Brian.
+# ⭐ Origen: Commitment Protocol v1.0 — "los agentes no esperan a los humanos".
+# ⛔ El airlock NO relaja el shipping flow: el MERGE sigue siendo humano en los tres niveles. Lo
+# que cambia es CUÁNDO espero, no QUIÉN mergea. Y en duda se SUBE de nivel (rule-inheritance).
+_air=0
+grep -q "EL AIRLOCK" "$M/rules/rule-pr-batching.md" || { _air=$((_air+1)); printf '     ⤷ la regla no declara el airlock\n'; }
+grep -q "el MERGE sigue siendo humano\|El merge sigue siendo humano" "$M/rules/rule-pr-batching.md" || { _air=$((_air+1)); printf '     ⤷ no declara que el merge sigue siendo humano: sin eso, el airlock se lee como permiso para mergear\n'; }
+grep -q "sube de nivel" "$M/rules/rule-pr-batching.md" || { _air=$((_air+1)); printf '     ⤷ no dice qué hacer en duda — un nivel 3 clasificado como 1 es el daño que esto puede causar\n'; }
+eq "el airlock declara sus 3 niveles, y que el merge sigue siendo humano" "0" "$_air"
 
 _ex=$(grep -c 'test|spec' "$M/bin/grade-block")
 [ "${_ex:-0}" -ge 1 ] && ok "grade-block exime los tests del conteo de código muerto" \

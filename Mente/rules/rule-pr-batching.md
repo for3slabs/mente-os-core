@@ -144,6 +144,54 @@ documento que declare `Type: generated` entra aquí, incluidos los que se creen 
 el día que alguien añada una etapa sin gobernarla, la batería lo dice — en vez de descubrirse
 cuando falla.
 
+
+---
+
+## 5 · ⭐ EL AIRLOCK — el agente no espera al humano
+
+> **Brian, 2026-08-11**, sobre el Commitment Protocol: *"El airlock sí te sirve — resuelve que yo
+> pare en cada PR esperándote."*
+
+🔴 **El defecto que cierra, medido en esta sesión:** la IA abre un PR y **para**. Brian mergea cuando
+puede. Entre medias **nada avanza**, aunque el trabajo siguiente no dependa del anterior.
+⭐ **Hoy el sistema tiene un solo nivel de revisión: el más estricto.** Todo espera a Brian, incluida
+la corrección de una ruta desnuda.
+
+**El origen:** el *Commitment Protocol v1.0* (documento externo que Brian aportó el 2026-08-11 — ⛔ no vive en este repo) — *"los agentes completan trabajo y lo
+envían… los humanos revisan de forma asíncrona; **los agentes no esperan a los humanos**."*
+
+### 5.1 · Los tres niveles
+
+| Nivel | Qué lo cierra | Qué entra aquí |
+|---|---|---|
+| **1 · rutina** | ⭐ **la batería en verde, sin esperar** | lo que un check ya vigila: índices regenerados, rutas desnudas, citas rotas, formato |
+| **2 · asíncrono** | la batería + Brian **puede reabrir** | reglas nuevas, planes, cambios de método |
+| **3 · síncrono** | ⛔ **Brian aprueba ANTES de cerrar** | criterio · seguridad · el servidor · otro repo · borrar algo |
+
+⛔ **El nivel NO lo elige quien hace el trabajo por comodidad.** Se deriva de qué toca:
+
+| Si toca… | Nivel |
+|---|---|
+| solo archivos que un validador ya juzga | 1 |
+| una regla, un contrato o un plan | 2 |
+| `secrets/` · el servidor · otro repo · un borrado · criterio de Brian | **3** |
+
+### 5.2 · Lo que el airlock NO relaja
+
+- ⛔ **`rule-shipping-flow.md` sigue intacto:** rama → verificar → PR. **El merge sigue siendo humano.**
+  El airlock cambia **cuándo espero**, no **quién mergea**.
+- ⛔ **La evidencia sigue siendo obligatoria** en los tres niveles. Un nivel 1 no es "sin verificar":
+  es "verificado por un check que ya existe".
+- ⚠️ **Un nivel 3 mal clasificado como 1 es exactamente el daño que esto puede causar.** En duda,
+  **sube de nivel**: `rules/rule-inheritance.md` — en conflicto gana la más estricta.
+
+### 5.3 · Qué cambia en la práctica
+
+**Antes:** PR abierto → la IA para → Brian mergea → la IA sigue.
+**Ahora:** PR abierto → **si es nivel 1, la IA sigue con lo siguiente** y el PR espera su merge.
+
+⭐ **El PR no se mergea solo nunca.** Lo que deja de ocurrir es que **el trabajo independiente se
+detenga** mientras uno espera revisión.
 ---
 
 Related: `rules/rule-shipping-flow.md` (el ciclo hasta el PR; §0-bis apunta aquí) ·

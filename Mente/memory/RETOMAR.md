@@ -1,6 +1,6 @@
 # RETOMAR — Cold-Start Brief (LEER ESTO PRIMERO) ⚡
 
-**Status:** current · **Type:** entry-point · **Updated:** 2026-08-10 · **Owner:** brian
+**Status:** current · **Type:** entry-point · **Updated:** 2026-08-18 · **Owner:** brian
 **Migrated:** Doc/RETOMAR.md → memory/RETOMAR.md (2026-07-30, ADR-029)
 
 
@@ -63,120 +63,71 @@ redactada). 👉 `project_entrenamiento_foresito` · `work/Entrenamiento_Ejecuci
 
 ## 5 · 👉 ESTADO ACTUAL + PRÓXIMO PASO (arrancar aquí tras /clear)
 
-### 🆕 EL CICLO DE TRABAJO YA ES UN SISTEMA, NO UNA COSTUMBRE (2026-08-08/10)
+### 📕 LA VERDAD DE V1 — sabemos qué es For3s OS, medido (2026-08-12, S13)
 
-📊 **Batería 199 → 220 · 0 fallos.** Clon ajeno: **209/1**, y ese 1 (`registered=no`) es la
-respuesta correcta. Identidad en el clon: **0 menciones a Brian**, 11 al dueño real.
+**50 auditorías al servidor + ~45,000 líneas de Mente OS leídas** (el 100% de lo que gobierna,
+decide o registra). Nacen 3 documentos en `campaigns/producto-for3s-os/` — **4,715 líneas**:
+📕 `campaigns/producto-for3s-os/terreno/LA-VERDAD-DE-V1.md` (**entrar por aquí**) · `campaigns/producto-for3s-os/terreno/AUDITORIA-FOR3S-OS-2026-08.md` (el código) ·
+`campaigns/producto-for3s-os/terreno/AUDITORIA-MENTE-OS-CONOCIMIENTO.md` (el conocimiento, 33 §).
 
-⭐ **Lo que cambió de raíz:** el ciclo declaraba hasta `⛔ STOP` y **terminaba ahí**. Conflicto,
-merge y limpieza no estaban en ningún mapa — y un hueco del que nadie habla es indistinguible de
-uno que no existe. Ahora son **12 etapas, cada una con su regla**, y un check falla si alguna se
-queda sin dueño o apunta a una regla inexistente (`rules/rule-pr-batching.md` §4).
+> ⭐⭐⭐ **EL VEREDICTO:** For3s OS **no está roto ni abandonado**. Está en la **Fase 1-3 de un
+> plan de 6**, pasa **6/6** el gate de su fase, tiene **13 de 16 hitos**, y **va adelantado**:
+> ~2 meses de código contra 6-7 estimados.
 
-🆕 **4 reglas nuevas del ciclo:** `rule-pr-batching` (4 pendientes por PR · el último **cierra**
-el bloque y apunta a los anteriores · **conflictos**: diagnosticar → rebase → `--force-with-lease`,
-⛔ nunca en la web de GitHub) · `rule-post-merge-cleanup` (verificar que viajó, **luego** borrar) ·
-`contract-pending` + `rule-pending-rotation` (los pendientes rotan por archivo cada mes).
+⭐⭐ **LA VARA DE LA CAMPAÑA, resuelta por medición:** ni el Grafo ni el código — **el GATE DE LA
+FASE EN CURSO** (`memory/archive/Plan_Maestro_Programacion.md`). Contra el Grafo completo faltan
+**15 de 15 tablas** (rojo inútil); contra el gate: **6/6**, y los 24 hallazgos **se reducen a 4**.
 
-🆕 **Ya no se pregunta si un PR se mergeó: se mira.** `bin/check-prs` al arrancar y
-`hooks/watch-prs.py` antes de tocar git a mitad de sesión. ⛔ No es un cron: un cron dispara
-cuando no hay nadie escuchando.
+**Los 4 que importan, en los 4 primeros bloques:** 🔴 **H-01** contenido EN CLARO (`seguridad`,
+y viola la anti-visión #9 *no-negociable*) · 🟠 **H-02** la búsqueda cruza sesiones y el contador
+no → **podría borrar lo que sí usa** (`memoria`) · 🔴 **H-04** digest muerto 29d, el worker está
+apagado 8h/día (`cerebro`) · 🔴 **H-03** instancia huérfana, 933 MB (`despliegue`).
 
-🗓️ **Los pendientes viven en `memory/pendiente-<mes>-<año>.md`** — 111 uno por uno (eran 27
-agrupaciones), en 5 bloques. `PENDIENTES.md` quedó **congelado**.
+🔴 **Los 2 nodos ausentes:** Amígdala (7) y Tálamo (8) — confirmados por 5 métodos independientes.
+⭐ **Lo que superó al estado del arte:** la microglía — **41% podado** con audit de cada olvido.
 
-🏁 **Bloque MOTOR cerrado 9/11.** Los 2 abiertos: el §6 de la voz (🙋 criterio de Brian) y el
-renombrado (orden 7 de 7, ya desbloqueado).
+🆕 **El airlock** (`rule-pr-batching` §5): 3 niveles de revisión. **El agente ya no para en cada
+PR** — nivel 1 sigue solo; el merge sigue siendo humano en los tres.
 
-**👉 PRÓXIMO PASO: la PRUEBA DE CAMPO** — que alguien ajeno instale el sistema. **Cero
-instalaciones externas verificadas**: todo lo medido en un clon lo midió la IA en esta máquina.
+✅ **HECHO (13/14-ago):** el plan de las 3 fases (`docs/plans/PLAN-3-fases.md`) · la vara temporal
+en `rules/rule-product-authority.md` §2 · el campo `campaign_phase:` en `rules/contract-block.md` · su
+validador en `bin/check-campaigns` (4 comprobaciones, verificado por sabotaje) · el **DOSSIER para
+el consultor** (`vision/DOSSIER-SISTEMA-COMPLETO-2026-08.md`, 1,016 líneas).
 
-### LO ANTERIOR · el clon ya verifica el motor (2026-08-07, S13)
+🆕 **BLOQUE 1 DE 12 · `seguridad` — VA 6/11** (18-ago). ⛔ **NO está cerrado.**
+✅ **La mitad que MIDE, completa (6/6):** Fase 1 cerrada con veredicto por dimensión en
+`campaigns/producto-for3s-os/hallazgos/seguridad-fase-1.md` — **5 de 6 en 🟢**.
+⭐⭐ **La frase del bloque: la seguridad está bien CONSTRUIDA y mal CABLEADA.** `crypto.py` está
+bien hecho, la master key custodiada (32 B, `600`, fuera del repo), la cadena de auditoría
+verificada eslabón a eslabón (12,963 + sabotaje) y el sandbox resistió 5 ataques. **Lo que falla
+es que el contenido nunca pasa por la cripto.**
+⬜ **La mitad que ARREGLA, sin empezar (0/5):** SB-7 capa `contenido.py` → SB-8 los 2 escritores →
+SB-9 los 9 lectores → SB-10 migrar 15 MB. ⭐ **El orden NO es negociable:** SB-9 antes que SB-10, o
+el sistema queda leyendo cifrado con código que espera texto plano.
+✅ **Rollback PROBADO:** dump 131 MB restaurado → 33,908 filas (BD desechable, eliminada).
 
-`separacion-motor-instancia` **cerrado 5/5 y archivado**. Recorrido medido en un clon: `10 → 1`.
-⭐ **El hallazgo que dio la vuelta al problema:** la hipótesis era mover 221 archivos de instancia;
-**medido, ninguno estorbaba** — lo que fallaba eran los CHECKS que los interrogaban mal, y mover
-archivos habría escondido el defecto. **4 defectos del motor** que la etiqueta *"son fallos de la
-instancia de Brian"* llevaba meses tapando.
-👉 Detalle: `blocks/archive/separacion-motor-instancia_2026-08/SUMMARY.md`.
+🔴 **EL PATRÓN QUE APARECIÓ 3 VECES — el hallazgo más importante de la semana:**
+| Caso | La pieza existe | Y nadie pasa por ella |
+|---|---|---|
+| H-01 | `crypto.py` funciona | el contenido no se cifra |
+| workspaces | `derive_workspace_key()` funciona | hay **1 solo** |
+| **BYOK** (18-ago) | **`LLMProvider(ABC)` existe** | **12 archivos instancian `ClaudeProvider` directo** |
+⭐ *"Se construye la pieza y no se conecta."* **Tres veces ya no es un cable suelto: es cómo se ha
+venido trabajando.** ⚠️ Y el 3º **bloquea una venta**: sin eso, un cliente no puede poner su propio
+LLM y el cupo de suscripción (uno solo, compartido por 3 instancias) es un techo duro.
 
-### 🆕 LA DEMO: de 0 a 4 tests, con 23/23 en verde (2026-08-05/06)
+🆕 **SB-3 DERRIBÓ UNA PREMISA MÍA:** afirmé 3 veces que H-01 crecía a diario. **Falso** — 99.5% es
+importado (ene-may), lo vivo son 81 kB y lleva 16 días parado. H-01 **no gana por urgencia, gana
+por gravedad**. ⭐ La Fase 1 existe para eso: si el arreglo hubiera ido antes, habríamos cifrado
+con la urgencia equivocada.
 
-`plan-tests-demo` cerró 🟢 PRODUCTO. Los 4 caminos críticos escritos (autorizar · entrar · hablar ·
-apagar) y **23/23 en verde** contra la rama de Neon de test. 🔬 **Cada test se VIO FALLAR antes de
-creerle** — en ④ eso destapó que mi propio caso no discriminaba, y que iba a probar el archivo
-equivocado. 🔬 De paso, **2 defectos del MOTOR** (`check-applied`) corregidos.
-📊 El bloque `demo` está **11/12**; su único pendiente vivo es §F-11 (rutas OAuth).
-👉 Detalle y estado real: `blocks/active/demo/BLOCK.md`.
+⭐ **Reparto del territorio = opción A** (un archivo, un dueño): el `hooks/pre-edit-standards.py` se
+queda con **el primer** bloque que reclama un archivo, así que dos dueños dan la vara equivocada.
 
-### ⚡ RENDIMIENTO: el sistema es **86x más rápido** (2026-08-05)
+### LO ANTERIOR (en `memory/Bitacora_Progreso.md`)
 
-`check-links` **47.2s → 0.55s** · batería **1m10 → 15.6s** · métricas **2m31 → 13.5s**. Causa: un `glob` recursivo recorría los 43,986 archivos de `marca-personal` **por cada cita**. 🔬 F0 destapó 2 defectos silenciosos (mi sonda no medía; `glob` no ve ocultos, `os.walk` sí). → `docs/plan-check-links-performance.md`.
-
-### 🆕 ⭐ LO ANTERIOR (2026-08-05, S11) — **LA CAPA 2 EXISTE Y `distribucion` CERRÓ 🟢 PRODUCTO**
-
-**Sin commit — `Mente/` está en `.gitignore` de este repo (el motor se publica en `mente-os`).**
-
-- 📜 **Las 6 dimensiones de QA, LLENAS** (`rules/qa-dimensions.md`, `draft` → `current`). La más
-  dura, literal suya: *"NO PUEDE DEJAR CÓDIGO HUÉRFANO, MUERTO, SIN CONECTAR — Y ESO LO LOGRAMOS
-  PROBANDO EL FLUJO A PROFUNDIDAD CON DATOS REALES"* (§2.5). **Él responde con casos, yo estructuro.**
-- 🏁 **`distribucion` CERRADO 🟢 PRODUCTO** — primer bloque juzgado por **capa 2**. Archivado en
-  `blocks/archive/distribucion_2026-08/` (su `SUMMARY.md` lleva qué se hizo y qué se aprendió).
-
-- 🔌 **3ª ronda de cableado**: el criterio LLENO tampoco llegaba (2 `val-*` sin declarar, 2 dueños
-  diciendo `pending` de lo lleno) → corregido + **2 checks** que lo impiden.
-- 🏁⭐ **LOS 3 DUEÑOS CON CRITERIO PROPIO — huecos 66 → 3.** `principles/expertise/doc-structure.md` cerró el último:
-  ⭐ **si un documento excede su techo DEBE partirse**, y las mitades se apuntan (endurece ADR-027) ·
-  puntero siempre que el dato tenga dueño en otro sitio · `Status: current` es un contrato de 4
-  términos (**quién lo verificó y con qué**) · ⛔ nunca borrar historia para que un check pase.
-  **Los 3 restantes NO son criterio:** 2 punteros de índice + 1 falso positivo del contador.
-- 🎓 **`principles/expertise/doc-planning.md` LLENO** — **todo límite que un plan declare se MIDE** · una fase entrega
-  UNA cosa · ⛔ nada de fases "pulir" · **si tocar algo obliga a BD+frontend+backend, es UN BLOQUE**
-  · un hueco real **se marca como pendiente asignado a Brian** · ⛔ *no omitas algo porque crees
-  que ya lo sé*, ni te excuses con *"no sabía"*.
-- 🔴 **Brian cazó un SESGO DE DISEÑO:** mi check exigía que todo criterio aterrizara en un bloque
-  de código — *"los usuarios pueden hacer código o no, no es ley"*. Corregido + nace el bloque
-  `plan-tests-demo` (`type: docs`), el primero que ejercita owner-1.
-- 🎓⭐ **OWNER-2 COMPLETO** — `principles/expertise/dev-frontend.md`: **el servidor es dueño del estado, React lo
-  refleja** · lo que el usuario decidió sobrevive al refresh · 🔴 **un control nunca miente** · el
-  nombre dice qué MUESTRA · ⛔ secreto en el cliente, botón oculto como única autorización.
-- 🎓 **`principles/expertise/dev-backend.md` LLENO** — **guardián único por regla** (`session.ts` 12→0) · el fallo
-  esperable **es** el contrato · seguridad o dinero **se unifican siempre** · ⛔ endpoint genérico,
-  exponer control, confiar en un id del cliente. 🔬 **El check de cableado me cazó a mí.**
-- 🎓⭐ **OWNER-3 COMPLETO** — *fallar ruidosamente* · **los DATOS deciden** detener vs degradar ·
-  *no se asume nada* · **ausencia de evidencia NO es evidencia** · *nunca cierres algo cuyo fallo
-  no sabrías detectar*.
-- 🎓 **`principles/expertise/dev-database.md` LLENO → fase F1 CERRADA.** 5 categorías que nunca viven en código · 4
-  estados imposibles · **FK siempre** · 4 condiciones antes de una migración. ⭐ Su raíz: *"debe
-  existir un PLAN DE IMPLEMENTACIÓN que valide por qué la tabla existe"*.
-- 🧩 **2 skills externas desmanteladas** → bloque `expertise-programacion` **CERRADO 🟢 PRODUCTO**
-  + nace `rules/rule-shipping-flow.md` (rama → verificar → PR → ⛔ no mergear), **transversal**.
-- 🔧 **`grade-block`: 3 defectos** → arreglados + **5 self-tests** · nace **`docs/WORKSPACE.md`**.
-- 🔌 **2ª ronda de cableado**: piezas escritas y no conectadas — **las 20 reglas ya tienen script**
-  (eran 17) + `docs/WORKSPACE.md` con check propio. 🔬 Verificados **por reversión**.
-
-✅ **P1·P2·P4·P5 HECHOS** (batería **173 → 175**): el commit **bloquea un índice desfasado** (cazó
-3 derivas reales, la primera a mí) · `/clear` **lee la batería** y se niega si está roja · nace
-**`VERSION` 0.1.0 + `CHANGELOG`** con 2 checks · `allow` declarado **por mecanismo**.
-✅ **P3 HECHO: `.github/workflows/ci.yml`** (3 jobs) en `Mente/`, que **es su propio repo**.
-Escribirlo destapó **4 defectos reales**: los 2 bloques archivados hoy **sin `SUMMARY.md` ni
-`connections.md`** (nada de la batería lo vigilaba) y sus encabezados en español que el validador
-no reconocía. 🔬 Medido antes: con `HOME` limpio fallan 3 checks que **leen la máquina, no el
-motor** — el job los nombra uno a uno para que la exención no crezca sola.
-
-**👉 PRÓXIMO PASO:** queda **1 bloque activo: `demo`** (6/10, 🔴 MVP). Sus 3 tapones siguen donde
-los dejó el 26-jul (§5 "LO ANTERIOR"). Deuda abierta: **prueba de campo real** de `mente-os`
-(alguien que no sea Brian clonando) · los **35 huecos** restantes (**solo queda owner-1**: `doc-planning` + `doc-structure`) · las 2 decisiones 🔑🔐 de abajo.
-
-### LO ANTERIOR — S10 (voz) y S9 (instalador) → `memory/Bitacora_Progreso.md`
-
-### LO ANTERIOR (2026-07-31, S7) — el v2 se construyó y F8-4 lo verificó
-
-**Mente OS pasó de DOCUMENTAR a GOBERNAR.** F0-F8 cerradas · migración v1→v2 completa (M0-M5,
-ADR-029): si un documento cita `Alma/` `Cuerpo/` `Doc/` `Tickets/` es **cita fósil**.
-🖥️⭐ **La demo es un bloque grande con índice propio** — entrar por `project_bloque_demo_pendientes`.
-👉 **Sus tapones vivos están en `blocks/active/demo` §F**, que es donde se miden.
-📦 Detalle completo → `memory/Bitacora_Progreso.md` (movido el 2026-08-05).
+El ciclo de 12 etapas · el clon que verifica el motor · los 111 pendientes rotados · el bloque
+MOTOR 9/11. **Todo cerrado y archivado** — se consulta, no bloquea.
 
 ## 5-ter · 🏗️ el PORQUÉ del v2 (diagnóstico 27-jul) · ✅ construido, ver §5
 
@@ -224,7 +175,7 @@ capas** — validado contra 4 frameworks, **ninguno responde *"¿producto o MVP?
 | Necesitas… | Lee… |
 |---|---|
 | **🖥️⭐ LA DEMO — índice maestro (ENTRAR POR AQUÍ)** | memoria `project_bloque_demo_pendientes` |
-| **TODOS los pendientes a detalle** | 🗓️ `memory/pendiente-<mes>-<año>.md` (rota mensual) · `PENDIENTES.md` = histórico congelado |
+| **TODOS los pendientes a detalle** | 🗓️ `memory/pendiente-<mes>-<año>.md` (rota mensual) · `memory/PENDIENTES.md` = histórico congelado |
 | **Secretos de la demo (DEMO_ENC_KEY) — FUERA de git** | `secrets/Secretos_Demo_Sitio.md` |
 | Demo: Ronda F0 · mapa · plan BD · auditoría | repo del sitio: `marca-personal/DEMO_*.md` |
 | 🎓 Caso: limpiar un hardcodeo heredado sin romper | `memory/archive/CASO_Default_Peligroso_Tema_Hilo.md` |

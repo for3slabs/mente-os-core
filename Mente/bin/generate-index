@@ -135,10 +135,27 @@ def collect_docs():
         if any(f.startswith(s) for s in SKIP) or "/.git/" in f:
             continue
         t = open(f, encoding="utf-8", errors="replace").read(2500)
+        # 🔴 UN GENERADO NO PUBLICA SU PROPIO TAMAÑO (2026-08-14).
+        # `docs/INDEX.md` se listaba a sí mismo CON su conteo de líneas, así que al crecer
+        # (medido: 569 → 571) invalidaba el índice que acababa de escribir. `--check` fallaba
+        # sobre un árbol limpio, y `pre-commit` rechazaba el commit por ello.
+        # ⭐ Es un punto fijo que no converge: el valor cambia por el acto de publicarlo.
+        #
+        # La batería ya conocía el SÍNTOMA y lo parcheaba regenerando el índice antes de cada
+        # check (líneas 15-17 y 698, autopsia de S11: *"salía 176/1 y a la segunda 175/2:
+        # empeoraba solo"*). ⛔ Regenerar más veces no converge — trata el efecto, no la causa
+        # (`rules/rule-fix-not-patch.md`). La causa es publicar un dato que se mide a sí mismo.
+        #
+        # El documento SIGUE listado: esconderlo perdería información y `INDEX.md` existe para
+        # listarlo todo. Lo que no se publica es el único campo que se autoinvalida.
+        # ⚠️ Aplica a los DOS generados, no solo al que oscila hoy: `STATES.md` tiene el mismo
+        # defecto con la mecha más larga — hoy no salta porque su tamaño es estable.
+        gen = f in ("docs/INDEX.md", "docs/STATES.md")
         docs.append({"path": f, "type": field(t, "Type") or "—",
                      "status": field(t, "Status") or "—",
                      "updated": field(t, "Updated") or "",
-                     "lines": sum(1 for _ in open(f, encoding="utf-8", errors="replace"))})
+                     "lines": "—" if gen else
+                              sum(1 for _ in open(f, encoding="utf-8", errors="replace"))})
     return docs
 
 

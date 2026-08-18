@@ -45,6 +45,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S9 | `dc733bc1` | 2026-08-02 22:43 | 2026-08-03 18:39 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
 | S11 | `8b4bddcb` | 2026-08-04 02:31 | ⚠️ **NO cerró aquí** — el mismo `.jsonl` siguió vivo hasta 08-07 21:26 (ver S12) | 11.8 MB → 25 MB | 65 → 2,381 | **999,757 → 1,000,030** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
 | S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 22:41 (**~47h**) 🔴 | **27 MB** 🟡 | 2,499 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
+| S13 | `4c2f0014` | 2026-08-07 23:05 | 2026-08-12 08:17 (**~105h**) 🔴 | **36 MB** 🟡 | 1,530 turnos | **999,702** 🔴 | **LA JORNADA DE LA VERDAD DE V1** — 50 auditorías al servidor + lectura de ~45,000 líneas de Mente OS. Nacen 3 documentos (4,715 líneas): el terreno del código, el del conocimiento y **`LA-VERDAD-DE-V1.md`**. ⭐ Se resolvió la VARA de la campaña (el gate de la fase, no el Grafo) y los 24 hallazgos se redujeron a **4**. 🔴 **cache_read 1,347M — el máximo histórico, supera al 21-jul (1,033M)**. 8 errores míos corregidos en voz alta |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
 | — | `fa2c625f` | 2026-07-15 21:01 | 2026-07-19 00:38 (**~76h**) 🔴 | 10.1 MB 🟢 | 1,180 turnos | **999K tokens** 🔴 | 🔴 **R2 · LA JORNADA SEGURIDAD/SEC-4c** — registrada retroactivamente el 31-jul (S8). Ver §R2 |
 | — | `b075269c` | 2026-06-16 05:43 | 2026-06-27 23:58 (**~11 días**) 🔴 | 12.9 MB 🟢 | 661 turnos | 679K 🔴 | 🔴 **R3 · LA JORNADA H5-H10** — registrada retroactivamente el 31-jul (S8). Ver §R3 |
@@ -409,6 +410,157 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 
 Ninguna. Sesión sana en todos los ejes.
 
+
+## S14 · `4c2f0014` — LA JORNADA DEL PRIMER BLOQUE (2026-08-12 → 08-18, ~194h) 🔴
+
+🔴 **194h abiertas — el récord del proyecto.** El incidente del 21-jul detonó a las 96h. No hubo
+degradación esta vez, pero **el margen se agotó**: se cierra por tiempo, no por trabajo terminado.
+
+### Qué se hizo
+
+| Fase | Entregable |
+|---|---|
+| **El DOSSIER para el consultor** | `vision/DOSSIER-SISTEMA-COMPLETO-2026-08.md` — 1,016 líneas, 15 §. Abre con la carta que dice **dónde falló la consultoría anterior** |
+| **Las 3 piezas de regla** | la vara temporal (`rules/rule-product-authority.md` §2) · el campo `campaign_phase:` · su validador con 4 comprobaciones |
+| **El plan de 3 fases** | `docs/plans/PLAN-3-fases.md` — una fase es una MIRADA, no un bloque |
+| **⭐ EL BLOQUE 1 DE 12** | `seguridad` abierto y llevado a **6/11** — Fase 1 cerrada con veredicto por dimensión |
+| **La batería** | 231 → **235** · 4 checks nuevos, los 4 por sabotaje |
+
+### ⭐ Las 4 cosas que no se re-litigan
+
+1. **Reparto del territorio = opción A** (un archivo, un dueño). Razón MEDIDA, no preferencia:
+   `hooks/pre-edit-standards.py` se queda con **el primer** bloque que reclama un archivo, así que
+   dos dueños dan la vara equivocada. Salida para el caso legítimo: el `§Channel`.
+2. **H-01 se arregla con una CAPA ÚNICA.** Descartada la opción rápida (9 lectores descifrando por
+   su cuenta) porque **repetiría el defecto que el propio bloque diagnosticó**.
+3. **El techo se mira AL CERRAR, no durante** (Brian): mirarlo a mitad cambia QUÉ se escribe.
+   §B subido a 20 con su razón.
+4. **SB-9 antes que SB-10.** Al revés el sistema queda leyendo cifrado con código que espera texto
+   plano — roto ENTRE dos pasos.
+
+### 🔴 EL HALLAZGO MAYOR: el patrón apareció 3 veces
+
+| Caso | La pieza existe | Y nadie pasa por ella |
+|---|---|---|
+| H-01 | `crypto.py` funciona | el contenido no se cifra |
+| workspaces | `derive_workspace_key()` funciona | hay 1 solo |
+| **BYOK** | **`LLMProvider(ABC)` existe** | **12 archivos instancian `ClaudeProvider` directo** |
+
+⭐ *"Se construye la pieza y no se conecta."* **Tres veces ya no es un cable suelto: es cómo se ha
+venido trabajando.** Y el tercero **bloquea una venta** (BYOK).
+
+### 🩺 AUTOPSIA — 3 errores míos, los 3 corregidos en origen
+
+1. 🔴 **Afirmé 3 veces que H-01 crecía a diario. Falso.** 99.5% es importado (ene-may); lo vivo son
+   81 kB, parado hace 16 días. Deduje del peso de la BD y **nunca medí la fecha de las filas**.
+   ⭐ Lo cazó SB-3 — la Fase 1 tumbó una premisa del bloque que la ejecutaba. **Si el arreglo
+   hubiera ido antes, habríamos cifrado con la urgencia equivocada.**
+2. ⚠️ **Declaré el SSH "bloqueador de los 12" sin leer `secrets/Conectar_Servidor_For3s.md`**, que
+   documenta el método y lista ese error exacto con su solución. Coste: una decisión pedida a
+   Brian que no hacía falta pedirle.
+3. ⚠️ **Dije "10+ escritores" y son 2.** Conté los que MENCIONAN la tabla. El trabajo real está en
+   los **9 lectores** — dimensionaba mal el arreglo.
+
+### 📉 Y un error de FORMA que Brian tuvo que corregir dos veces
+
+*"No entiendo si ya estamos realizando el bloque"* y *"cuando un bloque va avanzando me tienes que
+dar el estado del bloque y todo referente a ese bloque, no solamente decirme qué sigue"*.
+⭐ **Causa:** reporté pasos y arreglos del motor mezclados, sin separar **producto** de **motor** y
+sin dar el estado completo del bloque. **La regla que queda: al avanzar un bloque, se entrega su
+estado, qué se hizo, por qué así y qué archivos se tocaron — nunca solo el siguiente paso.**
+
+### 👉 Dónde queda
+
+`seguridad` **6/11** · la mitad que MIDE completa, la que ARREGLA sin empezar · rollback probado
+(131 MB → 33,908 filas) · **cero cambios en producción** · batería 235/235.
+
+---
+
+## S13 · `4c2f0014` — LA JORNADA DE LA VERDAD DE V1 (2026-08-07 23:05 → 08-12 08:17, ~105h)
+
+**36 MB** 🟡 · **1,530 turnos** · **contexto pico 999,702** 🔴 · **cache_read 1,347,949,789** 🔴
+(el máximo del proyecto — supera al 21-jul: 1,033M) · cache_write 15.6M · output 1.6M.
+
+### Qué se hizo
+
+| Fase | Entregable |
+|---|---|
+| **El airlock** | `rules/rule-pr-batching.md` §5 — 3 niveles de revisión. **El agente deja de esperar al humano en cada PR** |
+| **35 auditorías a For3s OS** | A1-A15 componentes · A16-A35 uso real con los datos de Brian · C1-C15 comportamiento y canales |
+| **La lectura de Mente OS** | ~45,000 de 110,000 líneas — **el 100% de lo que gobierna, decide o registra** |
+| **3 documentos, 4,715 líneas** | `AUDITORIA-FOR3S-OS` (980) · `AUDITORIA-MENTE-OS-CONOCIMIENTO` (2,451, 33 §) · **`LA-VERDAD-DE-V1`** (1,136, 17 §) |
+| **La campaña** | 12 bloques decididos · el orden por gravedad · **la VARA declarada** |
+| **La batería** | 228 → **232** · 4 checks nuevos, los 4 verificados por sabotaje |
+
+### ⭐ Las 3 decisiones que no se re-litigan
+
+1. **La vara de la campaña NO es el Grafo ni el código: es el GATE DE LA FASE EN CURSO.**
+   Medido: contra el Grafo completo, For3s OS falla **15 de 15 tablas** — un rojo que declararía
+   muerto un sistema que corre a diario. Contra el gate de su Fase 1: **pasa 6 de 6**, y los 24
+   hallazgos **se reducen a 4**.
+2. **12 bloques, en orden de gravedad** (Brian): `seguridad` abre porque H-01 **empeora cada día**.
+   Y `entrenamiento` entra pese a 38 días sin escribir: *"2,192 líneas sin auditar no se dejan
+   fuera del producto"*.
+3. **La decisión de partir los archivos grandes se APLAZA con recordatorio registrado** — los 18
+   archivos >400 líneas y su bloque dueño quedan en `AUDITORIA-FOR3S-OS` §16, con la obligación de
+   preguntar antes de cerrar cada fase 2.
+
+### 🔴 Los hallazgos que cambian el trabajo
+
+| | |
+|---|---|
+| **H-01** | el contenido de las conversaciones está **EN CLARO** (15 MB) — y no es un olvido: **R2 B1 §1.6 lo lockeó cifrado**, y viola la anti-visión #9, declarada *no-negociable* |
+| **H-02** | la búsqueda **cruza sesiones** (`incluir_import`) pero el contador **no** → un recuerdo importado se recupera y nunca se marca · **el sistema podría borrar lo que sí usa** |
+| **H-04** | el `digest_valor` está programado a las 14:00 UTC y **el worker está apagado 8h/día** (11h-18h): su cartero corre a una hora en la que el sistema no existe |
+| **Los 2 nodos ausentes** | **Amígdala** (nodo 7) y **Tálamo** (nodo 8) — confirmados por **cinco métodos independientes** |
+| **Tres tableros congelados** | `bridges/` publica 5/18 · el Mapa 3/18 · el Grafo 11/11 — la realidad es **13 de 16 hitos** |
+
+### ⭐⭐ Lo que se descubrió y nadie sabía
+
+- **For3s OS va ADELANTADO:** su plan estimaba el MVP en 3-3.5 meses y el sistema completo en
+  9-10. **Lleva ~2 meses de código con MVP + cerebro + aprendizaje gobernado.**
+- **La microglía superó al estado del arte** que su propio diseño describía (*"nadie la implementa
+  bien"*): **41% de la memoria podada**, con audit de cada olvido.
+- **Nadie vio la divergencia diseño↔código porque la auditoría de junio comparó DOCUMENTOS con
+  DOCUMENTOS.** Su propia §2.1 lo dice. El código nunca entró en la comparación.
+- **Mente OS v2 nunca ha gobernado trabajo de producto:** los 5 bloques archivados son del motor.
+  **La campaña será su prueba de campo.**
+
+### ⚠️ 8 errores míos, corregidos en voz alta
+
+E-1 *"76 archivos"* eran del núcleo (son 112 `.py`) · E-2 *"43 huérfanos"* eran **5** · E-3
+`entrenamiento_repo` no es código muerto · E-4 *"36 consultas sin filtro"* — **ninguna** ·
+E-5 reporté el servidor caído **estando encendido** (no leí `secrets/`) · E-6 los stubs del DMN no
+son un fallo · 🔴 **E-7 *"la memoria está INALCANZABLE"* — FALSO**, desmontado ejecutando
+`recordar()` en vivo · E-8 un `pgrep` que se detectaba a sí mismo, **cazado antes de escribirlo**.
+
+⭐ **El patrón: medir una parte y hablar del todo, o inferir del esquema en vez de ejecutar el
+código.** De ahí salen **L-32** (*un esquema describe lo que se PUEDE consultar, no lo que el
+código consulta*) y **L-33** (*cuando una función LEE con un criterio y otra ESCRIBE con otro, el
+sistema funciona y miente a la vez*).
+
+### 🔴 Consumo — cuándo empezó a crecer
+
+**Desde el arranque.** No hubo un punto de inflexión: la sesión nació con contexto grande (venía
+de una compactación) y **las 50 auditorías + la lectura de 45,000 líneas lo mantuvieron en el
+techo durante 105 horas**. El pico de 999,702 se alcanzó y se sostuvo.
+
+📊 **cache_read 1,347 millones — el máximo histórico del proyecto**, por encima de la sesión del
+21-jul (1,033M) que causó el peor incidente.
+
+⚠️ **Y sin embargo NO hubo degradación observable:** cero `<synthetic>`, cero mezcla de temas
+viejos, cero violaciones de alcance. **Los 8 errores fueron de método (medir mal), no de
+contexto.** ⭐ **Es la primera sesión >100h del proyecto que cruza el millón de cache_read sin
+degradarse** — dato que merece registrarse, no celebrarse.
+
+### Motivo del cierre
+
+Trabajo en frontera natural: la lectura de Mente OS **cerrada**, los 3 documentos **escritos y
+verificados**, la vara de la campaña **resuelta**. Lo siguiente (`PLAN-3-fases` + contratos +
+validador de `fase:`) es **trabajo delicado de escritura de reglas** — exactamente lo que no
+conviene hacer con 105h y 999K de contexto.
+
+---
 
 ## S12 · `8b4bddcb` — LA JORNADA DEL CLON QUE POR FIN VERIFICA (2026-08-05 23:07 → 08-07 21:26, ~46h)
 
