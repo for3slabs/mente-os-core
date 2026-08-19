@@ -20,6 +20,7 @@ La ley medida de este sistema: código 100%, documento 40-60%. Este era document
 
 ⛔ LA REGLA: si el repo squashea, la base de un PR es `master` — SIEMPRE. Una dependencia real
 entre dos PRs se resuelve ESPERANDO al merge de la base y rebasando encima, nunca encadenando.
+📖 La regla completa, con el incidente y cómo repararlo: `rules/rule-pr-base.md`.
 
 USO
     check-pr-base <base>          ¿puedo abrir un PR contra esta base?

@@ -8,7 +8,7 @@
 **Generated:** 2026-08-18 · **Type:** generated
 
 
-**338 documents** · **8 blocks** · 35 directories
+**339 documents** · **8 blocks** · 35 directories
 
 
 | Directory | Docs |
@@ -44,7 +44,7 @@
 | `memory/archive/` | 38 |
 | `principles/` | 7 |
 | `principles/expertise/` | 7 |
-| `rules/` | 26 |
+| `rules/` | 27 |
 | `rules/decisions/` | 30 |
 | `vision/` | 9 |
 | `work/` | 88 |
@@ -418,10 +418,11 @@
 | `rule-moving-files.md` | rule | current | 2026-07-30 | 76 |
 | `rule-pending-rotation.md` | rule | current | 2026-08-08 | 103 |
 | `rule-post-merge-cleanup.md` | rule | current | 2026-08-08 | 86 |
-| `rule-pr-batching.md` | rule | current | 2026-08-08 | 199 |
+| `rule-pr-base.md` | rule | current | 2026-08-18 | 110 |
+| `rule-pr-batching.md` | rule | current | 2026-08-18 | 201 |
 | `rule-product-authority.md` | rule | current | 2026-08-12 | 180 |
 | `rule-session-close.md` | rule | current | 2026-07-29 | 108 |
-| `rule-shipping-flow.md` | rule | current | 2026-08-18 | 293 |
+| `rule-shipping-flow.md` | rule | current | 2026-08-18 | 250 |
 
 ## `rules/decisions/`
 

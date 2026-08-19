@@ -2758,11 +2758,16 @@ elif [ -x "$_pb" ]; then
 fi
 
 # La regla debe declarar el candado, y haber ANULADO la excepción que lo permitía.
-_r="$M/rules/rule-shipping-flow.md"
+# ⚠️ §2-bis se partió a su propia regla el 18-ago (rule-shipping-flow tocó su techo de 250):
+# `rule-pr-base.md` es la TERCERA hermana. La orden sigue en shipping-flow §2 fila 8; el
+# mecanismo, el incidente medido y la reparación viven en la hermana.
+_r="$M/rules/rule-pr-base.md"
 _rn=0
-grep -q "check-pr-base" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ la regla no nombra su validador\n'; }
-grep -q "queda ANULADA" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ no anula el "unless explicitly stacked": esa cláusula ES la que se usó para justificar el error\n'; }
-grep -q "2-bis" "$_r" || { _rn=$((_rn+1)); printf '     ⤷ falta la sección §2-bis con el incidente medido\n'; }
+[ -f "$_r" ] || { _rn=$((_rn+1)); printf '     ⤷ no existe rules/rule-pr-base.md\n'; }
+grep -q "check-pr-base" "$_r" 2>/dev/null || { _rn=$((_rn+1)); printf '     ⤷ la regla no nombra su validador\n'; }
+grep -q "queda ANULADA" "$_r" 2>/dev/null || { _rn=$((_rn+1)); printf '     ⤷ no anula el "unless explicitly stacked": esa cláusula ES la que se usó para justificar el error\n'; }
+grep -q "23:08" "$_r" 2>/dev/null || { _rn=$((_rn+1)); printf '     ⤷ no lleva el incidente MEDIDO (los 9 segundos entre #32 y #33)\n'; }
+grep -q "rule-pr-base" "$M/rules/rule-shipping-flow.md" || { _rn=$((_rn+1)); printf '     ⤷ shipping-flow no apunta a su hermana: la orden quedaría huérfana\n'; }
 eq "la regla declara el candado y ANULA la excepción de PRs encadenados" "0" "$_rn"
 
 # ═══════════════════════════════════════════════════════════════════ RESULT

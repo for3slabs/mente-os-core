@@ -1,5 +1,5 @@
 # RULE · PR BATCHING — un PR por bloque, no por error
-**Status:** current · **Type:** rule · **Updated:** 2026-08-08 · **Owner:** brian
+**Status:** current · **Type:** rule · **Updated:** 2026-08-18 · **Owner:** brian
 **Language:** US English · **Applies to:** EVERY discipline — backend · frontend · database · docs
 **Split from:** `rules/rule-shipping-flow.md` §0-bis (2026-08-08: 297 líneas sobre el techo de 250,
 y `-bis` es la señal literal de *"pártanme"* — `principles/expertise/doc-structure.md` §2.1)
@@ -113,10 +113,12 @@ no corresponde a nada. **El valor correcto no está en ninguno de los dos lados 
 2026-08-10, **23 documentos los citan y 14 checks los exigen**. Un clon nacería con 23 citas rotas
 y la batería en rojo. El conflicto es molesto; un clon roto es peor.
 
+📖 **El mismo squash tiene un segundo daño, y es peor porque no produce ningún conflicto:** un PR
+encadenado sobre una rama sin mergear **no llega a `master`** y queda con la etiqueta MERGED
+puesta. Su regla, su candado y el incidente medido: `rules/rule-pr-base.md`.
+
 ⭐ **La señal es el `Type:` del propio archivo.** No se memoriza una lista de nombres: cualquier
 documento que declare `Type: generated` entra aquí, incluidos los que se creen mañana.
-
----
 
 ## 4 · ⭐ EL CICLO COMPLETO — cada etapa con la regla que la gobierna
 
