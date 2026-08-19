@@ -131,6 +131,11 @@ updated: 2026-08-18
 
 <!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
 ## Friction log
+- ⚠️ 2026-08-18 (S15) · **El bloque NO avanzó: la jornada fue del MOTOR.** Sigue en 6/11 y SB-7
+  sin empezar. Lo que sí cambia para su ejecución: **la base de un PR es `master`, siempre**
+  (`rules/rule-pr-base.md` + `bin/check-pr-base`) — los PRs de SB-7..SB-10 **no se encadenan**
+  entre sí aunque dependan en orden; se espera el merge y se rebasa. ⭐ Nació de perder 329 líneas
+  ese día por encadenar dos PRs en un repo que squashea.
 - 🔴 2026-08-18 · **EL PATRÓN POR 3ª VEZ, y ahora bloquea una VENTA.** Brian preguntó si un cliente
   puede conectar su propio LLM (BYOK). Medido: `llm.py` **ya define `LLMProvider(ABC)`** y el
   `secrets/README.md` **ya preveía** *"las API keys de clientes van en el Key Vault cifrado"* —

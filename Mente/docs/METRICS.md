@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-18 · **Owner:** brian
-**Generated:** 2026-08-18 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-19 · **Owner:** brian
+**Generated:** 2026-08-19 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
@@ -37,7 +37,7 @@ state is the bug this file removes.
 | Metric | Value |
 |---|---|
 | `battery.checks` | **248** |
-| `battery.failed` | **0** |
+| `battery.failed` | **1** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
@@ -68,7 +68,7 @@ Counted where the holes LIVE (`rules/qa-dimensions.md` · `principles/owner-0-vo
 
 | Metric | Value |
 |---|---|
-| `sessions.registered` | **14** |
+| `sessions.registered` | **15** |
 | `sessions.on_disk` | 14 |
 | `sessions.heavy_unregistered` | **0** |
 
@@ -79,7 +79,7 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 24 |
+| `system.validators` | 23 |
 | `system.hook_files` | 8 |
 | `system.hooks_registered` | **8** |
 | `system.blocks_active` | 2 |

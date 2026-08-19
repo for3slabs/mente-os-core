@@ -124,6 +124,22 @@ con la urgencia equivocada.
 ⭐ **Reparto del territorio = opción A** (un archivo, un dueño): el `hooks/pre-edit-standards.py` se
 queda con **el primer** bloque que reclama un archivo, así que dos dueños dan la vara equivocada.
 
+🆕 **S15 · LA JORNADA DEL CANDADO (18-ago) — motor, no producto.** El bloque `seguridad` **sigue
+en 6/11**: SB-7 no se empezó. Lo que sí cambió es que el sistema ya no pierde trabajo en silencio:
+
+- ⛔ **LA BASE DE UN PR ES `master`, SIEMPRE** — `bin/check-pr-base` lo RECHAZA si no lo es, y la
+  excepción *"unless explicitly stacked"* del anti-patrón #8 quedó **ANULADA**. Regla:
+  `rules/rule-pr-base.md` (3ª hermana). 🔴 **Nació de un daño real ese día:** encadené el PR #33
+  sobre una rama con PR abierto, el squash rompió el parentesco y **329 líneas quedaron fuera de
+  `master` con la etiqueta MERGED puesta**. ⭐ Verificar un merge **por CONTENIDO, nunca por la
+  etiqueta** — así se descubrió.
+- ✅ **El falso `session open` está muerto** — medía el `.jsonl` más nuevo por mtime, que tras un
+  `/clear` es el ANTERIOR. Ahora resuelve por `session_id`.
+- ✅ **Un clon del motor vuelve a pasar su batería** (18 fallos → 0). ⚠️ **Un clon necesita
+  `bin/init`**: `CLAUDE.md`, `PROJECT-RULES.md` y `WORKSPACE.md` se GENERAN, no viajan.
+- ⚠️ **Las horas de `Registro_Conversaciones.md` van en LOCAL (CST), nunca en UTC** — 6 filas
+  las tenían mal; ya hay validador.
+
 ### LO ANTERIOR (en `memory/Bitacora_Progreso.md`)
 
 El ciclo de 12 etapas · el clon que verifica el motor · los 111 pendientes rotados · el bloque

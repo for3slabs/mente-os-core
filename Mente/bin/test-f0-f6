@@ -854,6 +854,22 @@ if [ -f "$_cap" ]; then
       printf '     ⤷ bin/%s exists but the capability map never names it\n' "$_n"; }
   done
   eq "CAPABILITIES names EVERY validator that exists" "0" "$_unlisted"
+
+  # ⭐ THE THIRD DIRECTION — added 2026-08-19, and it was the hole the two above left open.
+  # Both checks compare CAPABILITIES against bin/. NEITHER checks the NUMBER that docs/METRICS.md
+  # publishes, and `system.validators` is what an agent reads to know how many things it can run.
+  # 🔴 Measured that day: METRICS said 24, bin/ held 23 executables. generate-metrics counted plain
+  # FILES, so `mente_config.py` — a library the validators import — counted as one you could run.
+  # The battery already knew the distinction (line ~851 skips *.py as "imported, not run"); the
+  # generator did not. The engine disagreed with itself and nothing measured the gap.
+  _exec_count=0
+  for _f in bin/*; do
+    case "$(basename "$_f")" in *.py|__pycache__) continue ;; esac
+    [ -x "$_f" ] && _exec_count=$((_exec_count+1))
+  done
+  _metrics_count=$(grep -oE '`system\.validators` \| \*?\*?[0-9]+' "$M/docs/METRICS.md" 2>/dev/null \
+                   | grep -oE '[0-9]+$')
+  eq "METRICS system.validators counts EXECUTABLES, not files" "$_exec_count" "${_metrics_count:-0}"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

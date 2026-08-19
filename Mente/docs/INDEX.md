@@ -5,7 +5,7 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-08-18 · **Type:** generated
+**Generated:** 2026-08-19 · **Type:** generated
 
 
 **339 documents** · **8 blocks** · 35 directories
@@ -70,7 +70,7 @@
 | `Cerebro_Humano_acercamiento2.md` | — | — |  | 820 |
 | `For3s_OS_Grafo_Maestro.md` | architecture | current | 2026-08-10 | 1300 |
 | `Mapeo_Nodo_Cerebral_Tabla_SQL.md` | — | — |  | 2486 |
-| `Registro_Conversaciones.md` | — | — |  | 1022 |
+| `Registro_Conversaciones.md` | — | — |  | 1113 |
 
 ## `Maestro/`
 
@@ -113,7 +113,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 200 |
+| `BLOCK.md` | — | — |  | 205 |
 
 ## `blocks/archive/distribucion_2026-08/`
 
@@ -238,7 +238,7 @@
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
 | `INDEX.md` | generated | — |  | — |
-| `METRICS.md` | generated | current | 2026-08-18 | 104 |
+| `METRICS.md` | generated | current | 2026-08-19 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | — |
 | `WORKSPACE.md` | entry-point | current | 2026-08-07 | 91 |
@@ -322,7 +322,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1738 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
-| `RETOMAR.md` | entry-point | current | 2026-08-18 | 192 |
+| `RETOMAR.md` | entry-point | current | 2026-08-18 | 208 |
 | `pendiente-agosto-2026.md` | pending | current | 2026-08-18 | 1681 |
 
 ## `memory/archive/`

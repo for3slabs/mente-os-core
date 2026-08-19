@@ -199,7 +199,11 @@ links_broken = broken_links()
 reg, on_disk, heavy_unreg = sessions()
 perms = permissions()
 hooks_reg = registered_hooks()
-validators = len([f for f in os.listdir("bin") if os.path.isfile(f"bin/{f}")])
+# ⭐ EXECUTABLES only — `mente_config.py` is a LIBRARY the validators import, not one
+# you can run. Counting plain files said 24 while bin/ held 23 runnable checks, and
+# CAPABILITIES.md §2 cites this metric as "what you can run" (measured 2026-08-19).
+validators = len([f for f in os.listdir("bin") if os.access(f"bin/{f}", os.X_OK)
+                  and os.path.isfile(f"bin/{f}")])
 hook_files = len([f for f in os.listdir("hooks") if os.path.isfile(f"hooks/{f}")])
 active = len(glob.glob("blocks/active/*/BLOCK.md"))
 archived = len(glob.glob("blocks/archive/*/BLOCK.md"))

@@ -57,6 +57,7 @@ cerrar bloques (RETOMAR.md guarda el estado, no se pierde nada).
 | S9 | `dc733bc1` | 2026-08-02 16:43 | 2026-08-03 12:51 (**~20h**) 🟡 | 7.7 MB 🟢 | 1,637 turnos | **681K** 🔴 | **LA JORNADA DEL AGENTE INSTALADOR** — 8 hallazgos de una misma familia (checks que corrían, decían verde y no medían lo que decían) → plan de raíz F1-F4 + `rule-checks-must-measure`. Citas rotas 144 → **0**. Bypass del `deny` cerrado (python3/node/bun leían lo prohibido). Bloque `distribucion` abierto y **6/6 construido**: un clon con otro dueño se instala solo, probado en clon real. Batería 138 → 160 |
 | S11 | `8b4bddcb` | 2026-08-04 02:31 | ⚠️ **NO cerró aquí** — el mismo `.jsonl` siguió vivo hasta 08-07 21:26 (ver S12) | 11.8 MB → 25 MB | 65 → 2,381 | **999,757 → 1,000,030** 🔴 | **LA JORNADA DEL CRITERIO Y LOS TESTS** — los 66 huecos de criterio de los 3 dueños **cerrados a 0** (Brian responde con casos reales, la IA estructura) + rendimiento **86x** (`check-links` 47.2s → 0.55s) + la demo pasa de **0 a 4 archivos de test**. Batería 160 → **178**. 🔴 **Contexto máximo de la historia del proyecto: supera a S7 (998K) y a S1 la monstruo (985K)** |
 | S12 | `8b4bddcb` (mismo) | 2026-08-05 23:07 | 2026-08-07 22:41 (**~47h**) 🔴 | **27 MB** 🟡 | 2,499 turnos acum. | **1,000,030** 🔴 | **LA JORNADA DEL CLON QUE POR FIN VERIFICA** — la batería daba 195/0 aquí y **22 fallos en un clon**; lo destapó una auditoría externa, no el sistema. 12 PRs (#1-#12). Familia D crece a **8 casos**: el peor (`grade-block archived`) se ataba a la instancia **sin nombrarla**, por el exit code bajo `pipefail`. Clon **10 → 1 fallo**. 🔴 **Contexto máximo histórico: 1,000,030 — el primero en superar el millón**, por encima del 21-jul (999K) |
+| S15 | `5457aafc` | 2026-08-18 14:36 | 2026-08-18 18:55 (**4.3h**) 🟢 | **1.6 MB** 🟢 | **253 turnos** | **250,799** 🟡 | **LA JORNADA DEL CANDADO** — arrancó con un 🔴 falso (`session open 262h`) que resultó ser **la suma de dos jornadas** en un `.jsonl` compartido, no una sesión abierta. Tirar de ese hilo destapó 5 defectos encadenados: el resolutor de sesión adivinaba por mtime · 6 filas de este índice tenían la hora **UTC etiquetada como local** · un **squash dejó mi propio arreglo fuera de `master`** con la etiqueta MERGED puesta · un clon del motor fallaba **18 comprobaciones** · y mi regla rompió su techo. **5 PRs (#32-#36), 2 de ellos reparando errores míos.** Batería 235 → **248** · clon del motor **18 fallos → 0**. ⭐ El anti-patrón #8 pasa de documento a **candado ejecutable** (`bin/check-pr-base`) |
 | S14 | `4c2f0014` | 2026-08-12 02:17 | 2026-08-18 14:36 (**~150h**) 🔴 | **41 MB** 🟡 | **3,526 turnos** (acum.) | **999,702** 🔴 | **LA JORNADA DEL PRIMER BLOQUE** — el DOSSIER para el consultor (1,016 líneas), las 3 piezas de regla, y **el bloque 1 de 12 abierto y llevado a 6/11**. ⭐ El hallazgo mayor: *"se construye la pieza y no se conecta"* apareció **3 veces** (cripto · workspaces · BYOK). 🔴 **cache_read 1,696M — nuevo máximo histórico, supera a S13 (1,347M)**. ⚠️ **Mismo `.jsonl` que S13: 11 días sin corte, el récord del proyecto.** 3 errores míos + 1 de forma que Brian corrigió dos veces |
 | S13 | `4c2f0014` | 2026-08-07 17:05 | 2026-08-12 02:17 (**~111h**) 🔴 | **36 MB** 🟡 | 1,530 turnos | **999,702** 🔴 | **LA JORNADA DE LA VERDAD DE V1** — 50 auditorías al servidor + lectura de ~45,000 líneas de Mente OS. Nacen 3 documentos (4,715 líneas): el terreno del código, el del conocimiento y **`LA-VERDAD-DE-V1.md`**. ⭐ Se resolvió la VARA de la campaña (el gate de la fase, no el Grafo) y los 24 hallazgos se redujeron a **4**. 🔴 **cache_read 1,347M — el máximo histórico, supera al 21-jul (1,033M)**. 8 errores míos corregidos en voz alta |
 | — | `4c187f33` | 2026-07-20 00:32 | 2026-07-23 23:42 (**~96h**) 🔴 | **23.4 MB** 🔴 | 1,256 turnos | **999K tokens** 🔴 | 🔴 **R1 · LA SESIÓN DEL INCIDENTE DEL 21-JUL** — registrada retroactivamente el 31-jul (S8). Es la que `rule-session-close.md` §2 cita como *"el peor infractor"*. Ver §R1 |
@@ -424,13 +425,103 @@ proyecto, dónde vive, en qué fase está, cuál es el próximo paso y qué NO h
 Ninguna. Sesión sana en todos los ejes.
 
 
-## S14 · `4c2f0014` — LA JORNADA DEL PRIMER BLOQUE (2026-08-12 08:17 → 08-18 20:33, ~154h) 🔴
+## S15 · `5457aafc` — LA JORNADA DEL CANDADO (2026-08-18 14:36 → 18:55, 4.3h) 🟢
+
+**1.6 MB** 🟢 · **253 turnos** · **contexto pico 250,799** 🟡 · cache_read 68.6M · cache_write
+913K · output 213K · **2 errores de conexión**.
+
+🟢 **La primera sesión sana desde S10.** 4.3h contra las 150h de S14 y las 111h de S13 — el patrón
+medido es que las sesiones *"mueren de EDAD, no de tamaño"*, y esta se cierra por trabajo
+terminado, no por agotamiento. Contexto pico 250K: la mitad del umbral 🔴.
+
+### De dónde salió todo: una alarma que gritó en falso
+
+El arranque reportó `session open 262h` y **yo lo repetí como hallazgo sin medirlo**. Era falso: el
+`.jsonl` `4c2f0014` contiene S13 **y** S14, así que 262h era la **suma de dos jornadas** ya
+cerradas y registradas. La alarma que existe por el incidente del 21-jul apuntaba a un archivo que
+nadie estaba escribiendo. Tirar de ese hilo destapó cinco defectos encadenados.
+
+### Qué se hizo
+
+| # | Defecto | Arreglo |
+|---|---|---|
+| ① | `check_session()` tomaba el `.jsonl` más nuevo **por mtime** como "la sesión actual" — heurística que falla tras cada `/clear`, cuando el transcript nuevo aún no gana | `session_current()` resuelve por el `session_id` real del payload de SessionStart; `RESOLVER MISS` avisa cuando adivinó y cayó en una sesión ya registrada |
+| ② | **6 filas de este índice** tenían la hora **UTC etiquetada como local** (S7-S10, S13, S14) | corregidas contra el último timestamp de cada transcript; la columna ahora declara su huso |
+| ③ | 🔴 **un squash dejó mi propio arreglo fuera de `master`** — #32 y #33 mergeados con 9 segundos de diferencia, ambos MERGED, **0 de 4 piezas** en master | rama nueva desde `origin/master` + cherry-pick; y el **candado** `bin/check-pr-base` |
+| ④ | un clon del motor fallaba **18 comprobaciones** | 16 eran `bin/init` sin correr; **2 eran la frontera motor/instancia rota dentro de la propia batería** |
+| ⑤ | mi §2-bis empujó `rule-shipping-flow` de 250 a 293 | partido a una **tercera regla hermana**, `rule-pr-base.md` |
+
+**5 PRs (#32-#36), los 5 mergeados. Dos de ellos —#34 y #36— reparan errores míos.**
+
+### 🔴 EL ERROR DE LA JORNADA, y por qué importa más que el daño
+
+Encadené el PR #33 sobre `feat/airlock-revision`, una rama con PR abierto, **en un repo que
+squashea**. El squash de #32 aplastó 51 commits en un commit nuevo sobre `master` que **no es
+descendiente** de esa rama: el parentesco se rompió, y 9 segundos después #33 se mergeó contra un
+ancestro que ya no lo era. 9 archivos, 329 líneas, con la etiqueta MERGED puesta.
+
+⚠️ **Lo grave no es el daño —se reparó en un PR— sino que estaba escrito.** El anti-patrón #8
+existía desde el 05-ago y la memoria `feedback_squash_merge_borra_trabajo_empujado` lo registraba
+desde el 08-ago **tras pasar dos veces el mismo día**. Ambos se leyeron al arrancar esta sesión.
+Ninguno detuvo la decisión.
+
+⭐ **Y peor: al ofrecerle a Brian las 3 opciones de cómo subir, ninguna mencionaba el riesgo de
+squash.** Yo tenía el dato y no lo puse en la decisión — él eligió con información incompleta que
+yo poseía. Eso quedó escrito como regla propia en la memoria: *si una alternativa puede perder
+trabajo, se dice al presentarla, no después*.
+
+### ⭐ Las 3 caras del mismo squash — el orden que trajo la partición
+
+Al partir la regla apareció que el mismo defecto se documentaba en tres sitios sin que nadie viera
+que era **uno solo**:
+
+| Regla | Cuándo actúa el squash |
+|---|---|
+| `rule-pr-batching.md` §3 | produce **conflictos visibles** |
+| `rule-post-merge-cleanup.md` | deja **trabajo empujado fuera** |
+| 🆕 `rule-pr-base.md` | **no produce ninguna señal** — la peor: nada que resolver, nada que avise |
+
+### Lo que se midió, no se supuso
+
+- **Los merges se verificaron por CONTENIDO, nunca por la etiqueta.** Fue así como se descubrió el
+  ③: los dos PRs decían MERGED y `grep` sobre `origin/master` devolvía **0 ocurrencias** de las 4
+  piezas.
+- **Las 13 comprobaciones nuevas se verificaron POR SABOTAJE** en ambas direcciones: revertido
+  `check-health` las 4 de §19 fallan reproduciendo `session open 154h` textual; repuesto `20:33`
+  en S14 el §20 lo caza; retirado el ejecutable el §21 falla; retirada `rule-pr-base.md` falla el
+  test **y** 4 citas quedan colgando.
+- **El clon se probó fuera del árbol del autor** (`feedback_verificar_fuera_del_arbol_del_autor`),
+  instalado como lo haría un usuario real: `bin/init`, owner `Auditor Externo`, batería completa.
+- **Un defecto propio solo apareció ahí:** el candado sale `rc=2` en un clon `--single-branch` y mi
+  test lo contaba como fallo. Un límite honesto no es un 🔴.
+
+### ⚠️ Lo que NO avanzó
+
+**El bloque `seguridad` sigue en 6/11, exactamente donde arrancó.** Toda la jornada fue motor, no
+producto. Es defendible —las piezas nuevas impiden pérdidas reales de trabajo— pero SB-7
+(`contenido.py`) sigue sin empezar.
+
+### Consumo
+
+Sin crecimiento anómalo. cache_read 68.6M contra los 1,696M de S14: **25× menos**, coherente con
+una sesión de 4.3h que arrancó con contexto limpio. Los 2 errores de conexión están muy por debajo
+del umbral de 5 que señala saturación.
+
+### Por qué se cierra
+
+Trabajo terminado y verificado: 5 PRs mergeados, `master` al día, repo con una sola rama, batería
+**248/0** y un clon limpio de GitHub en **236/0**. Frontera natural antes de entrar a SB-7, que es
+trabajo de producto y merece contexto fresco.
+
+---
+
+## S14 · `4c2f0014` — LA JORNADA DEL PRIMER BLOQUE (2026-08-12 02:17 → 08-18 14:36, ~150h) 🔴
 
 **41 MB** 🟡 · **3,526 turnos** (acumulados con S13, mismo `.jsonl`) · **contexto pico 999,702** 🔴
 · **cache_read 1,696,388,727** 🔴 ⭐ **nuevo máximo del proyecto — supera a S13 (1,347M) y al
 21-jul (1,033M)** · cache_write 22.7M · output 2.2M.
 
-🔴 **11 DÍAS DE `.jsonl` SIN CORTE (07-ago 23:05 → 18-ago 20:33) — el récord del proyecto.**
+🔴 **11 DÍAS DE `.jsonl` SIN CORTE (07-ago 17:05 → 18-ago 14:36) — el récord del proyecto.**
 S13 y S14 comparten sesión: S13 nunca se cortó, solo se registró. El incidente del 21-jul detonó
 a las **96h**; esto es **3.8×** eso. ⭐ **No hubo degradación medible esta vez** — y esa es
 exactamente la trampa: el patrón de las 3 sesiones huérfanas es que **mueren de EDAD, no de
@@ -497,7 +588,7 @@ estado, qué se hizo, por qué así y qué archivos se tocaron — nunca solo el
 
 ---
 
-## S13 · `4c2f0014` — LA JORNADA DE LA VERDAD DE V1 (2026-08-07 23:05 → 08-12 08:17, ~105h)
+## S13 · `4c2f0014` — LA JORNADA DE LA VERDAD DE V1 (2026-08-07 17:05 → 08-12 02:17, ~111h)
 
 **36 MB** 🟡 · **1,530 turnos** · **contexto pico 999,702** 🔴 · **cache_read 1,347,949,789** 🔴
 (el máximo del proyecto — supera al 21-jul: 1,033M) · cache_write 15.6M · output 1.6M.
