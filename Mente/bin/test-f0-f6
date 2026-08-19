@@ -771,13 +771,22 @@ import mente_config as c; print(c.session_dir()[0] or '')" 2>/dev/null)"/*.jsonl
 sid=$(basename "${sid:-none}" .jsonl | cut -c1-8)
 # Family A (rules/rule-checks-must-measure.md): 8 hex as a bare substring matches inside any
 # longer hash. The neighbours must not be hex — same fix as check-clear-ready (8d9f5f3).
-if grep -qE "(^|[^0-9a-f])$sid([^0-9a-f]|$)" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
+# ⚠️ SIN TRANSCRIPTS NO HAY NADA QUE MEDIR (2026-08-18): en un clon recién instalado no existe
+# el directorio de sesiones, así que `sid` queda en "none", no está en el registro y este check
+# exigía 1 — pero check-clear-ready sale 0 con razón: no hay sesión que se pueda perder. Un clon
+# fallaba esto para siempre. Medido: 235/2 tras `bin/init`, y este era 1 de los 2.
+if [ "$sid" = "none" ]; then
+  note "acuerdo con el registro: SALTADO — no hay transcripts en esta máquina (no es un ✅)"
+  want=skip
+elif grep -qE "(^|[^0-9a-f])$sid([^0-9a-f]|$)" Cerebro/Registro_Conversaciones.md 2>/dev/null; then want=0; else want=1; fi
 # 🔴 `$?` was read INSIDE eq's own arguments, and the $(...) that builds the label runs
 # FIRST — so the label's exit code overwrote the one being measured. It only ever showed
 # when want=1: with want=0 the clobbered $? happened to match. Capture before anything runs.
-./bin/check-clear-ready --quiet >/dev/null 2>&1
-_ccr=$?
-eq "check-clear-ready agrees with the registry (registered=$( [ $want = 0 ] && echo yes || echo no ))" "$want" "$_ccr"
+if [ "$want" != "skip" ]; then
+  ./bin/check-clear-ready --quiet >/dev/null 2>&1
+  _ccr=$?
+  eq "check-clear-ready agrees with the registry (registered=$( [ $want = 0 ] && echo yes || echo no ))" "$want" "$_ccr"
+fi
 
 # Found by the E2E flow 2026-07-30: an EMPTY docs block scored 🟢 PRODUCT — zero broken links
 # and zero orphans, because there was nothing to measure. Absence of evidence read as evidence.
@@ -2391,10 +2400,20 @@ if grep -q "jazz\|mashe" "$M/memory/RETOMAR.md" 2>/dev/null; then
   grep -q "NO EXISTEN\|no existen\|borr" "$M/memory/RETOMAR.md" || {
     _srv=$((_srv+1)); printf '     ⤷ RETOMAR nombra jazz/mashe sin decir que fueron BORRADAS el 06-ago\n'; }
 fi
-grep -q "secrets/Conectar_Servidor_For3s.md" "$M/docs/WORKSPACE.md" 2>/dev/null || {
-  _srv=$((_srv+1)); printf '     ⤷ WORKSPACE no dice DÓNDE está el acceso al servidor\n'; }
-grep -q "for3s-os" "$M/docs/WORKSPACE.md" 2>/dev/null || {
-  _srv=$((_srv+1)); printf '     ⤷ WORKSPACE no dice dónde vive el código del producto\n'; }
+# ⚠️ FRONTERA MOTOR/INSTANCIA (2026-08-18): estas dos sondas exigían rutas de la instancia de
+# Brian (`secrets/Conectar_Servidor_For3s.md`, `for3s-os`) desde la batería del MOTOR, así que
+# CUALQUIER clon las fallaba para siempre — medido ese día: un clon recién instalado con
+# `bin/init` daba 235/2, y este era 1 de los 2. El WORKSPACE que genera `init` no las tiene, y
+# NO debe tenerlas: describen una instalación concreta, no el motor.
+# ⭐ La exigencia sigue viva donde importa —una instancia CON servidor debe decir dónde está su
+# acceso y su código— pero se mide solo si esa instancia declara tener uno.
+_ws="$M/docs/WORKSPACE.md"
+if [ -f "$_ws" ] && grep -qiE "servidor|server" "$_ws"; then
+  grep -q "secrets/" "$_ws" || {
+    _srv=$((_srv+1)); printf '     ⤷ WORKSPACE habla de un servidor pero no dice DÓNDE está su acceso\n'; }
+  grep -qE "^\|.*\`?~?/" "$_ws" || {
+    _srv=$((_srv+1)); printf '     ⤷ WORKSPACE habla de un servidor pero no mapea ninguna ruta de código\n'; }
+fi
 eq "el mapa del servidor no contradice lo que el repo ya sabe" "0" "$_srv"
 
 # ── 32 · EL VALIDADOR DE campaign_phase DISCRIMINA (2026-08-12) ────────────
@@ -2715,7 +2734,15 @@ _pb="$M/bin/check-pr-base"
 [ -x "$_pb" ] && ok "existe el candado de la base de un PR (bin/check-pr-base)" \
   || bad "candado de base" "bin/check-pr-base ejecutable" "no existe"
 
-if [ -x "$_pb" ]; then
+# ⚠️ rc=2 es "NO PUDE MEDIR", no "falló" (2026-08-18): un clon `--single-branch` no tiene
+# `origin/master`, así que el candado no puede saber cuál es la rama base y lo dice. Contar eso
+# como fallo convertía un límite honesto en un 🔴 — medido: 3 fallos en un clon recién instalado
+# y ninguno era un defecto del candado. Se SALTA con nota, que es lo que hace el resto de la
+# batería cuando le falta el terreno (rules/rule-checks-must-measure.md).
+"$_pb" master >/dev/null 2>&1
+if [ "$?" = "2" ]; then
+  note "candado de base: SALTADO — sin origin/master no hay rama base que medir (no es un ✅)"
+elif [ -x "$_pb" ]; then
   # ① acepta la rama base
   "$_pb" master >/dev/null 2>&1
   eq "check-pr-base ACEPTA master como base" "0" "$?"
