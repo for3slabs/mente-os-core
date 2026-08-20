@@ -1,7 +1,7 @@
 # PLAN · Sistema de multi-cuentas para Mente OS v2
 
 **Status:** current · **Type:** plan · **Updated:** 2026-08-19 · **Owner:** brian
-**Block:** `blocks/active/multicuentas/BLOCK.md` · **Verified by:** **bin/check-accounts** — ⬜ la crea la F2 de este mismo plan
+**Block:** `blocks/archive/multicuentas_2026-08/BLOCK.md` · **Verified by:** **bin/check-accounts** — ⬜ la crea la F2 de este mismo plan
 **Level:** 🔧 MOTOR — viaja con el clon · el registro y las guías son 📦 INSTANCIA
 
 ## Purpose
@@ -214,6 +214,6 @@ puerta que estorba se termina desactivando.
 
 ---
 
-Related: `blocks/active/multicuentas/BLOCK.md` · `secrets/README.md` · `hooks/gate-secrets.py`
+Related: `blocks/archive/multicuentas_2026-08/BLOCK.md` · `secrets/README.md` · `hooks/gate-secrets.py`
 (el patrón de lease que se reusa) · `rules/rule-checks-must-measure.md` · `rules/rule-config-hygiene.md` ·
 `CAPABILITIES.md` · `Maestro/punteros.tsv` (donde apareció la 3ª cuenta).

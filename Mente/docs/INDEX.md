@@ -8,7 +8,7 @@
 **Generated:** 2026-08-20 · **Type:** generated
 
 
-**341 documents** · **9 blocks** · 36 directories
+**342 documents** · **9 blocks** · 37 directories
 
 
 | Directory | Docs |
@@ -19,12 +19,13 @@
 | `blocks/` | 1 |
 | `blocks/active/demo/` | 1 |
 | `blocks/active/demo/docs/` | 8 |
-| `blocks/active/multicuentas/` | 1 |
 | `blocks/active/seguridad/` | 1 |
 | `blocks/archive/distribucion_2026-08/` | 3 |
 | `blocks/archive/distribucion_2026-08/docs/` | 1 |
 | `blocks/archive/expertise-programacion_2026-08/` | 3 |
 | `blocks/archive/expertise-programacion_2026-08/docs/` | 1 |
+| `blocks/archive/multicuentas_2026-08/` | 1 |
+| `blocks/archive/multicuentas_2026-08/docs/` | 1 |
 | `blocks/archive/plan-tests-demo_2026-08/` | 3 |
 | `blocks/archive/plan-tests-demo_2026-08/docs/` | 1 |
 | `blocks/archive/separacion-motor-instancia_2026-08/` | 3 |
@@ -110,12 +111,6 @@
 | `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 170 |
 | `rama-neon-de-test.md` | analysis | current | 2026-08-06 | 101 |
 
-## `blocks/active/multicuentas/`
-
-| Document | Type | Status | Updated | Lines |
-|---|---|---|---|---|
-| `BLOCK.md` | — | — |  | 135 |
-
 ## `blocks/active/seguridad/`
 
 | Document | Type | Status | Updated | Lines |
@@ -149,6 +144,18 @@
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
 | `closing-report.md` | analysis | current | 2026-08-05 | 77 |
+
+## `blocks/archive/multicuentas_2026-08/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `BLOCK.md` | — | — |  | 167 |
+
+## `blocks/archive/multicuentas_2026-08/docs/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `runbook-y-rollback.md` | plan | current | 2026-08-20 | 62 |
 
 ## `blocks/archive/plan-tests-demo_2026-08/`
 

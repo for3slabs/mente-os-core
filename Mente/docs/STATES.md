@@ -11,10 +11,10 @@
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
 | 🟢 | **demo** | code | active | full-block | 11/12 |  | 2026-08-18 | `blocks/active/demo/BLOCK.md` |
-| 🟢 | **multicuentas** | infra | active | direct | 6/6 |  | 2026-08-20 | `blocks/active/multicuentas/BLOCK.md` |
 | 🟢 | **seguridad** | code | active | full-block | 6/11 |  | 2026-08-18 | `blocks/active/seguridad/BLOCK.md` |
 | 🟢 | **distribucion_2026-08** | code | closed | full-block | 6/6 |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
 | 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | 6/6 |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |
+| 🟢 | **multicuentas_2026-08** | infra | closed | direct | 6/6 |  | 2026-08-20 | `blocks/archive/multicuentas_2026-08/BLOCK.md` |
 | 🟢 | **plan-tests-demo_2026-08** | docs | closed | direct | 2/2 |  | 2026-08-05 | `blocks/archive/plan-tests-demo_2026-08/BLOCK.md` |
 | 🟢 | **separacion-motor-instancia_2026-08** | infra | closed | task | 5/5 |  | 2026-08-07 | `blocks/archive/separacion-motor-instancia_2026-08/BLOCK.md` |
 | 🟢 | **split-architecture_2026-07** | docs | closed | full-block | 6/6 | brian | 2026-07-30 | `blocks/archive/split-architecture_2026-07/BLOCK.md` |
@@ -27,10 +27,10 @@
 ## Phase
 
 - **demo**: ⭐ LAYER 1 = 🟢 PRODUCT (2026-08-05). Los dos rojos ce
-- **multicuentas**: **F1-F6 CONSTRUIDAS** — plan aprobado por Brian el 2
 - **seguridad**: **Fase 1 · NODOS** — ¿existe cada pieza que el Grafo
 - **distribucion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 7/7 + layer 2
 - **expertise-programacion_2026-08**: CLOSED 2026-08-05 · 🟢 PRODUCT (layer 1 3/3 applicabl
+- **multicuentas_2026-08**: **F1-F6 CONSTRUIDAS** — plan aprobado por Brian el 2
 - **plan-tests-demo_2026-08**: ✅ CLOSED 2026-08-05 — plan written, ONE test running
 - **separacion-motor-instancia_2026-08**: **CERRADO 2026-08-07** · 🟡 cierra (capa 2 6/6 🟢 · ca
 - **split-architecture_2026-07**: CLOSED — 2496 → 632 lines, 5 pieces, verdict 🟢 PRODU

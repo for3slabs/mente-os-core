@@ -4,7 +4,7 @@
 id: blk-multicuentas-2026-08
 type: infra
 intent: que Mente OS sepa QUÉ cuenta usa cada repo, POR QUÉ existe y CÓMO se accede — hoy vive en memoria humana
-status: active · lane: direct · owner: brian
+status: closed · lane: direct · owner: brian
 created: 2026-08-19 · updated: 2026-08-19
 
 <!-- ══ B · SCOPE ══ required to OPEN · ≤20 lines ══ -->
@@ -132,4 +132,36 @@ el resolutor y la puerta son MOTOR (viajan con el clon).
 
 <!-- ══ K · CLOSING ══ required to CLOSE ══ -->
 ## Closing
-(pending — el bloque acaba de abrirse)
+closed: 2026-08-20
+summary: el sistema ya sabe **a dónde sale el trabajo**. 6/6 fases. Nace de un fallo propio —
+  3 documentos nombraban 3 repos distintos como "el de la verdad" y ninguno se comparaba con
+  `git remote -v` (46, 31 y 24 días equivocados). Se construyó el registro, el validador que
+  compara contra la MÁQUINA, 3 guías de acceso sin valores, el resolutor y la puerta.
+  ⭐ **De regalo cazó una fuga real:** la contraseña del servidor en claro en 4 archivos de este
+  repo PÚBLICO, 20 ocurrencias. Historial reescrito: 0 commits, 0 blobs.
+  ⭐ **Y la auditoría de 4 perspectivas cazó 7 fallos propios**, incluido el que rompía la promesa
+  central: `cuentas.tsv` viajaba en el clon.
+connections affected: `seguridad` (sus PRs de SB-7..SB-10 empujan a 2 remotos; la puerta ahora
+  avisa) · `demo` (vive en `ElBrAyAn1967`, identidad distinta, ya registrada)
+runbook + rollback: `blocks/archive/multicuentas_2026-08/docs/runbook-y-rollback.md`
+
+### quality verdict — las 2 capas (`rules/qa-dimensions.md`)
+
+**LAYER 1 · medido** (`bin/grade-block multicuentas`): 🟢 **PRODUCT** — 0 secretos escritos ·
+runbook ✅ · rollback ✅. Las 3 métricas de código salen `n/a` por ser `infra` (ADR-028).
+
+**LAYER 2 · las 6 dimensiones, con evidencia MOSTRADA:**
+
+| Dimensión | Veredicto | La evidencia |
+|---|---|---|
+| **Arquitectura** | 🟢 | motor/instancia separados y **probado en un clon real** con owner "Auditor Externo": 0 menciones de Brian, `bin/init` generó el registro vacío |
+| **Diseño de datos** | 🟢 | TSV de 7 columnas como `piezas.tsv`; `por_que_existe` obligatorio, verificado por sabotaje |
+| **Abstracción** | 🟢 | reusa `gate-secrets`+lease y `.access-log.md` en vez de inventar un modelo nuevo |
+| **Nombres** | 🟢 | `check-` mide · `conectar-` resuelve · `gate-` bloquea — la convención ya existente |
+| **Contratos** | 🟢 | 3 exit codes documentados · el veredicto de la puerta ES el recibo (ADR-030) · **11 sabotajes probados** |
+| **🔴 Necesidad** | 🟢 | no es hipotética: 2 commits firmados vivieron 24 días fuera de GitHub y **nada lo medía** |
+
+⚠️ **Deuda declarada, no oculta:** un alias (`g push`) evade la puerta. Exige configurarlo antes,
+así que protege del descuido, no de un adversario con shell. Está escrito en el hook.
+
+sufficiency: pass

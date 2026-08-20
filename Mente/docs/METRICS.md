@@ -82,8 +82,8 @@ actually costs something. The 21-jul incident came from one of them.
 | `system.validators` | 25 |
 | `system.hook_files` | 9 |
 | `system.hooks_registered` | **9** |
-| `system.blocks_active` | 3 |
-| `system.blocks_archived` | 5 |
+| `system.blocks_active` | 2 |
+| `system.blocks_archived` | 6 |
 
 ⚠️ `hook_files` and `hooks_registered` differ on purpose: `hooks/pre-commit.sh` is invoked by git, not
 by the harness, so it is a file without a settings entry.
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 382 | 202 |
+| `permissions.local` (`settings.local.json`) | 384 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).
