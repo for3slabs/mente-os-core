@@ -5,8 +5,8 @@
 
 # METRICS — every live number, measured once
 
-**Status:** current · **Type:** generated · **Updated:** 2026-08-19 · **Owner:** brian
-**Generated:** 2026-08-19 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
+**Status:** current · **Type:** generated · **Updated:** 2026-08-20 · **Owner:** brian
+**Generated:** 2026-08-20 · **Source:** the tree itself · **Regenerate:** `bin/generate-metrics`
 
 ## Purpose
 
@@ -36,8 +36,8 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **248** |
-| `battery.failed` | **1** |
+| `battery.checks` | **249** |
+| `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
@@ -82,7 +82,7 @@ actually costs something. The 21-jul incident came from one of them.
 | `system.validators` | 23 |
 | `system.hook_files` | 8 |
 | `system.hooks_registered` | **8** |
-| `system.blocks_active` | 2 |
+| `system.blocks_active` | 3 |
 | `system.blocks_archived` | 5 |
 
 ⚠️ `hook_files` and `hooks_registered` differ on purpose: `hooks/pre-commit.sh` is invoked by git, not
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 378 | 202 |
+| `permissions.local` (`settings.local.json`) | 379 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

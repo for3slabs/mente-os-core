@@ -110,8 +110,9 @@ Registry and full rules: `Mente/bridges/Puentes_Mente_OS.md`.
 
 | Repo | Role |
 |---|---|
-| `github.com/fruterito101/for3s` | the repo of truth (AGPL, GPG-signed by {{owner}}) |
-| server `~/for3s-os` | the workshop |
+| `github.com/for3slabs/for3s-os` | ⭐ the **workshop's remote** — the server pushes here daily (`origin`) |
+| `github.com/for3slabs/for3s` | the **verified product's backup** (AGPL, GPG-signed by {{owner}}) (`backup`) |
+| server `~/for3s-os` | the workshop itself — **the source** |
 | `marca-personal` | the site — **pushing to `main` publishes** |
 
 ---

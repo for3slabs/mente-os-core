@@ -5,10 +5,10 @@
 
 # INDEX — every document in Mente OS
 
-**Generated:** 2026-08-19 · **Type:** generated
+**Generated:** 2026-08-20 · **Type:** generated
 
 
-**339 documents** · **8 blocks** · 35 directories
+**341 documents** · **9 blocks** · 36 directories
 
 
 | Directory | Docs |
@@ -19,6 +19,7 @@
 | `blocks/` | 1 |
 | `blocks/active/demo/` | 1 |
 | `blocks/active/demo/docs/` | 8 |
+| `blocks/active/multicuentas/` | 1 |
 | `blocks/active/seguridad/` | 1 |
 | `blocks/archive/distribucion_2026-08/` | 3 |
 | `blocks/archive/distribucion_2026-08/docs/` | 1 |
@@ -39,7 +40,7 @@
 | `docs/` | 19 |
 | `docs/analysis/` | 28 |
 | `docs/architecture/` | 6 |
-| `docs/plans/` | 11 |
+| `docs/plans/` | 12 |
 | `memory/` | 5 |
 | `memory/archive/` | 38 |
 | `principles/` | 7 |
@@ -108,6 +109,12 @@
 | `hallazgos-del-motor.md` | analysis | current | 2026-08-05 | 66 |
 | `plan-piece-e-admin.md` | analysis | fossil | 2026-07-20 | 170 |
 | `rama-neon-de-test.md` | analysis | current | 2026-08-06 | 101 |
+
+## `blocks/active/multicuentas/`
+
+| Document | Type | Status | Updated | Lines |
+|---|---|---|---|---|
+| `BLOCK.md` | — | — |  | 135 |
 
 ## `blocks/active/seguridad/`
 
@@ -238,7 +245,7 @@
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
 | `INDEX.md` | generated | — |  | — |
-| `METRICS.md` | generated | current | 2026-08-19 | 104 |
+| `METRICS.md` | generated | current | 2026-08-20 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
 | `STATES.md` | generated | — |  | — |
 | `WORKSPACE.md` | entry-point | current | 2026-08-07 | 91 |
@@ -314,6 +321,7 @@
 | `PLAN-V2-7-rotacion.md` | plan | current | 2026-08-08 | 86 |
 | `PLAN-campana.md` | plan | current | 2026-08-10 | 198 |
 | `PLAN-fase-comportamiento.md` | plan | current | 2026-08-11 | 316 |
+| `PLAN-multicuentas.md` | plan | current | 2026-08-19 | 219 |
 
 ## `memory/`
 
@@ -322,7 +330,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1738 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
-| `RETOMAR.md` | entry-point | current | 2026-08-18 | 208 |
+| `RETOMAR.md` | entry-point | current | 2026-08-18 | 214 |
 | `pendiente-agosto-2026.md` | pending | current | 2026-08-18 | 1681 |
 
 ## `memory/archive/`

@@ -29,7 +29,10 @@ El cold-start brief: el ÚNICO archivo que leer al retomar. Dónde quedamos, el 
 Tailscale `for3s` 100.112.177.53 · SSH brianweb3 · **cómo entrar: `secrets/Conectar_Servidor_For3s.md`**
 · gestor `for3s listar|agregar|entrar|encender|apagar|borrar`. Aislamiento TOTAL por
 `docker compose -p for3s-<nombre>`. Comparten SOLO: máquina + imagen + suscripción Claude
-(**1 solo cupo**). ⭐ **El código del producto vive en `~/for3s-os`** (`for3slabs/for3s-os`, `main`).
+(**1 solo cupo**). ⭐ **El código del producto vive en `~/for3s-os`** en el servidor — esa es la
+FUENTE. Tiene **2 remotos, a propósito**: `origin` → `for3slabs/for3s-os` (el taller) y `backup` →
+`for3slabs/for3s` (el respaldo del producto verificado). ⛔ **Se empuja a los DOS**; a uno solo
+los deja divergentes. Medido en el servidor 2026-08-19, no leído de un documento.
 
 | Bot | Instancia | Estado |
 |---|---|---|
@@ -49,8 +52,11 @@ Diseño 100% LOCKED (R1-R10, 11 nodos, 3 pilares). **v0.20.0 CONECTORES SELF-SER
 Hermes (5/5) + intern-os + CI + Frente B + Molde + Trace + Frente E + super-cerebro (§4).
 **Cero bugs abiertos.**
 
-- **✅ TRÍADA SINCRONIZADA** (19/20-jul): server = GitHub (`for3slabs/for3s-os`) = local en HEAD
-  `f50a5db`. CI+Trivy verdes · 260 tests.
+- **✅ TRÍADA SINCRONIZADA** — ⭐ **re-medida y RESTAURADA el 2026-08-19**: server = `origin`
+  (`for3slabs/for3s-os`) = `backup` (`for3slabs/for3s`), los tres en **`732c434`**.
+  ⚠️ **Estuvo ROTA 24 días y este archivo no se enteró:** declaraba `f50a5db` (19-jul) mientras el
+  servidor tenía 2 commits firmados sin empujar (23 y 26-jul). Un HEAD escrito a mano es correcto
+  exactamente una vez — se lee con `git rev-parse`, no de aquí.
 - **✅ SEGURIDAD CERRADA** (16-jul): CI verde · SEC-3/4/5/6 + 3b/4b · token rotado · **SEC-4c**
   non-root por instancia. 🔒 **nunca `chown -R` un bind mount** (`feedback_nunca_chown_bind_mount`).
 
