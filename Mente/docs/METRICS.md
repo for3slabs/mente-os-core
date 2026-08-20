@@ -36,7 +36,7 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **265** |
+| `battery.checks` | **270** |
 | `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
@@ -48,7 +48,7 @@ is registered in `Cerebro/Registro_Conversaciones.md`. A count one under the tot
 
 | Metric | Value |
 |---|---|
-| `links.broken` | **0** |
+| `links.broken` | **1** |
 
 ⭐ **This number is a CEILING, not a target.** `bin/test-f0-f6` fails if it goes UP from what is
 committed here — the debt is allowed to exist, never to grow unseen. It drifted from ~73 to 144
@@ -80,7 +80,7 @@ actually costs something. The 21-jul incident came from one of them.
 | Metric | Value |
 |---|---|
 | `system.validators` | 25 |
-| `system.hook_files` | 9 |
+| `system.hook_files` | 10 |
 | `system.hooks_registered` | **9** |
 | `system.blocks_active` | 2 |
 | `system.blocks_archived` | 6 |
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 384 | 202 |
+| `permissions.local` (`settings.local.json`) | 394 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).

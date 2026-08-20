@@ -196,12 +196,31 @@ def check_against_machine(data):
                        f"— pushing to only one leaves them divergent (measured 2026-07-23)")
 
 
+def check_layer2():
+    """¿Está instalada la capa que NO se puede rodear?
+
+    ⭐ `hooks/gate-accounts.py` lee el TEXTO del comando, y eso tiene un techo: medido
+    2026-08-20, cinco formas de invocar git (alias, función, variable, `eval`, `xargs`) lo
+    evadían. `hooks/pre-push.sh` lo ejecuta GIT en el push real, así que ninguna lo rodea.
+    ⛔ Sin enlazar, el repo tiene la puerta evadible y no la otra — y nadie lo sabría.
+    """
+    src = os.path.join("hooks", "pre-push.sh")
+    dst = os.path.join("..", ".git", "hooks", "pre-push")
+    if not os.path.exists(src):
+        RED.append("hooks/pre-push.sh no existe — la capa 2 de la puerta no está construida")
+        return
+    if not os.path.exists(dst):
+        YEL.append("la capa 2 (`.git/hooks/pre-push`) NO está instalada: un alias o un `eval` "
+                   "evade la puerta. Instálala con `bin/init`")
+
+
 def main():
     quiet = "--quiet" in sys.argv
     data = rows()
     check_no_secrets()
     check_shape(data)
     check_against_machine(data)
+    check_layer2()
 
     if not quiet:
         if RED:

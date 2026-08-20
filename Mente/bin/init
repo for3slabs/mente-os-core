@@ -260,6 +260,26 @@ def main():
     # en git y un clon ajeno heredaba las 8 cuentas de su autor. Lo cazó la auditoría "ponte en
     # los zapatos del que clona". ⛔ Sin él la puerta gate-accounts no sabe qué es legítimo, así
     # que el motor lo crea con su cabecera y sin una sola fila.
+    # ⭐ La CAPA 2 de la puerta de cuentas: `pre-push` lo ejecuta GIT en el push real, así que
+    # un alias, una función, `eval` o `xargs` no lo rodean — medido 2026-08-20, esas 5 formas SÍ
+    # rodeaban la capa 1, que lee el texto del comando. Sin enlazarlo, un clon tiene la puerta
+    # que se puede evadir y no la que no.
+    hookdir = os.path.join(REPO, ".git", "hooks")
+    src = os.path.join(MENTE, "hooks", "pre-push.sh")
+    dst = os.path.join(hookdir, "pre-push")
+    if os.path.isdir(hookdir) and os.path.exists(src):
+        try:
+            rel = os.path.relpath(src, hookdir)
+            if os.path.islink(dst) and os.readlink(dst) == rel:
+                print("   ✅ pre-push: ya enlazado (capa 2 de la puerta de cuentas)")
+            else:
+                if os.path.lexists(dst):
+                    os.remove(dst)
+                os.symlink(rel, dst)
+                print("   🆕 pre-push: enlazado (capa 2 — la que no se rodea)")
+        except OSError as e:
+            print(f"   🟡 pre-push: no se pudo enlazar ({e}) — queda solo la capa 1")
+
     reg = os.path.join(MENTE, "cuentas.tsv")
     if os.path.exists(reg):
         print("   ✅ cuentas.tsv: ya existe (no se toca — es tuyo)")

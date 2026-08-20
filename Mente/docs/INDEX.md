@@ -8,7 +8,7 @@
 **Generated:** 2026-08-20 · **Type:** generated
 
 
-**342 documents** · **9 blocks** · 37 directories
+**343 documents** · **9 blocks** · 37 directories
 
 
 | Directory | Docs |
@@ -25,7 +25,7 @@
 | `blocks/archive/expertise-programacion_2026-08/` | 3 |
 | `blocks/archive/expertise-programacion_2026-08/docs/` | 1 |
 | `blocks/archive/multicuentas_2026-08/` | 1 |
-| `blocks/archive/multicuentas_2026-08/docs/` | 1 |
+| `blocks/archive/multicuentas_2026-08/docs/` | 2 |
 | `blocks/archive/plan-tests-demo_2026-08/` | 3 |
 | `blocks/archive/plan-tests-demo_2026-08/docs/` | 1 |
 | `blocks/archive/separacion-motor-instancia_2026-08/` | 3 |
@@ -58,7 +58,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 183 |
+| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 184 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
 | `README.md` | entry-point | current | 2026-08-06 | 210 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |
@@ -155,6 +155,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
+| `incidente-fuga-credencial.md` | case | current | 2026-08-20 | 73 |
 | `runbook-y-rollback.md` | plan | current | 2026-08-20 | 62 |
 
 ## `blocks/archive/plan-tests-demo_2026-08/`

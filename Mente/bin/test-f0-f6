@@ -948,6 +948,26 @@ if [ -f "$_cap" ]; then
   _echo=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$REPO"'","tool_input":{"command":"echo \"recuerda: git push origin main\""}}' \
           | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | wc -c)
   eq "la puerta NO se dispara con `git push` dentro de un echo (falso positivo)" "0" "$_echo"
+
+  # ⭐ LA CAPA 2 — la que no se rodea. `gate-accounts.py` lee el TEXTO del comando, y eso tiene
+  # techo: medido 2026-08-20, CINCO formas de invocar git lo evadían (alias, función, variable,
+  # `eval`, `xargs`). La deuda declarada decía "un alias"; eran cinco. `hooks/pre-push.sh` lo
+  # ejecuta GIT en el push real, así que ninguna llega a rodearlo.
+  [ -x "$M/hooks/pre-push.sh" ] && ok "la capa 2 (pre-push) existe y es ejecutable" \
+    || bad "pre-push.sh" "ejecutable" "solo queda la capa que un alias evade"
+  [ -e "$REPO/.git/hooks/pre-push" ] && ok "la capa 2 está INSTALADA en .git/hooks" \
+    || bad "pre-push" "instalado" "existe pero git no lo invoca — protege a nadie"
+  grep -q "pre-push" "$M/bin/init" \
+    && ok "bin/init instala la capa 2 en un clon nuevo" \
+    || bad "bin/init" "instala pre-push" "un clon nace sin la capa que no se rodea"
+  # 🔴 Debe ABORTAR un push a un repo no registrado, venga como venga.
+  _pp=$( ( cd "$REPO" && bash "$M/hooks/pre-push.sh" x https://github.com/nadie/inexistente.git \
+           </dev/null 2>&1 | grep -c "PUSH ABORTADO" ) )
+  eq "medido: la capa 2 ABORTA un push a un repo no registrado" "1" "$_pp"
+  # ⛔ Y NO debe abortar uno legítimo: un guardia que estorba se termina desactivando.
+  _ppok=$( ( cd "$REPO" && bash "$M/hooks/pre-push.sh" origin https://github.com/for3slabs/mente-os-for3s.git \
+             </dev/null >/dev/null 2>&1; echo $? ) )
+  eq "la capa 2 NO estorba un push legítimo" "0" "$_ppok"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

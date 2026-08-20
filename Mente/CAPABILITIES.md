@@ -131,6 +131,7 @@ You do not call these. They fire on their own, and two of them **refuse**.
 | before touching `secrets/` | `hooks/gate-secrets.py` — 🔑 reading with a live lease · ⛔ writing ALWAYS asks | **ask/allow** |
 | when the context loads | `bin/secrets-lease open` — issues the secrets lease (SessionStart + PostCompact) | grants |
 | before a `git push` / `gh repo` | ⭐ `hooks/gate-accounts.py` — a push to a repo nobody registered · a clone with 2 remotes pushed to only one · creating or deleting a repo | 🔴 **deny** / ask |
+| ⭐ at the REAL push (git runs it) | `hooks/pre-push.sh` — **layer 2, the one you cannot route around**: an alias, a shell function, `eval` or `xargs` all reach it, because git itself invokes it | 🔴 **aborts the push** |
 | before a commit | `hooks/pre-commit.sh` — a block violating its contract | 🔴 **BLOCKS** |
 
 **When a gate blocks, its message IS the receipt** (`ADR-030`): the piece, why it is

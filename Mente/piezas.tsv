@@ -78,6 +78,7 @@ val-campanas	bin/check-campaigns	mente	canonical	¿una campaña cumple su contra
 val-cuentas	bin/check-accounts	mente	canonical	¿el registro de cuentas coincide con `git remote -v`? el único que compara contra la máquina
 conectar-cuenta	bin/conectar-cuenta	mente	canonical	¿con qué cuenta toco este repo? fail-closed si no está registrado
 puerta-cuentas	hooks/gate-accounts.py	mente	canonical	la puerta: nada sale hacia un repo que nadie declaró
+puerta-cuentas-2	hooks/pre-push.sh	mente	canonical	la capa 2: la ejecuta git en el push real, así que un alias no la rodea
 registro-cuentas	cuentas.tsv	mente	canonical	qué cuenta gobierna cada repo y por qué existe — ⛔ nunca lleva un token
 conectar-servidor	bin/conectar-servidor	mente	canonical	entrar al servidor For3s leyendo secrets/ — el valor NUNCA se escribe
 # ── 🔴 5 piezas que EXISTÍAN y nadie declaraba (2026-08-10) ──────────────────
