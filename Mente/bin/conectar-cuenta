@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""conectar-cuenta — ¿con qué cuenta toco este repo, y está vivo el acceso?
+
+⭐ POR QUÉ EXISTE. Hermano de `bin/conectar-servidor`, que nació de un fallo real: la IA
+improvisó un `ssh` desnudo, falló, y reportó el servidor como caído — el dato estaba en
+`secrets/` y nadie lo leyó. Brian: *"no puedo creer que te lo tengo que estar repitiendo"*.
+
+Aquí el fallo equivalente es peor: improvisar con una cuenta empuja trabajo a un repo que
+nadie declaró, o lo empuja a UNO de dos remotos y los deja divergentes — que es exactamente
+lo que pasó el 2026-07-23 y nadie notó durante 24 días.
+
+⛔ EL CONTRATO DE SEGURIDAD, y es lo que hace este script distinto de un `cat`:
+
+    1. NUNCA imprime el valor de una credencial. Imprime la RUTA y el ESTADO.
+    2. El agente NUNCA pide un token: pide "conéctame a este repo" y el motor decide.
+    3. Un repo que no está en cuentas.tsv → exit 2 y no resuelve nada (fail-closed).
+    4. Toda invocación queda registrada — el rastro es del sistema, no de la memoria de nadie.
+
+Usage:
+  bin/conectar-cuenta <owner/repo>     qué cuenta, qué guía, si el acceso está vivo
+  bin/conectar-cuenta --list           todos los repos registrados
+  bin/conectar-cuenta --check <repo>   solo el exit code, para hooks
+
+Exit codes: 0 registrado y resuelto · 1 registrado pero el acceso no responde · 2 NO registrado
+"""
+import os
+import re
+import sys
+import subprocess
+import datetime
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(ROOT)
+
+REGISTER = "cuentas.tsv"
+COLS = ("repo", "cuenta", "rol", "remoto", "ruta_local", "por_que_existe", "guia")
+LOG = os.path.join("secrets", ".access-log.md")
+
+
+def rows():
+    if not os.path.exists(REGISTER):
+        return []
+    out = []
+    for raw in open(REGISTER, encoding="utf-8"):
+        line = raw.rstrip("\n")
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        cells = [c.strip() for c in line.split("\t")]
+        if len(cells) != len(COLS) or cells[0] == "repo":
+            continue
+        out.append(dict(zip(COLS, cells)))
+    return out
+
+
+def log(action, detail):
+    """The trail is the system's, not anyone's memory. Same file gate-secrets already writes."""
+    try:
+        stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        with open(LOG, "a", encoding="utf-8") as fh:
+            fh.write(f"| {stamp} | conectar-cuenta | {action} | {detail} |\n")
+    except Exception:
+        pass          # a log that cannot be written must never block the operation
+
+
+def gh_alive():
+    """Is there a live GitHub session? ⛔ Never reads, prints or returns the token itself."""
+    try:
+        r = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, timeout=25)
+        blob = (r.stdout or "") + (r.stderr or "")
+        if "Logged in to github.com" in blob:
+            # ⚠️ Dos formatos según la versión de `gh`: "as <cuenta>" (2.x) y "account <cuenta>".
+            # Medido 2026-08-19: aquí es "as". Un solo patrón devolvía "?" y hacía sonar una
+            # alarma falsa de cuenta equivocada — un aviso que miente enseña a ignorar los avisos.
+            m = re.search(r"Logged in to \S+ as (\S+)", blob) or re.search(r"account (\S+)", blob)
+            return True, (m.group(1) if m else None)
+        return False, None
+    except Exception:
+        return False, None
+
+
+def show(repo):
+    data = rows()
+    hit = [r for r in data if r["repo"].lower() == repo.lower()]
+
+    if not hit:
+        # 🔴 FAIL-CLOSED. An unregistered repo is not a lookup miss: it is work about to leave
+        # for somewhere nobody declared. The way out is to register it, never to bypass this.
+        print(f"\n🔴 `{repo}` NO está en {REGISTER} — no resuelvo nada")
+        print(f"\n   Por qué me detengo: empujar ahí significa que el trabajo sale del sistema")
+        print(f"   y nadie sabe adónde fue. Pasó el 2026-07-23 y costó 24 días de silencio.")
+        print(f"\n   La salida: añade su fila a {REGISTER} — con su `por_que_existe`.")
+        print(f"   Luego: bin/check-accounts")
+        log("DENEGADO", f"{repo} no registrado")
+        return 2
+
+    r = hit[0]
+    print(f"\n📦 {r['repo']}")
+    print(f"   cuenta   : {r['cuenta']}")
+    print(f"   rol      : {r['rol']}")
+    print(f"   por qué  : {r['por_que_existe']}")
+    if r["ruta_local"] != "-":
+        print(f"   clon     : {r['ruta_local']}")
+
+    # ⚠️ Two remotes on the same path: the divergence trap, surfaced BEFORE the push.
+    siblings = [x for x in data
+                if x["ruta_local"] == r["ruta_local"] != "-" and x["repo"] != r["repo"]]
+    if siblings:
+        others = ", ".join(f"{s['remoto']}→{s['repo']}" for s in siblings)
+        print(f"\n   ⚠️  ESTE CLON TIENE MÁS DE UN REMOTO: {r['remoto']}→{r['repo']}, {others}")
+        print(f"       ⛔ Empujar a uno solo los deja divergentes. Empuja a TODOS.")
+
+    if r["guia"] == "-":
+        print(f"\n   🔑 no requiere credencial")
+        log("RESUELTO", f"{repo} (sin credencial)")
+        return 0
+
+    guide = os.path.join("secrets", r["guia"])
+    if not os.path.exists(guide):
+        print(f"\n   🔴 la guía {guide} NO existe — acceso no repetible")
+        log("ROTO", f"{repo}: guía {r['guia']} ausente")
+        return 1
+
+    print(f"\n   🔑 guía    : {guide}")
+    print(f"      ⛔ el VALOR de la credencial vive ahí y en ningún otro sitio — nunca se imprime")
+
+    alive, who = gh_alive()
+    if alive:
+        print(f"\n   ✅ sesión de GitHub VIVA" + (f" (cuenta `{who}`)" if who else ""))
+        if who and who.lower() != r["cuenta"].lower():
+            print(f"      ⚠️  pero el repo lo gobierna `{r['cuenta']}`, no `{who}`")
+            print(f"         → lee {guide} antes de empujar")
+        log("RESUELTO", f"{repo} · cuenta {r['cuenta']} · sesión viva")
+        return 0
+
+    print(f"\n   🔴 no hay sesión de GitHub viva")
+    print(f"      → los pasos están en {guide}")
+    log("SIN-SESION", f"{repo} · cuenta {r['cuenta']}")
+    return 1
+
+
+def listing():
+    data = rows()
+    if not data:
+        print(f"\n⬜ {REGISTER} está vacío — un clon nuevo empieza así, a propósito")
+        print("   Nadie hereda las cuentas de otro. Añade las tuyas y corre bin/check-accounts")
+        return 0
+    print(f"\n📋 {len(data)} repos registrados\n")
+    w = max(len(r["repo"]) for r in data)
+    for r in data:
+        print(f"   {r['repo']:<{w}}  {r['cuenta']:<14} {r['rol']:<10} {r['por_que_existe'][:52]}")
+    print(f"\n   detalle: bin/conectar-cuenta <owner/repo>")
+    return 0
+
+
+def main():
+    args = [a for a in sys.argv[1:] if a != "--check"]
+    quiet = "--check" in sys.argv
+
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if args[0] == "--list":
+        return listing()
+
+    if quiet:
+        data = rows()
+        return 0 if any(r["repo"].lower() == args[0].lower() for r in data) else 2
+    return show(args[0])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

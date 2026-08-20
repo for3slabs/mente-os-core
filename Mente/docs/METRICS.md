@@ -79,7 +79,7 @@ actually costs something. The 21-jul incident came from one of them.
 
 | Metric | Value |
 |---|---|
-| `system.validators` | 24 |
+| `system.validators` | 25 |
 | `system.hook_files` | 8 |
 | `system.hooks_registered` | **8** |
 | `system.blocks_active` | 3 |
@@ -93,7 +93,7 @@ by the harness, so it is a file without a settings entry.
 | Metric | allow | deny |
 |---|---|---|
 | `permissions.shared` (`settings.json`) | 45 | 185 |
-| `permissions.local` (`settings.local.json`) | 380 | 202 |
+| `permissions.local` (`settings.local.json`) | 382 | 202 |
 
 `deny` must be **identical** in both — one that lives only in the local file protects nobody
 else (`rules/rule-config-hygiene.md` §1.6).
