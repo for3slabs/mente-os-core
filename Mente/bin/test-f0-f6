@@ -531,7 +531,8 @@ print(sum(len(e['hooks']) for a in d.get('hooks',{}).values() for e in a))")
 # the failure this catches. It fired correctly when gate-handoff was added, y otra vez al
 # cablear la puerta de secrets — the count is meant to be updated deliberately, never widened
 # to "N or more".
-eq "project hooks registered (session-start + standards + 3 gates + 2 leases + vigía PR)" "8" "$n"
+#   + gate-accounts (2026-08-19): nada sale hacia un repo que nadie declaró. Cuarta puerta.
+eq "project hooks registered (session-start + standards + 4 gates + 2 leases + vigía PR)" "9" "$n"
 
 # ⭐ THE SEAM: counting 4 says nothing about whether they point at anything real.
 # Found 2026-07-31 by breaking settings.json and measuring who noticed: a hook rewritten to
@@ -870,6 +871,60 @@ if [ -f "$_cap" ]; then
   _metrics_count=$(grep -oE '`system\.validators` \| \*?\*?[0-9]+' "$M/docs/METRICS.md" 2>/dev/null \
                    | grep -oE '[0-9]+$')
   eq "METRICS system.validators counts EXECUTABLES, not files" "$_exec_count" "${_metrics_count:-0}"
+
+  # ══ F7 · MULTI-CUENTAS — que nada salga hacia un destino que nadie declaró ══════════════
+  # ⭐ Nace de un fallo del sistema sobre sí mismo (2026-08-19): tres documentos vivos nombraban
+  # tres repos distintos como "el de la verdad" y NINGUNO se comparaba contra `git remote -v`.
+  # PROJECT-RULES estuvo 46 días equivocado, la memoria 31, RETOMAR 24 — y 2 commits firmados
+  # vivieron fuera de GitHub todo ese tiempo. Nada lo medía porque cada check comparaba
+  # documentos contra OTROS DOCUMENTOS.
+  [ -f "$M/cuentas.tsv" ] && ok "el registro de cuentas existe" \
+    || bad "cuentas.tsv" "existe" "MISSING — ningún repo tiene dueño declarado"
+  [ -x "$M/bin/check-accounts" ] && ok "bin/check-accounts es ejecutable" \
+    || bad "check-accounts" "ejecutable" "ausente"
+  [ -x "$M/bin/conectar-cuenta" ] && ok "bin/conectar-cuenta es ejecutable" \
+    || bad "conectar-cuenta" "ejecutable" "ausente"
+  [ -x "$M/hooks/gate-accounts.py" ] && ok "la puerta de cuentas es ejecutable" \
+    || bad "gate-accounts" "ejecutable" "ausente"
+
+  # 🔴 EL CHECK CENTRAL: el registro contra la MÁQUINA, no contra otro documento.
+  ( cd "$M" && ./bin/check-accounts --quiet >/dev/null 2>&1 )
+  _acc=$?
+  [ "$_acc" -le 1 ] && ok "el registro de cuentas no contradice a git remote -v" \
+    || bad "check-accounts" "0 o 1" "$_acc — un remoto real no está declarado"
+
+  # 🔴 Cada fila declara POR QUÉ existe. Un repo que no puede justificarse es basura (Brian).
+  _sinporque=$(awk -F'\t' '!/^#/ && NF==7 && $1!="repo" && ($6=="" || $6=="-")' "$M/cuentas.tsv" 2>/dev/null | wc -l)
+  eq "cada repo registrado declara por qué existe" "0" "$_sinporque"
+
+  # ⛔ El registro VIAJA EN GIT. Un token aquí es una fuga, no una errata.
+  # ⚠️ `grep -c` sale con 1 cuando cuenta CERO, así que `|| echo 0` añadía un SEGUNDO cero y
+  # el check comparaba "0\n0" contra "0". Un validador que falla en el caso bueno es peor que
+  # no tenerlo: enseña a ignorarlo (medido al escribirlo, 2026-08-19).
+  _tok=$(grep -cE 'gh[pousr]_[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{20,}' "$M/cuentas.tsv" 2>/dev/null); _tok=${_tok:-0}
+  eq "el registro de cuentas no lleva ninguna credencial" "0" "$_tok"
+
+  # ⭐ SABOTAJE: un remoto que nadie registró debe poner el validador en ROJO. Un check que
+  # solo se ha visto en verde no está probado (rules/rule-checks-must-measure.md).
+  ( cd "$M/.." && git remote add _f7_saboteo https://github.com/nadie/inexistente.git 2>/dev/null )
+  ( cd "$M" && ./bin/check-accounts --quiet >/dev/null 2>&1 )
+  _sab=$?
+  ( cd "$M/.." && git remote remove _f7_saboteo 2>/dev/null )
+  [ "$_sab" -eq 2 ] && ok "medido: un remoto no registrado pone check-accounts en 🔴" \
+    || bad "sabotaje de cuentas" "exit 2" "$_sab — el validador no lo caza"
+
+  # ⭐ La puerta debe DENEGAR un push a un repo no declarado, y NO estorbar en un fetch.
+  _deny=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$M"'/..","tool_input":{"command":"git push https://github.com/nadie/inexistente.git main"}}' \
+          | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | grep -c '"permissionDecision": "deny"')
+  eq "la puerta DENIEGA un push a un repo no registrado" "1" "$_deny"
+  _fetch=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$M"'/..","tool_input":{"command":"git fetch origin"}}' \
+          | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | wc -c)
+  eq "la puerta NO estorba un git fetch (leer no manda nada fuera)" "0" "$_fetch"
+
+  # La puerta debe estar CABLEADA: un hook que existe y nadie invoca no protege.
+  _reg=$(grep -c "gate-accounts.py" "$REPO/.claude/settings.json" 2>/dev/null || echo 0)
+  [ "$_reg" -ge 1 ] && ok "la puerta de cuentas está registrada en settings.json" \
+    || bad "gate-accounts" "registrado" "existe pero nada lo invoca"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

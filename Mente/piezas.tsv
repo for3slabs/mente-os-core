@@ -77,6 +77,7 @@ contrato-campana	rules/contract-campaign.md	mente	canonical	la forma de una camp
 val-campanas	bin/check-campaigns	mente	canonical	¿una campaña cumple su contrato? hijos, autoridad, impacto, cierre
 val-cuentas	bin/check-accounts	mente	canonical	¿el registro de cuentas coincide con `git remote -v`? el único que compara contra la máquina
 conectar-cuenta	bin/conectar-cuenta	mente	canonical	¿con qué cuenta toco este repo? fail-closed si no está registrado
+puerta-cuentas	hooks/gate-accounts.py	mente	canonical	la puerta: nada sale hacia un repo que nadie declaró
 registro-cuentas	cuentas.tsv	mente	canonical	qué cuenta gobierna cada repo y por qué existe — ⛔ nunca lleva un token
 conectar-servidor	bin/conectar-servidor	mente	canonical	entrar al servidor For3s leyendo secrets/ — el valor NUNCA se escribe
 # ── 🔴 5 piezas que EXISTÍAN y nadie declaraba (2026-08-10) ──────────────────

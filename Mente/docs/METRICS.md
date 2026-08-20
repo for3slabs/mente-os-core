@@ -36,8 +36,8 @@ state is the bug this file removes.
 
 | Metric | Value |
 |---|---|
-| `battery.checks` | **248** |
-| `battery.failed` | **1** |
+| `battery.checks` | **260** |
+| `battery.failed` | **0** |
 
 ⚠️ **`battery.checks` is not stable across a `/clear`.** The battery includes
 `check-clear-ready`, which measures the **live** session: it reads one short until this session
@@ -80,8 +80,8 @@ actually costs something. The 21-jul incident came from one of them.
 | Metric | Value |
 |---|---|
 | `system.validators` | 25 |
-| `system.hook_files` | 8 |
-| `system.hooks_registered` | **8** |
+| `system.hook_files` | 9 |
+| `system.hooks_registered` | **9** |
 | `system.blocks_active` | 3 |
 | `system.blocks_archived` | 5 |
 

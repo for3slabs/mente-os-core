@@ -12,6 +12,13 @@
 # 📦 ESTE ARCHIVO ES DE INSTANCIA: describe las cuentas de ESTA persona. Un clon lo recibe
 #    VACÍO (bin/init lo genera con esta cabecera y sin filas) — nadie hereda cuentas ajenas.
 #
+# ⭐ LAS CUENTAS NO SON INDEPENDIENTES — medido 2026-08-19 con `gh api user/memberships/orgs`:
+#    `fruterito101` es **admin activo de la organización `for3slabs`**. Es la cuenta PERSONAL de
+#    Brian y la DUEÑA de la org, así que una sola sesión de `gh` alcanza ambas.
+#    ⚠️ Por eso `conectar-cuenta` NO debe gritar cuando la sesión es fruterito101 y el repo es
+#    de for3slabs: es el caso NORMAL. Un aviso que suena en el caso normal enseña a ignorarlo.
+#    ⛔ `ElBrAyAn1967` SÍ es una identidad distinta (el sitio) y usa SSH, no la sesión de gh.
+#
 # Formato (separado por TAB): repo	cuenta	rol	remoto	ruta_local	por_que_existe	guia
 #   repo         → owner/nombre en GitHub
 #   cuenta       → la cuenta de GitHub que lo gobierna

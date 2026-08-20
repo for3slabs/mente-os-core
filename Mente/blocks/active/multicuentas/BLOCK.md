@@ -49,22 +49,22 @@ created: 2026-08-19 · updated: 2026-08-19
 
 <!-- ══ E · STATE ══ ≤10 lines ══ -->
 ## State
-phase: **F0 · el plan está escrito y espera aprobación de Brian**
-next: que Brian apruebe `docs/plans/PLAN-multicuentas.md`; luego F1 (**cuentas.tsv** + validador)
+phase: **F1-F6 CONSTRUIDAS** — plan aprobado por Brian el 2026-08-19
+next: cerrar el bloque (§K) tras una jornada de uso real de la puerta
 blockers: ninguno
-progress: 0/6 fases (F1..F6, ver el plan)
-updated: 2026-08-19
+progress: **6/6 fases** · batería 249 → **260** (+11) · 6 sabotajes probados
+updated: 2026-08-20
 
 <!-- ══ F · SUB-BLOCKS ══ the propagation graph ══ -->
 ## Sub-blocks
 | # | task | pieza | dependents | status |
 |---|---|---|---|---|
-| 1 | **cuentas.tsv** — el registro, una fila por repo | Mente/cuentas.tsv | 0 | todo |
-| 2 | **bin/check-accounts** — compara lo escrito vs `git remote -v` | bin/ | 0 | todo |
-| 3 | las 3 guías **Acceder_Cuenta_*.md** en `secrets/` | secrets/ | 0 | todo |
-| 4 | **bin/conectar-cuenta** — resuelve credencial por repo | bin/ | 0 | todo |
-| 5 | **hooks/gate-accounts.py** — detiene un push a repo no registrado | hooks/ | 0 | todo |
-| 6 | cablear: `piezas.tsv` · `CAPABILITIES.md` · batería · `secrets/README.md` | varios | 0 | todo |
+| 1 | **cuentas.tsv** — el registro, una fila por repo | Mente/cuentas.tsv | 0 | ✅ done |
+| 2 | **bin/check-accounts** — compara lo escrito vs `git remote -v` | bin/ | 0 | ✅ done |
+| 3 | las 3 guías **Acceder_Cuenta_*.md** en `secrets/` | secrets/ | 0 | ✅ done |
+| 4 | **bin/conectar-cuenta** — resuelve credencial por repo | bin/ | 0 | ✅ done |
+| 5 | **hooks/gate-accounts.py** — detiene un push a repo no registrado | hooks/ | 0 | ✅ done |
+| 6 | cablear: `piezas.tsv` · `CAPABILITIES.md` · batería §F7 · settings.json | varios | 0 | ✅ done |
 
 <!-- ══ G · DECISIONS ══ each one WITH its rationale ══ -->
 ## Decisions

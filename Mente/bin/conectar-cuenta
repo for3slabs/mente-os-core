@@ -78,6 +78,22 @@ def gh_alive():
         return False, None
 
 
+def org_role(org):
+    """¿La sesión viva pertenece a esta organización, y con qué rol?
+
+    ⭐ Existe porque el aviso "la cuenta no coincide" era FALSO en el caso más común: la cuenta
+    personal que es dueña de la org. Se resuelve preguntando (`user/memberships/orgs/<org>`),
+    nunca infiriendo del nombre. Sin red devuelve None → el aviso cauto, nunca uno inventado.
+    """
+    try:
+        r = subprocess.run(["gh", "api", f"user/memberships/orgs/{org}", "-q", ".role"],
+                           capture_output=True, text=True, timeout=25)
+        role = (r.stdout or "").strip()
+        return role if role in ("admin", "member") else None
+    except Exception:
+        return None
+
+
 def show(repo):
     data = rows()
     hit = [r for r in data if r["repo"].lower() == repo.lower()]
@@ -127,8 +143,18 @@ def show(repo):
     if alive:
         print(f"\n   ✅ sesión de GitHub VIVA" + (f" (cuenta `{who}`)" if who else ""))
         if who and who.lower() != r["cuenta"].lower():
-            print(f"      ⚠️  pero el repo lo gobierna `{r['cuenta']}`, no `{who}`")
-            print(f"         → lee {guide} antes de empujar")
+            # ⭐ Una sesión personal PUEDE gobernar una org legítimamente. Medido 2026-08-19:
+            # `fruterito101` es admin de `for3slabs`, así que gritar aquí es una alarma en el
+            # caso NORMAL — y una alarma que suena siempre enseña a ignorar todas las alarmas
+            # (`rules/rule-checks-must-measure.md`). Se PREGUNTA a GitHub, no se supone.
+            role = org_role(r["cuenta"])
+            if role in ("admin", "member"):
+                print(f"      ℹ️  `{who}` es **{role}** de la organización `{r['cuenta']}` "
+                      f"— la sesión alcanza este repo")
+            else:
+                print(f"      ⚠️  el repo lo gobierna `{r['cuenta']}` y `{who}` no pertenece a esa "
+                      f"cuenta")
+                print(f"         → lee {guide} antes de empujar")
         log("RESUELTO", f"{repo} · cuenta {r['cuenta']} · sesión viva")
         return 0
 
