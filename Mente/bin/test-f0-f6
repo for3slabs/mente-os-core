@@ -968,6 +968,27 @@ if [ -f "$_cap" ]; then
   _ppok=$( ( cd "$REPO" && bash "$M/hooks/pre-push.sh" origin https://github.com/for3slabs/mente-os-for3s.git \
              </dev/null >/dev/null 2>&1; echo $? ) )
   eq "la capa 2 NO estorba un push legítimo" "0" "$_ppok"
+
+  # ⭐ LA FUENTE DE VERDAD ES UN DOCUMENTO CANÓNICO, no la memoria de nadie (2026-08-20).
+  # Tres documentos vivos nombraron tres repos distintos como "el de la verdad" — 46, 31 y 24
+  # días equivocados. Ahora hay UN archivo que lo dice, y los puntos de entrada lo citan.
+  [ -f "$M/docs/FUENTES-DE-VERDAD.md" ] && ok "existe el mapa de fuentes de verdad" \
+    || bad "FUENTES-DE-VERDAD.md" "existe" "la respuesta vuelve a vivir en la memoria de alguien"
+  for _e in "$REPO/CLAUDE.md" "$REPO/PROJECT-RULES.md" "$M/memory/RETOMAR.md"; do
+    grep -q "FUENTES-DE-VERDAD\|mente-os-core" "$_e" 2>/dev/null \
+      || bad "$(basename "$_e")" "cita la fuente de verdad" "un mapa que nadie encuentra no gobierna"
+  done
+  ok "los 3 puntos de entrada citan la fuente de verdad"
+
+  # 🔴 El repo ARCHIVADO no puede volver a ser el destino: sus objetos huérfanos siguen en GitHub.
+  _viejo=$(cd "$REPO" && git remote -v | grep -c "mente-os-for3s" || true); _viejo=${_viejo:-0}
+  eq "ningún remoto apunta al repo archivado (mente-os-for3s)" "0" "$_viejo"
+  grep -q "mente-os-core" "$M/cuentas.tsv" \
+    && ok "cuentas.tsv declara la fuente de verdad vigente" \
+    || bad "cuentas.tsv" "declara mente-os-core" "el registro no conoce el repo real"
+  grep -q "mente-os-core" "$M/Maestro/punteros.tsv" 2>/dev/null \
+    && ok "el Maestro apunta al repo vigente, no al archivado" \
+    || bad "punteros.tsv" "apunta a mente-os-core" "el Maestro leería una rama muerta"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

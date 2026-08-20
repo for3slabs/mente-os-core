@@ -34,7 +34,7 @@ os.chdir(ROOT)
 
 REGISTER = "cuentas.tsv"
 COLS = ("repo", "cuenta", "rol", "remoto", "ruta_local", "por_que_existe", "guia")
-ROLES = ("taller", "backup", "motor", "control", "sitio", "publicado", "plantilla")
+ROLES = ("taller", "backup", "motor", "control", "sitio", "publicado", "plantilla", "archivado")
 
 # 🔴 A token in a file that travels in git is the failure this whole block exists to prevent.
 # These are the shapes GitHub and OpenSSH actually emit — not a guess.

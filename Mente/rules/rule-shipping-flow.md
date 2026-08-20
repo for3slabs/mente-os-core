@@ -24,7 +24,7 @@ The workflow that turns a ticket into a reviewable PR: **branch → verify → P
 > producción, si es una rama de prueba lo tienes que hacer sí o sí, porque son buenas prácticas."*
 
 ⛔ **Sin excepción por repo.** No solo `marca-personal` (que despliega desde `main`): también
-`mente-os-for3s`, aunque Brian sea el único que escribe en él. Un PR que uno abre y revisa solo
+`mente-os-core`, aunque Brian sea el único que escribe en él. Un PR que uno abre y revisa solo
 sigue dejando el diff legible antes de entrar — que es para lo que existe.
 
 ### 🔴 Por qué nació: la regla se cumplió 0 de 15 veces

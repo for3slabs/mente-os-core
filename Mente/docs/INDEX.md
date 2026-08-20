@@ -8,7 +8,7 @@
 **Generated:** 2026-08-20 · **Type:** generated
 
 
-**343 documents** · **9 blocks** · 37 directories
+**344 documents** · **9 blocks** · 37 directories
 
 
 | Directory | Docs |
@@ -38,7 +38,7 @@
 | `campaigns/producto-for3s-os/fases/` | 1 |
 | `campaigns/producto-for3s-os/hallazgos/` | 2 |
 | `campaigns/producto-for3s-os/terreno/` | 5 |
-| `docs/` | 19 |
+| `docs/` | 20 |
 | `docs/analysis/` | 28 |
 | `docs/architecture/` | 6 |
 | `docs/plans/` | 12 |
@@ -252,6 +252,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
+| `FUENTES-DE-VERDAD.md` | entry-point | current | 2026-08-20 | 110 |
 | `INDEX.md` | generated | — |  | — |
 | `METRICS.md` | generated | current | 2026-08-20 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |
@@ -338,7 +339,7 @@
 | `Bitacora_Progreso.md` | append-only | current | 2026-07-30 | 1738 |
 | `Estado_Sesion_Continuidad.md` | fossil | current | 2026-07-30 | 4783 |
 | `PENDIENTES.md` | pending | current | 2026-08-08 | 4808 |
-| `RETOMAR.md` | entry-point | current | 2026-08-18 | 231 |
+| `RETOMAR.md` | entry-point | current | 2026-08-18 | 237 |
 | `pendiente-agosto-2026.md` | pending | current | 2026-08-18 | 1681 |
 
 ## `memory/archive/`

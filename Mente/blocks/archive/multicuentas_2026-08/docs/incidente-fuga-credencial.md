@@ -70,4 +70,4 @@ haya clonado mientras era público conserva el historial.
 ---
 
 Related: `../BLOCK.md` · `runbook-y-rollback.md` (dónde están las copias) ·
-`../../../secrets/README.md` · `../../../../PROJECT-RULES.md` §5.
+`../../../../secrets/README.md` · `../../../../PROJECT-RULES.md` §5.

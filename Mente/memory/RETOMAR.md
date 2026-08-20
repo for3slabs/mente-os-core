@@ -146,6 +146,12 @@ en 6/11**: SB-7 no se empezó. Lo que sí cambió es que el sistema ya no pierde
 - ⚠️ **Las horas de `Registro_Conversaciones.md` van en LOCAL (CST), nunca en UTC** — 6 filas
   las tenían mal; ya hay validador.
 
+🔴 **EL REPO DEL MOTOR CAMBIÓ (20-ago): ahora es `for3slabs/mente-os-core`.** El anterior
+(`mente-os-for3s`) quedó **archivado y privado**: fue público con la contraseña del servidor
+dentro, y sus objetos huérfanos **no se pueden borrar de GitHub**. Se empujó el historial ya
+limpio —137 commits, 2159 blobs escaneados, 0 contaminados— a un repo que nunca los tuvo.
+👉 **El mapa completo de qué repo manda: `docs/FUENTES-DE-VERDAD.md`.**
+
 🆕 **S16 · MULTI-CUENTAS (20-ago) — motor.** El sistema ya sabe **a dónde sale el trabajo**.
 Nace de un fallo suyo: 3 documentos nombraban 3 repos distintos como "el de la verdad" y ninguno
 se comparaba con `git remote -v` (46, 31 y 24 días equivocados). Bloque `multicuentas` **6/6**.
