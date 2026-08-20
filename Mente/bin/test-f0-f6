@@ -989,6 +989,19 @@ if [ -f "$_cap" ]; then
   grep -q "mente-os-core" "$M/Maestro/punteros.tsv" 2>/dev/null \
     && ok "el Maestro apunta al repo vigente, no al archivado" \
     || bad "punteros.tsv" "apunta a mente-os-core" "el Maestro leería una rama muerta"
+
+  # 🔴 EL REPO ES PÚBLICO desde el 2026-08-20. Lo que se commitea lo ve cualquiera, así que un
+  # secreto que entre ya no se puede "quitar": los objetos huérfanos de GitHub no se borran —
+  # esa es exactamente la razón por la que hubo que abandonar el repo anterior.
+  _leak=0
+  for _f in $(cd "$REPO" && git ls-files); do
+    grep -qE 'gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{22,}|sk-ant-[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}' "$REPO/$_f" 2>/dev/null \
+      && { _leak=$((_leak+1)); printf '     ⤷ %s\n' "$_f"; }
+  done
+  eq "ningún archivo versionado lleva algo con forma de credencial" "0" "$_leak"
+  # ⛔ Y las dos carpetas que NUNCA deben viajar en un repo público.
+  _sec=$(cd "$REPO" && git ls-files | grep -c "^Mente/secrets/" || true); _sec=${_sec:-0}
+  eq "secrets/ no viaja en git (el repo es público)" "0" "$_sec"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

@@ -155,7 +155,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `incidente-fuga-credencial.md` | case | current | 2026-08-20 | 73 |
+| `incidente-fuga-credencial.md` | case | current | 2026-08-20 | 91 |
 | `runbook-y-rollback.md` | plan | current | 2026-08-20 | 62 |
 
 ## `blocks/archive/plan-tests-demo_2026-08/`
@@ -252,7 +252,7 @@
 |---|---|---|---|---|
 | `Arquitectura_Mente_OS_v2_Bloques.md` | architecture | current | 2026-08-06 | 2471 |
 | `DECISIONS.md` | rule | current | 2026-07-29 | 52 |
-| `FUENTES-DE-VERDAD.md` | entry-point | current | 2026-08-20 | 110 |
+| `FUENTES-DE-VERDAD.md` | entry-point | current | 2026-08-20 | 116 |
 | `INDEX.md` | generated | — |  | — |
 | `METRICS.md` | generated | current | 2026-08-20 | 104 |
 | `PENDING-BRIAN.md` | entry-point | current | 2026-08-05 | 122 |

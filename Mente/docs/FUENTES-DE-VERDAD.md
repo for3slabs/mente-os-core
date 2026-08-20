@@ -31,8 +31,14 @@ por GitHub** (`git/blobs/<sha>` los devolvía) y **ningún comando de git los bo
 recolección de basura o GitHub Support.
 
 ⭐ **Un repo nuevo es lo único que ELIMINA el problema en vez de esconderlo:** se empujó el
-historial ya limpio —**137 commits, 2159 blobs escaneados, 0 contaminados**— a un repo que nunca
+historial ya limpio —**137 commits, 2180 blobs escaneados, 0 contaminados**— a un repo que nunca
 tuvo esos objetos. Verificado: los 3 blobs contaminados devuelven `Not Found` allí.
+
+🌐 **`mente-os-core` es PÚBLICO** (2026-08-20), y lo es *después* de escanear su historial entero
+—contraseñas, tokens, llaves privadas, claves de API: 0 en 2180 blobs— no antes.
+⚠️ **Lo que sí viaja y conviene saber:** la IP Tailscale del servidor aparece en 14 archivos. Es
+rango CGNAT (RFC 6598): **no se rutea en internet público**, solo dentro de la tailnet, y siempre
+junto a la contraseña ya redactada. Riesgo bajo, pero declarado — un límite oculto es deuda.
 
 ---
 
@@ -40,7 +46,7 @@ tuvo esos objetos. Verificado: los 3 blobs contaminados devuelven `Not Found` al
 
 | Repo | Rol | Cuenta | ¿Se empuja? |
 |---|---|---|---|
-| ⭐ **`for3slabs/mente-os-core`** | **el motor Mente OS v2 + la instancia** | `for3slabs` | ✅ sí — es el `origin` |
+| ⭐ **`for3slabs/mente-os-core`** | **el motor Mente OS v2 + la instancia** · 🌐 público | `for3slabs` | ✅ sí — es el `origin` |
 | `for3slabs/for3s-os` | **el taller** del producto | `for3slabs` | ✅ sí — `origin` en el servidor |
 | `for3slabs/for3s` | **el respaldo** del producto verificado | `for3slabs` | ✅ sí — `backup` en el servidor |
 | `for3slabs/mente-os-maestro` | el **controlador** que apunta a las ramas | `for3slabs` | ✅ repo anidado, propio `.git` |
