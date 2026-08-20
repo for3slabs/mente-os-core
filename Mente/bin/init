@@ -254,6 +254,34 @@ def main():
     print(f"   engine  : {MENTE}\n")
 
     rc = 0
+
+    # ⭐ cuentas.tsv NACE VACÍO en cada instancia (2026-08-20). Su plan lo prometía —"un clon lo
+    # recibe VACÍO, nadie hereda cuentas ajenas"— y la promesa NO se cumplía: el archivo viajaba
+    # en git y un clon ajeno heredaba las 8 cuentas de su autor. Lo cazó la auditoría "ponte en
+    # los zapatos del que clona". ⛔ Sin él la puerta gate-accounts no sabe qué es legítimo, así
+    # que el motor lo crea con su cabecera y sin una sola fila.
+    reg = os.path.join(MENTE, "cuentas.tsv")
+    if os.path.exists(reg):
+        print("   ✅ cuentas.tsv: ya existe (no se toca — es tuyo)")
+    else:
+        header = (
+            "# cuentas.tsv — FUENTE ÚNICA de qué cuenta gobierna cada repo\n"
+            "# Lo leen: bin/check-accounts · bin/conectar-cuenta · hooks/gate-accounts.py\n"
+            "#\n"
+            "# 📦 ARCHIVO DE INSTANCIA: describe TUS cuentas. Nace vacío a propósito —\n"
+            "#    nadie hereda las cuentas de quien escribió el motor.\n"
+            "# ⛔ AQUÍ NUNCA VA UN TOKEN NI UNA CONTRASEÑA. La columna `guia` apunta a\n"
+            "#    secrets/, que está fuera de git y en 700.\n"
+            "#\n"
+            "# rol: taller | backup | motor | control | sitio | publicado | plantilla\n"
+            "# por_que_existe: OBLIGATORIO — un repo que no puede justificarse es basura\n"
+            "#\n"
+            "repo\tcuenta\trol\tremoto\truta_local\tpor_que_existe\tguia\n"
+        )
+        status = write(reg, header)          # reusa la función que ya respeta --dry-run y --force
+        icon = {"DIFFERS": "🔴", "unchanged": "✅", "written": "🆕", "would write": "🔎"}[status]
+        print(f"   {icon} cuentas.tsv: {status} (vacío — añade tus repos)")
+
     # ⚠️ WORKSPACE.md se GENERA, no se hereda (2026-08-07). Describe ESTA máquina —qué repo es
     # cuál, qué está vedado, dónde viven los secretos— y viajaba con el motor, así que cada clon
     # nacía con la descripción de la máquina de otro. El archivo lo declaraba desde el 05-ago

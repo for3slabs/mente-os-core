@@ -925,6 +925,29 @@ if [ -f "$_cap" ]; then
   _reg=$(grep -c "gate-accounts.py" "$REPO/.claude/settings.json" 2>/dev/null || echo 0)
   [ "$_reg" -ge 1 ] && ok "la puerta de cuentas está registrada en settings.json" \
     || bad "gate-accounts" "registrado" "existe pero nada lo invoca"
+
+  # 🔴 EL FALLO QUE LA AUDITORÍA DEL 2026-08-20 CAZÓ: `cuentas.tsv` VIAJABA en el clon, y su
+  # propio plan promete lo contrario. Un clon ajeno heredaba las 8 cuentas de su autor — la
+  # contaminación exacta que rules/rule-inheritance.md existe para impedir. Sin este check,
+  # basta un `git add -f` distraído para que vuelva.
+  ( cd "$REPO" && git check-ignore -q Mente/cuentas.tsv )
+  [ $? -eq 0 ] && ok "cuentas.tsv está gitignored (de INSTANCIA: no viaja en un clon)" \
+    || bad "cuentas.tsv" "gitignored" "🔴 VIAJA — un clon heredaría cuentas ajenas"
+  _tracked=$(cd "$REPO" && git ls-files Mente/cuentas.tsv | wc -l)
+  eq "cuentas.tsv no está en el índice de git" "0" "$_tracked"
+
+  # ⭐ Y que bin/init lo GENERE vacío: sin registro, la puerta no sabe qué es legítimo.
+  grep -q "cuentas.tsv" "$M/bin/init" \
+    && ok "bin/init genera cuentas.tsv para una instancia nueva" \
+    || bad "bin/init" "genera cuentas.tsv" "un clon queda sin registro y la puerta no puede medir"
+
+  # ⭐ Las 2 evasiones de la puerta halladas en la auditoría adversarial del 20-ago.
+  _api=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$REPO"'","tool_input":{"command":"gh api repos/nadie/x/git/refs -X POST"}}' \
+         | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | grep -c '"permissionDecision": "ask"')
+  eq "la puerta ve `gh api -X POST` (la otra vía de escritura)" "1" "$_api"
+  _echo=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$REPO"'","tool_input":{"command":"echo \"recuerda: git push origin main\""}}' \
+          | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | wc -c)
+  eq "la puerta NO se dispara con `git push` dentro de un echo (falso positivo)" "0" "$_echo"
   grep -q "CAPABILITIES.md" "$REPO/CLAUDE.md" \
     && ok "the router points the agent at its capability map" \
     || bad "CAPABILITIES routing" "CLAUDE.md points at it" "unreferenced — no agent will find it"

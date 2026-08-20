@@ -45,6 +45,11 @@ Mente/.secrets-lease.json
 # primera línea, y `bin/init` es el primer paso de la instalación.
 /CLAUDE.md
 /PROJECT-RULES.md
+# 🔴 2026-08-20: cuentas.tsv VIAJABA en el clon, y su propio plan promete lo contrario
+# ("un clon lo recibe VACÍO — nadie hereda cuentas ajenas"). Un clon ajeno heredaba las 8
+# cuentas de Brian: la contaminación exacta que rules/rule-inheritance.md existe para impedir.
+# Lo cazó la auditoría "ponte en los zapatos del que clona". bin/init lo genera vacío.
+/Mente/cuentas.tsv
 
 # Respaldo local que deja bin/init al recablear los hooks — es instancia, no motor.
 *.mente-bak

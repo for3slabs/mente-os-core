@@ -36,9 +36,18 @@ REGISTER = os.path.join(ROOT, "cuentas.tsv")
 COLS = ("repo", "cuenta", "rol", "remoto", "ruta_local", "por_que_existe", "guia")
 
 # Lo que MANDA trabajo fuera. `fetch`, `pull`, `clone` y `status` no están aquí a propósito.
-PUSH = re.compile(r"\bgit\s+(?:-C\s+\S+\s+)?push\b")
+# ⚠️ Anclado al INICIO del comando o tras un separador (`&&`, `;`, `|`, `(`), nunca en medio:
+# medido 2026-08-20, `echo "recuerda: git push origin main"` disparaba la puerta. Un aviso sobre
+# un comando que nadie va a ejecutar es ruido, y el ruido enseña a ignorar los avisos de verdad.
+PUSH = re.compile(r"""(?:^|[;&|(]\s*|\bbash\s+-c\s+["'])\s*\S*git\s+(?:-C\s+\S+\s+)?push\b""")
 # Lo que crea, borra o expone un repo — irreversible o de cara al público.
 REPO_ADMIN = re.compile(r"\bgh\s+repo\s+(create|delete|edit|archive|rename|transfer)\b")
+# ⭐ La OTRA vía de escritura, encontrada en la auditoría adversarial 2026-08-20: `gh api` con un
+# método de escritura empuja refs, crea releases y borra ramas SIN pasar por `git push`. La puerta
+# la ignoraba por completo — un candado en la puerta principal con la ventana abierta.
+GH_API_WRITE = re.compile(r"\bgh\s+api\b[^|;&]*(?:-X\s*(?:POST|PUT|PATCH|DELETE)|--method\s*(?:POST|PUT|PATCH|DELETE))")
+# ⚠️ Borrar una rama remota NO es empujar trabajo: es destruirlo. Pasaba como un push normal.
+PUSH_DELETE = re.compile(r"\bpush\b[^|;&]*(?:--delete\b|\s:\S)")
 
 
 def verdict(decision, reason):
@@ -126,8 +135,26 @@ def main():
                        "⛔ Eso es decisión de Brian, nunca automática — y varias no se deshacen.\n"
                        "Si es lo que quieres, apruébalo aquí.")
 
+    if GH_API_WRITE.search(cmd):
+        m = re.search(r"repos/([\w.-]+/[\w.-]+)", cmd)
+        target = m.group(1) if m else "un repositorio"
+        return verdict("ask",
+                       f"🌐 `gh api` con método de ESCRITURA sobre `{target}`.\n"
+                       f"Esta vía crea refs, releases y borra ramas sin pasar por `git push`, "
+                       f"así que no puedo medirla como un push normal.\n"
+                       f"Si es lo que quieres, apruébalo.")
+
     if not PUSH.search(cmd):
         return 0                      # leer no manda nada fuera: esta puerta no se mete
+
+    if PUSH_DELETE.search(cmd):
+        m = re.search(r"--delete\s+(\S+)", cmd)
+        rama = m.group(1) if m else "una rama"
+        return verdict("ask",
+                       f"🗑️  Esto BORRA la rama remota `{rama}`.\n"
+                       f"⛔ No es empujar trabajo: es destruirlo, y en el remoto no hay reflog.\n"
+                       f"`rules/rule-post-merge-cleanup.md`: se borra tras VERIFICAR que su "
+                       f"trabajo viajó — por contenido, nunca por la etiqueta MERGED.")
 
     data = rows()
     if not data:

@@ -146,6 +146,23 @@ en 6/11**: SB-7 no se empezó. Lo que sí cambió es que el sistema ya no pierde
 - ⚠️ **Las horas de `Registro_Conversaciones.md` van en LOCAL (CST), nunca en UTC** — 6 filas
   las tenían mal; ya hay validador.
 
+🆕 **S16 · MULTI-CUENTAS (20-ago) — motor.** El sistema ya sabe **a dónde sale el trabajo**.
+Nace de un fallo suyo: 3 documentos nombraban 3 repos distintos como "el de la verdad" y ninguno
+se comparaba con `git remote -v` (46, 31 y 24 días equivocados). Bloque `multicuentas` **6/6**.
+
+- 📋 **`cuentas.tsv`** — qué cuenta gobierna cada repo y **por qué existe** (obligatorio: *"un repo
+  que no puede justificarse es basura"*). ⛔ **De INSTANCIA, no viaja**: un clon lo recibe vacío.
+- 🔎 **`bin/check-accounts`** — el primer validador que compara contra la **MÁQUINA**, no contra
+  otro documento · 🔌 **`bin/conectar-cuenta <repo>`** — el agente pide un repo, **nunca un token**
+- 🚪 **`hooks/gate-accounts.py`** — un push a un repo no registrado se **deniega**; a un clon con
+  2 remotos empujando a 1, **pregunta**. ⚠️ No estorba `fetch` ni `status`.
+- 🔴 **FUGA CERRADA:** la contraseña del servidor vivía en claro en **4 archivos de este repo
+  PÚBLICO** (20 ocurrencias). Historial reescrito con `filter-repo`: **0 commits, 0 blobs**.
+  ⚠️ Brian decidió **NO rotarla** — riesgo aceptado conscientemente.
+- ⭐ **`fruterito101` ES admin de `for3slabs`** (medido, `user/memberships/orgs`). Una sesión
+  alcanza ambas. ⛔ `ElBrAyAn1967` sí es otra identidad: el sitio, por SSH.
+- ✅ **Tríada del producto restaurada** tras 24 días rota: server = `origin` = `backup` en `732c434`.
+
 ### LO ANTERIOR (en `memory/Bitacora_Progreso.md`)
 
 El ciclo de 12 etapas · el clon que verifica el motor · los 111 pendientes rotados · el bloque

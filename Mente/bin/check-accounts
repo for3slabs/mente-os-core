@@ -215,7 +215,15 @@ def main():
         n = len([1 for _ in data])
         print(f"\n{len(RED)} errors · {len(YEL)} warnings · {n} repos registered")
         if not RED and not YEL:
-            print("✅ the register matches the machine")
+            # ⚠️ Un registro VACÍO no "coincide con la máquina": es un registro que aún no
+            # dice nada. Decir ✅ ahí enseña que el verde no significa nada — medido en un clon
+            # limpio el 2026-08-20, donde imprimía ✅ sobre cero filas.
+            if n == 0:
+                print("⬜ el registro está VACÍO — un clon nuevo empieza así, a propósito.")
+                print("   Nadie hereda cuentas ajenas. Declara tus repos antes de empujar:")
+                print("   cada fila necesita su `por_que_existe`, y `bin/conectar-cuenta` los lee.")
+            else:
+                print("✅ the register matches the machine")
 
     return 2 if RED else (1 if YEL else 0)
 
