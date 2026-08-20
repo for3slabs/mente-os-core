@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""check-accounts — does `cuentas.tsv` match the MACHINE? It decides nothing.
+
+The doctrine is a document. The VERIFICATION is a script.
+
+⭐ WHY THIS EXISTS, measured 2026-08-19. Three live documents named three different repos as
+"the repo of truth" and NOT ONE was ever compared against `git remote -v`:
+
+  PROJECT-RULES.md §4          wrong for 46 days
+  project_repo_oficial_for3s   wrong for 31 days  (called the server's `origin` a "copia vieja")
+  RETOMAR.md §3                wrong for 24 days  (claimed a triad that was already broken)
+
+Cost: two GPG-signed commits lived outside GitHub for 24 days. Nothing measured it, because
+every check compared documents to OTHER DOCUMENTS. This one compares the register to the
+machine — the only source that cannot be edited into agreement.
+
+⭐ What this script will never do: decide whether a repo SHOULD exist, or which account is
+"right". That is criterion and belongs to Brian (ADR-003). It checks that every repo carries
+the fields that let a human decide, and that the register does not contradict `git remote -v`.
+
+Usage:
+  bin/check-accounts              this machine
+  bin/check-accounts --quiet      exit code only, for hooks
+
+Exit codes: 0 clean · 1 warnings (yellow) · 2 errors (red)
+"""
+import os
+import re
+import sys
+import subprocess
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(ROOT)
+
+REGISTER = "cuentas.tsv"
+COLS = ("repo", "cuenta", "rol", "remoto", "ruta_local", "por_que_existe", "guia")
+ROLES = ("taller", "backup", "motor", "control", "sitio", "publicado", "plantilla")
+
+# 🔴 A token in a file that travels in git is the failure this whole block exists to prevent.
+# These are the shapes GitHub and OpenSSH actually emit — not a guess.
+TOKEN_SHAPES = re.compile(
+    r"(gh[pousr]_[A-Za-z0-9]{16,}"          # ghp_ gho_ ghu_ ghs_ ghr_
+    r"|github_pat_[A-Za-z0-9_]{20,}"
+    r"|-----BEGIN [A-Z ]*PRIVATE KEY-----"
+    r"|xox[baprs]-[A-Za-z0-9-]{10,}"        # slack, in case a guide grows one
+    r"|AKIA[0-9A-Z]{16})"                   # aws
+)
+
+RED, YEL = [], []
+
+
+def rows():
+    """Data rows only: comments and the header line are shape, not content."""
+    if not os.path.exists(REGISTER):
+        RED.append(f"{REGISTER} does not exist — bin/init generates it for a new instance")
+        return []
+    out = []
+    for n, raw in enumerate(open(REGISTER, encoding="utf-8"), 1):
+        line = raw.rstrip("\n")
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        cells = line.split("\t")
+        if cells[0].strip() == "repo":          # the header
+            if tuple(c.strip() for c in cells) != COLS:
+                RED.append(f"{REGISTER}:{n} header is not the declared one: {COLS}")
+            continue
+        if len(cells) != len(COLS):
+            RED.append(f"{REGISTER}:{n} has {len(cells)} columns, expected {len(COLS)} "
+                       f"— separator must be a TAB, never spaces")
+            continue
+        out.append((n, dict(zip(COLS, [c.strip() for c in cells]))))
+    return out
+
+
+def git_remotes(path="."):
+    """Every remote URL git actually knows about, normalized to owner/name.
+
+    ⚠️ Both forms must normalize to the SAME key or the check reports false positives:
+       https://github.com/owner/name.git   and   git@github.com:owner/name.git
+    """
+    try:
+        raw = subprocess.run(["git", "-C", path, "remote", "-v"],
+                             capture_output=True, text=True, timeout=15)
+    except Exception:
+        return {}
+    found = {}
+    for line in raw.stdout.splitlines():
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        name, url = parts[0], parts[1]
+        m = re.search(r"(?:github\.com[:/])([^/]+/[^/\s]+?)(?:\.git)?$", url)
+        if m:
+            found.setdefault(m.group(1), set()).add(name)
+    return found
+
+
+def check_shape(data):
+    """Every field a human needs to decide. An absent one is not a style problem:
+    a repo with no `por_que_existe` is undeclared garbage (Brian, 2026-08-19)."""
+    seen = {}
+    for n, r in data:
+        if not re.match(r"^[\w.-]+/[\w.-]+$", r["repo"]):
+            RED.append(f"{REGISTER}:{n} `{r['repo']}` is not owner/name")
+        if r["repo"] in seen:
+            RED.append(f"{REGISTER}:{n} `{r['repo']}` already declared on line {seen[r['repo']]}")
+        seen[r["repo"]] = n
+
+        if not r["por_que_existe"] or r["por_que_existe"] == "-":
+            RED.append(f"{REGISTER}:{n} `{r['repo']}` has no `por_que_existe` "
+                       f"— a repo that cannot justify itself is garbage")
+        if r["rol"] not in ROLES:
+            RED.append(f"{REGISTER}:{n} rol `{r['rol']}` is not one of {ROLES}")
+        if r["repo"].split("/")[0] != r["cuenta"]:
+            YEL.append(f"{REGISTER}:{n} `{r['repo']}` is owned by `{r['repo'].split('/')[0]}` "
+                       f"but the register says `{r['cuenta']}`")
+        if r["guia"] != "-":
+            if not os.path.exists(os.path.join("secrets", r["guia"])):
+                RED.append(f"{REGISTER}:{n} cites secrets/{r['guia']}, which does not exist "
+                           f"— an access nobody can repeat")
+
+
+def check_no_secrets():
+    """🔴 The register travels in git. A token here is a leak, not a typo.
+
+    ⭐ The GUIDES are scanned too, and that is not symmetry for its own sake — it caught a real
+    leak on 2026-08-19, minutes after being written: a guide carried the SERVER PASSWORD inside
+    a `grep` example meant to teach how to look for leaks. The guide was `600` and outside git,
+    so it was not a breach — but it was a second copy of a live credential in a file whose whole
+    purpose is to NOT hold one.
+
+    ⚠️ A guide's own password lives in `Conectar_Servidor_For3s.md` BY DESIGN (it predates this
+    rule and Brian owns that decision), so that file is exempt by name — never by pattern.
+    """
+    EXEMPT = {"Conectar_Servidor_For3s.md", "Secretos_Demo_Sitio.md", ".access-log.md"}
+    targets = [REGISTER] if os.path.exists(REGISTER) else []
+    if os.path.isdir("secrets"):
+        targets += [os.path.join("secrets", f) for f in sorted(os.listdir("secrets"))
+                    if f.endswith(".md") and f not in EXEMPT]
+
+    # The literal secrets this repo knows it holds. Read from the exempt files themselves so the
+    # list is never typed here — ⛔ this script travels in git.
+    literals = set()
+    for f in EXEMPT:
+        path = os.path.join("secrets", f)
+        if not os.path.exists(path):
+            continue
+        for line in open(path, encoding="utf-8", errors="ignore"):
+            m = re.search(r"Contrase\u00f1a:\s*(\S+)", line)
+            if m and len(m.group(1)) >= 6:
+                literals.add(m.group(1))
+
+    for target in targets:
+        for n, line in enumerate(open(target, encoding="utf-8", errors="ignore"), 1):
+            if TOKEN_SHAPES.search(line):
+                RED.append(f"{target}:{n} contains something shaped like a CREDENTIAL. "
+                           f"⛔ The value belongs in an exempt secrets file, never here")
+            for lit in literals:
+                if lit in line:
+                    RED.append(f"{target}:{n} repeats a credential that already lives in an "
+                               f"exempt file — ⛔ a second copy doubles the exposure")
+
+
+def check_against_machine(data):
+    """⭐ THE CHECK NOTHING HAD. Compare the register to `git remote -v`, not to another document.
+
+    Two directions, because each one catches a different bug:
+      · a remote the register does not know  → work pushed somewhere nobody declared
+      · a declared local repo with no remote → the register describes a machine that moved
+    """
+    declared = {r["repo"] for _, r in data}
+    local_paths = {r["ruta_local"] for _, r in data
+                   if r["ruta_local"] not in ("-", "") and not r["ruta_local"].startswith("servidor:")}
+    local_paths.add(".")
+
+    for path in sorted(local_paths):
+        real = os.path.expanduser(path.replace("~", os.path.expanduser("~")))
+        if not os.path.isdir(os.path.join(real, ".git")):
+            continue
+        for repo, remote_names in git_remotes(real).items():
+            if repo not in declared:
+                RED.append(f"{real}: remote `{'/'.join(sorted(remote_names))}` points at "
+                           f"`{repo}`, which is NOT in {REGISTER} "
+                           f"— push there and nobody knows the work went out")
+
+    # 🟡 A repo with two remotes must declare both, or a push to one leaves the pair divergent.
+    # This is the 2026-07-23 defect: pushed to origin, not to backup, unnoticed for 24 days.
+    by_path = {}
+    for _, r in data:
+        if r["ruta_local"] not in ("-", ""):
+            by_path.setdefault(r["ruta_local"], []).append(r)
+    for path, group in by_path.items():
+        names = {r["remoto"] for r in group if r["remoto"] != "-"}
+        if len(names) > 1:
+            YEL.append(f"`{path}` declares {len(names)} remotes ({', '.join(sorted(names))}) "
+                       f"— pushing to only one leaves them divergent (measured 2026-07-23)")
+
+
+def main():
+    quiet = "--quiet" in sys.argv
+    data = rows()
+    check_no_secrets()
+    check_shape(data)
+    check_against_machine(data)
+
+    if not quiet:
+        if RED:
+            print(f"\n🔴 ERRORS ({len(RED)})")
+            for m in RED:
+                print(f"   {m}")
+        if YEL:
+            print(f"\n🟡 WARNINGS ({len(YEL)})")
+            for m in YEL:
+                print(f"   {m}")
+        n = len([1 for _ in data])
+        print(f"\n{len(RED)} errors · {len(YEL)} warnings · {n} repos registered")
+        if not RED and not YEL:
+            print("✅ the register matches the machine")
+
+    return 2 if RED else (1 if YEL else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

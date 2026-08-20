@@ -57,7 +57,7 @@
 
 | Document | Type | Status | Updated | Lines |
 |---|---|---|---|---|
-| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 179 |
+| `CAPABILITIES.md` | entry-point | current | 2026-08-05 | 181 |
 | `CHANGELOG.md` | append-only | current | 2026-08-05 | 86 |
 | `README.md` | entry-point | current | 2026-08-06 | 210 |
 | `base-rules.md` | entry-point | current | 2026-07-29 | 116 |

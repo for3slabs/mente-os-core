@@ -1,0 +1,32 @@
+# cuentas.tsv — FUENTE ÚNICA de qué cuenta gobierna cada repo (F1 del PLAN-multicuentas)
+# La leen: bin/check-accounts (verifica) · bin/conectar-cuenta (resuelve) · hooks/gate-accounts.py (bloquea)
+#
+# ⭐ POR QUÉ EXISTE ESTE ARCHIVO, medido 2026-08-19: tres documentos vivos declaraban tres repos
+# distintos y ninguno se comparaba con `git remote -v`. PROJECT-RULES estuvo 46 días equivocado,
+# la memoria 31 y RETOMAR 24 — y 2 commits firmados vivieron fuera de GitHub todo ese tiempo.
+# Ningún validador lo medía. Un dato copiado a mano es correcto exactamente una vez.
+#
+# ⛔ AQUÍ NUNCA VA UN TOKEN, UNA CONTRASEÑA NI UNA LLAVE. Este archivo VIAJA EN GIT.
+#    La columna `guia` apunta a secrets/, que está fuera de git y en 700.
+#
+# 📦 ESTE ARCHIVO ES DE INSTANCIA: describe las cuentas de ESTA persona. Un clon lo recibe
+#    VACÍO (bin/init lo genera con esta cabecera y sin filas) — nadie hereda cuentas ajenas.
+#
+# Formato (separado por TAB): repo	cuenta	rol	remoto	ruta_local	por_que_existe	guia
+#   repo         → owner/nombre en GitHub
+#   cuenta       → la cuenta de GitHub que lo gobierna
+#   rol          → taller | backup | motor | control | sitio | publicado | plantilla
+#   remoto       → el nombre del remoto git que apunta ahí ("-" si no hay clon local)
+#   ruta_local   → dónde vive el clon en esta máquina ("-" si no hay)
+#   por_que_existe → ⭐ OBLIGATORIO. Un repo que no puede justificarse es basura (Brian, 19-ago)
+#   guia         → el archivo de secrets/ con los pasos de acceso ("-" si no requiere credencial)
+#
+repo	cuenta	rol	remoto	ruta_local	por_que_existe	guia
+for3slabs/for3s-os	for3slabs	taller	origin	servidor:~/for3s-os	el codigo del producto; el servidor empuja aqui a diario	Acceder_Cuenta_for3slabs.md
+for3slabs/for3s	for3slabs	backup	backup	servidor:~/for3s-os	respaldo del producto YA verificado; se empuja junto con origin	Acceder_Cuenta_for3slabs.md
+for3slabs/mente-os-for3s	for3slabs	motor	origin	~/for3s	este sistema: el motor Mente OS v2 mas la instancia de Brian	Acceder_Cuenta_for3slabs.md
+for3slabs/mente-os-maestro	for3slabs	control	origin	~/for3s/Mente/Maestro	apunta a las 5 ramas Mente OS sin replicarlas; repo anidado con su propio .git	Acceder_Cuenta_for3slabs.md
+for3slabs/mente-os-diseno-jazz	for3slabs	control	-	-	rama de diseno de Jazz declarada en Maestro/punteros.tsv	Acceder_Cuenta_for3slabs.md
+ElBrAyAn1967/For3s	ElBrAyAn1967	sitio	origin	~/for3s/marca-personal	el sitio y la demo (Next.js) — NO es el agente; su push a main PUBLICA	Acceder_Cuenta_ElBrAyAn1967.md
+fruterito101/mente-os	fruterito101	publicado	-	-	el motor Mente OS publicado en MIT para terceros, sin instancia	Acceder_Cuenta_fruterito101.md
+fruterito101/mente-os-template	fruterito101	plantilla	-	-	plantilla de jul-2026 superada por fruterito101/mente-os — candidata a archivar	Acceder_Cuenta_fruterito101.md

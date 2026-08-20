@@ -22,6 +22,7 @@ other document answers: *what can I run?* and *what may I change?*
 ```
 📦 INSTANCE — you fill this in, as the work advances
    mente.config.yml · blocks/ · memory/ · docs/ · work/ · vision/ · Cerebro/
+   cuentas.tsv · secrets/            (⭐ QUIÉN eres y a QUÉ accedes — nunca viaja en un clon)
    CLAUDE.md · PROJECT-RULES.md          (generated for THIS user)
 
 🔧 ENGINE — you run it, you do not rewrite it
@@ -64,6 +65,7 @@ measures** — that is how a measured verdict becomes an opinion.
 | `bin/check-pendings` | *does every pending carry its block, dates and priority?* | 0 · 1 warn · 2 error |
 | `bin/conectar-servidor` | *entrar al servidor For3s* — lee `secrets/`, ⛔ nunca escribe el valor | 0 dentro · 1 sin secrets |
 | `bin/check-campaigns` | *does every campaign carry its mission, authority, blocks and impact?* | 0 clean · 1 warn · 2 error |
+| ⭐ `bin/check-accounts` | *does the account register match the MACHINE?* — the only check that compares a document against `git remote -v` instead of another document. A remote nobody registered, a repo with no reason to exist, a credential-shaped string, a guide cited but absent | 0 clean · 1 warn · 2 error |
 | `bin/check-prs` | *did any PR change state since I last looked?* | 0 nothing new · 1 something to act on · 2 could not ask GitHub |
 | `bin/check-pr-base` | *⛔ can I open a PR against this base?* — the base must be `master`; a squash merge orphans a chained PR (2026-08-18: #32/#33, 9 seconds, 329 lines never reached master) | 0 safe base · 1 🔴 do not open the PR · 2 could not measure |
 | `bin/check-structure` | *is the folder tree the one the design declared?* | 0 · 1 warn · 2 missing |

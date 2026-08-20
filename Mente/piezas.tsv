@@ -75,6 +75,8 @@ val-pr-base	bin/check-pr-base	mente	canonical	⛔ la base de un PR es master: el
 vigia-prs	hooks/watch-prs.py	mente	canonical	avisa de un merge ajeno antes de tocar git, sin preguntar
 contrato-campana	rules/contract-campaign.md	mente	canonical	la forma de una campaña: agrupa bloques bajo una misión y unos estándares
 val-campanas	bin/check-campaigns	mente	canonical	¿una campaña cumple su contrato? hijos, autoridad, impacto, cierre
+val-cuentas	bin/check-accounts	mente	canonical	¿el registro de cuentas coincide con `git remote -v`? el único que compara contra la máquina
+registro-cuentas	cuentas.tsv	mente	canonical	qué cuenta gobierna cada repo y por qué existe — ⛔ nunca lleva un token
 conectar-servidor	bin/conectar-servidor	mente	canonical	entrar al servidor For3s leyendo secrets/ — el valor NUNCA se escribe
 # ── 🔴 5 piezas que EXISTÍAN y nadie declaraba (2026-08-10) ──────────────────
 # Barrido pedido por Brian: "conecta todos los cables sueltos". Las 5 funcionaban y estaban
