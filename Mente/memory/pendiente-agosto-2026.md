@@ -25,6 +25,34 @@ a sí mismas.
 Criterio de Brian (2026-08-08): **lo que desbloquea a otro primero**. Cada pendiente lleva
 además su propio plan de implementación.
 
+### MC-1 · Purgar los objetos huérfanos del repo archivado (GitHub Support)
+
+- **Prioridad:** 🟠 importante
+- **Estado:** pausado — ⛔ **bloqueado por decisión de Brian**, no por falta de trabajo
+- **Creado:** 2026-08-20 · **Modificado:** 2026-08-20
+- **Arrastrado desde:** — (nació aquí)
+- **Archivos de referencia:** `blocks/archive/multicuentas_2026-08/docs/incidente-fuga-credencial.md` · `docs/FUENTES-DE-VERDAD.md`
+- **Depende de:** ⛔ **una decisión de Brian** — *"no es nuestro foco por el momento"* (2026-08-20)
+
+**Descripción.** `for3slabs/mente-os-for3s` (archivado + privado) conserva **objetos huérfanos**
+con la contraseña del servidor en 3 blobs. Se verificó que GitHub los SERVÍA por
+`git/blobs/<sha>` aun tras reescribir el historial: **ningún comando de git los borra**, solo su
+recolección de basura o un ticket a GitHub Support.
+
+⭐ **Por qué NO es urgente hoy:** la mudanza a `for3slabs/mente-os-core` ya resolvió lo operativo
+—historial limpio verificado en 2180 blobs— y el repo viejo está **privado y archivado**, así que
+el acceso anónimo está cortado. Lo que queda es limpieza del pasado, no exposición viva.
+
+⚠️ **Lo que sigue siendo cierto y no conviene olvidar:** la contraseña **no se rotó** (riesgo
+aceptado conscientemente por Brian). La exposición **pasada** no se revierte con esto: quien
+clonara el repo mientras era público conserva el historial. Este ticket cierra lo que queda en
+los servidores de GitHub, nada más.
+
+⛔ **BLOQUEADO, no pendiente de tomar.** Implica escribir a un tercero desde la cuenta de Brian,
+así que no lo abre el agente. Se desbloquea cuando él lo decida.
+
+---
+
 ### V2-1 · Partir la arquitectura: 2,471 líneas contra un techo de 800
 
 - **Prioridad:** 🔴 urgente

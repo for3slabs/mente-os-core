@@ -74,7 +74,7 @@ borrarlos. **Un repo nuevo los ELIMINA, porque nunca los tuvo.**
 
 | Punto | Estado | Quién decidió |
 |---|---|---|
-| **Ticket a GitHub Support** para purgar los huérfanos del repo archivado | ⏸️ **OMITIDO por ahora** — Brian, 2026-08-20 | Brian |
+| **Ticket a GitHub Support** para purgar los huérfanos del repo archivado | ⛔ **PENDIENTE BLOQUEADO** — *"no es nuestro foco por el momento"* (Brian, 2026-08-20). ⚠️ No es un olvido ni una tarea lista para tomar: se desbloquea cuando Brian lo decida | Brian |
 | **Rotar la contraseña** | ⛔ **NO se rota** — riesgo aceptado conscientemente | Brian |
 
 ⚠️ **Lo que eso implica, dicho sin adornos:** la contraseña estuvo pública y no se ha invalidado.
