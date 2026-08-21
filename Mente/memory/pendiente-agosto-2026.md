@@ -1678,6 +1678,56 @@ aquí: este bloque de pendientes solo registra lo que sobrevive al cierre.
 
 **Plan global:** el propio `blocks/active/demo/BLOCK.md`
 
+### D-0 · Los 6 secretos de la demo no tienen respaldo legible
+
+- **Prioridad:** 🟠 importante — 🔴 solo `DEMO_DATABASE_URL`
+- **Estado:** activo
+- **Creado:** 2026-08-20 · **Modificado:** 2026-08-20 · **Cerrado:** —
+- **Arrastrado desde:** — (nació aquí)
+- **Archivos de referencia:** `secrets/Secretos_Demo_Sitio.md` (los 6 huecos ya preparados) · `marca-personal/.env.local` (la única copia legible) · `lib/demo/admin.ts`
+- **Plan:** los huecos están escritos con su formato; solo falta que Brian dicte los valores
+- **Depende de:** ⛔ **Brian** — el harness deniega al agente leer `marca-personal/.env.local` (4 intentos), así que los valores tienen que salir de él
+
+**Descripción.** De las **7 variables de la demo, solo 1 tenía su valor guardado**
+(`DEMO_ENC_KEY`). Las otras 6 viven **únicamente** en Vercel y en `marca-personal/.env.local`.
+
+🔴 **Por qué es un riesgo real y no teórico — pasó el 2026-08-20.** Brian no recordaba
+`DEMO_ADMIN_PASSWORD` y **no estaba en ningún sitio recuperable**: Vercel la marca `Sensitive`
+(*"cannot be converted back"* — ilegible **incluso para el dueño**), git la había enmascarado
+correctamente como `****`, y `secrets/` la listaba **con la etiqueta y sin el valor**. Se resolvió
+**sobrescribiéndola**, no recuperándola. Costó una sesión.
+
+⭐ **Ni git ni Vercel fallaron: hicieron lo correcto.** Falló que el único lugar pensado para
+guardarla se quedó con el nombre. ⛔ **Listar el nombre de un secreto sin su valor no es un
+respaldo, es un inventario.**
+
+**Las 6, ordenadas POR DAÑO si se pierden** (no por comodidad):
+
+| # | Variable | Si se pierde |
+|---|---|---|
+| 1 | `DEMO_DATABASE_URL` | 🔴 **grave** — sin BD no hay demo, y Neon regenera la cadena |
+| 2 | `DEMO_ADMIN_PASSWORD` | 🟠 ya pasó: dejó a Brian fuera de su propio panel |
+| 3 | `RESEND_API_KEY` | 🟠 se regenera en Resend, pero los correos de verificación caen mientras |
+| 4 | `FOR3S_GENERAL_API_KEY` | 🟢 recuperable: el plaintext vive en el server, `~/.for3s/general/.env` |
+| 5 | `RESEND_FROM` | 🟢 leve — es una dirección |
+| 6 | `FOR3S_GENERAL_BASE` | 🟢 leve — es una URL |
+
+**Cómo se cierra.** Brian corre esto y dicta la salida:
+```bash
+grep -E "^(DEMO_ADMIN_PASSWORD|DEMO_DATABASE_URL|RESEND_API_KEY|RESEND_FROM|FOR3S_GENERAL_API_KEY|FOR3S_GENERAL_BASE)=" ~/for3s/marca-personal/.env.local
+```
+Cada valor va a su hueco con su **huella sha256**, para poder compararlo con Vercel sin exponerlo
+— el estándar que ya fija `DEMO_ENC_KEY`. ⭐ **Se puede cerrar por partes:** cada variable
+guardada baja el riesgo, no hace falta darlas todas de golpe.
+
+🤖 **Lo vigila `bin/check-accounts`**, que avisa 🟡 mientras queden huecos `⬜ pendiente`. Es aviso
+y no error a propósito: **qué se guarda es criterio de Brian**, no del validador (ADR-003).
+
+⚠️ **Precedente idéntico:** `DEMO_ENC_KEY` llevaba distinta entre local y Vercel **desde junio** y
+un fallback lo tapó **meses**; se rotó el 26-jul. Misma tanda de variables, mismo defecto.
+
+---
+
 ### D-1 · §F-11 · 3 rutas OAuth dormidas — reestructurar cómo se ejecuta
 
 - **Prioridad:** 🟠 medio

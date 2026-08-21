@@ -10,7 +10,7 @@
 
 | | Block | Type | Status | Lane | Progress | Owner | Updated | Path |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | **demo** | code | active | full-block | 11/12 |  | 2026-08-18 | `blocks/active/demo/BLOCK.md` |
+| 🟢 | **demo** | code | active | full-block | 11/12 |  | 2026-08-20 | `blocks/active/demo/BLOCK.md` |
 | 🟢 | **seguridad** | code | active | full-block | 6/11 |  | 2026-08-18 | `blocks/active/seguridad/BLOCK.md` |
 | 🟢 | **distribucion_2026-08** | code | closed | full-block | 6/6 |  | 2026-08-05 | `blocks/archive/distribucion_2026-08/BLOCK.md` |
 | 🟢 | **expertise-programacion_2026-08** | docs | closed | direct | 6/6 |  | 2026-08-05 | `blocks/archive/expertise-programacion_2026-08/BLOCK.md` |

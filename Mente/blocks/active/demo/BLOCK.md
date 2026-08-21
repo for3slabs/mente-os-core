@@ -59,7 +59,7 @@ blockers: ninguno. ⏸️ **ESPERA A PROPÓSITO (07-ago):** la campaña `product
 progress: **11/12 cerrados** · 🟢 23/23 tests en verde contra BD real. Solo queda §F-11
 note: 🟢 PRODUCT es la CAPA 1; la capa 2 se corre AL CERRAR. ⚠️ Decía "§F-7 sigue abierto" —
       falso desde el 06-ago (cerrado por la raíz). La tabla §F ya lo decía.
-updated: 2026-08-18
+updated: 2026-08-20
 note: the red test is the deliverable, not a defect — how to run them and what NOT to touch is
       `blocks/active/demo/docs/como-correr-los-tests.md`.
 
@@ -158,7 +158,18 @@ note: the red test is the deliverable, not a defect — how to run them and what
 
 <!-- ══ H · FRICTION ══ escalates to Brian on close ══ -->
 ## Friction log
-- (none recorded)
+- 🔴 2026-08-20 · **Los secretos de la demo no tenían respaldo legible, y costó una sesión.**
+  Brian no recordaba `DEMO_ADMIN_PASSWORD`: Vercel la marca `Sensitive` (ilegible **incluso para
+  el dueño**), git la enmascaró bien, y `secrets/` la listaba **con la etiqueta y sin el valor**.
+  Se resolvió **sobrescribiéndola**, no recuperándola. Auditadas las 7 variables: **solo 1 tenía
+  su valor guardado**. ⭐ *Listar el nombre de un secreto sin su valor no es un respaldo, es un
+  inventario.* 📌 Pendiente **D-0** (`memory/pendiente-agosto-2026.md`), vigilado por
+  `bin/check-accounts`. ⛔ No lo cierra el agente: el harness le deniega leer `.env.local`.
+- ⚠️ 2026-08-20 · **2 defectos menores del panel, hallados al diagnosticar** — no se tocan hoy
+  (el bloque espera a la campaña, §E): `checkAdminPassword` en `lib/demo/admin.ts:20` es **código
+  muerto** (nadie la llama; valida `isAdminAuthorized`), y `memory/PENDIENTES.md:1256` afirma que
+  la auth por contraseña se **eliminó** el 20-jul — se revirtió (`6da8dda`) y nadie corrigió el
+  registro. ⭐ El documento dice una cosa y el código hace otra.
 
 <!-- ══ I · CHECKPOINTS ══ -->
 ## Checkpoints
