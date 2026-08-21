@@ -173,9 +173,23 @@ def check_against_machine(data):
                    if r["ruta_local"] not in ("-", "") and not r["ruta_local"].startswith("servidor:")}
     local_paths.add(".")
 
+    # ⭐ AÑADIDO 2026-08-20: los repos ANIDADOS que nadie declaró. El barrido anterior solo
+    # miraba `ruta_local`, así que un repo git dentro del árbol quedaba invisible — y había DOS
+    # (`for3s-inter` y `For3s-OS`), uno de ellos apuntando a una cuenta distinta. Un repo que
+    # nadie registró es trabajo que puede salir sin que nadie sepa adónde fue.
+    root = os.path.dirname(os.path.abspath(REGISTER))
+    parent = os.path.dirname(root)
+    try:
+        for entry in sorted(os.listdir(parent)):
+            cand = os.path.join(parent, entry)
+            if os.path.isdir(os.path.join(cand, ".git")) or os.path.isfile(os.path.join(cand, ".git")):
+                local_paths.add(cand)
+    except OSError:
+        pass
+
     for path in sorted(local_paths):
         real = os.path.expanduser(path.replace("~", os.path.expanduser("~")))
-        if not os.path.isdir(os.path.join(real, ".git")):
+        if not (os.path.isdir(os.path.join(real, ".git")) or os.path.isfile(os.path.join(real, ".git"))):
             continue
         for repo, remote_names in git_remotes(real).items():
             if repo not in declared:
