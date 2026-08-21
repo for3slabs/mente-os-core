@@ -196,6 +196,29 @@ def check_against_machine(data):
                        f"— pushing to only one leaves them divergent (measured 2026-07-23)")
 
 
+def check_secret_backups():
+    """⬜ ¿Hay secretos listados por NOMBRE pero sin su valor guardado?
+
+    ⭐ Nace de un fallo real (2026-08-20): `secrets/Secretos_Demo_Sitio.md` listaba
+    `DEMO_ADMIN_PASSWORD` bajo "las que NO se tocan" — con la etiqueta y SIN el valor. Cuando
+    Brian la olvidó no estaba en ningún sitio recuperable: Vercel la marca `Sensitive` (ilegible
+    incluso para el dueño) y git la había enmascarado correctamente.
+
+    ⛔ La regla que faltaba: **listar el nombre de un secreto sin su valor no es un respaldo, es
+    un inventario.** Esto no es un error —el dueño decide qué guarda— pero sí un aviso: nadie
+    debería descubrir el hueco el día que necesita el valor.
+    """
+    for f in ("Secretos_Demo_Sitio.md",):
+        path = os.path.join("secrets", f)
+        if not os.path.exists(path):
+            continue
+        text = open(path, encoding="utf-8", errors="ignore").read()
+        pend = text.count("⬜ **pendiente**")
+        if pend:
+            YEL.append(f"secrets/{f}: {pend} secreto(s) listados SIN su valor — un inventario no "
+                       f"es un respaldo. Si Vercel los marca `Sensitive`, dejan de ser legibles")
+
+
 def check_layer2():
     """¿Está instalada la capa que NO se puede rodear?
 
@@ -221,6 +244,7 @@ def main():
     check_shape(data)
     check_against_machine(data)
     check_layer2()
+    check_secret_backups()
 
     if not quiet:
         if RED:
