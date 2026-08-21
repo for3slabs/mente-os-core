@@ -117,6 +117,14 @@ def show(repo):
     if r["ruta_local"] != "-":
         print(f"   clon     : {r['ruta_local']}")
 
+    # ⚠️ Un repo ARCHIVADO se resuelve igual —hay que poder consultarlo— pero decirlo sin avisar
+    # sería exactamente el defecto del 2026-08-20: el rol vivía en el registro y nadie lo leía,
+    # así que las dos puertas autorizaban empujar a un repo retirado por una fuga.
+    if r["rol"] == "archivado":
+        print(f"\n   ⛔ ARCHIVADO — se consulta, NO recibe trabajo.")
+        print(f"      Las dos puertas RECHAZAN un push aquí (verificado).")
+        print(f"      El repo vigente: bin/conectar-cuenta --list · docs/FUENTES-DE-VERDAD.md")
+
     # ⚠️ Two remotes on the same path: the divergence trap, surfaced BEFORE the push.
     siblings = [x for x in data
                 if x["ruta_local"] == r["ruta_local"] != "-" and x["repo"] != r["repo"]]

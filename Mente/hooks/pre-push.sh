@@ -51,6 +51,34 @@ if [ -z "$REPO" ]; then
   exit 0
 fi
 
+# 🔴 UN REPO `archivado` NO RECIBE TRABAJO — añadido 2026-08-20 tras probar el bug.
+# La capa 1 y esta respondían "adelante" a un repo marcado `archivado`: el rol se guardaba en el
+# registro y NINGUNA pieza lo leía. Autorizaban empujar a `mente-os-for3s`, retirado esa misma
+# mañana por una fuga cuyos objetos huérfanos GitHub no permite borrar.
+# ⭐ Esta comprobación va ANTES de la de "está registrado", porque un archivado SÍ está
+# registrado — y por eso pasaba.
+ROL=$(grep -iE "^${REPO}[[:space:]]" "$REG" 2>/dev/null | cut -f3 | head -1)
+if [ "$ROL" = "archivado" ]; then
+  cat >&2 <<MSG
+
+🔴 PUSH ABORTADO — \`$REPO\` está ARCHIVADO
+
+   Un repo archivado se conserva para consultarlo, nunca para escribir en él.
+   Empujar ahí deja el trabajo en un sitio que el sistema ya declaró retirado,
+   y nadie lo va a buscar allí.
+
+   ⭐ Esta es la capa que no se rodea: la ejecuta git en el push real.
+
+   La salida: empuja al repo vigente.
+     Mente/bin/conectar-cuenta --list      los repos activos
+     Mente/docs/FUENTES-DE-VERDAD.md       cuál sucede a cuál
+
+   Tu trabajo sigue en local: no se ha perdido nada.
+
+MSG
+  exit 1
+fi
+
 if grep -qiE "^${REPO}[[:space:]]" "$REG"; then
   # ⚠️ El clon puede tener MÁS remotos declarados. Empujar a uno solo los deja divergentes:
   # es el defecto del 2026-07-23, que nadie notó en 24 días.

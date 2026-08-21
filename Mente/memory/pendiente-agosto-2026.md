@@ -53,6 +53,47 @@ así que no lo abre el agente. Se desbloquea cuando él lo decida.
 
 ---
 
+### MC-2 · El registro de cuentas no es un objeto: 4 piezas con la lógica duplicada
+
+- **Prioridad:** 🟠 importante
+- **Estado:** activo
+- **Creado:** 2026-08-20 · **Modificado:** 2026-08-20 · **Cerrado:** —
+- **Arrastrado desde:** — (nació aquí)
+- **Archivos de referencia:** `bin/check-accounts` (289 L) · `bin/conectar-cuenta` (198 L) · `hooks/gate-accounts.py` (211 L) · `hooks/pre-push.sh` · `cuentas.tsv`
+- **Depende de:** — (el bug urgente que destapó ya está cerrado)
+
+**Descripción.** ⭐ **Pregunta de Brian, 2026-08-20:** *"¿Mente OS v2 no tiene ese sistema ya
+incorporado, orientado a objetos, que sepa y monitorice desde dónde está el repo, la cuenta y
+todo?"* **Medido: no.** El motor tiene **CERO clases**. El registro de cuentas son 4 scripts
+sueltos y **3 de ellos definen su propia `rows()`, su propia `COLS` y su propio parseo**.
+
+🔴 **La divergencia no es hipotética: ocurrió el mismo día en que se construyó.** Se añadió el rol
+`archivado` y solo 2 de las 4 piezas lo conocían. Consecuencia medida: **ambas puertas
+autorizaban empujar a `mente-os-for3s`**, el repo retirado esa mañana por una fuga cuyos objetos
+huérfanos GitHub no permite borrar. El dato estaba guardado y **ninguna pieza lo leía**.
+
+⭐ **Es el patrón que este proyecto ya documentó 3 veces** (`crypto.py`, workspaces, BYOK) en su
+versión hermana: no *"se construye la pieza y no se conecta"*, sino **"se construye cuatro veces
+y se desincronizan"**.
+
+✅ **El bug ya está cerrado** (2026-08-20): las 3 piezas respetan `archivado`, verificado en 7
+casos, y la batería lo vigila con 2 candados. ⛔ **Lo que queda es la causa, no el síntoma:**
+mientras el conocimiento viva en 4 copias, el próximo rol nuevo volverá a divergir.
+
+**Lo que se propone** (a diseñar con Brian, no decidido):
+
+| | |
+|---|---|
+| **Una clase** `AccountRegistry` — parsea, valida y responde *"¿puedo empujar aquí?"* | las 4 piezas la consumen |
+| **Un objeto** `SecretRef` — apunta a un secreto sin contener su valor | cierra el hueco de `D-0` por diseño |
+| **El efecto medido** | ~102 líneas duplicadas → una clase con una responsabilidad; añadir un rol pasa de 4 ediciones a 1 |
+
+⚠️ **La decisión previa no es cómo hacerlo, sino hasta dónde:** ¿solo cuentas, o también los
+secretos y su monitorización? Brian lo planteó como **un sistema base de Mente OS v2**, lo que es
+más grande que refactorizar 4 scripts. **Se habla antes de construir.**
+
+---
+
 ### V2-1 · Partir la arquitectura: 2,471 líneas contra un techo de 800
 
 - **Prioridad:** 🔴 urgente

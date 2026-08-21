@@ -965,9 +965,31 @@ if [ -f "$_cap" ]; then
            </dev/null 2>&1 | grep -c "PUSH ABORTADO" ) )
   eq "medido: la capa 2 ABORTA un push a un repo no registrado" "1" "$_pp"
   # ⛔ Y NO debe abortar uno legítimo: un guardia que estorba se termina desactivando.
-  _ppok=$( ( cd "$REPO" && bash "$M/hooks/pre-push.sh" origin https://github.com/for3slabs/mente-os-for3s.git \
+  # ⚠️ El destino se LEE del remoto real, nunca se escribe a mano: este check citaba
+  # `mente-os-for3s`, y el 2026-08-20 ese repo pasó a `archivado` — la capa 2 empezó a abortarlo
+  # (correcto) y el check se puso en rojo culpando al hook. ⭐ Un ejemplo escrito a mano es
+  # correcto exactamente una vez; el mismo defecto que docs/METRICS.md existe para eliminar.
+  _origin=$(cd "$REPO" && git remote get-url origin 2>/dev/null)
+  _ppok=$( ( cd "$REPO" && bash "$M/hooks/pre-push.sh" origin "$_origin" \
              </dev/null >/dev/null 2>&1; echo $? ) )
   eq "la capa 2 NO estorba un push legítimo" "0" "$_ppok"
+
+  # 🔴 EL BUG DEL ROL QUE NADIE LEÍA (2026-08-20). El registro marcaba `mente-os-for3s` como
+  # `archivado` —retirado esa misma mañana por una fuga cuyos objetos huérfanos GitHub no borra—
+  # y AMBAS puertas respondían "adelante". El dato estaba guardado y ninguna pieza lo consultaba.
+  # ⭐ Es el defecto que este proyecto ya documentó 3 veces: se construye la pieza y no se conecta.
+  # ⛔ Empujar a un archivado no es equivocarse de destino: revive un repo retirado por seguridad.
+  _arch=$(awk -F'\t' '!/^#/ && NF==7 && $3=="archivado" {print $1; exit}' "$M/cuentas.tsv")
+  if [ -n "$_arch" ]; then
+    _d1=$(printf '%s' '{"tool_name":"Bash","cwd":"'"$REPO"'","tool_input":{"command":"git push https://github.com/'"$_arch"'.git master"}}' \
+          | python3 "$M/hooks/gate-accounts.py" 2>/dev/null | grep -c '"permissionDecision": "deny"')
+    eq "la capa 1 DENIEGA un push a un repo archivado" "1" "$_d1"
+    ( cd "$REPO" && bash "$M/hooks/pre-push.sh" x "https://github.com/$_arch.git" </dev/null >/dev/null 2>&1 )
+    [ $? -eq 1 ] && ok "la capa 2 ABORTA un push a un repo archivado" \
+      || bad "pre-push archivado" "aborta" "deja empujar a un repo retirado por seguridad"
+  else
+    ok "no hay repos archivados que verificar (nada que bloquear)"
+  fi
 
   # ⭐ LA FUENTE DE VERDAD ES UN DOCUMENTO CANÓNICO, no la memoria de nadie (2026-08-20).
   # Tres documentos vivos nombraron tres repos distintos como "el de la verdad" — 46, 31 y 24

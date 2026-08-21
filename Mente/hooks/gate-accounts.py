@@ -203,6 +203,23 @@ def main():
                            f"Si es a propósito, apruébalo.")
 
     r = known[repo.lower()]
+
+    # 🔴 UN REPO `archivado` NO RECIBE TRABAJO — arreglado 2026-08-20, tras probarlo.
+    # El registro decía `archivado` y esta puerta respondía ALLOW igual: el rol se guardaba y
+    # nadie lo leía. Medido ese día: autorizaba empujar a `mente-os-for3s`, el repo que se
+    # abandonó ESA MAÑANA por una fuga de credencial cuyos objetos huérfanos GitHub no borra.
+    # ⭐ Empujar ahí no es un error de destino: revive un repo retirado por seguridad y le añade
+    # objetos nuevos que tampoco se podrán quitar.
+    if r["rol"] == "archivado":
+        return verdict("deny",
+                       f"🔴 `{repo}` está ARCHIVADO — no recibe trabajo.\n\n"
+                       f"Por qué: {r['por_que_existe']}\n\n"
+                       f"Un repo archivado se conserva para consultarlo, nunca para escribir en "
+                       f"él. Si empujas ahí, el trabajo queda en un sitio que el sistema ya "
+                       f"declaró retirado — y nadie lo va a buscar allí.\n\n"
+                       f"La salida: empuja al repo vigente. `bin/conectar-cuenta --list` los "
+                       f"muestra, y `docs/FUENTES-DE-VERDAD.md` dice cuál sucede a cuál.")
+
     return verdict("allow",
                    f"✅ `{repo}` registrado · cuenta `{r['cuenta']}` · rol `{r['rol']}`")
 
